@@ -75,8 +75,8 @@ const ja: Record<string, string> = {
     "A: はい。ZMK キーボードであれば、変更なしでキーマップ機能を使えます。",
   "You can also support other features by using cormoran's ZMK fork and cormoran's ZMK modules, although it's not suggested considering compatibility and maintainability.":
     "cormoran の ZMK fork と ZMK モジュールを使うことで他の機能にも対応できますが、互換性と保守性を考えると推奨しません。",
-  "ClickBoard ErgoTrack and GoFortyMax firmware support is in progress — see the developer guide for how a keyboard adds Keeb-On! Studio support.":
-    "ClickBoard ErgoTrack と GoFortyMax のファームウェア対応は現在進行中です — キーボードが Keeb-On! Studio に対応する方法は開発者ガイドを参照してください。",
+  "ClickBoard ErgoTrack and GoFortyMax firmware support is in progress.":
+    "ClickBoard ErgoTrack と GoFortyMax のファームウェア対応は現在進行中です。",
   "Warning: cormoran's ZMK fork is very experimental, optimized for DYA keyboards and may contain unstable or breaking changes. Use at your own risk. In rare cases, it may cause malfunction or damage to your keyboard hardware.":
     "警告: cormoran の ZMK fork は非常に実験的で、DYA キーボード向けに最適化されています。不安定な変更や破壊的変更を含む可能性があります。自己責任で使用してください。まれにキーボードハードウェアの誤動作や損傷につながる場合があります。",
   "Q: Can I get source code of Keeb-On! Studio?":
@@ -624,7 +624,6 @@ const ja: Record<string, string> = {
   "Special thanks to": "Special thanks to",
   "ZMK community": "ZMK community",
   "Release notes": "リリースノート",
-  "Keyboard developer guide": "キーボード開発者向けガイド",
   "Release notes ({{version}})": "リリースノート ({{version}})",
   "Release Notes": "リリースノート",
   "What's new in Keeb-On! Studio": "Keeb-On! Studio の新機能",
@@ -1439,8 +1438,8 @@ const zh: Record<string, string> = {
     "A: 可以。任何 ZMK 键盘无需修改即可使用键位功能。",
   "You can also support other features by using cormoran's ZMK fork and cormoran's ZMK modules, although it's not suggested considering compatibility and maintainability.":
     "也可以通过使用 cormoran 的 ZMK 分支及其 ZMK 模块来支持其他功能，但考虑到兼容性和可维护性，不建议这样做。",
-  "ClickBoard ErgoTrack and GoFortyMax firmware support is in progress — see the developer guide for how a keyboard adds Keeb-On! Studio support.":
-    "ClickBoard ErgoTrack 和 GoFortyMax 的固件支持正在开发中 — 有关键盘如何支持 Keeb-On! Studio，请参阅开发者指南。",
+  "ClickBoard ErgoTrack and GoFortyMax firmware support is in progress.":
+    "ClickBoard ErgoTrack 和 GoFortyMax 的固件支持正在开发中。",
   "Warning: cormoran's ZMK fork is very experimental, optimized for DYA keyboards and may contain unstable or breaking changes. Use at your own risk. In rare cases, it may cause malfunction or damage to your keyboard hardware.":
     "警告：cormoran 的 ZMK 分支非常实验性，针对 DYA 键盘进行了优化，可能包含不稳定或破坏性更改。使用风险自负。在极少数情况下，可能导致键盘硬件故障或损坏。",
   "Q: Can I get source code of Keeb-On! Studio?":
@@ -1953,7 +1952,6 @@ const zh: Record<string, string> = {
   "Special thanks to": "特别感谢",
   "ZMK community": "ZMK 社区",
   "Release notes": "发布说明",
-  "Keyboard developer guide": "键盘开发者指南",
   "Release notes ({{version}})": "发布说明（{{version}}）",
   "Release Notes": "发布说明",
   "What's new in Keeb-On! Studio": "Keeb-On! Studio 的新功能",

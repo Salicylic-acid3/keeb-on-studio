@@ -46,12 +46,6 @@ import { useUrlTab, pathnameFromTabId } from "./hooks/useUrlTab";
 import { useDevtool } from "./hooks/useDevtool";
 import { DevtoolWindow } from "./components/DevtoolWindow";
 import { trackPageView } from "./lib/analytics";
-import { DeveloperGuidePage } from "./components/developerGuide";
-import {
-  DEVELOPER_GUIDE_PATH,
-  getDeveloperGuidePageDefinition,
-  isDeveloperGuidePath,
-} from "./content/developerGuide";
 
 function getTabs(t: (key: string) => string): TabItem[] {
   return [
@@ -128,32 +122,7 @@ function App() {
   );
 }
 
-/**
- * Select connection-free documentation before mounting any keyboard provider.
- * This keeps guide URLs usable on a browser without Web Serial, Web Bluetooth,
- * or a connected keyboard.
- */
 function AppRouter() {
-  const { language } = useLanguage();
-  const [pathname, setPathname] = useState(() => window.location.pathname);
-
-  useEffect(() => {
-    const onPopState = () => setPathname(window.location.pathname);
-    window.addEventListener("popstate", onPopState);
-    return () => window.removeEventListener("popstate", onPopState);
-  }, []);
-
-  if (isDeveloperGuidePath(pathname)) {
-    return (
-      <DeveloperGuidePage
-        page={
-          getDeveloperGuidePageDefinition(pathname, language) ??
-          getDeveloperGuidePageDefinition(DEVELOPER_GUIDE_PATH, language)!
-        }
-      />
-    );
-  }
-
   return (
     <KeyboardLayoutProvider>
       <DeviceConnectionProvider>
@@ -259,7 +228,6 @@ function AppContent() {
                 isConnecting={connection.isLoading}
                 error={connection.error}
                 onShowReleaseNotes={() => navigatePath(RELEASE_NOTES_PATH)}
-                onShowDeveloperGuide={() => navigatePath(DEVELOPER_GUIDE_PATH)}
               />
             </motion.div>
           )

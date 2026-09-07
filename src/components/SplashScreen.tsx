@@ -19,8 +19,6 @@ interface SplashScreenProps {
   error: string | null;
   /** Navigate to the standalone release notes page. */
   onShowReleaseNotes: () => void;
-  /** Navigate to the connection-free keyboard developer guide. */
-  onShowDeveloperGuide: () => void;
 }
 
 function LoadingDots() {
@@ -59,7 +57,6 @@ export function SplashScreen({
   isConnecting,
   error,
   onShowReleaseNotes,
-  onShowDeveloperGuide,
 }: SplashScreenProps) {
   const { t } = useLanguage();
   const version = getCurrentVersion();
@@ -306,12 +303,6 @@ export function SplashScreen({
         animate={{ opacity: 1 }}
         transition={{ delay: 1.1 }}
       >
-        <button
-          onClick={onShowDeveloperGuide}
-          className="hover:text-[var(--color-electric)] transition-colors underline"
-        >
-          {t("Keyboard developer guide")}
-        </button>
         <button
           onClick={onShowReleaseNotes}
           className="hover:text-[var(--color-electric)] transition-colors underline"

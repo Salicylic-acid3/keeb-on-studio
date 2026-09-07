@@ -164,7 +164,7 @@ export function HomePage() {
                 )}
                 <br />
                 {t(
-                  "ClickBoard ErgoTrack and GoFortyMax firmware support is in progress — see the developer guide for how a keyboard adds Keeb-On! Studio support.",
+                  "ClickBoard ErgoTrack and GoFortyMax firmware support is in progress.",
                 )}
                 <div className="mt-2 p-3 rounded bg-[var(--color-warning)]/20 border border-[var(--color-warning)] text-[var(--color-warning)] text-xs">
                   {t(
