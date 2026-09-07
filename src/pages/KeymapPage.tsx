@@ -997,29 +997,6 @@ export function KeymapPage() {
               </div>
             )}
 
-            {/* Sensor Rotation Configuration */}
-            {!sensorRotate.isAvailable && (
-              <div className="glass-card p-4 mt-6 mb-4 border-yellow-500/20 bg-yellow-500/10 flex items-center gap-3">
-                <div className="p-2">
-                  <IconAlertTriangle size={24} />
-                </div>
-                <p className="text-sm">
-                  {t(
-                    "Runtime sensor rotation subsystem is not available for your keyboard. Rotary encoder configuration will not be displayed. You can enable the feature by applying cormoran/zmk-behavior-runtime-sensor-rotate in your firmware.",
-                  )}
-                  <br />
-                  <a
-                    href="https://github.com/cormoran/zmk-behavior-runtime-sensor-rotate"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[var(--color-electric)] underline mx-1"
-                  >
-                    cormoran/zmk-behavior-runtime-sensor-rotate
-                  </a>
-                </p>
-              </div>
-            )}
-
             {sensorRotate.isAvailable && currentLayer && (
               <div className="mt-6">
                 <SensorRotationConfig

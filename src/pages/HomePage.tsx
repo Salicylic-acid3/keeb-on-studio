@@ -62,6 +62,23 @@ export function HomePage() {
                   </>
                 )}
               </p>
+              <p className="text-sm text-[var(--color-text-muted)] mt-1">
+                {language === "ja" ? (
+                  <>
+                    Keeb-On! Studio は DYA Studio
+                    の機能を絞り込み、Salicylic_acid3
+                    が開発するキーボード向けに特化させたツールです。一般的な ZMK
+                    キーボードへの対応は目的としていません。
+                  </>
+                ) : (
+                  <>
+                    Keeb-On! Studio intentionally narrows down DYA Studio's
+                    feature set to specialize it for the keyboards
+                    Salicylic_acid3 develops — it is not intended to support
+                    general ZMK keyboards.
+                  </>
+                )}
+              </p>
             </div>
           </div>
         </div>
@@ -150,12 +167,61 @@ export function HomePage() {
                 {t("Q: Can my keyboard support Keeb-On! Studio?")}
               </p>
               <p className="text-sm text-[var(--color-text-muted)]">
-                {t(
-                  "A: Yes, you can use the keymap feature without any modification with your ZMK keyboard.",
-                )}
-                <br />
-                {t(
-                  "You can also support other features by using cormoran's ZMK fork and cormoran's ZMK modules, although it's not suggested considering compatibility and maintainability.",
+                {language === "ja" ? (
+                  <>
+                    A: いいえ。Keeb-On! Studio は Salicylic_acid3
+                    が開発するキーボード（ClickBoard ErgoTrack、GoFortyMax
+                    など）に特化したツールで、一般の ZMK
+                    キーボードには対応していません。
+                    <br />
+                    一般的な ZMK
+                    キーボードで同様のツールを使いたい場合は、本家の{" "}
+                    <a
+                      href="https://studio.dya.cormoran.works/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors mx-1"
+                    >
+                      DYA Studio
+                    </a>{" "}
+                    をご利用のうえ、
+                    <a
+                      href="https://studio.dya.cormoran.works/developer-guide"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors mx-1"
+                    >
+                      DYA Studio のドキュメント
+                    </a>
+                    に従ってセットアップしてください。
+                  </>
+                ) : (
+                  <>
+                    A: No — Keeb-On! Studio is specialized for the keyboards
+                    Salicylic_acid3 develops (such as ClickBoard ErgoTrack and
+                    GoFortyMax) and does not support general ZMK keyboards.
+                    <br />
+                    If you want a similar tool for a general ZMK keyboard,
+                    please use the upstream{" "}
+                    <a
+                      href="https://studio.dya.cormoran.works/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors mx-1"
+                    >
+                      DYA Studio
+                    </a>{" "}
+                    and follow its{" "}
+                    <a
+                      href="https://studio.dya.cormoran.works/developer-guide"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors mx-1"
+                    >
+                      documentation
+                    </a>
+                    .
+                  </>
                 )}
                 <br />
                 {t(
@@ -222,16 +288,6 @@ export function HomePage() {
                     </a>{" "}
                     is what this fork started from.
                   </>
-                )}
-              </p>
-            </div>
-            <div>
-              <p className="font-medium text-[var(--color-text)] mb-1">
-                {t("Q: Are there plan to migrate the ZMK fork to ZMK v0.4.0?")}
-              </p>
-              <p className="text-sm text-[var(--color-text-muted)]">
-                {t(
-                  "A: Yes, it's already done. The ZMK fork now tracks recent ZMK (Zephyr 4.x).",
                 )}
               </p>
             </div>

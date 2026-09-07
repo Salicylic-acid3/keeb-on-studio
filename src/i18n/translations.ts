@@ -69,20 +69,12 @@ const ja: Record<string, string> = {
   "Coming Soon": "近日公開",
   "Q: Can my keyboard support Keeb-On! Studio?":
     "Q: 自分のキーボードは Keeb-On! Studio に対応できますか？",
-  "A: Yes, you can use the keymap feature without any modification with your ZMK keyboard.":
-    "A: はい。ZMK キーボードであれば、変更なしでキーマップ機能を使えます。",
-  "You can also support other features by using cormoran's ZMK fork and cormoran's ZMK modules, although it's not suggested considering compatibility and maintainability.":
-    "cormoran の ZMK fork と ZMK モジュールを使うことで他の機能にも対応できますが、互換性と保守性を考えると推奨しません。",
   "ClickBoard ErgoTrack and GoFortyMax firmware support is in progress.":
     "ClickBoard ErgoTrack と GoFortyMax のファームウェア対応は現在進行中です。",
   "Warning: cormoran's ZMK fork is very experimental, optimized for DYA keyboards and may contain unstable or breaking changes. Use at your own risk. In rare cases, it may cause malfunction or damage to your keyboard hardware.":
     "警告: cormoran の ZMK fork は非常に実験的で、DYA キーボード向けに最適化されています。不安定な変更や破壊的変更を含む可能性があります。自己責任で使用してください。まれにキーボードハードウェアの誤動作や損傷につながる場合があります。",
   "Q: Can I get source code of Keeb-On! Studio?":
     "Q: Keeb-On! Studio のソースコードを入手できますか？",
-  "Q: Are there plan to migrate the ZMK fork to ZMK v0.4.0?":
-    "Q: ZMK fork を ZMK v0.4.0 へ移行する予定はありますか？",
-  "A: Yes, it's already done. The ZMK fork now tracks recent ZMK (Zephyr 4.x).":
-    "A: はい、すでに移行済みです。ZMK fork は最新の ZMK（Zephyr 4.x）に追従しています。",
 
   "Configure key bindings and layers": "キー割り当てとレイヤーを設定します",
   "Unsaved changes": "未保存の変更",
@@ -147,8 +139,6 @@ const ja: Record<string, string> = {
     "この選択は現在ブラウザーのローカルストレージに保存されます。",
   "Physical layout module preview could not be loaded: {{error}}":
     "物理レイアウトモジュールのプレビューを読み込めませんでした: {{error}}",
-  "Runtime sensor rotation subsystem is not available for your keyboard. Rotary encoder configuration will not be displayed. You can enable the feature by applying cormoran/zmk-behavior-runtime-sensor-rotate in your firmware.":
-    "このキーボードではランタイムセンサー回転サブシステムを利用できません。ロータリーエンコーダー設定は表示されません。ファームウェアに cormoran/zmk-behavior-runtime-sensor-rotate を適用すると、この機能を有効にできます。",
   "Click on a key to modify its binding. Modified keys are highlighted in green and show the original binding on hover. Use the Discard button to drop unsaved changes, or Reset to restore the default keymap.":
     "キーをクリックして割り当てを変更します。変更されたキーは緑で強調表示され、ホバーすると元の割り当てが表示されます。未保存の変更を破棄するには「破棄」を、デフォルトのキーマップに戻すには「リセット」を使ってください。",
   "Connect your keyboard to edit keymaps. Click on a key to modify its binding.":
@@ -1403,20 +1393,12 @@ const zh: Record<string, string> = {
   "Coming Soon": "即将推出",
   "Q: Can my keyboard support Keeb-On! Studio?":
     "Q: 我的键盘可以使用 Keeb-On! Studio 吗？",
-  "A: Yes, you can use the keymap feature without any modification with your ZMK keyboard.":
-    "A: 可以。任何 ZMK 键盘无需修改即可使用键位功能。",
-  "You can also support other features by using cormoran's ZMK fork and cormoran's ZMK modules, although it's not suggested considering compatibility and maintainability.":
-    "也可以通过使用 cormoran 的 ZMK 分支及其 ZMK 模块来支持其他功能，但考虑到兼容性和可维护性，不建议这样做。",
   "ClickBoard ErgoTrack and GoFortyMax firmware support is in progress.":
     "ClickBoard ErgoTrack 和 GoFortyMax 的固件支持正在开发中。",
   "Warning: cormoran's ZMK fork is very experimental, optimized for DYA keyboards and may contain unstable or breaking changes. Use at your own risk. In rare cases, it may cause malfunction or damage to your keyboard hardware.":
     "警告：cormoran 的 ZMK 分支非常实验性，针对 DYA 键盘进行了优化，可能包含不稳定或破坏性更改。使用风险自负。在极少数情况下，可能导致键盘硬件故障或损坏。",
   "Q: Can I get source code of Keeb-On! Studio?":
     "Q: 我可以获取 Keeb-On! Studio 的源代码吗？",
-  "Q: Are there plan to migrate the ZMK fork to ZMK v0.4.0?":
-    "Q: 计划将 ZMK 分支迁移到 ZMK v0.4.0 吗？",
-  "A: Yes, it's already done. The ZMK fork now tracks recent ZMK (Zephyr 4.x).":
-    "A: 已经完成。ZMK 分支现在跟踪最新的 ZMK（Zephyr 4.x）。",
 
   "Configure key bindings and layers": "配置按键绑定和层",
   "Unsaved changes": "有未保存的更改",
@@ -1476,8 +1458,6 @@ const zh: Record<string, string> = {
     "此选择目前保存在浏览器的本地存储中。",
   "Physical layout module preview could not be loaded: {{error}}":
     "无法加载物理布局模块预览：{{error}}",
-  "Runtime sensor rotation subsystem is not available for your keyboard. Rotary encoder configuration will not be displayed. You can enable the feature by applying cormoran/zmk-behavior-runtime-sensor-rotate in your firmware.":
-    "您的键盘不支持运行时传感器旋转子系统，将不会显示旋转编码器配置。您可以在固件中应用 cormoran/zmk-behavior-runtime-sensor-rotate 来启用此功能。",
   "Click on a key to modify its binding. Modified keys are highlighted in green and show the original binding on hover. Use the Discard button to drop unsaved changes, or Reset to restore the default keymap.":
     "点击按键以修改其绑定。被修改的按键会以绿色高亮显示，悬停时显示原始绑定。使用“放弃”按钮可丢弃未保存的更改，或使用“重置”恢复默认键位。",
   "Connect your keyboard to edit keymaps. Click on a key to modify its binding.":
