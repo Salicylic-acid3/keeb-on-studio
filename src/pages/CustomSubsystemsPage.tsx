@@ -36,7 +36,7 @@ import { OS_DETECTION_SUBSYSTEM_IDENTIFIER } from "../hooks/useOsDetection";
 import { DEVTOOL_SUBSYSTEM_IDENTIFIER } from "../hooks/useDevtool";
 import { FAST_KEYMAP_SUBSYSTEM_IDENTIFIER } from "../hooks/useKeymapSource";
 
-// Identifiers of subsystems DYA Studio already has a dedicated UI for
+// Identifiers of subsystems Keeb-On! Studio already has a dedicated UI for
 // (mirrors the `*_IDENTIFIER` constants exported by src/hooks/*.ts).
 const SUPPORTED_SUBSYSTEM_IDENTIFIERS = new Set<string>([
   DEVICE_INFO_SUBSYSTEM_IDENTIFIER,
@@ -56,7 +56,7 @@ const SUPPORTED_SUBSYSTEM_IDENTIFIERS = new Set<string>([
   OS_DETECTION_SUBSYSTEM_IDENTIFIER,
   DEVTOOL_SUBSYSTEM_IDENTIFIER,
   // Fast keymap has no dedicated tab of its own — it transparently powers the
-  // Keymap tab's fast-loading path (see useKeymapSource), so DYA Studio still
+  // Keymap tab's fast-loading path (see useKeymapSource), so Keeb-On! Studio still
   // fully handles it and it belongs with the already-supported subsystems.
   FAST_KEYMAP_SUBSYSTEM_IDENTIFIER,
 ]);
@@ -427,7 +427,7 @@ export function CustomSubsystemsPage() {
               <div className="glass-card p-6">
                 <p className="text-sm text-[var(--color-text-muted)]">
                   {t(
-                    "All custom subsystems reported by this device are already supported by DYA Studio.",
+                    "All custom subsystems reported by this device are already supported by Keeb-On! Studio.",
                   )}
                 </p>
               </div>
@@ -442,9 +442,9 @@ export function CustomSubsystemsPage() {
                       className="text-[var(--color-electric)]"
                     />
                   }
-                  title={t("Already supported by DYA Studio")}
+                  title={t("Already supported by Keeb-On! Studio")}
                   subtitle={t(
-                    "These subsystems have a dedicated UI elsewhere in DYA Studio",
+                    "These subsystems have a dedicated UI elsewhere in Keeb-On! Studio",
                   )}
                 >
                   <div className="space-y-4">

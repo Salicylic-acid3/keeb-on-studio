@@ -926,7 +926,7 @@ export function ConnectionPage() {
                   </h3>
                   <p className="text-sm text-[var(--color-text-secondary)] mb-2">
                     {t(
-                      "Changing the output priority may disconnect DYA Studio from your keyboard.",
+                      "Changing the output priority may disconnect Keeb-On! Studio from your keyboard.",
                     )}
                   </p>
                   <p className="text-sm text-[var(--color-text-muted)]">

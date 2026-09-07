@@ -1,5 +1,5 @@
 /**
- * Adapts DYA Studio's live ZMK Studio connection into the shape
+ * Adapts Keeb-On! Studio's live ZMK Studio connection into the shape
  * `@keyboard-hub/adapter-zmk` expects.
  *
  * The adapter is built to own its connection: `zmkAdapter.connect()` opens a
@@ -21,7 +21,7 @@ import type { ConnectionMethod } from "../../components/DeviceConnection";
 /**
  * Placeholder for the transport the adapter is not allowed to touch.
  *
- * `transportConnection` is required by `ZmkConnection`, but DYA Studio owns the
+ * `transportConnection` is required by `ZmkConnection`, but Keeb-On! Studio owns the
  * transport and must not hand it over — the adapter closing it would kill the
  * user's session. Nothing in the adapter's load or writeback paths reads it.
  *
@@ -36,7 +36,7 @@ const UNAVAILABLE_TRANSPORT = Object.freeze(
   {},
 ) as ZmkConnection["transportConnection"];
 
-/** Maps a DYA Studio connection method onto the adapter's transport label. */
+/** Maps a Keeb-On! Studio connection method onto the adapter's transport label. */
 function transportOf(method: ConnectionMethod): ZmkConnection["transport"] {
   return method === "ble" ? "ble" : "usb";
 }
@@ -60,7 +60,7 @@ export interface AbyssZmkConnectionInput {
   notificationSource?: ZmkNotificationSource;
 }
 
-/** Wraps DYA Studio's connection so the Abyss adapter can read and write it. */
+/** Wraps Keeb-On! Studio's connection so the Abyss adapter can read and write it. */
 export function createAbyssZmkConnection({
   rpcConnection,
   deviceName,
@@ -72,7 +72,7 @@ export function createAbyssZmkConnection({
     transport: transportOf(method),
     deviceName,
     rpcConnection,
-    // The adapter never aborts this; DYA Studio owns the connection lifecycle.
+    // The adapter never aborts this; Keeb-On! Studio owns the connection lifecycle.
     rpcAbortController: new AbortController(),
     transportConnection: UNAVAILABLE_TRANSPORT,
     notificationSource,

@@ -236,7 +236,7 @@ describe("TroubleshootingPage", () => {
 
     await waitFor(() => expect(writeTextMock).toHaveBeenCalledTimes(1));
     const reportText = writeTextMock.mock.calls[0][0] as string;
-    expect(reportText).toContain("# DYA Studio Support Report");
+    expect(reportText).toContain("# Keeb-On! Studio Support Report");
     expect(reportText).toContain("## Device Info (zmk__device_info)");
   });
 

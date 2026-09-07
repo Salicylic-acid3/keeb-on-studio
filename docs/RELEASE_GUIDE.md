@@ -1,6 +1,6 @@
 # Release & Release Notes Guide
 
-DYA Studio ships from `main` via a manually triggered release, and every release
+Keeb-On! Studio ships from `main` via a manually triggered release, and every release
 is recorded in the in-app **Release Notes** page
 (`https://studio.dya.cormoran.works/release-notes`).
 
@@ -13,7 +13,7 @@ never set it by hand.
 
 ## How a release happens
 
-The **Release DYA Studio** workflow (`.github/workflows/release.yml`) is run
+The **Release Keeb-On! Studio** workflow (`.github/workflows/release.yml`) is run
 manually (`workflow_dispatch`). It:
 
 1. Runs `node scripts/release.ts`, which resolves the next `YYYY.MM.DD.N` from

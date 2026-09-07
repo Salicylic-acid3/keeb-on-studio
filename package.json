@@ -1,5 +1,5 @@
 {
-  "name": "dya-studio",
+  "name": "keeb-on-studio",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -92,8 +92,8 @@
     ]
   },
   "build": {
-    "appId": "works.cormoran.dya-studio",
-    "productName": "DYA Studio",
+    "appId": "com.keebon.studio",
+    "productName": "Keeb-On! Studio",
     "directories": {
       "output": "release"
     },

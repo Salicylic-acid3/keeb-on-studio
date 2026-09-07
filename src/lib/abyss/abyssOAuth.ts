@@ -22,7 +22,7 @@
  * Only the tab that *started* the login answers, and it proves that by matching
  * the OAuth `state` parameter against the one it generated. That matters: the
  * PKCE code verifier lives in the initiating tab's `sessionStorage`, so any
- * other open DYA Studio tab would fail the exchange. The acknowledgement is
+ * other open Keeb-On! Studio tab would fail the exchange. The acknowledgement is
  * also how the callback page tells which mode it is in — acknowledged means it
  * is a popup and should close, silence means it is a full-page redirect and
  * must exchange the code itself.
@@ -37,10 +37,10 @@ export const OAUTH_CALLBACK_PATH = "/oauth/callback";
 /** Path the user is sent back to after a full-page redirect login. */
 export const IMPORT_EXPORT_PATH = "/import-export";
 
-const CHANNEL_NAME = "dya-studio-abyss-oauth";
-const MSG_CALLBACK = "dya-studio:abyss-oauth-callback";
-const MSG_ACK = "dya-studio:abyss-oauth-ack";
-const RETURN_PATH_KEY = "dya-studio-abyss-return-path";
+const CHANNEL_NAME = "keebon-studio-abyss-oauth";
+const MSG_CALLBACK = "keebon-studio:abyss-oauth-callback";
+const MSG_ACK = "keebon-studio:abyss-oauth-ack";
+const RETURN_PATH_KEY = "keebon-studio-abyss-return-path";
 
 /** How long the callback page waits for the opener to claim the callback
  * before assuming it is a full-page redirect and exchanging the code itself. */

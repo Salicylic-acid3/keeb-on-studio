@@ -179,7 +179,7 @@ describe("CustomSubsystemsPage", () => {
       // Already-supported subsystem is tucked inside a collapsed section.
       expect(screen.queryByText("zmk__settings")).not.toBeInTheDocument();
       expect(
-        screen.getByText("Already supported by DYA Studio"),
+        screen.getByText("Already supported by Keeb-On! Studio"),
       ).toBeInTheDocument();
     });
 
@@ -198,7 +198,7 @@ describe("CustomSubsystemsPage", () => {
         },
       });
 
-      fireEvent.click(screen.getByText("Already supported by DYA Studio"));
+      fireEvent.click(screen.getByText("Already supported by Keeb-On! Studio"));
 
       expect(screen.getByText("zmk__settings")).toBeInTheDocument();
     });
@@ -224,7 +224,7 @@ describe("CustomSubsystemsPage", () => {
       ).not.toBeInTheDocument();
       expect(
         screen.getByText(
-          "All custom subsystems reported by this device are already supported by DYA Studio.",
+          "All custom subsystems reported by this device are already supported by Keeb-On! Studio.",
         ),
       ).toBeInTheDocument();
     });
@@ -249,7 +249,7 @@ describe("CustomSubsystemsPage", () => {
         },
       });
 
-      // No dedicated DYA Studio UI: shown prominently with its external web UI.
+      // No dedicated Keeb-On! Studio UI: shown prominently with its external web UI.
       expect(screen.getByText("zmk__setting_expose")).toBeInTheDocument();
       expect(
         screen.getByText(
@@ -257,7 +257,7 @@ describe("CustomSubsystemsPage", () => {
         ),
       ).toBeInTheDocument();
       expect(
-        screen.queryByText("Already supported by DYA Studio"),
+        screen.queryByText("Already supported by Keeb-On! Studio"),
       ).not.toBeInTheDocument();
     });
 
@@ -276,7 +276,7 @@ describe("CustomSubsystemsPage", () => {
       });
 
       expect(
-        screen.queryByText("Already supported by DYA Studio"),
+        screen.queryByText("Already supported by Keeb-On! Studio"),
       ).not.toBeInTheDocument();
     });
 
@@ -296,7 +296,7 @@ describe("CustomSubsystemsPage", () => {
 
       expect(
         screen.getByText(
-          "All custom subsystems reported by this device are already supported by DYA Studio.",
+          "All custom subsystems reported by this device are already supported by Keeb-On! Studio.",
         ),
       ).toBeInTheDocument();
     });

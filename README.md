@@ -1,31 +1,26 @@
-<p align="center">
-  <img src="src/assets/dya.svg" alt="DYA Logo" width="96" height="96" />
-</p>
-
-<h1 align="center">DYA Studio</h1>
+<h1 align="center">⌨️ Keeb-On! Studio</h1>
 
 <p align="center">
-  A web-based configuration tool for the <strong>DYA keyboard series</strong> and ZMK keyboards.<br />
+  A web-based configuration tool for ZMK keyboards, built for people who found ZMK Studio (and its variants) harder to use than it should be.<br />
   Tune your keymap, trackball, and connections — right from your browser. No install required.
 </p>
 
 <p align="center">
-  <a href="https://studio.dya.cormoran.works"><strong>🚀 Open DYA Studio →</strong></a>
-  &nbsp;·&nbsp;
-  <a href="https://dya-studio-dev.cormoran707.workers.dev/">🧪 Dev preview</a>
-  <br />
-  <sub><strong>Open DYA Studio</strong> is the stable release. <strong>Dev preview</strong> tracks the latest <code>main</code> and may be unstable.</sub>
+  <sub>🚧 Not deployed yet — see <a href="#status--roadmap">Status &amp; Roadmap</a> below.</sub>
   <br />
   <sub>No keyboard at hand? Hit the <em>Demo</em> button on the splash screen to explore every feature with a simulated keyboard.</sub>
 </p>
 
+> [!NOTE]
+> **Keeb-On! Studio is a fork of [DYA Studio](https://github.com/cormoran/dya-studio) by [cormoran](https://github.com/cormoran) (cormoran707)**, licensed [AGPL-3.0](LICENSE). All credit for the original architecture, the ZMK Studio protocol extensions, and the vast majority of the feature set below belongs to that project. This fork exists to explore further UX changes and ship them under Hiroki's own brand; per the AGPL, this repository's full source (including all modifications) stays public. See [Attribution](#attribution) for details.
+
 <p align="center">
-  <img src="docs/images/keymap.png" alt="DYA Studio keymap editor" width="800" />
+  <img src="docs/images/keymap.png" alt="Keeb-On! Studio keymap editor" width="800" />
 </p>
 
 ## Getting Started
 
-1. Open [studio.dya.cormoran.works](https://studio.dya.cormoran.works) in a supported browser (see below).
+1. Run it locally for now (see [Development](#development) below) — no hosted URL yet.
 2. Choose how to connect on the splash screen:
    - **USB** — plug in your keyboard and pick its serial port.
    - **Bluetooth** — pair and connect over BLE.
@@ -89,27 +84,20 @@ Inspect battery levels, firmware build info, and uptime for both halves. Hunt do
 ## Does it work with my keyboard?
 
 - **Any ZMK keyboard with [ZMK Studio](https://zmk.dev/docs/features/studio) enabled**: the keymap editor works out of the box.
-- **DYA keyboards** (and keyboards built on [cormoran's ZMK fork + modules](https://github.com/cormoran)): everything above — trackball tuning, connection management, per-OS default layers, diagnostics, and more.
+- **DYA keyboards, and keyboards built on [cormoran's ZMK fork + modules](https://github.com/cormoran)**: everything above — trackball tuning, connection management, per-OS default layers, diagnostics, and more. See the [developer guide](https://studio.dya.cormoran.works/developer-guide) (upstream) for how to add support to your own board.
 
 > [!WARNING]
 > cormoran's ZMK fork is experimental and optimized for DYA keyboards. It may contain unstable or breaking changes — use it with other keyboards at your own risk.
 
-## The DYA Keyboard Series
-
-| Keyboard     | Description                                                     | Links                                                                                                                                                               |
-| ------------ | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **DYA Dash** | 40% split keyboard with embedded trackball, for mobile use      | [Design](https://github.com/cormoran/dya-dash-keyboard) · [Docs](https://cormoran.github.io/dya-dash-keyboard/) · [Buy](https://cormoran707.booth.pm/items/6913095) |
-| **DYA2**     | Next-gen 60% split, standard row-staggered layout — coming soon | [Booth](https://cormoran707.booth.pm/items/7627440)                                                                                                                 |
-
-Follow [#dya_kbd](https://x.com/search?q=%23dya_kbd) on X, or reach the maintainer [@cormoran707](https://x.com/cormoran707).
+Bringing this to Hiroki's own ClickBoard / GoForty lines means those boards' firmware moving onto ZMK + cormoran's Custom Studio Protocol modules first — see [Status & Roadmap](#status--roadmap).
 
 ## Development
 
 **Stack**: React 19, TypeScript, Vite, Tailwind CSS v4, Radix UI
 
 ```bash
-git clone https://github.com/cormoran/dya-studio.git
-cd dya-studio
+git clone <this-repo-url>   # TODO: set once pushed to Hiroki's own GitHub
+cd keeb-on-studio
 npm install
 npm run dev            # Start dev server at http://localhost:5173
 ```
@@ -123,6 +111,22 @@ npm run test:coverage  # Test coverage
 
 - [Development Guide](docs/DEVELOPMENT_GUIDE.md) — design system, component patterns, and implementation guidelines
 - [Testing Guide](docs/TESTING_GUIDE.md) — testing patterns and examples
+
+## Status & Roadmap
+
+This fork was just started. So far: rebranded (name, colors — indigo/vermillion/gold/cream instead of the upstream cyan/green/purple "cybernetic" theme), confirmed the build and full test suite (83 suites / 688 tests) still pass unmodified. Not yet done, roughly in order:
+
+- [ ] Decide on and apply real UX changes (the goal is "easier than ZMK Studio," not just a reskin — needs a concrete list of pain points to fix)
+- [ ] Replace the placeholder DYA logo/favicon with Keeb-On! Studio's own mark
+- [ ] Stand up a real repo (GitHub) and a hosting domain
+- [ ] The "Abyss" cloud import/export tab talks to cormoran's own backend (`abyss.keyboard-hub.com`) via an OAuth client id that's only valid for the upstream app — it's already disabled in this fork (no client id configured) until/unless that's addressed separately
+- [ ] Longer term, if ClickBoard/GoForty move to ZMK: build/adapt the cormoran-fork modules for those boards so this tool can actually configure them
+
+## Attribution
+
+Keeb-On! Studio is a fork of **[DYA Studio](https://github.com/cormoran/dya-studio)**, created by **cormoran ([@cormoran707](https://x.com/cormoran707))**. The keymap/macro/combo editor, the ZMK Studio protocol client, the trackball/connection/diagnostics tooling, and the underlying "Custom Studio Protocol" extensions to ZMK are all upstream work. This fork's changes so far are limited to branding (name, color palette); substantive feature work has not started.
+
+Licensed under [AGPL-3.0](LICENSE), same as upstream — any modified version of this app made available over a network must offer its complete corresponding source, per the license's terms.
 
 ## Acknowledgments
 

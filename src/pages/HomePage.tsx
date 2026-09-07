@@ -20,7 +20,7 @@ import DYA2Img2 from "../assets/dya2/dya2-2.jpeg";
 const Dya2Images = [DYA2Img, DYA2Img2];
 
 const xShareContents = {
-  title: encodeURIComponent("DYA Studio for DYA & ZMK Keyboards"),
+  title: encodeURIComponent("Keeb-On! Studio for DYA & ZMK Keyboards"),
   link: encodeURIComponent("https://studio.dya.cormoran.works"),
   tags: "dya_studio,dy_kbd",
 };
@@ -37,12 +37,12 @@ export function HomePage() {
           <div className="flex items-center gap-3 flex-1">
             <div className="flex-1">
               <h1 className="text-xl font-medium text-[var(--color-text)] text-center tablet:text-left">
-                {t("Welcome to DYA Studio")}
+                {t("Welcome to Keeb-On! Studio")}
               </h1>
               <p className="text-sm text-[var(--color-text-muted)] mt-1">
                 {language === "ja" ? (
                   <>
-                    DYA Studio は{" "}
+                    Keeb-On! Studio は{" "}
                     <a
                       href="https://x.com/cormoran707"
                       target="_blank"
@@ -64,7 +64,7 @@ export function HomePage() {
                   </>
                 ) : (
                   <>
-                    DYA Studio is yet another{" "}
+                    Keeb-On! Studio is yet another{" "}
                     <a
                       href="https://zmk.studio/"
                       target="_blank"
@@ -110,7 +110,7 @@ export function HomePage() {
         {/* Guide */}
         <div className="glass-card p-6 mb-6">
           <h2 className="text-sm font-medium text-[var(--color-text-secondary)] mb-4">
-            {t("Features - What you can do with DYA Studio")}
+            {t("Features - What you can do with Keeb-On! Studio")}
           </h2>
           <div className="text-sm text-[var(--color-text-muted)] space-y-4">
             <ul className="list-disc list-outside space-y-2 pl-5">
@@ -264,7 +264,7 @@ export function HomePage() {
           <div className="space-y-4">
             <div>
               <p className="font-medium text-[var(--color-text)] mb-1">
-                {t("Q: Can my keyboard support DYA Studio?")}
+                {t("Q: Can my keyboard support Keeb-On! Studio?")}
               </p>
               <p className="text-sm text-[var(--color-text-muted)]">
                 {t(
@@ -311,12 +311,12 @@ export function HomePage() {
             </div>
             <div>
               <p className="font-medium text-[var(--color-text)] mb-1">
-                {t("Q: Can I get source code of DYA Studio?")}
+                {t("Q: Can I get source code of Keeb-On! Studio?")}
               </p>
               <p className="text-sm text-[var(--color-text-muted)]">
                 {language === "ja" ? (
                   <>
-                    A: はい、DYA Studio
+                    A: はい、Keeb-On! Studio
                     はオープンソースになりました。ソースコードは{" "}
                     <a
                       href="https://github.com/cormoran/dya-studio"
@@ -339,7 +339,7 @@ export function HomePage() {
                   </>
                 ) : (
                   <>
-                    A: Yes, DYA Studio is now open source. You can find the
+                    A: Yes, Keeb-On! Studio is now open source. You can find the
                     source code on{" "}
                     <a
                       href="https://github.com/cormoran/dya-studio"

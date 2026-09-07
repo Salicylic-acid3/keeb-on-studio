@@ -228,7 +228,7 @@ export function ReleaseNotesPage({ onBack }: { onBack: () => void }) {
             {t("Release Notes")}
           </h1>
           <p className="text-sm text-[var(--color-text-muted)] mt-1">
-            {t("What's new in DYA Studio")}
+            {t("What's new in Keeb-On! Studio")}
           </p>
         </div>
 

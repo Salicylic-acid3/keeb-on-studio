@@ -605,7 +605,7 @@ export function DeveloperGuidePage({
               className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-surface-elevated)] hover:text-[var(--color-electric)]"
             >
               <IconHome size={17} aria-hidden="true" />
-              {t("Back to DYA Studio")}
+              {t("Back to Keeb-On! Studio")}
             </a>
           </footer>
         </main>

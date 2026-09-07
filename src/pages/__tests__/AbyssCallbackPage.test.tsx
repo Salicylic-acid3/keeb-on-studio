@@ -93,7 +93,7 @@ describe("AbyssCallbackPage", () => {
       screen.getByText("Something went wrong talking to Abyss."),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Back to DYA Studio" }),
+      screen.getByRole("button", { name: "Back to Keeb-On! Studio" }),
     ).toBeInTheDocument();
   });
 });

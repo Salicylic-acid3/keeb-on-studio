@@ -88,7 +88,7 @@ export const developerGuidePages: Record<
 > = {
   "/developer-guide": {
     route: "/developer-guide",
-    title: "あなたの ZMK キーボードを DYA Studio に対応させる",
+    title: "あなたの ZMK キーボードを Keeb-On! Studio に対応させる",
     summary:
       "ZMK 公式の機能から始め、必要に応じて既存モジュールや独自 RPC を段階的に追加します。",
     sections: [
@@ -126,7 +126,7 @@ export const developerGuidePages: Record<
     route: "/developer-guide/level-1",
     title: "レベル 1: 公式 ZMK Studio に対応する",
     summary:
-      "DYA Studio の Keymap 画面でキー割り当てを変更できる最小構成です。",
+      "Keeb-On! Studio の Keymap 画面でキー割り当てを変更できる最小構成です。",
     level: 1,
     screenshots: [
       screenshot(
@@ -204,7 +204,7 @@ export const developerGuidePages: Record<
         ],
         bullets: [
           "Custom Studio Protocol に対応した ZMK モジュールへの対応",
-          "&studio_unlock 実行時に DYA Studio と BLE 接続できるようになる機能",
+          "&studio_unlock 実行時に Keeb-On! Studio と BLE 接続できるようになる機能",
           "分割キーボードの左右で柔軟にデータをやり取りできる機能",
           "IO ピン 1 本で左右有線通信をできる機能（回路側のサポートが必要）",
           "以下で紹介する ZMK モジュールで必要な機能を提供するためのインターフェース追加",
@@ -448,7 +448,7 @@ export const developerGuidePages: Record<
       {
         title: "検証",
         body: [
-          "DYA Studio の Keymap タブを開き、Keymap / Macro / Combo の編集 UI が表示されることを確認します。「未対応です」と表示される場合は、必要な module または *_STUDIO_RPC が有効になっていません。",
+          "Keeb-On! Studio の Keymap タブを開き、Keymap / Macro / Combo の編集 UI が表示されることを確認します。「未対応です」と表示される場合は、必要な module または *_STUDIO_RPC が有効になっていません。",
         ],
       },
     ],
@@ -527,7 +527,7 @@ export const developerGuidePages: Record<
       {
         title: "検証",
         body: [
-          "DYA Studio の Trackball タブを開き、CPI や processor の調整 UI が表示されることを確認します。「未対応です」と表示される場合は、driver または input processor RPC が有効になっていません。",
+          "Keeb-On! Studio の Trackball タブを開き、CPI や processor の調整 UI が表示されることを確認します。「未対応です」と表示される場合は、driver または input processor RPC が有効になっていません。",
         ],
       },
     ],
@@ -582,7 +582,7 @@ export const developerGuidePages: Record<
       {
         title: "検証",
         body: [
-          "DYA Studio の Connection タブを開き、BLE profile、接続先レイヤー、OS 検出の UI が表示されることを確認します。「未対応です」と表示される場合は、対応する module または *_STUDIO_RPC が有効になっていません。",
+          "Keeb-On! Studio の Connection タブを開き、BLE profile、接続先レイヤー、OS 検出の UI が表示されることを確認します。「未対応です」と表示される場合は、対応する module または *_STUDIO_RPC が有効になっていません。",
         ],
       },
     ],
@@ -634,7 +634,7 @@ export const developerGuidePages: Record<
       {
         title: "検証",
         body: [
-          "DYA Studio の Settings タブを開き、公開した sleep / custom setting の UI が表示されることを確認します。「未対応です」と表示される場合は、対応する module または *_STUDIO_RPC が有効になっていません。",
+          "Keeb-On! Studio の Settings タブを開き、公開した sleep / custom setting の UI が表示されることを確認します。「未対応です」と表示される場合は、対応する module または *_STUDIO_RPC が有効になっていません。",
         ],
       },
       {
@@ -742,7 +742,7 @@ export const developerGuidePages: Record<
       {
         title: "検証",
         body: [
-          "DYA Studio の Troubleshooting タブを開き、Device Info や Watchdog の UI が表示されることを確認します。「未対応です」と表示される場合は、対応する diagnostic module または *_STUDIO_RPC が有効になっていません。",
+          "Keeb-On! Studio の Troubleshooting タブを開き、Device Info や Watchdog の UI が表示されることを確認します。「未対応です」と表示される場合は、対応する diagnostic module または *_STUDIO_RPC が有効になっていません。",
         ],
       },
     ],
@@ -763,7 +763,7 @@ export const developerGuidePages: Record<
       {
         title: "対象",
         body: [
-          "独自のセンサー設定を Web から編集したり、DYA Studio よりも使いやすい設定画面を作ったり、より多くの機能を設定できるようにしたいキーボード開発者向けです。",
+          "独自のセンサー設定を Web から編集したり、Keeb-On! Studio よりも使いやすい設定画面を作ったり、より多くの機能を設定できるようにしたいキーボード開発者向けです。",
         ],
       },
       {
@@ -869,7 +869,7 @@ export const developerGuidePages: Record<
     ],
     sections: [
       {
-        title: "DYA Studio に接続できない",
+        title: "Keeb-On! Studio に接続できない",
         body: [
           "USB の Studio RPC snippet、中央側の build、CONFIG_ZMK_STUDIO を確認します。",
         ],
@@ -881,7 +881,7 @@ export const developerGuidePages: Record<
       {
         title: "期待した画面が出ない",
         body: [
-          "対応 module と *_STUDIO_RPC、DYA Studio が対応する subsystem を確認します。",
+          "対応 module と *_STUDIO_RPC、Keeb-On! Studio が対応する subsystem を確認します。",
         ],
       },
       {
@@ -1164,8 +1164,8 @@ function renderSections(
  * a route renderer can consume it without connecting to a keyboard.
  */
 const englishText: Record<string, string> = {
-  "あなたの ZMK キーボードを DYA Studio に対応させる":
-    "Make your ZMK keyboard work with DYA Studio",
+  "あなたの ZMK キーボードを Keeb-On! Studio に対応させる":
+    "Make your ZMK keyboard work with Keeb-On! Studio",
   "キーマップ編集から始め、必要に応じて既存モジュールや独自 RPC を段階的に追加します。":
     "Start with keymap editing, then add existing modules or your own RPC as needed.",
   "ZMK 公式の機能から始め、必要に応じて既存モジュールや独自 RPC を段階的に追加します。":
@@ -1183,8 +1183,8 @@ const englishText: Record<string, string> = {
     "Level 3 — Custom modules: build ZMK modules and settings screens that can be edited from the web",
   "レベル 1: 公式 ZMK Studio に対応する":
     "Level 1: Add official ZMK Studio support",
-  "DYA Studio の Keymap 画面でキー割り当てを変更できる最小構成です。":
-    "The smallest setup for changing key bindings in DYA Studio's Keymap screen.",
+  "Keeb-On! Studio の Keymap 画面でキー割り当てを変更できる最小構成です。":
+    "The smallest setup for changing key bindings in Keeb-On! Studio's Keymap screen.",
   "ライトモードの Keymap エディタ": "Keymap editor in light mode",
   "カスタムモジュールを無効にしたライトモードの Keymap エディタ":
     "Keymap editor in light mode with custom modules disabled",
@@ -1240,8 +1240,8 @@ const englishText: Record<string, string> = {
     "This adds the following internal programs and interfaces.",
   "Custom Studio Protocol に対応した ZMK モジュールへの対応":
     "Support for ZMK modules that use the Custom Studio Protocol",
-  "&studio_unlock 実行時に DYA Studio と BLE 接続できるようになる機能":
-    "BLE connection to DYA Studio when &studio_unlock runs",
+  "&studio_unlock 実行時に Keeb-On! Studio と BLE 接続できるようになる機能":
+    "BLE connection to Keeb-On! Studio when &studio_unlock runs",
   分割キーボードの左右で柔軟にデータをやり取りできる機能:
     "Flexible data exchange between the two halves of a split keyboard",
   "IO ピン 1 本で左右有線通信をできる機能（回路側のサポートが必要）":
@@ -1312,7 +1312,7 @@ const englishText: Record<string, string> = {
   検証: "Verify",
   "Macro と Combo を保存し、割り当てたキーで動作すること、再接続後にも値が復元されることを確認します。":
     "Save a macro and combo, verify that their assigned keys work, then reconnect and confirm the values are restored.",
-  "DYA Studio の Keymap タブを開き、Keymap / Macro / Combo の編集 UI が表示されることを確認します。「未対応です」と表示される場合は、必要な module または *_STUDIO_RPC が有効になっていません。":
+  "Keeb-On! Studio の Keymap タブを開き、Keymap / Macro / Combo の編集 UI が表示されることを確認します。「未対応です」と表示される場合は、必要な module または *_STUDIO_RPC が有効になっていません。":
     "Open the Keymap tab and confirm that the Keymap, Macro, or Combo controls are shown. If Studio says the feature is unsupported, the required module or *_STUDIO_RPC is not enabled.",
   トラックボール: "Trackball",
   "PMW3610 の読み取りと、ポインター / スクロールへの変換を実機に合わせて調整します。":
@@ -1340,7 +1340,7 @@ const englishText: Record<string, string> = {
   "DYA2 の right-trackball.conf": "DYA2 right-trackball.conf",
   "ポインターとスクロールの両方を確認し、回転、軸、レイヤー別の有効化を一つずつ調整します。":
     "Test both pointer and scroll modes, then adjust rotation, axes, and per-layer enablement one at a time.",
-  "DYA Studio の Trackball タブを開き、CPI や processor の調整 UI が表示されることを確認します。「未対応です」と表示される場合は、driver または input processor RPC が有効になっていません。":
+  "Keeb-On! Studio の Trackball タブを開き、CPI や processor の調整 UI が表示されることを確認します。「未対応です」と表示される場合は、driver または input processor RPC が有効になっていません。":
     "Open the Trackball tab and confirm that CPI and processor controls are shown. If Studio says the feature is unsupported, the driver or input-processor RPC is not enabled.",
   "接続先と OS に合わせる": "Connections and operating systems",
   "BLE profile、接続先別レイヤー、OS 別デフォルトレイヤーを管理します。":
@@ -1358,7 +1358,7 @@ const englishText: Record<string, string> = {
   "必要な機能だけを有効にします。": "Enable only the features you need.",
   "USB と各 BLE profile を切り替え、指定した優先順位でデフォルトレイヤーが変わることを確認します。":
     "Switch between USB and each BLE profile and confirm that the default layer changes according to the configured priority.",
-  "DYA Studio の Connection タブを開き、BLE profile、接続先レイヤー、OS 検出の UI が表示されることを確認します。「未対応です」と表示される場合は、対応する module または *_STUDIO_RPC が有効になっていません。":
+  "Keeb-On! Studio の Connection タブを開き、BLE profile、接続先レイヤー、OS 検出の UI が表示されることを確認します。「未対応です」と表示される場合は、対応する module または *_STUDIO_RPC が有効になっていません。":
     "Open the Connection tab and confirm that BLE profile, host-layer, and OS-detection controls are shown. If Studio says a feature is unsupported, its module or *_STUDIO_RPC is not enabled.",
   設定と物理レイアウト: "Settings and physical layouts",
   設定: "Settings",
@@ -1367,7 +1367,7 @@ const englishText: Record<string, string> = {
   "sleep と custom setting の設定": "Sleep and custom-setting controls",
   スリープまでの時間を設定する: "Set the time until sleep",
   より高度な設定を変更する: "Change more advanced settings",
-  "DYA Studio の Settings タブを開き、公開した sleep / custom setting の UI が表示されることを確認します。「未対応です」と表示される場合は、対応する module または *_STUDIO_RPC が有効になっていません。":
+  "Keeb-On! Studio の Settings タブを開き、公開した sleep / custom setting の UI が表示されることを確認します。「未対応です」と表示される場合は、対応する module または *_STUDIO_RPC が有効になっていません。":
     "Open the Settings tab and confirm that the published sleep or custom-setting controls are shown. If Studio says a feature is unsupported, its module or *_STUDIO_RPC is not enabled.",
   "利用者が変更してよい実機設定と、画面に描くキー配置を安全に公開します。":
     "Expose safe hardware settings and the key layout shown in Studio.",
@@ -1380,7 +1380,7 @@ const englishText: Record<string, string> = {
   分割キーボード: "Split keyboards",
   "設定が中央側・非中央側のどちらへ適用されるかを UI と仕様で明示します。":
     "Make it clear in both the UI and documentation whether a setting applies to the central or non-central half.",
-  "DYA Studio の Settings タブを開き、公開した sleep / physical layout / custom setting の UI が表示されることを確認します。「未対応です」と表示される場合は、対応する module または *_STUDIO_RPC が有効になっていません。":
+  "Keeb-On! Studio の Settings タブを開き、公開した sleep / physical layout / custom setting の UI が表示されることを確認します。「未対応です」と表示される場合は、対応する module または *_STUDIO_RPC が有効になっていません。":
     "Open the Settings tab and confirm that the published sleep, physical-layout, or custom-setting controls are shown. If Studio says a feature is unsupported, its module or *_STUDIO_RPC is not enabled.",
   "出荷後に状況を把握でき、開発中には再現と切り分けをしやすくします。":
     "Make field diagnosis possible after shipping and make reproduction and isolation easier during development.",
@@ -1422,7 +1422,7 @@ const englishText: Record<string, string> = {
     "Minimize the information exposed in production and enable only the diagnostics you need.",
   "Troubleshooting report、firmware commit / build 時刻、board・shield、再現手順を取得できることを確認します。":
     "Confirm that you can collect a troubleshooting report, firmware commit and build time, board and shield, and reproduction steps.",
-  "DYA Studio の Troubleshooting タブを開き、Device Info や Watchdog の UI が表示されることを確認します。「未対応です」と表示される場合は、対応する diagnostic module または *_STUDIO_RPC が有効になっていません。":
+  "Keeb-On! Studio の Troubleshooting タブを開き、Device Info や Watchdog の UI が表示されることを確認します。「未対応です」と表示される場合は、対応する diagnostic module または *_STUDIO_RPC が有効になっていません。":
     "Open the Troubleshooting tab and confirm that Device Info and Watchdog controls are shown. If Studio says a feature is unsupported, its diagnostic module or *_STUDIO_RPC is not enabled.",
   "レベル 3: 独自 Custom Studio Protocol モジュールを作る":
     "Level 3: Build a custom Studio Protocol module",
@@ -1433,8 +1433,8 @@ const englishText: Record<string, string> = {
   対象: "Use cases",
   "独自センサーのキャリブレーション、ノブの動作モード、ケース LED、実機固有の診断値などを読み書きできます。":
     "Read and write values such as custom-sensor calibration, knob modes, case LEDs, and hardware-specific diagnostics.",
-  "独自のセンサー設定を Web から編集したり、DYA Studio よりも使いやすい設定画面を作ったり、より多くの機能を設定できるようにしたいキーボード開発者向けです。":
-    "For keyboard developers who want to edit custom sensor settings on the web, create settings screens that are easier to use than DYA Studio, or configure more capabilities.",
+  "独自のセンサー設定を Web から編集したり、Keeb-On! Studio よりも使いやすい設定画面を作ったり、より多くの機能を設定できるようにしたいキーボード開発者向けです。":
+    "For keyboard developers who want to edit custom sensor settings on the web, create settings screens that are easier to use than Keeb-On! Studio, or configure more capabilities.",
   作成の流れ: "Build flow",
   "west manifest に module と対応 ZMK を追加する。":
     "Add the module and its compatible ZMK version to the west manifest.",
@@ -1517,7 +1517,7 @@ const englishText: Record<string, string> = {
     "Diagnose connection, UI, persistence, memory, and input-position issues by symptom.",
   "サポートに必要な device info と診断":
     "Device information and diagnostics for support",
-  "DYA Studio に接続できない": "Cannot connect to DYA Studio",
+  "Keeb-On! Studio に接続できない": "Cannot connect to Keeb-On! Studio",
   "USB の Studio RPC snippet、中央側の build、CONFIG_ZMK_STUDIO を確認します。":
     "Check the USB Studio RPC snippet, the build for the half connected to the PC, and CONFIG_ZMK_STUDIO.",
   "Keymap は出るが変更できない":
@@ -1525,8 +1525,8 @@ const englishText: Record<string, string> = {
   "&studio_unlock と Studio の lock 状態を確認します。":
     "Check &studio_unlock and the Studio lock state.",
   期待した画面が出ない: "An expected screen does not appear",
-  "対応 module と *_STUDIO_RPC、DYA Studio が対応する subsystem を確認します。":
-    "Check the required module and *_STUDIO_RPC option, and whether DYA Studio supports that subsystem.",
+  "対応 module と *_STUDIO_RPC、Keeb-On! Studio が対応する subsystem を確認します。":
+    "Check the required module and *_STUDIO_RPC option, and whether Keeb-On! Studio supports that subsystem.",
   "キーボードがリセットされたり、フリーズ後に復帰したりする":
     "The keyboard resets or recovers after freezing",
   "stack overflow または時間のかかる処理によって Watchdog timer が動作した可能性が高いです。thread stack と処理時間を確認してください。":

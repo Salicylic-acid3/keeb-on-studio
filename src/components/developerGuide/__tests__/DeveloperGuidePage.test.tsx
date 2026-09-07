@@ -66,7 +66,7 @@ describe("DeveloperGuidePage navigation", () => {
     expect(window.location.pathname).toBe("/developer-guide/modules/settings");
   });
 
-  it("offers theme switching and a link back to DYA Studio", () => {
+  it("offers theme switching and a link back to Keeb-On! Studio", () => {
     const toggleTheme = jest.fn();
 
     render(
@@ -83,7 +83,7 @@ describe("DeveloperGuidePage navigation", () => {
 
     expect(toggleTheme).toHaveBeenCalledTimes(1);
     expect(
-      screen.getByRole("link", { name: "Back to DYA Studio" }),
+      screen.getByRole("link", { name: "Back to Keeb-On! Studio" }),
     ).toHaveAttribute("href", "/");
   });
 });

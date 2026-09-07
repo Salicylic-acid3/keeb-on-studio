@@ -7,7 +7,7 @@
  * stub without per-file boilerplate; the real SDK is only ever executed by the
  * Vite build and in the browser.
  *
- * Only the surface DYA Studio actually uses is stubbed. Tests that need client
+ * Only the surface Keeb-On! Studio actually uses is stubbed. Tests that need client
  * behaviour inject their own fake through `getAbyssClient`.
  */
 

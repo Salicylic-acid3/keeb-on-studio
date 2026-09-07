@@ -20,7 +20,7 @@ export function macroDoc(t: TranslateFn): DocTipContent {
         ],
       },
       {
-        heading: t("In DYA Studio"),
+        heading: t("In Keeb-On! Studio"),
         bullets: [
           t("Create and edit the action sequence of each macro"),
           t("Bind a macro to a key from the Keymap tab"),

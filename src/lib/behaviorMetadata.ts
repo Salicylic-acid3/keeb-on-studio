@@ -545,7 +545,7 @@ const BEHAVIOR_METADATA_BASE: BehaviorMetadata[] = [
     category: "system",
     displayNameVariants: ["Studio Unlock", "studio_unlock"],
     shortCode: "Studio",
-    description: "Unlock keyboard for ZMK Studio and DYA Studio",
+    description: "Unlock keyboard for ZMK Studio and Keeb-On! Studio",
   },
   {
     category: "keypress",

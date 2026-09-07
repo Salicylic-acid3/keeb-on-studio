@@ -1,5 +1,5 @@
 /**
- * Bridges DYA Studio's notification subscriptions to the Abyss adapter.
+ * Bridges Keeb-On! Studio's notification subscriptions to the Abyss adapter.
  *
  * `RpcConnection.notification_readable` permits a single reader, and
  * `useZMKApp` takes it for the lifetime of the connection so the app can react

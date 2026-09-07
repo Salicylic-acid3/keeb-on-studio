@@ -125,7 +125,7 @@ export function AbyssCallbackPage({
                 className="btn-ghost border border-[var(--color-border)] text-sm"
                 onClick={() => onDone(IMPORT_EXPORT_PATH)}
               >
-                {t("Back to DYA Studio")}
+                {t("Back to Keeb-On! Studio")}
               </button>
             </>
           )}

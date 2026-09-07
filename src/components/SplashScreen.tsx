@@ -267,7 +267,7 @@ export function SplashScreen({
         animate={{ opacity: 1 }}
         transition={{ delay: 1 }}
       >
-        {t("DYA Studio is maintained by")}
+        {t("Keeb-On! Studio is maintained by")}
         <a
           href="https://x.com/cormoran707"
           target="_blank"

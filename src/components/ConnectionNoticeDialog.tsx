@@ -87,7 +87,7 @@ export function ConnectionNoticeDialog({
               </h4>
               <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
                 {t(
-                  "DYA Studio collects your keyboard name and anonymous usage data — such as which features you use, how you connect, and connection errors — for usage analysis. No keymaps, settings, or other keyboard configuration data is ever sent; everything is handled locally on your device.",
+                  "Keeb-On! Studio collects your keyboard name and anonymous usage data — such as which features you use, how you connect, and connection errors — for usage analysis. No keymaps, settings, or other keyboard configuration data is ever sent; everything is handled locally on your device.",
                 )}
               </p>
             </div>

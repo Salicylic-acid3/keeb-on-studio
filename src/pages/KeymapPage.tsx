@@ -885,7 +885,7 @@ export function KeymapPage() {
                         <ul className="list-disc pl-4 space-y-1">
                           <li>
                             {t(
-                              "This setting only affects the visual key labels in DYA Studio web UI.",
+                              "This setting only affects the visual key labels in Keeb-On! Studio web UI.",
                             )}
                           </li>
                           <li>

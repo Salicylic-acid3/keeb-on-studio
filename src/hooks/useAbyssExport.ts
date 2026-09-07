@@ -248,7 +248,7 @@ export function useAbyssExport(
           layoutVariationId: resolved?.layout?.variation.id,
           layoutVersionId: resolved?.layout?.latestVersion.id,
           layout,
-          message: `Saved from DYA Studio (${selectedSectionIds(selection)})`,
+          message: `Saved from Keeb-On! Studio (${selectedSectionIds(selection)})`,
         });
       } else if (resolved?.layout) {
         written = await client.createKeymap(resolved.layout.variation.id, {
@@ -260,7 +260,7 @@ export function useAbyssExport(
           name: name.trim(),
           visibility,
           layout,
-          message: "Created from DYA Studio",
+          message: "Created from Keeb-On! Studio",
         });
       } else {
         // No exact variation, or the keyboard is not in the catalog at all.
@@ -274,7 +274,7 @@ export function useAbyssExport(
           name: name.trim(),
           visibility,
           layout,
-          message: "Imported from DYA Studio",
+          message: "Imported from Keeb-On! Studio",
         });
       }
       setResult(written);

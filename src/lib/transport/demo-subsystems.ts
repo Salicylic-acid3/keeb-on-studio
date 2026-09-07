@@ -30,7 +30,7 @@ export const FAST_KEYMAP_IDENTIFIER = "cormoran__fast_keymap";
 
 /**
  * Identifier the zephyr-setting-expose module registers on the device.
- * DYA Studio has no dedicated UI for it; it ships its own external web UI, so
+ * Keeb-On! Studio has no dedicated UI for it; it ships its own external web UI, so
  * the Subsystems tab surfaces it as an external-link card (see
  * SETTING_EXPOSE_UI_URL).
  */

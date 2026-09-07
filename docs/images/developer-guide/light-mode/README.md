@@ -16,7 +16,7 @@ Capture every image in **light mode**, with the relevant screen and a realistic 
 
 ## Generate the assets
 
-The repeatable capture job uses DYA Studio's built-in Demo keyboard. It needs no
+The repeatable capture job uses Keeb-On! Studio's built-in Demo keyboard. It needs no
 physical keyboard or Renode firmware, while still displaying the Custom Studio
 RPC feature states the guide describes.
 

@@ -2,19 +2,21 @@
 
 ## Design System
 
-**Style**: Futuristic Cybernetic + Minimalist
+**Style**: Onsen-town (温泉街) + Minimalist
 
 - Clean layouts, generous whitespace
 - Glass morphism cards with blur effects
-- Glowing accents (electric blue, neon green, cyber purple)
+- Glowing accents (vermillion, gold, indigo) instead of upstream's cyan/green/purple
 - Functional first, decorative second
 
 **Colors**:
 
-- `--color-electric` (#00d4ff): Primary actions
-- `--color-neon` (#00ffcc): Success/connected states
-- `--color-cyber` (#8b5cf6): Secondary accent
+- `--color-electric` (#d9432e vermillion / 朱色): Primary actions
+- `--color-neon` (#c9a227 gold / 金): Success/connected states
+- `--color-cyber` (#3d6fac indigo / 藍): Secondary accent
 - Red: Danger only
+
+Variable _names_ (`--color-electric`, `--color-neon`, `--color-cyber`) are kept as-is from upstream to minimize the diff — only their values changed. Don't read the names as literal colors.
 
 ## Theme System
 

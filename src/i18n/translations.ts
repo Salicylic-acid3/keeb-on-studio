@@ -9,8 +9,8 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
-  "DYA Studio for DYA & ZMK Keyboards":
-    "DYA & ZMK キーボードのための DYA Studio",
+  "Keeb-On! Studio for DYA & ZMK Keyboards":
+    "DYA & ZMK キーボードのための Keeb-On! Studio",
   "The operation failed because the device is locked in ZMK Studio. Unlock the keyboard and try again.":
     "デバイスが ZMK Studio ロック状態のため操作に失敗しました。キーボードのロックを解除してから再度お試しください。",
   Home: "ホーム",
@@ -48,15 +48,15 @@ const ja: Record<string, string> = {
   Dismiss: "閉じる",
   Loading: "読み込み中",
   "Never show again": "今後表示しない",
-  "Welcome to DYA Studio": "DYA Studio へようこそ",
-  "DYA Studio is yet another ZMK Studio for DYA keyboard series, designed by cormoran707":
-    "DYA Studio は cormoran707 が設計した DYA キーボードシリーズ向けのもう一つの ZMK Studio です",
+  "Welcome to Keeb-On! Studio": "Keeb-On! Studio へようこそ",
+  "Keeb-On! Studio is yet another ZMK Studio for DYA keyboard series, designed by cormoran707":
+    "Keeb-On! Studio は cormoran707 が設計した DYA キーボードシリーズ向けのもう一つの ZMK Studio です",
   "Share on X": "X で共有",
   "DYA is pronounced dai-a.": "DYA の読み方はダイアです",
   "cormoran is pronounced cormoran [kˈɔɚm(ə)rən].":
     "cormoran の読み方はコーモラン [kˈɔɚm(ə)rən] です",
-  "Features - What you can do with DYA Studio":
-    "機能 - DYA Studio でできること",
+  "Features - What you can do with Keeb-On! Studio":
+    "機能 - Keeb-On! Studio でできること",
   "You can customize keymaps with a slightly easier UI, equivalent to ZMK Studio.":
     "少し使いやすい UI で ZMK Studio と同等のキーマッピングカスタマイズができます。",
   "You can configure trackball sensitivity, auto layer switching and various input processor settings.":
@@ -79,8 +79,8 @@ const ja: Record<string, string> = {
     "次世代 DYA キーボード。60% 分割、標準的なロウスタッガード配列。",
   "Coming Soon": "近日公開",
   "Watch Booth": "Booth を見る",
-  "Q: Can my keyboard support DYA Studio?":
-    "Q: 自分のキーボードは DYA Studio に対応できますか？",
+  "Q: Can my keyboard support Keeb-On! Studio?":
+    "Q: 自分のキーボードは Keeb-On! Studio に対応できますか？",
   "A: Yes, you can use the keymap feature without any modification with your ZMK keyboard.":
     "A: はい。ZMK キーボードであれば、変更なしでキーマップ機能を使えます。",
   "You can also support other features by using cormoran's ZMK fork and cormoran's ZMK modules, although it's not suggested considering compatibility and maintainability.":
@@ -89,8 +89,8 @@ const ja: Record<string, string> = {
     "DYA Dash キーボード向けの experimental zmk-config を参照してください。",
   "Warning: cormoran's ZMK fork is very experimental, optimized for DYA keyboards and may contain unstable or breaking changes. Use at your own risk. In rare cases, it may cause malfunction or damage to your keyboard hardware.":
     "警告: cormoran の ZMK fork は非常に実験的で、DYA キーボード向けに最適化されています。不安定な変更や破壊的変更を含む可能性があります。自己責任で使用してください。まれにキーボードハードウェアの誤動作や損傷につながる場合があります。",
-  "Q: Can I get source code of DYA Studio?":
-    "Q: DYA Studio のソースコードを入手できますか？",
+  "Q: Can I get source code of Keeb-On! Studio?":
+    "Q: Keeb-On! Studio のソースコードを入手できますか？",
   "Q: Are there plan to migrate the ZMK fork to ZMK v0.4.0?":
     "Q: ZMK fork を ZMK v0.4.0 へ移行する予定はありますか？",
   "A: Yes, it's already done. The ZMK fork now tracks recent ZMK (Zephyr 4.x).":
@@ -151,8 +151,8 @@ const ja: Record<string, string> = {
   "Layout {{id}}": "レイアウト {{id}}",
   "OS Layout": "OS 配列",
   "Choose OS's keyboard layout setting": "OS のキーボード配列設定を選択",
-  "This setting only affects the visual key labels in DYA Studio web UI.":
-    "この設定は DYA Studio Web UI 上のキー表示にのみ影響します。",
+  "This setting only affects the visual key labels in Keeb-On! Studio web UI.":
+    "この設定は Keeb-On! Studio Web UI 上のキー表示にのみ影響します。",
   "Changing this does not update any firmware setting. The keyboard is detected as US regardless of this setting. Please change the layout setting in your OS if needed. For MacOS, USB connection is always detected as US and cannot be changed for now.":
     "これを変更してもファームウェア設定は更新されません。この設定に関係なく、キーボードは US として検出されます。必要に応じて OS 側の配列設定を変更してください。macOS では USB 接続が常に US として検出され、現時点では変更できません。",
   "The selection is saved in your browser's local storage for now.":
@@ -269,8 +269,8 @@ const ja: Record<string, string> = {
   "Are you sure you want to unpair this device?":
     "このデバイスのペアリングを解除しますか？",
   "Change Output Priority?": "出力優先度を変更しますか？",
-  "Changing the output priority may disconnect DYA Studio from your keyboard.":
-    "出力優先度を変更すると、DYA Studio とキーボードの接続が切断される場合があります。",
+  "Changing the output priority may disconnect Keeb-On! Studio from your keyboard.":
+    "出力優先度を変更すると、Keeb-On! Studio とキーボードの接続が切断される場合があります。",
   "You will need to reconnect manually after the change.":
     "変更後は手動で再接続する必要があります。",
 
@@ -614,11 +614,11 @@ const ja: Record<string, string> = {
     "このサブシステムで利用可能な Web UI はありません。",
   "No custom subsystems available. Custom subsystems are provided by the keyboard firmware.":
     "利用可能なカスタムサブシステムはありません。カスタムサブシステムはキーボードファームウェアによって提供されます。",
-  "All custom subsystems reported by this device are already supported by DYA Studio.":
-    "このデバイスが報告するカスタムサブシステムは、すべて DYA Studio で既にサポートされています。",
-  "Already supported by DYA Studio": "DYA Studio で既にサポート済み",
-  "These subsystems have a dedicated UI elsewhere in DYA Studio":
-    "これらのサブシステムは、DYA Studio の他の場所に専用の UI があります",
+  "All custom subsystems reported by this device are already supported by Keeb-On! Studio.":
+    "このデバイスが報告するカスタムサブシステムは、すべて Keeb-On! Studio で既にサポートされています。",
+  "Already supported by Keeb-On! Studio": "Keeb-On! Studio で既にサポート済み",
+  "These subsystems have a dedicated UI elsewhere in Keeb-On! Studio":
+    "これらのサブシステムは、Keeb-On! Studio の他の場所に専用の UI があります",
   "Custom subsystems are additional features provided by your keyboard firmware author. Web UI links open external pages supplied by the firmware metadata.":
     "カスタムサブシステムは、キーボードファームウェア作者が提供する追加機能です。Web UI リンクは、ファームウェアメタデータで提供された外部ページを開きます。",
 
@@ -629,14 +629,14 @@ const ja: Record<string, string> = {
   "Try Demo Mode (no device required)": "デモモードを試す（デバイス不要）",
   "Try demo mode without a keyboard": "キーボードなしでデモモードを試せます",
   "Reconnecting to your keyboard...": "キーボードに再接続中...",
-  "DYA Studio is maintained by": "DYA Studio のメンテナー",
+  "Keeb-On! Studio is maintained by": "Keeb-On! Studio のメンテナー",
   "Special thanks to": "Special thanks to",
   "ZMK community": "ZMK community",
   "Release notes": "リリースノート",
   "Keyboard developer guide": "キーボード開発者向けガイド",
   "Release notes ({{version}})": "リリースノート ({{version}})",
   "Release Notes": "リリースノート",
-  "What's new in DYA Studio": "DYA Studio の新機能",
+  "What's new in Keeb-On! Studio": "Keeb-On! Studio の新機能",
   Back: "戻る",
   Upcoming: "次回リリース予定",
   "No upcoming changes yet.": "次回リリース予定の変更はまだありません。",
@@ -647,8 +647,8 @@ const ja: Record<string, string> = {
   Patch: "パッチ",
   "Connect via {{method}}": "{{method}} で接続",
   "Data Collection Notice": "データ収集に関するお知らせ",
-  "DYA Studio collects your keyboard name and anonymous usage data — such as which features you use, how you connect, and connection errors — for usage analysis. No keymaps, settings, or other keyboard configuration data is ever sent; everything is handled locally on your device.":
-    "DYA Studio は利用状況分析のために、キーボード名と匿名の利用データ（使用する機能、接続方法、接続エラーなど）を収集します。キーマップや各種設定など、その他のキーボード設定データが送信されることは一切なく、すべてお使いのデバイス上でローカルに処理されます。",
+  "Keeb-On! Studio collects your keyboard name and anonymous usage data — such as which features you use, how you connect, and connection errors — for usage analysis. No keymaps, settings, or other keyboard configuration data is ever sent; everything is handled locally on your device.":
+    "Keeb-On! Studio は利用状況分析のために、キーボード名と匿名の利用データ（使用する機能、接続方法、接続エラーなど）を収集します。キーマップや各種設定など、その他のキーボード設定データが送信されることは一切なく、すべてお使いのデバイス上でローカルに処理されます。",
   "BLE Not Supported on your Browser":
     "このブラウザーは BLE に対応していません",
   "Your browser does not support Web Bluetooth API. Please use a compatible browser like Chrome, Edge, or Bluefy (iOS). BLE device discovery on non-Linux system requires cormoran's ZMK fork + press the studio unlock key on your keyboard.":
@@ -731,8 +731,8 @@ const ja: Record<string, string> = {
   "System reset": "システムリセット",
   "Bluetooth profile management": "Bluetooth プロファイル管理",
   "Output selection (USB/BLE)": "出力先選択（USB/BLE）",
-  "Unlock keyboard for ZMK Studio and DYA Studio":
-    "ZMK Studio と DYA Studio のためにキーボードをロック解除",
+  "Unlock keyboard for ZMK Studio and Keeb-On! Studio":
+    "ZMK Studio と Keeb-On! Studio のためにキーボードをロック解除",
   "Grave(`) on shift or GUI, otherwise Escape":
     "Shift または GUI では Grave(`)、それ以外では Escape",
   "Search keycodes...": "キーコードを検索...",
@@ -1060,7 +1060,7 @@ const ja: Record<string, string> = {
     "アプリや OS のショートカットを 1 押しで実行する",
   "Chain presses, holds, and waits into one action":
     "押下・長押し・待機を 1 つの動作にまとめる",
-  "In DYA Studio": "DYA Studio では",
+  "In Keeb-On! Studio": "Keeb-On! Studio では",
   "Create and edit the action sequence of each macro":
     "各マクロの動作シーケンスを作成・編集できます",
   "Bind a macro to a key from the Keymap tab":
@@ -1353,7 +1353,7 @@ const ja: Record<string, string> = {
   "Signed in to Abyss": "Abyss にサインインしました",
   "You can close this window.": "このウィンドウは閉じて構いません。",
   "Abyss sign-in failed": "Abyss のサインインに失敗しました",
-  "Back to DYA Studio": "DYA Studio に戻る",
+  "Back to Keeb-On! Studio": "Keeb-On! Studio に戻る",
 
   // Import/Export — error messages
   "Your Abyss session expired. Please log in again.":
@@ -1382,7 +1382,8 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
-  "DYA Studio for DYA & ZMK Keyboards": "面向 DYA 和 ZMK 键盘的 DYA Studio",
+  "Keeb-On! Studio for DYA & ZMK Keyboards":
+    "面向 DYA 和 ZMK 键盘的 Keeb-On! Studio",
   "The operation failed because the device is locked in ZMK Studio. Unlock the keyboard and try again.":
     "操作失败，因为设备在 ZMK Studio 中处于锁定状态。请解锁键盘后重试。",
   Home: "首页",
@@ -1420,14 +1421,15 @@ const zh: Record<string, string> = {
   Dismiss: "关闭",
   Loading: "加载中",
   "Never show again": "不再显示",
-  "Welcome to DYA Studio": "欢迎使用 DYA Studio",
-  "DYA Studio is yet another ZMK Studio for DYA keyboard series, designed by cormoran707":
-    "DYA Studio 是由 cormoran707 设计的、面向 DYA 键盘系列的另一款 ZMK Studio",
+  "Welcome to Keeb-On! Studio": "欢迎使用 Keeb-On! Studio",
+  "Keeb-On! Studio is yet another ZMK Studio for DYA keyboard series, designed by cormoran707":
+    "Keeb-On! Studio 是由 cormoran707 设计的、面向 DYA 键盘系列的另一款 ZMK Studio",
   "Share on X": "分享到 X",
   "DYA is pronounced dai-a.": "DYA 的发音是 dai-a（读作“迪亚”）。",
   "cormoran is pronounced cormoran [kˈɔɚm(ə)rən].":
     "cormoran 的发音是 cormoran [kˈɔɚm(ə)rən]（读作“科莫兰”）。",
-  "Features - What you can do with DYA Studio": "功能 - DYA Studio 能做什么",
+  "Features - What you can do with Keeb-On! Studio":
+    "功能 - Keeb-On! Studio 能做什么",
   "You can customize keymaps with a slightly easier UI, equivalent to ZMK Studio.":
     "使用更简洁的界面自定义键位，功能上等同于 ZMK Studio。",
   "You can configure trackball sensitivity, auto layer switching and various input processor settings.":
@@ -1449,8 +1451,8 @@ const zh: Record<string, string> = {
     "下一代 DYA 键盘，60% 分体式，标准行错位布局。",
   "Coming Soon": "即将推出",
   "Watch Booth": "查看 Booth",
-  "Q: Can my keyboard support DYA Studio?":
-    "Q: 我的键盘可以使用 DYA Studio 吗？",
+  "Q: Can my keyboard support Keeb-On! Studio?":
+    "Q: 我的键盘可以使用 Keeb-On! Studio 吗？",
   "A: Yes, you can use the keymap feature without any modification with your ZMK keyboard.":
     "A: 可以。任何 ZMK 键盘无需修改即可使用键位功能。",
   "You can also support other features by using cormoran's ZMK fork and cormoran's ZMK modules, although it's not suggested considering compatibility and maintainability.":
@@ -1459,8 +1461,8 @@ const zh: Record<string, string> = {
     "请参考面向 DYA Dash 键盘的实验性 zmk-config。",
   "Warning: cormoran's ZMK fork is very experimental, optimized for DYA keyboards and may contain unstable or breaking changes. Use at your own risk. In rare cases, it may cause malfunction or damage to your keyboard hardware.":
     "警告：cormoran 的 ZMK 分支非常实验性，针对 DYA 键盘进行了优化，可能包含不稳定或破坏性更改。使用风险自负。在极少数情况下，可能导致键盘硬件故障或损坏。",
-  "Q: Can I get source code of DYA Studio?":
-    "Q: 我可以获取 DYA Studio 的源代码吗？",
+  "Q: Can I get source code of Keeb-On! Studio?":
+    "Q: 我可以获取 Keeb-On! Studio 的源代码吗？",
   "Q: Are there plan to migrate the ZMK fork to ZMK v0.4.0?":
     "Q: 计划将 ZMK 分支迁移到 ZMK v0.4.0 吗？",
   "A: Yes, it's already done. The ZMK fork now tracks recent ZMK (Zephyr 4.x).":
@@ -1516,8 +1518,8 @@ const zh: Record<string, string> = {
   "Layout {{id}}": "布局 {{id}}",
   "OS Layout": "操作系统布局",
   "Choose OS's keyboard layout setting": "选择操作系统的键盘布局设置",
-  "This setting only affects the visual key labels in DYA Studio web UI.":
-    "此设置仅影响 DYA Studio 网页界面中的按键标签显示。",
+  "This setting only affects the visual key labels in Keeb-On! Studio web UI.":
+    "此设置仅影响 Keeb-On! Studio 网页界面中的按键标签显示。",
   "Changing this does not update any firmware setting. The keyboard is detected as US regardless of this setting. Please change the layout setting in your OS if needed. For MacOS, USB connection is always detected as US and cannot be changed for now.":
     "更改此项不会更新任何固件设置。无论此设置如何，键盘都被识别为 US。如有需要，请在操作系统中更改布局设置。在 macOS 上，USB 连接始终被识别为 US，目前无法更改。",
   "The selection is saved in your browser's local storage for now.":
@@ -1624,8 +1626,8 @@ const zh: Record<string, string> = {
   Active: "已激活",
   "Are you sure you want to unpair this device?": "确定要取消配对此设备吗？",
   "Change Output Priority?": "更改输出优先级？",
-  "Changing the output priority may disconnect DYA Studio from your keyboard.":
-    "更改输出优先级可能会断开 DYA Studio 与键盘的连接。",
+  "Changing the output priority may disconnect Keeb-On! Studio from your keyboard.":
+    "更改输出优先级可能会断开 Keeb-On! Studio 与键盘的连接。",
   "You will need to reconnect manually after the change.":
     "更改后需要手动重新连接。",
 
@@ -1949,11 +1951,11 @@ const zh: Record<string, string> = {
   "No web UI available for this subsystem.": "此子系统没有可用的网页界面。",
   "No custom subsystems available. Custom subsystems are provided by the keyboard firmware.":
     "没有可用的自定义子系统。自定义子系统由键盘固件提供。",
-  "All custom subsystems reported by this device are already supported by DYA Studio.":
-    "此设备报告的所有自定义子系统已被 DYA Studio 支持。",
-  "Already supported by DYA Studio": "已被 DYA Studio 支持",
-  "These subsystems have a dedicated UI elsewhere in DYA Studio":
-    "这些子系统在 DYA Studio 的其他地方有专用界面",
+  "All custom subsystems reported by this device are already supported by Keeb-On! Studio.":
+    "此设备报告的所有自定义子系统已被 Keeb-On! Studio 支持。",
+  "Already supported by Keeb-On! Studio": "已被 Keeb-On! Studio 支持",
+  "These subsystems have a dedicated UI elsewhere in Keeb-On! Studio":
+    "这些子系统在 Keeb-On! Studio 的其他地方有专用界面",
   "Custom subsystems are additional features provided by your keyboard firmware author. Web UI links open external pages supplied by the firmware metadata.":
     "自定义子系统是您的键盘固件作者提供的附加功能。网页界面链接将打开由固件元数据提供的外部页面。",
 
@@ -1964,14 +1966,14 @@ const zh: Record<string, string> = {
   "Try Demo Mode (no device required)": "试用演示模式（无需设备）",
   "Try demo mode without a keyboard": "无需键盘即可试用演示模式",
   "Reconnecting to your keyboard...": "正在重新连接您的键盘...",
-  "DYA Studio is maintained by": "DYA Studio 由以下人员维护",
+  "Keeb-On! Studio is maintained by": "Keeb-On! Studio 由以下人员维护",
   "Special thanks to": "特别感谢",
   "ZMK community": "ZMK 社区",
   "Release notes": "发布说明",
   "Keyboard developer guide": "键盘开发者指南",
   "Release notes ({{version}})": "发布说明（{{version}}）",
   "Release Notes": "发布说明",
-  "What's new in DYA Studio": "DYA Studio 的新功能",
+  "What's new in Keeb-On! Studio": "Keeb-On! Studio 的新功能",
   Back: "返回",
   Upcoming: "即将发布",
   "No upcoming changes yet.": "暂无即将发布的更改。",
@@ -1981,8 +1983,8 @@ const zh: Record<string, string> = {
   Patch: "补丁",
   "Connect via {{method}}": "通过 {{method}} 连接",
   "Data Collection Notice": "数据收集说明",
-  "DYA Studio collects your keyboard name and anonymous usage data — such as which features you use, how you connect, and connection errors — for usage analysis. No keymaps, settings, or other keyboard configuration data is ever sent; everything is handled locally on your device.":
-    "DYA Studio 收集您的键盘名称和匿名使用数据（例如您使用的功能、连接方式以及连接错误）以进行使用分析。绝不会发送键位、设置或其他键盘配置数据；所有内容都在您的设备上本地处理。",
+  "Keeb-On! Studio collects your keyboard name and anonymous usage data — such as which features you use, how you connect, and connection errors — for usage analysis. No keymaps, settings, or other keyboard configuration data is ever sent; everything is handled locally on your device.":
+    "Keeb-On! Studio 收集您的键盘名称和匿名使用数据（例如您使用的功能、连接方式以及连接错误）以进行使用分析。绝不会发送键位、设置或其他键盘配置数据；所有内容都在您的设备上本地处理。",
   "BLE Not Supported on your Browser": "您的浏览器不支持 BLE",
   "Your browser does not support Web Bluetooth API. Please use a compatible browser like Chrome, Edge, or Bluefy (iOS). BLE device discovery on non-Linux system requires cormoran's ZMK fork + press the studio unlock key on your keyboard.":
     "您的浏览器不支持 Web Bluetooth API。请使用兼容的浏览器，例如 Chrome、Edge 或 Bluefy (iOS)。在非 Linux 系统上进行 BLE 设备发现需要 cormoran 的 ZMK 分支，并在键盘上按下 studio unlock 按键。",
@@ -2061,8 +2063,8 @@ const zh: Record<string, string> = {
   "System reset": "系统重置",
   "Bluetooth profile management": "蓝牙配置文件管理",
   "Output selection (USB/BLE)": "输出选择（USB/BLE）",
-  "Unlock keyboard for ZMK Studio and DYA Studio":
-    "为 ZMK Studio 和 DYA Studio 解锁键盘",
+  "Unlock keyboard for ZMK Studio and Keeb-On! Studio":
+    "为 ZMK Studio 和 Keeb-On! Studio 解锁键盘",
   "Grave(`) on shift or GUI, otherwise Escape":
     "在 Shift 或 GUI 时为反引号(`)，否则为 Escape",
   "Search keycodes...": "搜索键码...",
@@ -2382,7 +2384,7 @@ const zh: Record<string, string> = {
     "通过一次按键触发应用或操作系统的快捷键",
   "Chain presses, holds, and waits into one action":
     "将按压、长按和等待链接为一个操作",
-  "In DYA Studio": "在 DYA Studio 中",
+  "In Keeb-On! Studio": "在 Keeb-On! Studio 中",
   "Create and edit the action sequence of each macro":
     "创建和编辑每个宏的动作序列",
   "Bind a macro to a key from the Keymap tab": "在“键位”选项卡中将宏绑定到按键",
@@ -2656,7 +2658,7 @@ const zh: Record<string, string> = {
   "Signed in to Abyss": "已登录 Abyss",
   "You can close this window.": "可以关闭此窗口。",
   "Abyss sign-in failed": "Abyss 登录失败",
-  "Back to DYA Studio": "返回 DYA Studio",
+  "Back to Keeb-On! Studio": "返回 Keeb-On! Studio",
 
   // Import/Export — error messages
   "Your Abyss session expired. Please log in again.":

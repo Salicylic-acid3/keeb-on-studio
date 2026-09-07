@@ -26,7 +26,7 @@ describe("buildSupportReport", () => {
   it("includes header context (generated timestamp, device, browser)", () => {
     const report = buildSupportReport(baseInput());
 
-    expect(report).toContain("# DYA Studio Support Report");
+    expect(report).toContain("# Keeb-On! Studio Support Report");
     expect(report).toContain("Generated: 2026-07-06T00:00:00.000Z");
     expect(report).toContain("Device: dya-dash");
     expect(report).toContain("Browser: test-agent/1.0");
