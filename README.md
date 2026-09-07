@@ -2,7 +2,7 @@
 
 <p align="center">
   A web-based configuration tool for <strong>ClickBoard ErgoTrack</strong> and <strong>GoFortyMax</strong> (and any ZMK keyboard).<br />
-  Tune your keymap, trackball, and connections — right from your browser. No install required.
+  Tune your keymap and connections — right from your browser. No install required.
 </p>
 
 <p align="center">
@@ -53,14 +53,6 @@ Create and edit macros and combos at runtime, without rebuilding firmware.
   <img src="docs/images/macro.png" alt="Macro editor" width="800" />
 </p>
 
-### 🎯 Trackball Tuning
-
-Adjust the embedded trackball in real time: pointer sensitivity (0.1×–10×), sensor rotation for different mounting angles, axis snapping, scroll behavior, and automatic layer switching — all per input processor, scoped to the layers you choose.
-
-<p align="center">
-  <img src="docs/images/trackball.png" alt="Trackball settings" width="800" />
-</p>
-
 ### 📶 Connection Management
 
 Name, switch, and unpair BLE profiles. Choose whether USB or Bluetooth wins when both are connected. See which OS each host is detected as, override it per profile, and set a default layer per connection target or per OS — the keyboard switches layers automatically when you switch devices.
@@ -84,7 +76,7 @@ Inspect battery levels, firmware build info, and uptime for both halves. Hunt do
 ## Does it work with my keyboard?
 
 - **Any ZMK keyboard with [ZMK Studio](https://zmk.dev/docs/features/studio) enabled**: the keymap editor works out of the box.
-- **DYA keyboards, and keyboards built on [cormoran's ZMK fork + modules](https://github.com/cormoran)**: everything above — trackball tuning, connection management, per-OS default layers, diagnostics, and more. See the [developer guide](https://studio.dya.cormoran.works/developer-guide) (upstream) for how to add support to your own board.
+- **DYA keyboards, and keyboards built on [cormoran's ZMK fork + modules](https://github.com/cormoran)**: connection management, per-OS default layers, diagnostics, and more. See the [developer guide](https://studio.dya.cormoran.works/developer-guide) (upstream) for how to add support to your own board.
 
 > [!WARNING]
 > cormoran's ZMK fork is experimental and optimized for DYA keyboards. It may contain unstable or breaking changes — use it with other keyboards at your own risk.

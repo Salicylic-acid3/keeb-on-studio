@@ -5,7 +5,6 @@ import {
   IconHome,
   IconKeyboard,
   IconPlugConnected,
-  IconPointer,
   IconPuzzle,
   IconSettings,
   IconStethoscope,
@@ -29,7 +28,6 @@ import { AppLayout } from "./layouts/AppLayout";
 import { HomePage } from "./pages/HomePage";
 import { ConnectionPage } from "./pages/ConnectionPage";
 import { KeymapPage } from "./pages/KeymapPage";
-import { TrackballPage } from "./pages/TrackballPage";
 import { MacroComboPage } from "./pages/MacroComboPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { CustomSubsystemsPage } from "./pages/CustomSubsystemsPage";
@@ -66,12 +64,6 @@ function getTabs(t: (key: string) => string): TabItem[] {
       label: t("Macro&Combo"),
       icon: <IconWand size={18} />,
       content: <MacroComboPage />,
-    },
-    {
-      id: "trackball",
-      label: t("Trackball"),
-      icon: <IconPointer size={18} />,
-      content: <TrackballPage />,
     },
     {
       id: "connection",

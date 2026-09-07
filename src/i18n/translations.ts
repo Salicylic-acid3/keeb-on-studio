@@ -53,8 +53,6 @@ const ja: Record<string, string> = {
     "機能 - Keeb-On! Studio でできること",
   "You can customize keymaps with a slightly easier UI, equivalent to ZMK Studio.":
     "少し使いやすい UI で ZMK Studio と同等のキーマッピングカスタマイズができます。",
-  "You can configure trackball sensitivity, auto layer switching and various input processor settings.":
-    "トラックボールの感度、自動レイヤー切り替え、各種入力プロセッサー設定を変更できます。",
   "You can inspect device diagnostics and generate a troubleshooting report to share when asking for support.":
     "デバイスの診断情報を確認し、サポートに問い合わせる際に共有できるトラブルシューティングレポートを作成できます。",
   "You can name BLE connection targets and unpair them.":
@@ -1071,19 +1069,6 @@ const ja: Record<string, string> = {
   "Tune the timeout, active layers, and release behavior per combo":
     "コンボごとにタイムアウト・有効レイヤー・離し時の挙動を調整できます",
 
-  // Feature docs (DocTip) — Processors
-  "What are Processors?": "プロセッサとは？",
-  "Input processors transform trackball motion before it becomes pointer or scroll output, and can be turned on per layer.":
-    "入力プロセッサは、トラックボールの動きをポインタやスクロール出力になる前に変換し、レイヤーごとに有効化できます。",
-  "Switch the trackball between moving the cursor and scrolling":
-    "トラックボールをカーソル移動とスクロールで切り替える",
-  "Adjust sensitivity, or swap and invert the axes":
-    "感度を調整したり、軸を入れ替え・反転したりする",
-  "Choose which layers each processor is active on":
-    "各プロセッサを有効にするレイヤーを選ぶ",
-  "Optionally hold a temporary layer while the trackball moves":
-    "トラックボールの動作中に一時レイヤーを保持する（任意）",
-
   // Feature docs (DocTip) — Default layers
   "What are Default Layers?": "デフォルトレイヤーとは？",
   "A default layer is the keymap layer your keyboard activates automatically for a given connection.":
@@ -1097,19 +1082,6 @@ const ja: Record<string, string> = {
     "「OS 検出に従う」を選ぶと、代わりに OS 別デフォルトレイヤーが使われる",
   "The layer set for the detected OS (Windows, macOS, …) is applied":
     "検出された OS（Windows、macOS など）に設定したレイヤーが適用される",
-
-  // Feature docs (DocTip) — PMW3610 driver
-  "What is the PMW3610 driver?": "PMW3610 ドライバとは？",
-  "PMW3610 is the optical sensor inside the trackball. Its driver exposes low-level tuning for how motion is read.":
-    "PMW3610 はトラックボール内部の光学センサです。ドライバは動きの読み取り方を低レベルで調整する項目を提供します。",
-  "Typical settings": "主な設定",
-  "CPI / sensitivity of the sensor": "センサの CPI／感度",
-  "Orientation, axis rotation, and inversion": "向き・軸の回転・反転",
-  "Polling rate and sleep / power behavior":
-    "ポーリングレートやスリープ／電力の挙動",
-  Note: "補足",
-  "These values are read from and written to your keyboard's firmware. Change them in small steps.":
-    "これらの値はキーボードのファームウェアから読み書きされます。少しずつ変更してください。",
 
   // Version history — reset dropdown
   Versions: "バージョン",
@@ -1415,8 +1387,6 @@ const zh: Record<string, string> = {
     "功能 - Keeb-On! Studio 能做什么",
   "You can customize keymaps with a slightly easier UI, equivalent to ZMK Studio.":
     "使用更简洁的界面自定义键位，功能上等同于 ZMK Studio。",
-  "You can configure trackball sensitivity, auto layer switching and various input processor settings.":
-    "可配置轨迹球灵敏度、自动切换层以及各种输入处理器设置。",
   "You can inspect device diagnostics and generate a troubleshooting report to share when asking for support.":
     "可查看设备诊断信息，并生成可分享的故障排查报告以寻求支持。",
   "You can name BLE connection targets and unpair them.":
@@ -2384,18 +2354,6 @@ const zh: Record<string, string> = {
   "Tune the timeout, active layers, and release behavior per combo":
     "为每个组合键调整超时、激活层和释放行为",
 
-  // Feature docs (DocTip) — Processors
-  "What are Processors?": "什么是处理器？",
-  "Input processors transform trackball motion before it becomes pointer or scroll output, and can be turned on per layer.":
-    "输入处理器在轨迹球的运动成为指针或滚动输出之前对其进行处理，并可按层启用。",
-  "Switch the trackball between moving the cursor and scrolling":
-    "在移动光标和滚动之间切换轨迹球",
-  "Adjust sensitivity, or swap and invert the axes":
-    "调整灵敏度，或交换和反转轴",
-  "Choose which layers each processor is active on": "为每个处理器选择激活的层",
-  "Optionally hold a temporary layer while the trackball moves":
-    "在轨迹球移动时可选地保持一个临时层",
-
   // Feature docs (DocTip) — Default layers
   "What are Default Layers?": "什么是默认层？",
   "A default layer is the keymap layer your keyboard activates automatically for a given connection.":
@@ -2409,18 +2367,6 @@ const zh: Record<string, string> = {
     "选择“跟随操作系统检测”以使用按操作系统的默认层",
   "The layer set for the detected OS (Windows, macOS, …) is applied":
     "将应用为检测到的操作系统（Windows、macOS 等）设置的层",
-
-  // Feature docs (DocTip) — PMW3610 driver
-  "What is the PMW3610 driver?": "什么是 PMW3610 驱动？",
-  "PMW3610 is the optical sensor inside the trackball. Its driver exposes low-level tuning for how motion is read.":
-    "PMW3610 是轨迹球内部的光学传感器。其驱动程序公开了用于调整运动读取方式的低级选项。",
-  "Typical settings": "典型设置",
-  "CPI / sensitivity of the sensor": "传感器的 CPI / 灵敏度",
-  "Orientation, axis rotation, and inversion": "方向、轴旋转和反转",
-  "Polling rate and sleep / power behavior": "轮询频率和睡眠 / 电源行为",
-  Note: "备注",
-  "These values are read from and written to your keyboard's firmware. Change them in small steps.":
-    "这些值从键盘的固件中读取和写入。请逐步小幅调整。",
 
   // Version history — reset dropdown
   Versions: "版本",

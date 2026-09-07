@@ -57,32 +57,6 @@ export function comboDoc(t: TranslateFn): DocTipContent {
   };
 }
 
-/** Explains trackball input processors, shown next to the Processors header. */
-export function processorDoc(t: TranslateFn): DocTipContent {
-  return {
-    title: t("What are Processors?"),
-    intro: t(
-      "Input processors transform trackball motion before it becomes pointer or scroll output, and can be turned on per layer.",
-    ),
-    sections: [
-      {
-        heading: t("Typical uses"),
-        bullets: [
-          t("Switch the trackball between moving the cursor and scrolling"),
-          t("Adjust sensitivity, or swap and invert the axes"),
-        ],
-      },
-      {
-        heading: t("Layers"),
-        bullets: [
-          t("Choose which layers each processor is active on"),
-          t("Optionally hold a temporary layer while the trackball moves"),
-        ],
-      },
-    ],
-  };
-}
-
 /** Explains default layers, shown next to the Connections header. */
 export function defaultLayerDoc(t: TranslateFn): DocTipContent {
   return {
@@ -106,32 +80,6 @@ export function defaultLayerDoc(t: TranslateFn): DocTipContent {
           ),
           t("The layer set for the detected OS (Windows, macOS, …) is applied"),
         ],
-      },
-    ],
-  };
-}
-
-/** Explains the PMW3610 sensor driver, shown next to the PMW3610 Drivers header. */
-export function pmw3610Doc(t: TranslateFn): DocTipContent {
-  return {
-    title: t("What is the PMW3610 driver?"),
-    intro: t(
-      "PMW3610 is the optical sensor inside the trackball. Its driver exposes low-level tuning for how motion is read.",
-    ),
-    sections: [
-      {
-        heading: t("Typical settings"),
-        bullets: [
-          t("CPI / sensitivity of the sensor"),
-          t("Orientation, axis rotation, and inversion"),
-          t("Polling rate and sleep / power behavior"),
-        ],
-      },
-      {
-        heading: t("Note"),
-        body: t(
-          "These values are read from and written to your keyboard's firmware. Change them in small steps.",
-        ),
       },
     ],
   };

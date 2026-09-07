@@ -80,11 +80,6 @@ export function HomePage() {
               </li>
               <li>
                 {t(
-                  "You can configure trackball sensitivity, auto layer switching and various input processor settings.",
-                )}
-              </li>
-              <li>
-                {t(
                   "You can inspect device diagnostics and generate a troubleshooting report to share when asking for support.",
                 )}
               </li>
