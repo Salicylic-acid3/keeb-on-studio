@@ -49,12 +49,6 @@ const ja: Record<string, string> = {
   Loading: "読み込み中",
   "Never show again": "今後表示しない",
   "Welcome to Keeb-On! Studio": "Keeb-On! Studio へようこそ",
-  "Keeb-On! Studio is yet another ZMK Studio for DYA keyboard series, designed by cormoran707":
-    "Keeb-On! Studio は cormoran707 が設計した DYA キーボードシリーズ向けのもう一つの ZMK Studio です",
-  "Share on X": "X で共有",
-  "DYA is pronounced dai-a.": "DYA の読み方はダイアです",
-  "cormoran is pronounced cormoran [kˈɔɚm(ə)rən].":
-    "cormoran の読み方はコーモラン [kˈɔɚm(ə)rən] です",
   "Features - What you can do with Keeb-On! Studio":
     "機能 - Keeb-On! Studio でできること",
   "You can customize keymaps with a slightly easier UI, equivalent to ZMK Studio.":
@@ -69,24 +63,20 @@ const ja: Record<string, string> = {
     "スリープに入る時間など、各種設定を変更できます。",
   "See also below Q&A section for more details.":
     "詳細は下の Q&A セクションも参照してください。",
-  "DYA Keyboard series": "DYA キーボードシリーズ",
-  "40% Split keyboard for mobile use.":
-    "モバイル用途向けの 40% 分割キーボード。",
-  Design: "設計",
-  Buy: "購入",
-  Docs: "ドキュメント",
-  "Next generation DYA keyboard, 60% split, standard row-staggered layout.":
-    "次世代 DYA キーボード。60% 分割、標準的なロウスタッガード配列。",
+  "Supported keyboards": "対応キーボード",
+  "An ultra-thin ClickBoard-series keyboard using mouse switches.":
+    "マウス用スイッチを採用した、ClickBoard シリーズの極薄キーボード。",
+  "From the GoForty small-form-factor keyboard line.":
+    "小型キーボードの GoForty シリーズから。",
   "Coming Soon": "近日公開",
-  "Watch Booth": "Booth を見る",
   "Q: Can my keyboard support Keeb-On! Studio?":
     "Q: 自分のキーボードは Keeb-On! Studio に対応できますか？",
   "A: Yes, you can use the keymap feature without any modification with your ZMK keyboard.":
     "A: はい。ZMK キーボードであれば、変更なしでキーマップ機能を使えます。",
   "You can also support other features by using cormoran's ZMK fork and cormoran's ZMK modules, although it's not suggested considering compatibility and maintainability.":
     "cormoran の ZMK fork と ZMK モジュールを使うことで他の機能にも対応できますが、互換性と保守性を考えると推奨しません。",
-  "Please refer to the experimental zmk-config for DYA Dash keyboard.":
-    "DYA Dash キーボード向けの experimental zmk-config を参照してください。",
+  "ClickBoard ErgoTrack and GoFortyMax firmware support is in progress — see the developer guide for how a keyboard adds Keeb-On! Studio support.":
+    "ClickBoard ErgoTrack と GoFortyMax のファームウェア対応は現在進行中です — キーボードが Keeb-On! Studio に対応する方法は開発者ガイドを参照してください。",
   "Warning: cormoran's ZMK fork is very experimental, optimized for DYA keyboards and may contain unstable or breaking changes. Use at your own risk. In rare cases, it may cause malfunction or damage to your keyboard hardware.":
     "警告: cormoran の ZMK fork は非常に実験的で、DYA キーボード向けに最適化されています。不安定な変更や破壊的変更を含む可能性があります。自己責任で使用してください。まれにキーボードハードウェアの誤動作や損傷につながる場合があります。",
   "Q: Can I get source code of Keeb-On! Studio?":
@@ -630,6 +620,7 @@ const ja: Record<string, string> = {
   "Try demo mode without a keyboard": "キーボードなしでデモモードを試せます",
   "Reconnecting to your keyboard...": "キーボードに再接続中...",
   "Keeb-On! Studio is maintained by": "Keeb-On! Studio のメンテナー",
+  "Forked from DYA Studio by": "DYA Studio のフォーク元",
   "Special thanks to": "Special thanks to",
   "ZMK community": "ZMK community",
   "Release notes": "リリースノート",
@@ -1422,12 +1413,6 @@ const zh: Record<string, string> = {
   Loading: "加载中",
   "Never show again": "不再显示",
   "Welcome to Keeb-On! Studio": "欢迎使用 Keeb-On! Studio",
-  "Keeb-On! Studio is yet another ZMK Studio for DYA keyboard series, designed by cormoran707":
-    "Keeb-On! Studio 是由 cormoran707 设计的、面向 DYA 键盘系列的另一款 ZMK Studio",
-  "Share on X": "分享到 X",
-  "DYA is pronounced dai-a.": "DYA 的发音是 dai-a（读作“迪亚”）。",
-  "cormoran is pronounced cormoran [kˈɔɚm(ə)rən].":
-    "cormoran 的发音是 cormoran [kˈɔɚm(ə)rən]（读作“科莫兰”）。",
   "Features - What you can do with Keeb-On! Studio":
     "功能 - Keeb-On! Studio 能做什么",
   "You can customize keymaps with a slightly easier UI, equivalent to ZMK Studio.":
@@ -1442,23 +1427,20 @@ const zh: Record<string, string> = {
     "可以修改进入睡眠模式的时间等各种设置。",
   "See also below Q&A section for more details.":
     "更多详情请参阅下方的 Q&A 部分。",
-  "DYA Keyboard series": "DYA 键盘系列",
-  "40% Split keyboard for mobile use.": "面向移动场景的 40% 分体式键盘。",
-  Design: "设计",
-  Buy: "购买",
-  Docs: "文档",
-  "Next generation DYA keyboard, 60% split, standard row-staggered layout.":
-    "下一代 DYA 键盘，60% 分体式，标准行错位布局。",
+  "Supported keyboards": "支持的键盘",
+  "An ultra-thin ClickBoard-series keyboard using mouse switches.":
+    "采用鼠标微动开关的 ClickBoard 系列超薄键盘。",
+  "From the GoForty small-form-factor keyboard line.":
+    "来自小型键盘系列 GoForty。",
   "Coming Soon": "即将推出",
-  "Watch Booth": "查看 Booth",
   "Q: Can my keyboard support Keeb-On! Studio?":
     "Q: 我的键盘可以使用 Keeb-On! Studio 吗？",
   "A: Yes, you can use the keymap feature without any modification with your ZMK keyboard.":
     "A: 可以。任何 ZMK 键盘无需修改即可使用键位功能。",
   "You can also support other features by using cormoran's ZMK fork and cormoran's ZMK modules, although it's not suggested considering compatibility and maintainability.":
     "也可以通过使用 cormoran 的 ZMK 分支及其 ZMK 模块来支持其他功能，但考虑到兼容性和可维护性，不建议这样做。",
-  "Please refer to the experimental zmk-config for DYA Dash keyboard.":
-    "请参考面向 DYA Dash 键盘的实验性 zmk-config。",
+  "ClickBoard ErgoTrack and GoFortyMax firmware support is in progress — see the developer guide for how a keyboard adds Keeb-On! Studio support.":
+    "ClickBoard ErgoTrack 和 GoFortyMax 的固件支持正在开发中 — 有关键盘如何支持 Keeb-On! Studio，请参阅开发者指南。",
   "Warning: cormoran's ZMK fork is very experimental, optimized for DYA keyboards and may contain unstable or breaking changes. Use at your own risk. In rare cases, it may cause malfunction or damage to your keyboard hardware.":
     "警告：cormoran 的 ZMK 分支非常实验性，针对 DYA 键盘进行了优化，可能包含不稳定或破坏性更改。使用风险自负。在极少数情况下，可能导致键盘硬件故障或损坏。",
   "Q: Can I get source code of Keeb-On! Studio?":
@@ -1967,6 +1949,7 @@ const zh: Record<string, string> = {
   "Try demo mode without a keyboard": "无需键盘即可试用演示模式",
   "Reconnecting to your keyboard...": "正在重新连接您的键盘...",
   "Keeb-On! Studio is maintained by": "Keeb-On! Studio 由以下人员维护",
+  "Forked from DYA Studio by": "分叉自 DYA Studio，原作者",
   "Special thanks to": "特别感谢",
   "ZMK community": "ZMK 社区",
   "Release notes": "发布说明",

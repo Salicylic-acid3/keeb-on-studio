@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { IconSun, IconMoon, IconPlugConnectedX } from "@tabler/icons-react";
-import DyaLogo from "../assets/dya.svg?react";
+import KeebOnLogo from "../assets/keebon-logo.svg?react";
 import { useTheme } from "../hooks/useTheme";
 import { useLanguage } from "../hooks/useLanguage";
 import type { ConnectionMethod } from "../components/DeviceConnection";
@@ -41,10 +41,10 @@ export function AppLayout({
         )}
         {/* Logo & Brand */}
         <div className="flex items-center gap-4 flex-shrink-0 mr-4">
-          <DyaLogo className="w-8 h-8 [&_polygon]:fill-[var(--color-text)]" />
+          <KeebOnLogo className="w-8 h-8" />
           <div className="hidden sm:flex items-center gap-2">
-            <span className="text-lg font-light tracking-widest text-[var(--color-text)]">
-              DYA
+            <span className="text-lg font-light tracking-wide text-[var(--color-text)]">
+              Keeb-On!
             </span>
             <span className="text-xs font-light tracking-wider text-[var(--color-text-muted)] uppercase pt-1">
               Studio

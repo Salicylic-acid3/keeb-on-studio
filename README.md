@@ -1,7 +1,7 @@
 <h1 align="center">⌨️ Keeb-On! Studio</h1>
 
 <p align="center">
-  A web-based configuration tool for ZMK keyboards, built for people who found ZMK Studio (and its variants) harder to use than it should be.<br />
+  A web-based configuration tool for <strong>ClickBoard ErgoTrack</strong> and <strong>GoFortyMax</strong> (and any ZMK keyboard).<br />
   Tune your keymap, trackball, and connections — right from your browser. No install required.
 </p>
 

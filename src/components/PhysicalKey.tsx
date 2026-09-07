@@ -135,7 +135,7 @@ export function PhysicalKey({
           isHighlighted
             ? "bg-amber-400/20 border-amber-300 shadow-[0_0_14px_rgba(251,191,36,0.45)]"
             : isSelected
-              ? "bg-[var(--color-electric)]/20 border-[var(--color-electric)] shadow-[0_0_10px_rgba(0,212,255,0.3)]"
+              ? "bg-[var(--color-electric)]/20 border-[var(--color-electric)] shadow-[0_0_10px_rgba(173,0,45,0.3)]"
               : isModified
                 ? "bg-[var(--color-neon)]/10 border-[var(--color-neon)]/50 hover:border-[var(--color-neon)]"
                 : isChangedFromDefault

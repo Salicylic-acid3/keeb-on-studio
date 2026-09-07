@@ -1,30 +1,6 @@
-import {
-  IconBrandGithub,
-  IconShoppingCart,
-  IconFile,
-  IconBrandX,
-  IconInfoCircle,
-} from "@tabler/icons-react";
+import { IconBrandGithub } from "@tabler/icons-react";
 
-import DyaDashImg from "../assets/dya-dash/dya-dash.jpeg";
-import DyaDashImg2 from "../assets/dya-dash/dya-dash2.jpeg";
-import DyaDashImg3 from "../assets/dya-dash/dya-dash3.jpeg";
-import DyaDashImg4 from "../assets/dya-dash/dya-dash4.jpeg";
-
-const DyaDashImages = [DyaDashImg, DyaDashImg2, DyaDashImg3, DyaDashImg4];
-
-import DYA2Img from "../assets/dya2/dya2.jpeg";
 import { useLanguage } from "../hooks/useLanguage";
-import DYA2Img2 from "../assets/dya2/dya2-2.jpeg";
-
-const Dya2Images = [DYA2Img, DYA2Img2];
-
-const xShareContents = {
-  title: encodeURIComponent("Keeb-On! Studio for DYA & ZMK Keyboards"),
-  link: encodeURIComponent("https://studio.dya.cormoran.works"),
-  tags: "dya_studio,dy_kbd",
-};
-const xShareUrl = `https://twitter.com/intent/tweet?text=${xShareContents.title}&url=${xShareContents.link}&hashtags=${xShareContents.tags}`;
 
 export function HomePage() {
   const { language, t } = useLanguage();
@@ -42,16 +18,8 @@ export function HomePage() {
               <p className="text-sm text-[var(--color-text-muted)] mt-1">
                 {language === "ja" ? (
                   <>
-                    Keeb-On! Studio は{" "}
-                    <a
-                      href="https://x.com/cormoran707"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors mx-1"
-                    >
-                      cormoran707
-                    </a>{" "}
-                    が設計した DYA キーボードシリーズ向けの、もう一つの{" "}
+                    Keeb-On! Studio は ClickBoard ErgoTrack と GoFortyMax
+                    向けの、もう一つの{" "}
                     <a
                       href="https://zmk.studio/"
                       target="_blank"
@@ -60,7 +28,16 @@ export function HomePage() {
                     >
                       ZMK Studio
                     </a>{" "}
-                    です
+                    です（
+                    <a
+                      href="https://github.com/cormoran/dya-studio"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors mx-1"
+                    >
+                      DYA Studio
+                    </a>{" "}
+                    からのフォークです）
                   </>
                 ) : (
                   <>
@@ -73,38 +50,20 @@ export function HomePage() {
                     >
                       ZMK Studio
                     </a>{" "}
-                    for DYA keyboard series, designed by{" "}
+                    for ClickBoard ErgoTrack and GoFortyMax, forked from{" "}
                     <a
-                      href="https://x.com/cormoran707"
+                      href="https://github.com/cormoran/dya-studio"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors mx-1"
                     >
-                      cormoran707
+                      DYA Studio
                     </a>
                   </>
                 )}
               </p>
             </div>
           </div>
-          <div className="ml-auto">
-            <a
-              href={xShareUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center px-3 py-1 rounded bg-[var(--color-electric)] text-white hover:bg-[var(--color-neon)] transition-colors text-xs font-semibold"
-              aria-label={t("Share on X")}
-            >
-              {t("Share on X")} <IconBrandX size={16} className="ml-1" />
-            </a>
-          </div>
-        </div>
-        <div className="mb-4 text-xs text-[var(--color-text-muted)] flex items-center gap-1">
-          <IconInfoCircle size={14} /> {t("DYA is pronounced dai-a.")}
-        </div>
-        <div className="mb-4 text-xs text-[var(--color-text-muted)] flex items-center gap-1">
-          <IconInfoCircle size={14} />{" "}
-          {t("cormoran is pronounced cormoran [kˈɔɚm(ə)rən].")}
         </div>
 
         {/* Guide */}
@@ -142,115 +101,44 @@ export function HomePage() {
           </div>
         </div>
 
-        {/* DYA Keyboards Section */}
+        {/* Supported Keyboards Section */}
         <div className="glass-card p-6 mb-6">
           <h2 className="text-sm font-medium text-[var(--color-text-secondary)] mb-4">
-            {t("DYA Keyboard series")}
-            <a
-              href="https://x.com/intent/tweet?hashtags=dya_kbd"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline text-xs text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors mx-1"
-            >
-              #dya_kbd
-            </a>
+            {t("Supported keyboards")}
           </h2>
           <div className="space-y-3">
-            {/* DYA Dash */}
+            {/* ClickBoard ErgoTrack */}
             <div className="flex items-center justify-between p-4 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] group flex-col sm:flex-row">
               <div className="flex flex-col flex-1 w-full">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
-                  <div className="flex items-center gap-4">
-                    <p className="text-sm font-medium text-[var(--color-text-secondary)]">
-                      DYA Dash
-                    </p>
-                    <span className="text-xs text-[var(--color-text-muted)]">
-                      {t("40% Split keyboard for mobile use.")}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 sm:ml-auto">
-                    <a
-                      href="https://github.com/cormoran/dya-dash-keyboard"
-                      target="_blank"
-                      className="flex items-center gap-1 underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors"
-                    >
-                      <IconBrandGithub size={16} />
-                      {t("Design")}
-                    </a>
-                    <a
-                      href="https://cormoran707.booth.pm/items/6913095"
-                      target="_blank"
-                      className="flex items-center gap-1 underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors"
-                    >
-                      <IconShoppingCart size={16} />
-                      {t("Buy")}
-                    </a>
-                    <a
-                      href="https://cormoran.github.io/dya-dash-keyboard/"
-                      target="_blank"
-                      className="flex items-center gap-1 underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors"
-                    >
-                      <IconFile size={16} />
-                      {t("Docs")}
-                    </a>
-                  </div>
-                </div>
-                <div className="mt-2 overflow-x-auto">
-                  <div className="flex gap-4">
-                    {DyaDashImages.map((src, index) => (
-                      <img
-                        key={index}
-                        src={src}
-                        width="256"
-                        alt="DYA Dash"
-                        className="max-w-full h-auto rounded flex-shrink-0"
-                      />
-                    ))}
-                  </div>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                  <p className="text-sm font-medium text-[var(--color-text-secondary)]">
+                    ClickBoard ErgoTrack
+                  </p>
+                  <span className="text-xs text-[var(--color-text-muted)]">
+                    {t(
+                      "An ultra-thin ClickBoard-series keyboard using mouse switches.",
+                    )}
+                  </span>
+                  <span className="text-xs font-medium uppercase text-[var(--color-cyber)] sm:ml-auto">
+                    {t("Coming Soon")}
+                  </span>
                 </div>
               </div>
             </div>
 
-            {/* DY2 */}
+            {/* GoFortyMax */}
             <div className="flex items-center justify-between p-4 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] group flex-col sm:flex-row">
               <div className="flex flex-col flex-1 w-full">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
-                  <div className="flex items-center gap-4">
-                    <p className="text-sm font-medium text-[var(--color-text-secondary)]">
-                      DYA2
-                    </p>
-                    <span className="text-xs text-[var(--color-text-muted)]">
-                      {t(
-                        "Next generation DYA keyboard, 60% split, standard row-staggered layout.",
-                      )}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 sm:ml-auto">
-                    <span className="text-xs font-medium uppercase text-[var(--color-cyber)]">
-                      {t("Coming Soon")}
-                    </span>
-                    <a
-                      href="https://cormoran707.booth.pm/items/7627440"
-                      target="_blank"
-                      className="flex items-center gap-1 underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors"
-                    >
-                      <IconShoppingCart size={16} />
-                      {t("Watch Booth")}
-                    </a>
-                  </div>
-                </div>
-                <div className="mt-2 overflow-x-auto">
-                  <div className="flex gap-4">
-                    {Dya2Images.map((src, index) => (
-                      <img
-                        key={index}
-                        src={src}
-                        width="256"
-                        alt="DYA2"
-                        className="max-w-full h-auto rounded flex-shrink-0"
-                      />
-                    ))}
-                  </div>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                  <p className="text-sm font-medium text-[var(--color-text-secondary)]">
+                    GoFortyMax
+                  </p>
+                  <span className="text-xs text-[var(--color-text-muted)]">
+                    {t("From the GoForty small-form-factor keyboard line.")}
+                  </span>
+                  <span className="text-xs font-medium uppercase text-[var(--color-cyber)] sm:ml-auto">
+                    {t("Coming Soon")}
+                  </span>
                 </div>
               </div>
             </div>
@@ -275,32 +163,8 @@ export function HomePage() {
                   "You can also support other features by using cormoran's ZMK fork and cormoran's ZMK modules, although it's not suggested considering compatibility and maintainability.",
                 )}
                 <br />
-                {language === "ja" ? (
-                  <>
-                    DYA Dash キーボード向けの{" "}
-                    <a
-                      href="https://github.com/cormoran/zmk-keyboard-dya-dash/pull/9"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors mx-1"
-                    >
-                      experimental zmk-config
-                    </a>{" "}
-                    を参照してください。
-                  </>
-                ) : (
-                  <>
-                    Please refer to the{" "}
-                    <a
-                      href="https://github.com/cormoran/zmk-keyboard-dya-dash/pull/9"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors mx-1"
-                    >
-                      experimental zmk-config
-                    </a>{" "}
-                    for DYA Dash keyboard.
-                  </>
+                {t(
+                  "ClickBoard ErgoTrack and GoFortyMax firmware support is in progress — see the developer guide for how a keyboard adds Keeb-On! Studio support.",
                 )}
                 <div className="mt-2 p-3 rounded bg-[var(--color-warning)]/20 border border-[var(--color-warning)] text-[var(--color-warning)] text-xs">
                   {t(
@@ -316,50 +180,33 @@ export function HomePage() {
               <p className="text-sm text-[var(--color-text-muted)]">
                 {language === "ja" ? (
                   <>
-                    A: はい、Keeb-On! Studio
-                    はオープンソースになりました。ソースコードは{" "}
+                    A: はい、Keeb-On! Studio はオープンソース（AGPL-3.0）です。
                     <a
                       href="https://github.com/cormoran/dya-studio"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors mx-1"
+                      className="underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors mx-1 inline-flex items-center gap-1"
                     >
-                      GitHub
-                    </a>{" "}
-                    で公開しています。フィードバックや機能要望がある場合は、X で{" "}
-                    <a
-                      href="https://x.com/intent/tweet?hashtags=dya_studio"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors mx-1"
-                    >
-                      #dya_studio
-                    </a>{" "}
-                    ハッシュタグを付けて投稿してください。
+                      <IconBrandGithub size={14} />
+                      フォーク元の DYA Studio
+                    </a>
+                    のソースはこちらで公開されています。Keeb-On! Studio
+                    自体のリポジトリは準備中です。
                   </>
                 ) : (
                   <>
-                    A: Yes, Keeb-On! Studio is now open source. You can find the
-                    source code on{" "}
+                    A: Yes, Keeb-On! Studio is open source (AGPL-3.0). The{" "}
                     <a
                       href="https://github.com/cormoran/dya-studio"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors mx-1"
+                      className="underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors mx-1 inline-flex items-center gap-1"
                     >
-                      GitHub
-                    </a>
-                    . If you have feedback or feature request, please complaint
-                    on X with{" "}
-                    <a
-                      href="https://x.com/intent/tweet?hashtags=dya_studio"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors mx-1"
-                    >
-                      #dya_studio
+                      <IconBrandGithub size={14} />
+                      upstream DYA Studio source
                     </a>{" "}
-                    hashtag.
+                    is public now; this fork&apos;s own repository is being set
+                    up.
                   </>
                 )}
               </p>

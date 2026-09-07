@@ -150,8 +150,8 @@ export function SplashScreen({
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 0.5 }}
         >
-          <h1 className="text-4xl font-light tracking-[0.3em] text-[var(--color-text)]">
-            DYA
+          <h1 className="text-4xl font-light tracking-[0.15em] text-[var(--color-text)]">
+            Keeb-On!
           </h1>
           <p className="text-sm font-light tracking-[0.2em] text-[var(--color-text-muted)] uppercase">
             Studio
@@ -177,7 +177,7 @@ export function SplashScreen({
               <button
                 onClick={() => handleConnectClick("serial")}
                 disabled={isConnecting}
-                className="relative w-16 h-16 rounded-full flex items-center justify-center border-2 transition-all disabled:opacity-30 disabled:cursor-not-allowed border-[var(--color-electric)] bg-[var(--color-electric)]/10 hover:bg-[var(--color-electric)]/20 hover:border-[var(--color-electric)] hover:shadow-[0_0_20px_rgba(0,212,255,0.3)]"
+                className="relative w-16 h-16 rounded-full flex items-center justify-center border-2 transition-all disabled:opacity-30 disabled:cursor-not-allowed border-[var(--color-electric)] bg-[var(--color-electric)]/10 hover:bg-[var(--color-electric)]/20 hover:border-[var(--color-electric)] hover:shadow-[0_0_20px_rgba(173,0,45,0.3)]"
                 aria-label={t("Connect via USB")}
                 title={t("Connect via USB")}
               >
@@ -193,7 +193,7 @@ export function SplashScreen({
               <button
                 onClick={() => handleConnectClick("ble")}
                 disabled={isConnecting}
-                className="relative w-16 h-16 rounded-full flex items-center justify-center border-2 transition-all disabled:opacity-30 disabled:cursor-not-allowed border-[var(--color-neon)] bg-[var(--color-neon)]/10 hover:bg-[var(--color-neon)]/20 hover:border-[var(--color-neon)] hover:shadow-[0_0_20px_rgba(0,255,204,0.3)]"
+                className="relative w-16 h-16 rounded-full flex items-center justify-center border-2 transition-all disabled:opacity-30 disabled:cursor-not-allowed border-[var(--color-neon)] bg-[var(--color-neon)]/10 hover:bg-[var(--color-neon)]/20 hover:border-[var(--color-neon)] hover:shadow-[0_0_20px_rgba(201,162,39,0.3)]"
                 aria-label={t("Connect via Bluetooth")}
                 title={t("Connect via Bluetooth")}
               >
@@ -209,7 +209,7 @@ export function SplashScreen({
               <button
                 onClick={() => handleConnectClick("demo")}
                 disabled={isConnecting}
-                className="relative w-16 h-16 rounded-full flex items-center justify-center border-2 transition-all disabled:opacity-30 disabled:cursor-not-allowed border-[var(--color-cyber)] bg-[var(--color-cyber)]/10 hover:bg-[var(--color-cyber)]/20 hover:border-[var(--color-cyber)] hover:shadow-[0_0_20px_rgba(139,92,246,0.3)]"
+                className="relative w-16 h-16 rounded-full flex items-center justify-center border-2 transition-all disabled:opacity-30 disabled:cursor-not-allowed border-[var(--color-cyber)] bg-[var(--color-cyber)]/10 hover:bg-[var(--color-cyber)]/20 hover:border-[var(--color-cyber)] hover:shadow-[0_0_20px_rgba(61,111,172,0.3)]"
                 aria-label={t("Try Demo Mode")}
                 title={t("Try Demo Mode (no device required)")}
               >
@@ -268,6 +268,16 @@ export function SplashScreen({
         transition={{ delay: 1 }}
       >
         {t("Keeb-On! Studio is maintained by")}
+        <a
+          href="https://x.com/Salicylic_acid3"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline mx-1"
+        >
+          @Salicylic_acid3
+        </a>
+        <br />
+        {t("Forked from DYA Studio by")}
         <a
           href="https://x.com/cormoran707"
           target="_blank"

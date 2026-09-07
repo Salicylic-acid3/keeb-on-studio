@@ -6,7 +6,7 @@
 @layer base {
   :root {
     /* Onsen-town accent colors - same for both themes */
-    --color-electric: #d9432e; /* vermillion (朱色) - primary actions */
+    --color-electric: #ad002d; /* vermillion (朱色) - primary actions */
     --color-neon: #c9a227; /* gold (金) - success/connected states */
     --color-cyber: #3d6fac; /* indigo (藍) - secondary accent */
     --color-warning: #f59e0b;
@@ -52,7 +52,7 @@
     --scrollbar-thumb-hover: #c2b184;
 
     /* Adjusted accent colors for better contrast on cream */
-    --color-electric: #b8341f;
+    --color-electric: #8f0025;
     --color-neon: #a5841f;
     --color-warning: #d97706;
   }
@@ -144,8 +144,8 @@
   border-radius: 0.5rem;
   font-weight: 500;
   color: white;
-  background: rgba(217, 67, 46, 0.2);
-  border: 1px solid rgba(217, 67, 46, 0.4);
+  background: rgba(173, 0, 45, 0.2);
+  border: 1px solid rgba(173, 0, 45, 0.4);
   transition: all 0.3s ease-out;
   cursor: pointer;
 }
@@ -157,11 +157,11 @@
 }
 
 .btn-electric:hover {
-  background: rgba(217, 67, 46, 0.3);
-  border-color: rgba(217, 67, 46, 0.6);
+  background: rgba(173, 0, 45, 0.3);
+  border-color: rgba(173, 0, 45, 0.6);
   box-shadow:
-    0 0 20px rgba(217, 67, 46, 0.4),
-    0 0 40px rgba(217, 67, 46, 0.2);
+    0 0 20px rgba(173, 0, 45, 0.4),
+    0 0 40px rgba(173, 0, 45, 0.2);
 }
 
 :root.light .btn-electric:hover {
@@ -295,7 +295,7 @@
   width: 100%;
   height: 2px;
   background: var(--color-electric);
-  box-shadow: 0 0 10px rgba(217, 67, 46, 0.5);
+  box-shadow: 0 0 10px rgba(173, 0, 45, 0.5);
 }
 
 :root.light .tab-trigger[data-state="active"]::after {
@@ -342,8 +342,8 @@
 
 .select-field:focus {
   outline: none;
-  border-color: rgba(217, 67, 46, 0.5);
-  box-shadow: 0 0 10px rgba(217, 67, 46, 0.3);
+  border-color: rgba(173, 0, 45, 0.5);
+  box-shadow: 0 0 10px rgba(173, 0, 45, 0.3);
 }
 
 :root.light .select-field:focus {
@@ -358,8 +358,8 @@
 
 .input-field:focus {
   outline: none;
-  border-color: rgba(217, 67, 46, 0.5);
-  box-shadow: 0 0 10px rgba(217, 67, 46, 0.3);
+  border-color: rgba(173, 0, 45, 0.5);
+  box-shadow: 0 0 10px rgba(173, 0, 45, 0.3);
 }
 
 :root.light .input-field:focus {
@@ -391,8 +391,8 @@
 /* Utility classes */
 .text-glow-electric {
   text-shadow:
-    0 0 10px rgba(217, 67, 46, 0.5),
-    0 0 20px rgba(217, 67, 46, 0.3);
+    0 0 10px rgba(173, 0, 45, 0.5),
+    0 0 20px rgba(173, 0, 45, 0.3);
 }
 
 :root.light .text-glow-electric {
@@ -425,7 +425,7 @@
   background: linear-gradient(
     135deg,
     rgba(61, 111, 172, 0.1) 0%,
-    rgba(217, 67, 46, 0.1) 100%
+    rgba(173, 0, 45, 0.1) 100%
   );
 }
 
@@ -438,8 +438,8 @@
 }
 
 .border-glow-electric {
-  border-color: rgba(217, 67, 46, 0.3);
-  box-shadow: inset 0 0 20px rgba(217, 67, 46, 0.1);
+  border-color: rgba(173, 0, 45, 0.3);
+  box-shadow: inset 0 0 20px rgba(173, 0, 45, 0.1);
 }
 
 :root.light .border-glow-electric {

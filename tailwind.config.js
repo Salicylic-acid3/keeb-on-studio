@@ -6,18 +6,18 @@ export default {
       colors: {
         // Onsen-town color palette (indigo / vermillion / gold / cream)
         electric: {
-          // vermillion (朱色) - primary actions
-          DEFAULT: "#d9432e",
-          50: "#fdf0ec",
-          100: "#fad9cd",
-          200: "#f4b195",
-          300: "#ed875c",
-          400: "#e66935",
-          500: "#d9432e",
-          600: "#b8341f",
-          700: "#8f2818",
-          800: "#661c11",
-          900: "#40110a",
+          // vermillion (朱色) - primary actions - matches the Keeb-On! logo mark
+          DEFAULT: "#ad002d",
+          50: "#fbe6ea",
+          100: "#f5c2cd",
+          200: "#ea8fa3",
+          300: "#dc5c76",
+          400: "#c62d51",
+          500: "#ad002d",
+          600: "#8f0025",
+          700: "#6e001d",
+          800: "#4d0014",
+          900: "#2d000c",
         },
         neon: {
           // gold (金) - success/connected states
@@ -72,8 +72,8 @@ export default {
       },
       boxShadow: {
         "glow-electric":
-          "0 0 20px rgba(217, 67, 46, 0.4), 0 0 40px rgba(217, 67, 46, 0.2)",
-        "glow-electric-sm": "0 0 10px rgba(217, 67, 46, 0.3)",
+          "0 0 20px rgba(173, 0, 45, 0.4), 0 0 40px rgba(173, 0, 45, 0.2)",
+        "glow-electric-sm": "0 0 10px rgba(173, 0, 45, 0.3)",
         "glow-neon":
           "0 0 20px rgba(201, 162, 39, 0.4), 0 0 40px rgba(201, 162, 39, 0.2)",
         "glow-neon-sm": "0 0 10px rgba(201, 162, 39, 0.3)",
@@ -106,11 +106,11 @@ export default {
         "glow-pulse": {
           "0%, 100%": {
             boxShadow:
-              "0 0 20px rgba(217, 67, 46, 0.4), 0 0 40px rgba(217, 67, 46, 0.2)",
+              "0 0 20px rgba(173, 0, 45, 0.4), 0 0 40px rgba(173, 0, 45, 0.2)",
           },
           "50%": {
             boxShadow:
-              "0 0 30px rgba(217, 67, 46, 0.6), 0 0 60px rgba(217, 67, 46, 0.3)",
+              "0 0 30px rgba(173, 0, 45, 0.6), 0 0 60px rgba(173, 0, 45, 0.3)",
           },
         },
       },

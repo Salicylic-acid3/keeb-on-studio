@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { IconArrowLeft, IconSparkles, IconTag } from "@tabler/icons-react";
-import DyaLogo from "../assets/dya.svg?react";
+import KeebOnLogo from "../assets/keebon-logo.svg?react";
 import { useLanguage } from "../hooks/useLanguage";
 import { LanguageToggle } from "../components/LanguageToggle";
 import {
@@ -199,10 +199,10 @@ export function ReleaseNotesPage({ onBack }: { onBack: () => void }) {
       <header className="sticky top-0 z-10 border-b border-[var(--color-border)] bg-[var(--color-surface)]/80 backdrop-blur-sm">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 flex-shrink-0">
-            <DyaLogo className="w-8 h-8 [&_polygon]:fill-[var(--color-text)]" />
+            <KeebOnLogo className="w-8 h-8" />
             <div className="flex items-center gap-2">
-              <span className="text-lg font-light tracking-widest text-[var(--color-text)]">
-                DYA
+              <span className="text-lg font-light tracking-wide text-[var(--color-text)]">
+                Keeb-On!
               </span>
               <span className="text-xs font-light tracking-wider text-[var(--color-text-muted)] uppercase pt-1">
                 Studio

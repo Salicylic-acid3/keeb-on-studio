@@ -17,7 +17,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { IconCheck, IconAlertTriangle } from "@tabler/icons-react";
-import DyaLogo from "../assets/dya.svg?react";
+import KeebOnLogo from "../assets/keebon-logo.svg?react";
 import { useLanguage } from "../hooks/useLanguage";
 import { LoadingIndicator } from "../components/LoadingIndicator";
 import { getAbyssClient } from "../lib/abyss/abyssClient";
@@ -92,7 +92,7 @@ export function AbyssCallbackPage({
       <div className="absolute inset-0 bg-gradient-cyber opacity-20 pointer-events-none" />
       <div className="relative min-h-full flex items-center justify-center p-6">
         <div className="glass-card p-8 w-full max-w-md text-center">
-          <DyaLogo className="w-10 h-10 mx-auto mb-6 [&_polygon]:fill-[var(--color-text)]" />
+          <KeebOnLogo className="w-10 h-10 mx-auto mb-6" />
 
           {state.phase === "working" && (
             <LoadingIndicator label={t("Completing Abyss sign-in...")} />
