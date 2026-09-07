@@ -3,8 +3,8 @@ assets = { directory = "./dist", not_found_handling = "single-page-application" 
 
 [env.dev]
 
-name = "dya-studio-dev"
+name = "keeb-on-studio-dev"
 
 [env.release]
 
-name = "dya-studio"
+name = "keeb-on-studio"
