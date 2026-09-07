@@ -182,20 +182,15 @@ export function HomePage() {
                   <>
                     A: はい、Keeb-On! Studio はオープンソース（AGPL-3.0）です。
                     <a
-                      href="https://github.com/cormoran/dya-studio"
+                      href="https://github.com/Salicylic-acid3/keeb-on-studio"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors mx-1 inline-flex items-center gap-1"
                     >
                       <IconBrandGithub size={14} />
-                      フォーク元の DYA Studio
+                      GitHub
                     </a>
-                    のソースはこちらで公開されています。Keeb-On! Studio
-                    自体のリポジトリは準備中です。
-                  </>
-                ) : (
-                  <>
-                    A: Yes, Keeb-On! Studio is open source (AGPL-3.0). The{" "}
+                    で公開しています。フォーク元の
                     <a
                       href="https://github.com/cormoran/dya-studio"
                       target="_blank"
@@ -203,10 +198,34 @@ export function HomePage() {
                       className="underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors mx-1 inline-flex items-center gap-1"
                     >
                       <IconBrandGithub size={14} />
-                      upstream DYA Studio source
+                      DYA Studio
+                    </a>
+                    のソースはこちらです。
+                  </>
+                ) : (
+                  <>
+                    A: Yes, Keeb-On! Studio is open source (AGPL-3.0). Find it
+                    on{" "}
+                    <a
+                      href="https://github.com/Salicylic-acid3/keeb-on-studio"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors mx-1 inline-flex items-center gap-1"
+                    >
+                      <IconBrandGithub size={14} />
+                      GitHub
+                    </a>
+                    . The upstream{" "}
+                    <a
+                      href="https://github.com/cormoran/dya-studio"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors mx-1 inline-flex items-center gap-1"
+                    >
+                      <IconBrandGithub size={14} />
+                      DYA Studio source
                     </a>{" "}
-                    is public now; this fork&apos;s own repository is being set
-                    up.
+                    is what this fork started from.
                   </>
                 )}
               </p>

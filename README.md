@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  <sub>🚧 Not deployed yet — see <a href="#status--roadmap">Status &amp; Roadmap</a> below.</sub>
+  <sub>🚧 Not hosted anywhere yet (run it locally, see <a href="#development">Development</a>) — see <a href="#status--roadmap">Status &amp; Roadmap</a> below.</sub>
   <br />
   <sub>No keyboard at hand? Hit the <em>Demo</em> button on the splash screen to explore every feature with a simulated keyboard.</sub>
 </p>
@@ -96,7 +96,7 @@ Bringing this to Hiroki's own ClickBoard / GoForty lines means those boards' fir
 **Stack**: React 19, TypeScript, Vite, Tailwind CSS v4, Radix UI
 
 ```bash
-git clone <this-repo-url>   # TODO: set once pushed to Hiroki's own GitHub
+git clone https://github.com/Salicylic-acid3/keeb-on-studio.git
 cd keeb-on-studio
 npm install
 npm run dev            # Start dev server at http://localhost:5173
@@ -114,11 +114,18 @@ npm run test:coverage  # Test coverage
 
 ## Status & Roadmap
 
-This fork was just started. So far: rebranded (name, colors — indigo/vermillion/gold/cream instead of the upstream cyan/green/purple "cybernetic" theme), confirmed the build and full test suite (83 suites / 688 tests) still pass unmodified. Not yet done, roughly in order:
+Done so far:
+
+- Rebranded (name, colors — indigo/vermillion/gold/cream instead of the upstream cyan/green/purple "cybernetic" theme, real Keeb-On! logo/favicon)
+- Removed DYA Studio's self-promotion (Booth links, photo galleries, X/hashtag campaigns) and repointed the "Supported keyboards" section at ClickBoard ErgoTrack and GoFortyMax
+- Repo created and pushed to [github.com/Salicylic-acid3/keeb-on-studio](https://github.com/Salicylic-acid3/keeb-on-studio) (public, AGPL-3.0)
+- Build and full test suite (83 suites / 688 tests) confirmed passing, unmodified
+
+Not yet done, roughly in order:
 
 - [ ] Decide on and apply real UX changes (the goal is "easier than ZMK Studio," not just a reskin — needs a concrete list of pain points to fix)
-- [ ] Replace the placeholder DYA logo/favicon with Keeb-On! Studio's own mark
-- [ ] Stand up a real repo (GitHub) and a hosting domain
+- [ ] Set up a hosting domain and CI/deploy (upstream's `.github/workflows/` were dropped rather than carried over as-is — they target cormoran's Cloudflare account)
+- [ ] Real product photos, specs, and purchase links for ClickBoard ErgoTrack / GoFortyMax (currently placeholder "Coming Soon" cards)
 - [ ] The "Abyss" cloud import/export tab talks to cormoran's own backend (`abyss.keyboard-hub.com`) via an OAuth client id that's only valid for the upstream app — it's already disabled in this fork (no client id configured) until/unless that's addressed separately
 - [ ] Longer term, if ClickBoard/GoForty move to ZMK: build/adapt the cormoran-fork modules for those boards so this tool can actually configure them
 
