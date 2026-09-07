@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "types": ["vite/client", "gtag.js"],
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    /* Collapse @keyboard-hub/adapter-zmk's copy of the ZMK Studio client onto
+       the fork this app already uses, so `RpcConnection` is one type and
+       `call_rpc` one mutex. Mirrored in vite.config.ts and jest.config.ts. */
+    "paths": {
+      "@keyboard-hub/zmk-studio-ts-client": [
+        "./node_modules/@zmkfirmware/zmk-studio-ts-client/lib/index.d.ts"
+      ],
+      "@keyboard-hub/zmk-studio-ts-client/*": [
+        "./node_modules/@zmkfirmware/zmk-studio-ts-client/lib/*"
+      ]
+    },
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
+  },
+  "include": ["src"],
+  "exclude": ["src/**/*.test.tsx", "src/**/*.test.ts", "src/setupTests.ts"]
+}

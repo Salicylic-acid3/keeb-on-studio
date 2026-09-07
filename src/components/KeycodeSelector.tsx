@@ -1,0 +1,820 @@
+/**
+ * KeycodeSelector Component
+ *
+ * A modal dialog for selecting behaviors and configuring parameters.
+ * Behavior-first approach: select behavior, then configure parameters.
+ * Supports various parameter types with dedicated UI selectors.
+ *
+ * Features:
+ * - Close on select: Automatically close the dialog after selecting the last parameter
+ *   (setting is persisted in localStorage)
+ */
+import { useState, useMemo, useCallback, useEffect } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
+import { IconRestore, IconX } from "@tabler/icons-react";
+import { MOUSE_KEYCODES } from "../lib/keycodes";
+import {
+  getBehaviorMetadata,
+  formatBehaviorParam,
+  filterMatchingBehaviorValueDescriptions,
+  type BehaviorMetadata,
+} from "../lib/behaviorMetadata";
+import type { BehaviorBinding, BehaviorDefinition } from "../hooks/useKeymap";
+import { BehaviorDropdown } from "./BehaviorDropdown";
+import { ButtonListSelector } from "./ButtonListSelector";
+import { KeycodeValueSelector } from "./KeycodeValueSelector";
+import { RangeValueSelector } from "./RangeValueSelector";
+import { MouseMoveInputSelector } from "./MouseMoveInputSelector";
+import { type KeyboardLayoutType } from "../lib/keyboardLayouts";
+import { BehaviorParameterValueDescription } from "@zmkfirmware/zmk-studio-ts-client/behaviors";
+import { useLanguage } from "../hooks/useLanguage";
+
+// =============================================================================
+// Types
+// =============================================================================
+
+/**
+ * Selected behavior information for KeycodeSelector
+ * Contains all necessary information for parameter configuration
+ */
+interface SelectedBehaviorInfo {
+  behavior: BehaviorDefinition;
+  // metadata defined in DYA Studio for overriding values defined in ZMK firmware
+  overrideMetadata: BehaviorMetadata | null;
+  // List of valid value descriptions for param1
+  param1Descriptions: BehaviorParameterValueDescription[];
+  // List of valid value descriptions for param2, which is filtered based on param1 value
+  param2Descriptions: BehaviorParameterValueDescription[];
+}
+
+interface KeycodeSelectorProps {
+  open: boolean;
+  onClose: () => void;
+  onSelect: (binding: BehaviorBinding) => void;
+  currentBinding?: BehaviorBinding | null;
+  behaviors: Map<number, BehaviorDefinition>;
+  layers: Array<{ id: number; name: string }>;
+  keyboardLayout?: KeyboardLayoutType;
+  behaviorQuickSelects?: string[]; // Optional list of behavior displayNameVariants for quick select
+  runtimeMacros?: Array<{ slot: number; name?: string }>;
+}
+
+// =============================================================================
+// Helper Functions
+// =============================================================================
+
+/**
+ * Get human-readable label for a parameter type
+ */
+function getParamTypeLabel(
+  behaviorInfo: SelectedBehaviorInfo,
+  paramNumber: 1 | 2,
+  t: (key: string) => string,
+): string {
+  const overrideMeta = behaviorInfo.overrideMetadata;
+  const overrideType =
+    paramNumber === 1 ? overrideMeta?.param1Type : overrideMeta?.param2Type;
+  // From DYA Studio override metadata
+  if (overrideType) {
+    switch (overrideType) {
+      case "macro":
+        return "Macro";
+      case "mouse_keycode":
+        return t("Mouse Button");
+      case "mouse_movement":
+      case "mouse_scroll":
+        return t("Pointer movement");
+    }
+  }
+  // From firmware metadata
+  const descriptions =
+    paramNumber === 1
+      ? behaviorInfo.param1Descriptions
+      : behaviorInfo.param2Descriptions;
+  // NOTE: assuming all descriptions have the same type
+  if (descriptions.length > 0) {
+    if (descriptions[0].constant !== undefined) {
+      return t("Constant");
+    } else if (descriptions[0].range !== undefined) {
+      return t("Range");
+    } else if (descriptions[0].hidUsage !== undefined) {
+      return t("Keycode");
+    } else if (descriptions[0].layerId !== undefined) {
+      return t("Layer");
+    }
+  }
+  return t("Unknown Type");
+}
+
+/**
+ * Get description for a parameter type
+ */
+function getParamTypeDescription(
+  behaviorInfo: SelectedBehaviorInfo,
+  paramNumber: 1 | 2,
+  t: (key: string, params?: Record<string, string | number>) => string,
+): string {
+  const overrideMeta = behaviorInfo.overrideMetadata;
+  // From DYA Studio override metadata
+  if (overrideMeta) {
+    const overrideDescription =
+      paramNumber === 1
+        ? overrideMeta.param1Description
+        : overrideMeta.param2Description;
+    if (overrideDescription) {
+      return overrideDescription;
+    }
+  }
+  // From firmware metadata
+  const paramDescriptions =
+    paramNumber === 1
+      ? behaviorInfo.param1Descriptions
+      : behaviorInfo.param2Descriptions;
+  if (paramDescriptions.length == 1) {
+    return t("Select {{name}}", { name: paramDescriptions[0].name });
+  }
+  return t("Select options"); // Contains constant from multiple options
+}
+
+/**
+ * Format parameter value for display
+ */
+function formatParamValue(
+  behaviorInfo: SelectedBehaviorInfo,
+  param1: number,
+  param2: number,
+  paramNumber: 1 | 2,
+  layers: Array<{ id: number; name: string }>,
+  keyboardLayout?: KeyboardLayoutType,
+  runtimeMacros?: Array<{ slot: number; name?: string }>,
+): string {
+  const behavior = behaviorInfo.behavior;
+  // From DYA Studio override metadata
+  const overrideMeta = behaviorInfo.overrideMetadata;
+  if (overrideMeta?.formatParam) {
+    return overrideMeta.formatParam(param1, param2, paramNumber, {
+      layers,
+      keyboardLayout,
+      runtimeMacros,
+    });
+  }
+  // From firmware metadata
+  return formatBehaviorParam(behavior, param1, param2, paramNumber, {
+    layers,
+    keyboardLayout,
+    runtimeMacros,
+  });
+}
+
+function buildSelectedBehaviorInfo(
+  behaviors: Map<number, BehaviorDefinition>,
+  selectedBehavior: number | null,
+  param1: number,
+): SelectedBehaviorInfo | null {
+  if (selectedBehavior === null) return null;
+  const behavior = behaviors.get(selectedBehavior);
+  if (!behavior) {
+    return null; // Behavior not found in the firmware - this shouldn't happen but we should handle it gracefully
+  }
+  const validParamSetsForParam1 = behavior?.metadata
+    ?.map((m) => {
+      return {
+        ...m,
+        param1: m.param1.filter((desc) =>
+          filterMatchingBehaviorValueDescriptions(desc, null),
+        ),
+        param2: m.param2.filter((desc) =>
+          filterMatchingBehaviorValueDescriptions(desc, null),
+        ),
+      };
+    })
+    .filter((m) => m.param1.length > 0);
+  const param1MatchingParamSetsForParam2 = validParamSetsForParam1
+    .filter((m) => m.param2.length > 0)
+    .map((m) => {
+      return {
+        ...m,
+        param1: m.param1.filter((desc) =>
+          filterMatchingBehaviorValueDescriptions(desc, param1),
+        ),
+      };
+    })
+    .filter((m) => m.param1.length > 0);
+
+  // Use metadata if available, otherwise fall back to BehaviorDefinition.metadata
+  const overrideMetadata = getBehaviorMetadata(behavior.displayName);
+  return {
+    behavior,
+    overrideMetadata,
+    param1Descriptions: validParamSetsForParam1.flatMap((m) => m.param1),
+    param2Descriptions: param1MatchingParamSetsForParam2.flatMap(
+      (m) => m.param2,
+    ),
+  };
+}
+
+function hasParam(
+  behaviorInfo: SelectedBehaviorInfo | null,
+  paramNumber: 1 | 2,
+): boolean {
+  if (!behaviorInfo) return false;
+  const overrideMeta = behaviorInfo.overrideMetadata;
+  const overrideType =
+    paramNumber === 1 ? overrideMeta?.param1Type : overrideMeta?.param2Type;
+  if (overrideType) {
+    return true;
+  }
+  // Fallback to checking if there are any value descriptions for the parameter
+  const descriptions =
+    paramNumber === 1
+      ? behaviorInfo.param1Descriptions
+      : behaviorInfo.param2Descriptions;
+  return descriptions.length > 0;
+}
+
+// =============================================================================
+// Main Component
+// =============================================================================
+
+export function KeycodeSelector({
+  open,
+  onClose,
+  onSelect,
+  currentBinding,
+  behaviors,
+  layers,
+  keyboardLayout,
+  behaviorQuickSelects,
+  runtimeMacros = [],
+}: KeycodeSelectorProps) {
+  const { t } = useLanguage();
+  // State
+  const [selectedBehavior, setSelectedBehavior] = useState<number | null>(null);
+  const [param1, setParam1] = useState<number>(0);
+  const [param2, setParam2] = useState<number>(0);
+  const [activeParam, setActiveParam] = useState<1 | 2>(1);
+  const [closeOnSelect, setCloseOnSelect] = useState<boolean>(() => {
+    const saved = localStorage.getItem("keycodeSelectorCloseOnSelect");
+    return saved !== null ? saved === "true" : true;
+  });
+  const [wasOpened, setWasOpened] = useState<boolean>(false);
+
+  // Initial values to detect changes
+  const [initialValues, setInitialValues] = useState<{
+    behaviorId: number | null;
+    param1: number;
+    param2: number;
+  }>({ behaviorId: null, param1: 0, param2: 0 });
+
+  // Save closeOnSelect setting to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("keycodeSelectorCloseOnSelect", String(closeOnSelect));
+  }, [closeOnSelect]);
+
+  // Check if values have changed
+  const hasChanges = useMemo(() => {
+    return (
+      selectedBehavior !== initialValues.behaviorId ||
+      param1 !== initialValues.param1 ||
+      param2 !== initialValues.param2
+    );
+  }, [selectedBehavior, param1, param2, initialValues]);
+
+  // Get selected behavior info
+  const selectedBehaviorInfo = useMemo(
+    (): SelectedBehaviorInfo | null =>
+      buildSelectedBehaviorInfo(behaviors, selectedBehavior, param1),
+    [selectedBehavior, behaviors, param1],
+  );
+
+  // Check if behavior needs parameters
+  const needsParam1 = hasParam(selectedBehaviorInfo, 1);
+  const needsParam2 = hasParam(selectedBehaviorInfo, 2);
+  const needsAnyParam = needsParam1 || needsParam2;
+
+  // Handle behavior selection from dropdown
+  const handleBehaviorSelect = useCallback(
+    (behaviorId: number) => {
+      const behavior = behaviors.get(behaviorId);
+      if (!behavior) return;
+
+      setSelectedBehavior(behaviorId);
+      setParam1(0);
+      setParam2(0);
+      setActiveParam(1);
+
+      // Check if behavior needs params using fallback
+      const nextSelectedBehaviorInfo = buildSelectedBehaviorInfo(
+        behaviors,
+        behaviorId,
+        0,
+      );
+      const needsAnyParam =
+        hasParam(nextSelectedBehaviorInfo, 1) ||
+        hasParam(nextSelectedBehaviorInfo, 2);
+
+      // If behavior doesn't need params and closeOnSelect is enabled, apply immediately
+      if (closeOnSelect && !needsAnyParam) {
+        onSelect({
+          behaviorId,
+          param1: 0,
+          param2: 0,
+        });
+        onClose();
+      }
+    },
+    [behaviors, closeOnSelect, onSelect, onClose],
+  );
+
+  const handleParam1Change = useCallback(
+    (value: number, shouldNotClose?: boolean) => {
+      setParam1(value);
+      const nextSelectedBehaviorInfo = buildSelectedBehaviorInfo(
+        behaviors,
+        selectedBehavior,
+        value,
+      );
+      const needsParam2 = hasParam(nextSelectedBehaviorInfo, 2);
+      if (needsParam2) {
+        setActiveParam(2);
+      } else {
+        if (
+          shouldNotClose !== true &&
+          closeOnSelect &&
+          selectedBehavior !== null
+        ) {
+          // If param1 is the last param and closeOnSelect is enabled, apply and close
+          onSelect({
+            behaviorId: selectedBehavior,
+            param1: value,
+            param2: 0,
+          });
+          onClose();
+        }
+        if (param2 !== 0) {
+          setParam2(0);
+        }
+      }
+    },
+    [behaviors, closeOnSelect, onClose, onSelect, param2, selectedBehavior],
+  );
+
+  const handleParam2Change = useCallback(
+    (value: number, shouldNotClose?: boolean) => {
+      setParam2(value);
+      // If param2 is set and closeOnSelect is enabled, apply and close
+      if (
+        shouldNotClose !== true &&
+        closeOnSelect &&
+        selectedBehavior !== null
+      ) {
+        onSelect({
+          behaviorId: selectedBehavior,
+          param1,
+          param2: value,
+        });
+        onClose();
+      }
+    },
+    [closeOnSelect, selectedBehavior, param1, onSelect, onClose],
+  );
+
+  // Handle revert button click
+  const handleRevert = useCallback(() => {
+    setSelectedBehavior(initialValues.behaviorId);
+    setParam1(initialValues.param1);
+    setParam2(initialValues.param2);
+    setActiveParam(1);
+  }, [initialValues.behaviorId, initialValues.param1, initialValues.param2]);
+
+  // Reset state when dialog opens
+  const handleOpenChange = useCallback(
+    (isOpen: boolean) => {
+      if (isOpen) {
+        // Pre-select current binding if available
+        if (currentBinding) {
+          setSelectedBehavior(currentBinding.behaviorId);
+          setParam1(currentBinding.param1);
+          setParam2(currentBinding.param2);
+          setInitialValues({
+            behaviorId: currentBinding.behaviorId,
+            param1: currentBinding.param1,
+            param2: currentBinding.param2,
+          });
+        } else {
+          // Default to keypress behavior
+          const kpMetadata = getBehaviorMetadata("kp");
+          if (kpMetadata) {
+            const kpBehavior = Array.from(behaviors.values()).find((b) =>
+              kpMetadata.displayNameVariants.includes(b.displayName),
+            );
+            if (kpBehavior) {
+              setSelectedBehavior(kpBehavior.id);
+              setInitialValues({
+                behaviorId: kpBehavior.id,
+                param1: 0,
+                param2: 0,
+              });
+            }
+          }
+          setParam1(0);
+          setParam2(0);
+        }
+        setActiveParam(1);
+        setWasOpened(true);
+      } else {
+        // Always apply changes when closing
+        if (selectedBehavior !== null && wasOpened) {
+          setWasOpened(false);
+          onSelect({
+            behaviorId: selectedBehavior,
+            param1,
+            param2,
+          });
+          setInitialValues({
+            behaviorId: selectedBehavior,
+            param1: param1,
+            param2: param2,
+          });
+        }
+        onClose();
+      }
+    },
+    [
+      onClose,
+      currentBinding,
+      behaviors,
+      selectedBehavior,
+      param1,
+      param2,
+      onSelect,
+      wasOpened,
+    ],
+  );
+
+  // Run handleOpenChange on mount if open is true
+  useEffect(() => {
+    if (open) {
+      handleOpenChange(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  // Render parameter value selector based on type
+  const renderParamValueSelector = useCallback(
+    (
+      param1: number,
+      param2: number,
+      onChange: (v: number, shouldNotClose?: boolean) => void,
+      paramNumber: 1 | 2,
+    ) => {
+      const value = paramNumber === 1 ? param1 : param2;
+
+      const overrideMeta = selectedBehaviorInfo?.overrideMetadata;
+      const overrideType =
+        paramNumber === 1 ? overrideMeta?.param1Type : overrideMeta?.param2Type;
+      // From DYA Studio override metadata
+      if (overrideType) {
+        switch (overrideType) {
+          case "macro":
+            return runtimeMacros.length > 0 ? (
+              <ButtonListSelector
+                options={runtimeMacros.map((macro) => ({
+                  value: macro.slot,
+                  label: macro.name || `Macro ${macro.slot}`,
+                }))}
+                value={value}
+                onChange={onChange}
+                columns={Math.min(runtimeMacros.length, 4)}
+              />
+            ) : (
+              <input
+                type="number"
+                min={0}
+                value={value}
+                onChange={(e) => onChange(Number(e.target.value))}
+                className="w-full px-3 py-2 rounded-lg bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] focus:outline-none focus:border-[var(--color-electric)]/50"
+              />
+            );
+
+          case "mouse_keycode":
+            return (
+              <ButtonListSelector
+                options={MOUSE_KEYCODES.map((mk) => ({
+                  value: mk.value,
+                  label: mk.label,
+                  shortLabel: mk.shortLabel,
+                }))}
+                value={value}
+                onChange={onChange}
+                columns={3}
+              />
+            );
+
+          case "mouse_movement":
+            return (
+              <MouseMoveInputSelector
+                value={value}
+                onChange={onChange}
+                isScroll={false}
+              />
+            );
+
+          case "mouse_scroll":
+            return (
+              <MouseMoveInputSelector
+                value={value}
+                onChange={onChange}
+                isScroll={true}
+              />
+            );
+        }
+      }
+
+      // Fallback: use BehaviorDefinition metadata from firmware
+      if (selectedBehaviorInfo !== null) {
+        // accumulate descriptions to collect all constants
+        const descriptions =
+          paramNumber === 1
+            ? selectedBehaviorInfo.param1Descriptions
+            : selectedBehaviorInfo.param2Descriptions;
+        const groupByType = descriptions.reduce(
+          (acc, desc) => {
+            if (desc.constant !== undefined) {
+              acc.constants.push(desc);
+            } else if (desc.range !== undefined) {
+              acc.ranges.push(desc);
+            } else if (desc.hidUsage !== undefined) {
+              acc.hidUsages.push(desc);
+            } else if (desc.layerId !== undefined) {
+              acc.layerIds.push(desc);
+            } else {
+              acc.others.push(desc);
+            }
+            return acc;
+          },
+          {
+            constants: [] as BehaviorParameterValueDescription[],
+            ranges: [] as BehaviorParameterValueDescription[],
+            layerIds: [] as BehaviorParameterValueDescription[],
+            hidUsages: [] as BehaviorParameterValueDescription[],
+            others: [] as BehaviorParameterValueDescription[],
+          },
+        );
+        return (
+          <>
+            {/* layerIds */}
+            {groupByType.layerIds.length > 0 && (
+              <ButtonListSelector
+                options={layers.map((l) => ({
+                  value: l.id,
+                  label: l.name || `Layer ${l.id}`,
+                }))}
+                value={value}
+                onChange={onChange}
+                columns={Math.min(layers.length, 4)}
+              />
+            )}
+            {/* ranges */}
+            {groupByType.ranges.length > 0 && (
+              <RangeValueSelector
+                min={groupByType.ranges.reduce(
+                  (min, desc) => Math.min(min, desc.range?.min ?? 0),
+                  Infinity,
+                )}
+                max={groupByType.ranges.reduce(
+                  (max, desc) => Math.max(max, desc.range?.max ?? 0),
+                  -Infinity,
+                )}
+                value={value}
+                onChange={onChange}
+              />
+            )}
+            {/* constants */}
+            {groupByType.constants.length > 0 && (
+              <ButtonListSelector
+                options={groupByType.constants.map((l) => ({
+                  value: l.constant!,
+                  label: `${l.name} (${l.constant})`,
+                }))}
+                value={value}
+                onChange={onChange}
+                columns={Math.min(groupByType.constants.length, 4)}
+              />
+            )}
+            {/* hidUsages */}
+            {groupByType.hidUsages.length > 0 && (
+              <KeycodeValueSelector
+                value={value}
+                onChange={onChange}
+                showModifiers={true}
+                keyboardLayout={keyboardLayout}
+              />
+            )}
+            {groupByType.others.length > 0 && (
+              <input
+                type="number"
+                value={value}
+                onChange={(e) => onChange(Number(e.target.value))}
+                className="w-full px-3 py-2 rounded-lg bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] focus:outline-none focus:border-[var(--color-electric)]/50"
+              />
+            )}
+          </>
+        );
+      }
+      return null;
+    },
+    [layers, selectedBehaviorInfo, keyboardLayout, runtimeMacros],
+  );
+
+  return (
+    <Dialog.Root open={open} onOpenChange={handleOpenChange}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" />
+        <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full tablet:w-[90vw] max-w-4xl h-full tablet:h-[85vh] bg-[var(--color-surface)] rounded-none tablet:rounded-xl border border-[var(--color-border)] shadow-2xl z-50 flex flex-col overflow-hidden">
+          {/* Header with Cancel Button */}
+          <div className="flex items-center justify-between p-4 border-b border-[var(--color-border)]">
+            <Dialog.Title className="text-lg font-medium text-[var(--color-text)] flex items-center gap-2">
+              {t("Select Key Binding")}
+            </Dialog.Title>
+            <div className="flex items-center gap-2">
+              <label className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)] cursor-pointer hover:text-[var(--color-text)] transition-colors">
+                <input
+                  type="checkbox"
+                  checked={closeOnSelect}
+                  onChange={(e) => setCloseOnSelect(e.target.checked)}
+                  className="w-4 h-4 rounded border-[var(--color-border)] text-[var(--color-electric)] focus:ring-2 focus:ring-[var(--color-electric)]/50 cursor-pointer"
+                />
+                <span>{t("Close on select")}</span>
+              </label>
+              {hasChanges && (
+                <button
+                  className="px-4 py-2 text-sm rounded-lg border border-red-400 text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
+                  onClick={handleRevert}
+                >
+                  <IconRestore size={16} className="animate-pulse" />
+                  <span className="hidden tablet:inline">{t("Revert")}</span>
+                </button>
+              )}
+              <Dialog.Close asChild>
+                <button
+                  className="p-2 rounded-lg hover:bg-[var(--color-border)] transition-colors"
+                  aria-label={t("Close")}
+                >
+                  <IconX size={20} className="text-[var(--color-text-muted)]" />
+                </button>
+              </Dialog.Close>
+            </div>
+          </div>
+
+          {/* Behavior Selection */}
+          <div className="p-4 border-b border-[var(--color-border)]">
+            <label className="block text-xs font-medium text-[var(--color-text-muted)] mb-1">
+              {t("Behavior")}
+            </label>
+            {behaviors.size === 0 ? (
+              <div className="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-sm text-yellow-600">
+                ⚠️ {t("Behaviors not loaded from keyboard.")}
+              </div>
+            ) : (
+              <BehaviorDropdown
+                behaviors={behaviors}
+                selectedBehaviorId={selectedBehavior}
+                onSelect={handleBehaviorSelect}
+                onQuickSelect={handleBehaviorSelect}
+                quickSelects={behaviorQuickSelects}
+              />
+            )}
+          </div>
+
+          {/* Parameter Selection - Horizontal Layout */}
+          {selectedBehaviorInfo && needsAnyParam && (
+            <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+              {/* Parameters Label */}
+              <div className="px-4 pt-4 pb-1 hidden tablet:block">
+                <label className="block text-xs font-medium text-[var(--color-text-muted)] mb-1">
+                  {t("Parameters")}
+                </label>
+              </div>
+              {/* Parameter Tabs (Horizontal) */}
+              <div className="flex border-b border-[var(--color-border)] mx-4 mb-2">
+                {needsParam1 && (
+                  <button
+                    className={`flex-1 p-2 text-center transition-colors border-b-2 ${
+                      activeParam === 1
+                        ? "border-[var(--color-electric)] text-[var(--color-electric)]"
+                        : "border-transparent text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-border)]/50"
+                    }`}
+                    onClick={() => setActiveParam(1)}
+                  >
+                    <div className="font-medium text-xs">
+                      {t("param1")}:
+                      <span className="ml-1 text-[10px] text-[var(--color-text-muted)]">
+                        {getParamTypeLabel(selectedBehaviorInfo, 1, t)}
+                      </span>
+                    </div>
+                    <div
+                      className={`mt-0.5 font-mono text-sm text-[var(--color-neon)] ${
+                        activeParam === 1 ? "font-bold text-base" : ""
+                      }`}
+                    >
+                      {formatParamValue(
+                        selectedBehaviorInfo,
+                        param1,
+                        param2,
+                        1,
+                        layers,
+                        keyboardLayout,
+                        runtimeMacros,
+                      )}
+                    </div>
+                  </button>
+                )}
+                {needsParam2 && (
+                  <button
+                    className={`flex-1 p-2 text-center transition-colors border-b-2 ${
+                      activeParam === 2
+                        ? "border-[var(--color-electric)] text-[var(--color-electric)]"
+                        : "border-transparent text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-border)]/50"
+                    }`}
+                    onClick={() => setActiveParam(2)}
+                  >
+                    <div className="font-medium text-xs">
+                      {t("param2")}:
+                      <span className="ml-1 text-[10px] text-[var(--color-text-muted)]">
+                        {getParamTypeLabel(selectedBehaviorInfo, 2, t)}
+                      </span>
+                    </div>
+                    <div
+                      className={`mt-0.5 font-mono text-sm text-[var(--color-neon)] ${
+                        activeParam === 2 ? "font-bold text-base" : ""
+                      }`}
+                    >
+                      {formatParamValue(
+                        selectedBehaviorInfo,
+                        param1,
+                        param2,
+                        2,
+                        layers,
+                        keyboardLayout,
+                        runtimeMacros,
+                      )}
+                    </div>
+                  </button>
+                )}
+              </div>
+
+              {/* Parameter Description */}
+              <div className="px-4 py-2 bg-[var(--color-bg)] border-b border-[var(--color-border)] hidden tablet:block">
+                <p className="text-xs text-[var(--color-text-muted)]">
+                  {activeParam === 1
+                    ? getParamTypeDescription(selectedBehaviorInfo, 1, t)
+                    : getParamTypeDescription(selectedBehaviorInfo, 2, t)}
+                </p>
+              </div>
+
+              {/* Parameter Value Selector */}
+              <div className="flex-1 p-4 overflow-hidden flex flex-col">
+                {activeParam === 1 && needsParam1
+                  ? renderParamValueSelector(
+                      param1,
+                      param2,
+                      handleParam1Change,
+                      1,
+                    )
+                  : activeParam === 2 && needsParam2
+                    ? renderParamValueSelector(
+                        param1,
+                        param2,
+                        handleParam2Change,
+                        2,
+                      )
+                    : null}
+              </div>
+            </div>
+          )}
+
+          {/* No Parameters Message */}
+          {selectedBehaviorInfo && !needsAnyParam && (
+            <div className="flex-1 flex items-center justify-center p-8">
+              <div className="text-center">
+                <div className="text-4xl mb-4">
+                  {selectedBehaviorInfo.behavior.displayName === "none" ||
+                  selectedBehaviorInfo.behavior.displayName === "trans"
+                    ? "✓"
+                    : "⚡"}
+                </div>
+                <p className="text-[var(--color-text-secondary)]">
+                  {selectedBehaviorInfo.behavior.displayName}
+                </p>
+                <p className="text-sm text-[var(--color-text-muted)] mt-1">
+                  No parameters needed
+                </p>
+              </div>
+            </div>
+          )}
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+}
