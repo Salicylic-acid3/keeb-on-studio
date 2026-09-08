@@ -1,6 +1,58 @@
-import { IconBrandGithub } from "@tabler/icons-react";
+import {
+  IconBrandGithub,
+  IconBrandX,
+  IconBrandYoutube,
+  IconBuildingStore,
+  IconCalendarWeek,
+  IconNotebook,
+} from "@tabler/icons-react";
+import type { ReactNode } from "react";
 
 import { useLanguage } from "../hooks/useLanguage";
+
+/**
+ * Salicylic_acid3's own channels. The site names stay in Japanese in every
+ * language -- they are the brands' actual names, not copy to translate -- so
+ * each carries a translated category label to say what it is.
+ */
+const AUTHOR_LINKS: {
+  href: string;
+  name: string;
+  /** Translation key for the category label. */
+  category: string;
+  icon: ReactNode;
+}[] = [
+  {
+    href: "https://salicylic-acid3.hatenablog.com/",
+    name: "自作キーボード温泉街の歩き方",
+    category: "Blog",
+    icon: <IconNotebook size={16} />,
+  },
+  {
+    href: "https://salicylic-weekly.hatenablog.jp/",
+    name: "自作キーボード温泉街週報",
+    category: "Weekly notes",
+    icon: <IconCalendarWeek size={16} />,
+  },
+  {
+    href: "https://salicylic-acid3.booth.pm/",
+    name: "自キ温泉街販売所",
+    category: "Shop",
+    icon: <IconBuildingStore size={16} />,
+  },
+  {
+    href: "https://www.youtube.com/channel/UCGGha1Gn2y0xenVLjHE7ylg",
+    name: "自キ温泉街放送局",
+    category: "YouTube",
+    icon: <IconBrandYoutube size={16} />,
+  },
+  {
+    href: "https://x.com/Salicylic_acid3",
+    name: "@Salicylic_acid3",
+    category: "X",
+    icon: <IconBrandX size={16} />,
+  },
+];
 
 export function HomePage() {
   const { language, t } = useLanguage();
@@ -292,6 +344,37 @@ export function HomePage() {
               </p>
             </div>
           </div>
+        </div>
+
+        {/* Salicylic_acid3's channels */}
+        <div className="glass-card p-6 mt-6">
+          <h2 className="text-sm font-medium text-[var(--color-text-secondary)] mb-4">
+            {t("Links by Salicylic_acid3")}
+          </h2>
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {AUTHOR_LINKS.map((link) => (
+              <li key={link.href}>
+                <a
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-3 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-electric)] transition-colors group"
+                >
+                  <span className="text-[var(--color-electric)] shrink-0">
+                    {link.icon}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm text-[var(--color-text-secondary)] truncate group-hover:text-[var(--color-text)] transition-colors">
+                      {link.name}
+                    </span>
+                    <span className="block text-xs text-[var(--color-text-muted)]">
+                      {t(link.category)}
+                    </span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>
