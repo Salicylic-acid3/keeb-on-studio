@@ -48,6 +48,10 @@ const ja: Record<string, string> = {
   Dismiss: "閉じる",
   Loading: "読み込み中",
   "Never show again": "今後表示しない",
+  "{{name}} is not a keyboard that Keeb-On! Studio supports.":
+    "「{{name}}」は Keeb-On! Studio の対応キーボードではありません。",
+  "Keeb-On! Studio is specialized for the keyboards Salicylic_acid3 develops. For any other ZMK keyboard, please use the upstream DYA Studio.":
+    "Keeb-On! Studio は Salicylic_acid3 が開発するキーボードに特化したツールです。その他の ZMK キーボードには、本家の DYA Studio をご利用ください。",
   "Welcome to Keeb-On! Studio": "Keeb-On! Studio へようこそ",
   "Features - What you can do with Keeb-On! Studio":
     "機能 - Keeb-On! Studio でできること",
@@ -1372,6 +1376,10 @@ const zh: Record<string, string> = {
   Dismiss: "关闭",
   Loading: "加载中",
   "Never show again": "不再显示",
+  "{{name}} is not a keyboard that Keeb-On! Studio supports.":
+    "「{{name}}」不是 Keeb-On! Studio 支持的键盘。",
+  "Keeb-On! Studio is specialized for the keyboards Salicylic_acid3 develops. For any other ZMK keyboard, please use the upstream DYA Studio.":
+    "Keeb-On! Studio 是为 Salicylic_acid3 开发的键盘定制的工具。其他 ZMK 键盘请使用上游的 DYA Studio。",
   "Welcome to Keeb-On! Studio": "欢迎使用 Keeb-On! Studio",
   "Features - What you can do with Keeb-On! Studio":
     "功能 - Keeb-On! Studio 能做什么",

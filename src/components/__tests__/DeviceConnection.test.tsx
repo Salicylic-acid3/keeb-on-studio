@@ -55,11 +55,22 @@ function TestComponent() {
       {connection.isReconnecting && (
         <div data-testid="reconnecting">Reconnecting...</div>
       )}
+      {connection.unsupportedDevice && (
+        <div data-testid="unsupported-device">
+          {connection.unsupportedDevice}
+        </div>
+      )}
       <button
         onClick={() => connection.onConnect("serial")}
         data-testid="connect-button"
       >
         Connect
+      </button>
+      <button
+        onClick={() => connection.onConnect("demo")}
+        data-testid="connect-demo-button"
+      >
+        Connect Demo
       </button>
       <button onClick={connection.onDisconnect} data-testid="disconnect-button">
         Disconnect
@@ -160,13 +171,95 @@ describe("DeviceConnection", () => {
     });
   });
 
+  describe("Unsupported keyboards", () => {
+    // Keeb-On! Studio only drives the keyboards Salicylic_acid3 develops;
+    // anything else is hung up on with an explanation rather than half-working.
+    test("hangs up on a keyboard that is not on the supported list", async () => {
+      const user = userEvent.setup();
+
+      mocks.mockSuccessfulConnection({
+        deviceName: "Corne",
+        subsystems: [],
+      });
+
+      render(
+        <DeviceConnectionProvider>
+          <TestComponent />
+        </DeviceConnectionProvider>,
+      );
+
+      await user.click(screen.getByTestId("connect-button"));
+
+      await waitFor(() => {
+        expect(screen.getByTestId("unsupported-device")).toHaveTextContent(
+          "Corne",
+        );
+      });
+      expect(screen.getByTestId("connection-status")).toHaveTextContent(
+        "Disconnected",
+      );
+    });
+
+    test("keeps a supported keyboard connected", async () => {
+      const user = userEvent.setup();
+
+      mocks.mockSuccessfulConnection({
+        deviceName: "ergotrack",
+        subsystems: [],
+      });
+
+      render(
+        <DeviceConnectionProvider>
+          <TestComponent />
+        </DeviceConnectionProvider>,
+      );
+
+      await user.click(screen.getByTestId("connect-button"));
+
+      await waitFor(() => {
+        expect(screen.getByTestId("connection-status")).toHaveTextContent(
+          "Connected",
+        );
+      });
+      expect(
+        screen.queryByTestId("unsupported-device"),
+      ).not.toBeInTheDocument();
+    });
+
+    test("lets demo mode through even though it reports a fake keyboard", async () => {
+      const user = userEvent.setup();
+
+      mocks.mockSuccessfulConnection({
+        deviceName: "Keeb-On! Demo Keyboard",
+        subsystems: [],
+      });
+
+      render(
+        <DeviceConnectionProvider>
+          <TestComponent />
+        </DeviceConnectionProvider>,
+      );
+
+      await user.click(screen.getByTestId("connect-demo-button"));
+
+      await waitFor(() => {
+        expect(screen.getByTestId("connection-status")).toHaveTextContent(
+          "Connected",
+        );
+      });
+      expect(
+        screen.queryByTestId("unsupported-device"),
+      ).not.toBeInTheDocument();
+    });
+  });
+
   describe("Connection Flow", () => {
     test("successfully connects to keyboard", async () => {
       const user = userEvent.setup();
 
       // Configure mocks for successful connection
       mocks.mockSuccessfulConnection({
-        deviceName: "DYA Keyboard",
+        deviceName: "ergotrack",
         subsystems: [],
       });
 
@@ -187,9 +280,7 @@ describe("DeviceConnection", () => {
       });
 
       // Verify device name is displayed
-      expect(screen.getByTestId("device-name")).toHaveTextContent(
-        "DYA Keyboard",
-      );
+      expect(screen.getByTestId("device-name")).toHaveTextContent("ergotrack");
     });
 
     test("disconnects from keyboard", async () => {
@@ -197,7 +288,7 @@ describe("DeviceConnection", () => {
 
       // Configure mocks for successful connection
       mocks.mockSuccessfulConnection({
-        deviceName: "DYA Keyboard",
+        deviceName: "ergotrack",
       });
 
       render(
@@ -339,7 +430,7 @@ describe("DeviceConnection", () => {
     test("useZMKApp hook works correctly", async () => {
       // Configure mocks for successful connection
       mocks.mockSuccessfulConnection({
-        deviceName: "Test Device",
+        deviceName: "ergotrack",
         subsystems: ["test-subsystem"],
       });
 
@@ -360,13 +451,13 @@ describe("DeviceConnection", () => {
         },
         { timeout: 3000 },
       );
-      expect(result.current.state.deviceInfo?.name).toBe("Test Device");
+      expect(result.current.state.deviceInfo?.name).toBe("ergotrack");
     });
 
     test("findSubsystem works after connection", async () => {
       // Configure mocks for successful connection
       mocks.mockSuccessfulConnection({
-        deviceName: "Test Device",
+        deviceName: "ergotrack",
         subsystems: ["custom-subsystem"],
       });
 
@@ -394,7 +485,7 @@ describe("DeviceConnection", () => {
     test("disconnect clears all state", async () => {
       // Configure mocks for successful connection
       mocks.mockSuccessfulConnection({
-        deviceName: "Test Device",
+        deviceName: "ergotrack",
         subsystems: [],
       });
 
@@ -463,7 +554,7 @@ describe("DeviceConnection", () => {
 
       // Configure mocks for successful connection
       mocks.mockSuccessfulConnection({
-        deviceName: "My Keyboard",
+        deviceName: "ergotrack",
         subsystems: [],
       });
 
@@ -477,7 +568,7 @@ describe("DeviceConnection", () => {
 
       await waitFor(() => {
         expect(screen.getByTestId("device-name")).toHaveTextContent(
-          "My Keyboard",
+          "ergotrack",
         );
       });
     });
@@ -508,7 +599,7 @@ describe("DeviceConnection", () => {
 
     test("transitions to connected when a previously paired serial port reconnects successfully", async () => {
       mocks.mockSuccessfulConnection({
-        deviceName: "Auto Reconnected Keyboard",
+        deviceName: "ergotrack",
       });
 
       const mockPort = createMockSerialPort();
@@ -525,15 +616,13 @@ describe("DeviceConnection", () => {
           "Connected",
         );
       });
-      expect(screen.getByTestId("device-name")).toHaveTextContent(
-        "Auto Reconnected Keyboard",
-      );
+      expect(screen.getByTestId("device-name")).toHaveTextContent("ergotrack");
       expect(mockPort.open).toHaveBeenCalledWith({ baudRate: 12500 });
       expect(screen.queryByTestId("reconnecting")).not.toBeInTheDocument();
     });
 
     test("exposes isReconnecting while the attempt is in flight, then clears it once connected", async () => {
-      mocks.mockSuccessfulConnection({ deviceName: "Slow Reconnect" });
+      mocks.mockSuccessfulConnection({ deviceName: "goforty-max" });
 
       // Keep `port.open()` pending until the test explicitly resolves it, so
       // we can observe the in-between isReconnecting: true state.
@@ -570,13 +659,13 @@ describe("DeviceConnection", () => {
         );
       });
       expect(screen.getByTestId("device-name")).toHaveTextContent(
-        "Slow Reconnect",
+        "goforty-max",
       );
     });
 
     test("cancelling a pending reconnect stays disconnected even if the transport later resolves", async () => {
       const user = userEvent.setup();
-      mocks.mockSuccessfulConnection({ deviceName: "Should Not Connect" });
+      mocks.mockSuccessfulConnection({ deviceName: "ergotrack" });
 
       let resolveOpen: () => void = () => {};
       const openPromise = new Promise<void>((resolve) => {
@@ -676,7 +765,7 @@ describe("DeviceConnection", () => {
     });
 
     test("keeps the reconnecting indicator visible for at least reconnectMinDisplayMs even on an instant success", async () => {
-      mocks.mockSuccessfulConnection({ deviceName: "Fast Reconnect" });
+      mocks.mockSuccessfulConnection({ deviceName: "goforty-max" });
       const mockPort = createMockSerialPort();
       setPairedSerialPorts([mockPort]);
 

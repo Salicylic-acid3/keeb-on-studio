@@ -14,6 +14,12 @@ interface SplashScreenProps {
   error: string | null;
   /** Navigate to the standalone release notes page. */
   onShowReleaseNotes: () => void;
+  /**
+   * Keyboard we hung up on because Keeb-On! Studio does not support it, or
+   * `null`. Shown as an explanation with a pointer to DYA Studio rather than
+   * as a connection error, because nothing actually went wrong.
+   */
+  unsupportedDevice: string | null;
 }
 
 function LoadingDots() {
@@ -52,6 +58,7 @@ export function SplashScreen({
   isConnecting,
   error,
   onShowReleaseNotes,
+  unsupportedDevice,
 }: SplashScreenProps) {
   const { t } = useLanguage();
   const version = getCurrentVersion();
@@ -226,6 +233,34 @@ export function SplashScreen({
           animate={{ opacity: 1 }}
         >
           <LoadingDots />
+        </motion.div>
+      )}
+
+      {/* Unsupported keyboard: not a failure, so explain and redirect. */}
+      {unsupportedDevice && (
+        <motion.div
+          className="mt-4 max-w-md px-4 py-3 rounded-lg bg-[var(--color-warning)]/10 border border-[var(--color-warning)]/40"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <p className="text-sm font-medium text-[var(--color-text)]">
+            {t("{{name}} is not a keyboard that Keeb-On! Studio supports.", {
+              name: unsupportedDevice,
+            })}
+          </p>
+          <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+            {t(
+              "Keeb-On! Studio is specialized for the keyboards Salicylic_acid3 develops. For any other ZMK keyboard, please use the upstream DYA Studio.",
+            )}
+          </p>
+          <a
+            href="https://studio.dya.cormoran.works/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 inline-block text-xs underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors"
+          >
+            studio.dya.cormoran.works
+          </a>
         </motion.div>
       )}
 

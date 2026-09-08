@@ -220,6 +220,7 @@ function AppContent() {
                 isConnecting={connection.isLoading}
                 error={connection.error}
                 onShowReleaseNotes={() => navigatePath(RELEASE_NOTES_PATH)}
+                unsupportedDevice={connection.unsupportedDevice}
               />
             </motion.div>
           )

@@ -27,6 +27,7 @@ import {
   trackConnectFailed,
   classifyConnectError,
 } from "../lib/analytics";
+import { isSupportedDevice } from "../lib/supportedDevices";
 
 export type ConnectionMethod = "serial" | "ble" | "demo";
 
@@ -54,6 +55,13 @@ interface ConnectionContextValue {
   isReconnecting: boolean;
   /** Cancels an in-flight page-load auto-reconnect attempt. */
   onCancelReconnect: () => void;
+  /**
+   * Name of the keyboard we just disconnected from because Keeb-On! Studio
+   * does not support it, or `null`. Set instead of `error` so the connect
+   * screen can explain the narrowed scope and point at DYA Studio, rather
+   * than showing it as a connection failure.
+   */
+  unsupportedDevice: string | null;
 }
 
 const ConnectionContext = createContext<ConnectionContextValue>({
@@ -65,6 +73,7 @@ const ConnectionContext = createContext<ConnectionContextValue>({
   error: null,
   isReconnecting: false,
   onCancelReconnect: () => {},
+  unsupportedDevice: null,
 });
 
 interface DeviceConnectionProviderProps {
@@ -126,6 +135,22 @@ export function DeviceConnectionProvider({
   // fired, so a later device-info refresh doesn't re-report it.
   const connectedTrackedRef = useRef(false);
 
+  // How the *current* session was established, kept for the whole session
+  // (unlike `attemptedMethodRef`, which is cleared once the attempt's outcome
+  // is reported). Only used to let demo mode past the supported-device check.
+  // The page-load auto-reconnect never sets it and is always paired serial,
+  // so "serial" is the right default.
+  const sessionMethodRef = useRef<ConnectionMethod>("serial");
+  // Set when we hang up on a keyboard we don't support, so the connect screen
+  // can say which keyboard it was.
+  const [unsupportedDevice, setUnsupportedDevice] = useState<string | null>(
+    null,
+  );
+  // `zmkApp` is a fresh object each render, so the check effect below reads
+  // disconnect through a ref instead of depending on it.
+  const disconnectRef = useRef(zmkApp.disconnect);
+  disconnectRef.current = zmkApp.disconnect;
+
   const reportConnectFailed = useCallback((error: unknown) => {
     const method = attemptedMethodRef.current;
     if (!method) return;
@@ -155,6 +180,22 @@ export function DeviceConnectionProvider({
       reportConnectFailed(zmkApp.state.error);
     }
   }, [zmkApp.state.error, reportConnectFailed]);
+
+  // Keeb-On! Studio only drives the keyboards Salicylic_acid3 develops. Hang
+  // up on anything else as soon as the device tells us what it is, so a
+  // stranger's keyboard fails with an explanation instead of half-working.
+  //
+  // Waits for the name: it is undefined for a moment after the transport is up
+  // but before the device info arrives, and rejecting then would drop every
+  // keyboard. Demo mode is exempt -- it reports a fake keyboard on purpose.
+  useEffect(() => {
+    const name = zmkApp.state.deviceInfo?.name;
+    if (!zmkApp.isConnected || !name) return;
+    if (sessionMethodRef.current === "demo") return;
+    if (isSupportedDevice(name)) return;
+    setUnsupportedDevice(name);
+    disconnectRef.current();
+  }, [zmkApp.isConnected, zmkApp.state.deviceInfo?.name]);
 
   useEffect(() => {
     if (autoReconnectAttemptedRef.current) return;
@@ -232,6 +273,10 @@ export function DeviceConnectionProvider({
         connectFn = connectUSB;
       }
       attemptedMethodRef.current = method;
+      sessionMethodRef.current = method;
+      // A fresh attempt clears the previous rejection so the notice doesn't
+      // outlive it.
+      setUnsupportedDevice(null);
       try {
         await zmkApp.connect(connectFn);
       } catch (error) {
@@ -268,6 +313,7 @@ export function DeviceConnectionProvider({
     error: zmkApp.state.error,
     isReconnecting,
     onCancelReconnect: handleCancelReconnect,
+    unsupportedDevice,
   };
 
   return (
