@@ -32,6 +32,7 @@ import { StatusBadge, StatusDot, type EditStatus } from "./EditStatusIndicator";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { useKeymap, type BehaviorDefinition } from "../hooks/useKeymap";
 import { useLanguage } from "../hooks/useLanguage";
+import { hasSubsystemLabel, subsystemLabel } from "../lib/subsystemLabels";
 import {
   type Setting,
   type SettingBehaviorValue,
@@ -1066,9 +1067,15 @@ export function CustomSettingsSectionCard({
           )}
           <div className="min-w-0">
             <h4 className="truncate text-sm font-medium text-[var(--color-text)]">
-              {section.identifier}
+              {subsystemLabel(section.identifier, t)}
             </h4>
             <p className="text-xs text-[var(--color-text-muted)]">
+              {/* Keep the raw identifier in view: it is what module docs and
+                  bug reports refer to. Only worth showing when the heading
+                  above replaced it with a friendly name. */}
+              {hasSubsystemLabel(section.identifier) && (
+                <span className="font-mono">{section.identifier} · </span>
+              )}
               {t("{{count}} settings", {
                 count: section.settings.length,
               })}
