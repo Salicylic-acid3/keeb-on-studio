@@ -1,7 +1,7 @@
 /**
  * Custom-settings snapshot, shared by every tab that surfaces settings from
  * the `cormoran_custom_settings` subsystem (Settings, Subsystems, and the
- * PMW3610 cards on the Trackball tab).
+ * one subsystem's settings only).
  *
  * A snapshot is `identifier -> settingKey -> encoded value`. Keys carry the
  * source (a split keyboard reports the same setting per half) and, for array
@@ -103,7 +103,7 @@ export function decodeSettingValue(encoded: string): SettingValue | null {
 
 export function buildCustomSettingsSnapshot(
   sections: CustomSettingsSection[],
-  /** Optional filter, e.g. the Trackball tab's PMW3610 sections only. */
+  /** Optional filter, e.g. a single subsystem's sections only. */
   includeSection: (section: CustomSettingsSection) => boolean = () => true,
 ): CustomSettingsSnapshot {
   const snapshot: CustomSettingsSnapshot = { sections: {} };

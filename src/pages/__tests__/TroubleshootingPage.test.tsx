@@ -1,7 +1,7 @@
 /**
  * Tests for TroubleshootingPage
  *
- * Mocks the four data hooks directly (rather than exercising the RPC layer
+ * Mocks the three data hooks directly (rather than exercising the RPC layer
  * through ZMKAppContext) so each section's "available" / "not available" /
  * error rendering can be asserted independently, following BatteryPage's
  * hook-mocking test convention.
@@ -11,12 +11,10 @@ import { TroubleshootingPage } from "../TroubleshootingPage";
 import { useDeviceInfo } from "../../hooks/useDeviceInfo";
 import { useWatchdog } from "../../hooks/useWatchdog";
 import { useKscanDiagnostics } from "../../hooks/useKscanDiagnostics";
-import { usePmw3610 } from "../../hooks/usePmw3610";
 
 jest.mock("../../hooks/useDeviceInfo");
 jest.mock("../../hooks/useWatchdog");
 jest.mock("../../hooks/useKscanDiagnostics");
-jest.mock("../../hooks/usePmw3610");
 
 const mockUseDeviceInfo = useDeviceInfo as jest.MockedFunction<
   typeof useDeviceInfo
@@ -25,7 +23,6 @@ const mockUseWatchdog = useWatchdog as jest.MockedFunction<typeof useWatchdog>;
 const mockUseKscanDiagnostics = useKscanDiagnostics as jest.MockedFunction<
   typeof useKscanDiagnostics
 >;
-const mockUsePmw3610 = usePmw3610 as jest.MockedFunction<typeof usePmw3610>;
 
 const writeTextMock = jest.fn().mockResolvedValue(undefined);
 Object.defineProperty(navigator, "clipboard", {
@@ -67,22 +64,6 @@ function mockAllUnavailable() {
     topologyError: null,
     loadTopology: jest.fn(),
   });
-  mockUsePmw3610.mockReturnValue({
-    isAvailable: false,
-    devices: [],
-    diagnostics: null,
-    isLoading: false,
-    error: null,
-    refresh: jest.fn(),
-    readDiagnostics: jest.fn(),
-    frame: null,
-    isCapturing: false,
-    isStreaming: false,
-    fps: null,
-    captureOnce: jest.fn(),
-    startStreaming: jest.fn(),
-    stopStreaming: jest.fn(),
-  });
 }
 
 describe("TroubleshootingPage", () => {
@@ -105,15 +86,14 @@ describe("TroubleshootingPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows four 'not available' notices when no subsystem is present (once expanded)", () => {
+  it("shows three 'not available' notices when no subsystem is present (once expanded)", () => {
     render(<TroubleshootingPage />);
 
-    // One missing section must not affect the others: all four section
+    // One missing section must not affect the others: the remaining section
     // headings still render, collapsed by default.
     expect(screen.getByText("Device Info")).toBeInTheDocument();
     expect(screen.getByText("Stability (Watchdog)")).toBeInTheDocument();
     expect(screen.getByText("Key Switches")).toBeInTheDocument();
-    expect(screen.getByText("Trackball Sensor (PMW3610)")).toBeInTheDocument();
 
     // Sections start collapsed; nothing is visible until expanded.
     expect(
@@ -124,13 +104,12 @@ describe("TroubleshootingPage", () => {
       "Device Info",
       "Stability (Watchdog)",
       "Key Switches",
-      "Trackball Sensor (PMW3610)",
     ]) {
       fireEvent.click(screen.getByRole("button", { name }));
     }
 
     const notices = screen.getAllByText("Not available on this keyboard.");
-    expect(notices).toHaveLength(4);
+    expect(notices).toHaveLength(3);
   });
 
   it("renders Device Info section content when its data is available", () => {
@@ -183,13 +162,12 @@ describe("TroubleshootingPage", () => {
       "Device Info",
       "Stability (Watchdog)",
       "Key Switches",
-      "Trackball Sensor (PMW3610)",
     ]) {
       fireEvent.click(screen.getByRole("button", { name }));
     }
 
     const notices = screen.getAllByText("Not available on this keyboard.");
-    expect(notices).toHaveLength(3);
+    expect(notices).toHaveLength(2);
     expect(screen.getByText("dya_dash")).toBeInTheDocument();
     expect(screen.getByText("ABC123")).toBeInTheDocument();
   });
@@ -214,15 +192,14 @@ describe("TroubleshootingPage", () => {
       "Device Info",
       "Stability (Watchdog)",
       "Key Switches",
-      "Trackball Sensor (PMW3610)",
     ]) {
       fireEvent.click(screen.getByRole("button", { name }));
     }
 
     expect(screen.getByText("Failed to load incidents")).toBeInTheDocument();
-    // Still 3 "not available" notices for the other sections.
+    // Still 2 "not available" notices for the other sections.
     expect(screen.getAllByText("Not available on this keyboard.")).toHaveLength(
-      3,
+      2,
     );
   });
 

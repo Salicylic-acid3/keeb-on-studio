@@ -34,7 +34,6 @@ const SUBSYSTEM_LABELS: Record<string, string> = {
   cormoran__kscan_diagnostics: "Key Scan Diagnostics",
   cormoran__os_detection: "OS Detection",
   cormoran__physical_layouts: "Physical Layouts",
-  cormoran__pmw3610: "Trackball Sensor",
   cormoran__runtime_combo: "Combos",
   cormoran__runtime_macro: "Macros",
   cormoran__watchdog: "Watchdog",

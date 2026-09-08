@@ -2,7 +2,7 @@
  * Shared restore + labelling for custom-settings snapshots.
  *
  * Three tabs surface `cormoran_custom_settings` rows (Settings, Subsystems and
- * the PMW3610 cards on Trackball), so the write-back and the diff naming live
+ * a single subsystem's settings), so the write-back and the diff naming live
  * here once. Writes go through `writeSettingToMemory`, which is the app's
  * memory-write tier — the section's own Save is still what persists them.
  */

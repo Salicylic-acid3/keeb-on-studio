@@ -64,7 +64,6 @@ const ja: Record<string, string> = {
   "Key Scan Diagnostics": "キースキャン診断",
   "OS Detection": "OS検出",
   "Physical Layouts": "物理レイアウト",
-  "Trackball Sensor": "トラックボールセンサー",
   "Input Stream": "入力ストリーム",
   "Zephyr Settings": "Zephyr設定",
   "Device Settings": "デバイス設定",
@@ -164,7 +163,6 @@ const ja: Record<string, string> = {
   "Connect your keyboard to edit keymaps. Click on a key to modify its binding.":
     "キーマップを編集するにはキーボードを接続してください。キーをクリックすると割り当てを変更できます。",
 
-  "Trackball Settings": "トラックボール設定",
   "Adjust sensitivity and behavior via runtime input processor":
     "ランタイム入力プロセッサーで感度と動作を調整します",
   "Runtime input processor subsystem is not available for your keyboard.":
@@ -174,7 +172,6 @@ const ja: Record<string, string> = {
   "Loading trackball settings...": "トラックボール設定を読み込み中...",
   "No runtime input processor found. Make sure your firmware has the runtime input processor module enabled.":
     "ランタイム入力プロセッサーが見つかりません。ファームウェアでランタイム入力プロセッサーモジュールが有効になっていることを確認してください。",
-  "Advanced (PMW3610 Sensor Driver)": "詳細設定（PMW3610 センサードライバー）",
   "Sensor-level tuning exposed by the pmw3610 driver's custom Studio RPC":
     "pmw3610 ドライバーのカスタム Studio RPC が公開するセンサーレベルの調整項目です",
   "No pmw3610 driver settings were reported by the keyboard.":
@@ -185,7 +182,6 @@ const ja: Record<string, string> = {
   "Processor {{id}}": "プロセッサー {{id}}",
   "No processors found": "プロセッサーが見つかりません",
   "Loading...": "読み込み中...",
-  "PMW3610 Drivers": "PMW3610 ドライバー",
   "This driver is no longer available.":
     "このドライバーは利用できなくなりました。",
   "Active on layer": "有効なレイヤー",
@@ -997,7 +993,6 @@ const ja: Record<string, string> = {
   "Min repress gap": "最小再押下間隔",
   Chatter: "チャタリング",
 
-  "Trackball Sensor (PMW3610)": "トラックボールセンサー (PMW3610)",
   "Optical sensor health and surface diagnostics":
     "光学センサーの状態と表面診断",
   "Refresh sensor info": "センサー情報を更新",
@@ -1408,7 +1403,6 @@ const zh: Record<string, string> = {
   "Key Scan Diagnostics": "按键扫描诊断",
   "OS Detection": "操作系统检测",
   "Physical Layouts": "物理布局",
-  "Trackball Sensor": "轨迹球传感器",
   "Input Stream": "输入流",
   "Zephyr Settings": "Zephyr 设置",
   "Device Settings": "设备设置",
@@ -1503,7 +1497,6 @@ const zh: Record<string, string> = {
   "Connect your keyboard to edit keymaps. Click on a key to modify its binding.":
     "连接键盘以编辑键位。点击按键以修改其绑定。",
 
-  "Trackball Settings": "轨迹球设置",
   "Adjust sensitivity and behavior via runtime input processor":
     "通过运行时输入处理器调整灵敏度和行为",
   "Runtime input processor subsystem is not available for your keyboard.":
@@ -1513,7 +1506,6 @@ const zh: Record<string, string> = {
   "Loading trackball settings...": "正在加载轨迹球设置...",
   "No runtime input processor found. Make sure your firmware has the runtime input processor module enabled.":
     "未找到运行时输入处理器。请确保您的固件已启用运行时输入处理器模块。",
-  "Advanced (PMW3610 Sensor Driver)": "高级（PMW3610 传感器驱动）",
   "Sensor-level tuning exposed by the pmw3610 driver's custom Studio RPC":
     "pmw3610 驱动通过自定义 Studio RPC 公开的传感器级调整",
   "No pmw3610 driver settings were reported by the keyboard.":
@@ -1524,7 +1516,6 @@ const zh: Record<string, string> = {
   "Processor {{id}}": "处理器 {{id}}",
   "No processors found": "未找到处理器",
   "Loading...": "加载中...",
-  "PMW3610 Drivers": "PMW3610 驱动",
   "This driver is no longer available.": "此驱动已不可用。",
   "Active on layer": "在层上激活",
   "Temp layer": "临时层",
@@ -2293,7 +2284,6 @@ const zh: Record<string, string> = {
   "Min repress gap": "最小重按间隔",
   Chatter: "抖动",
 
-  "Trackball Sensor (PMW3610)": "轨迹球传感器 (PMW3610)",
   "Optical sensor health and surface diagnostics":
     "光学传感器健康状态与表面诊断",
   "Refresh sensor info": "刷新传感器信息",

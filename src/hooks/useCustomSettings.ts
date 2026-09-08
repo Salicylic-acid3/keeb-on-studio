@@ -117,7 +117,7 @@ export interface UseCustomSettingsOptions {
   // expanded). Defaults to true.
   autoLoad?: boolean;
   // When set, the list request is scoped to the custom subsystem that
-  // registered this identifier (e.g. the pmw3610 driver) instead of fetching
+  // registered this identifier (e.g. a driver's settings module) instead of fetching
   // every subsystem's settings. Callers that only care about one module should
   // set this so unrelated subsystems are never transferred or listed.
   subsystemIdentifier?: string;

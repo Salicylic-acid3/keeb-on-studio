@@ -18,7 +18,6 @@ function baseInput(): SupportReportInput {
     deviceInfo: { available: false, data: null },
     watchdog: { available: false, data: null },
     kscan: { available: false, data: null },
-    pmw3610: { available: false, data: null },
   };
 }
 
@@ -38,10 +37,10 @@ describe("buildSupportReport", () => {
     const notAvailableCount = (
       report.match(/Not available \(module not installed or disabled\)/g) ?? []
     ).length;
-    expect(notAvailableCount).toBe(4);
+    expect(notAvailableCount).toBe(3);
   });
 
-  it("renders full data for all four sections when available", () => {
+  it("renders full data for all three sections when available", () => {
     const input: SupportReportInput = {
       ...baseInput(),
       deviceInfo: {
@@ -157,41 +156,6 @@ describe("buildSupportReport", () => {
           ],
         },
       },
-      pmw3610: {
-        available: true,
-        data: {
-          devices: [
-            {
-              ready: true,
-              productId: 0x10,
-              revisionId: 1,
-              initError: 0,
-              runtimeConfig: {
-                cpi: 800,
-                swapXy: false,
-                invertX: false,
-                invertY: false,
-                forceAwake: false,
-                smartAlgorithm: true,
-                runDownshiftMs: 128,
-                rest1DownshiftMs: 40,
-                rest2DownshiftMs: 9,
-                rest1SampleMs: 10,
-                rest2SampleMs: 40,
-                rest3SampleMs: 100,
-                reportIntervalMinMs: 0,
-              },
-            },
-          ],
-          diagnostics: {
-            squal: 45,
-            shutter: 600,
-            pixMax: 90,
-            pixAvg: 55,
-            pixMin: 30,
-          },
-        },
-      },
     };
 
     const report = buildSupportReport(input);
@@ -207,8 +171,6 @@ describe("buildSupportReport", () => {
     expect(report).toContain(
       "Devices: 1, total presses: 50, suspect keys: 1, untested keys: 0",
     );
-    expect(report).toContain("## Trackball (cormoran__pmw3610)");
-    expect(report).toContain('"squal": 45');
   });
 
   it("renders the error message when a section failed to load", () => {
@@ -224,11 +186,11 @@ describe("buildSupportReport", () => {
     const report = buildSupportReport(input);
 
     expect(report).toContain("Failed to load device info: timeout");
-    // Only 3 remaining sections should say "not available".
+    // Only 2 remaining sections should say "not available".
     const notAvailableCount = (
       report.match(/Not available \(module not installed or disabled\)/g) ?? []
     ).length;
-    expect(notAvailableCount).toBe(3);
+    expect(notAvailableCount).toBe(2);
   });
 
   it("recording-stopped is reflected in the watchdog status line", () => {

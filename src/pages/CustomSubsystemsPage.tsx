@@ -20,7 +20,6 @@ import {
 import { SectionCard } from "../components/troubleshooting/SectionCard";
 import { DEVICE_INFO_SUBSYSTEM_IDENTIFIER } from "../hooks/useDeviceInfo";
 import { WATCHDOG_SUBSYSTEM_IDENTIFIER } from "../hooks/useWatchdog";
-import { PMW3610_SUBSYSTEM_IDENTIFIER } from "../hooks/usePmw3610";
 import { CUSTOM_SETTINGS_IDENTIFIER } from "../hooks/useCustomSettings";
 import { INPUT_STREAM_IDENTIFIER } from "../hooks/useInputStream";
 import { PHYSICAL_LAYOUTS_IDENTIFIERS } from "../hooks/usePhysicalLayoutModules";
@@ -41,7 +40,6 @@ import { FAST_KEYMAP_SUBSYSTEM_IDENTIFIER } from "../hooks/useKeymapSource";
 const SUPPORTED_SUBSYSTEM_IDENTIFIERS = new Set<string>([
   DEVICE_INFO_SUBSYSTEM_IDENTIFIER,
   WATCHDOG_SUBSYSTEM_IDENTIFIER,
-  PMW3610_SUBSYSTEM_IDENTIFIER,
   CUSTOM_SETTINGS_IDENTIFIER,
   INPUT_STREAM_IDENTIFIER,
   ...PHYSICAL_LAYOUTS_IDENTIFIERS,

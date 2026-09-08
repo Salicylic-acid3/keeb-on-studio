@@ -4,7 +4,7 @@
  *
  * A custom-subsystem notification arrives as a raw `Uint8Array` payload — the
  * device doesn't tell the transport which proto it is; each subsystem's hook
- * decodes it with its own `Notification` proto (e.g. {@link usePmw3610},
+ * decodes it with its own `Notification` proto (e.g. {@link useWatchdog},
  * {@link useWatchdog}). The generic logging layer sits below those hooks and has
  * only the payload bytes, so without this map it can only log the raw bytes.
  * This mirrors each hook's `Notification.decode` so the log shows the decoded
@@ -20,7 +20,6 @@ import { Notification as InputStreamNotification } from "../proto/zmk/input_stre
 import { Notification as RuntimeInputProcessorNotification } from "../proto/zmk/runtime_input_processor/runtime_input_processor";
 import { Notification as CustomSettingsNotification } from "../proto/cormoran/zmk/custom_settings/custom_settings";
 import { Notification as SettingsNotification } from "../proto/zmk/settings/core";
-import { Notification as Pmw3610Notification } from "../proto/cormoran/pmw3610/pmw3610";
 import { Notification as DevtoolNotification } from "../proto/cormoran/devtool/devtool";
 
 /**
@@ -40,7 +39,6 @@ const CUSTOM_NOTIFICATION_DECODERS: Record<
   cormoran_custom_settings: (payload) =>
     CustomSettingsNotification.decode(payload),
   zmk__settings: (payload) => SettingsNotification.decode(payload),
-  cormoran__pmw3610: (payload) => Pmw3610Notification.decode(payload),
   cormoran__devtool: (payload) => DevtoolNotification.decode(payload),
 };
 

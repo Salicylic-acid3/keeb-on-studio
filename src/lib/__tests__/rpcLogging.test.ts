@@ -31,12 +31,12 @@ describe("describeOfficialRequest", () => {
 describe("describeCustomNotification", () => {
   const subsystems: CustomSubsystemInfo[] = [
     { index: 3, identifier: "cormoran__watchdog", uiUrl: [] },
-    { index: 7, identifier: "cormoran__pmw3610", uiUrl: [] },
+    { index: 7, identifier: "cormoran__watchdog", uiUrl: [] },
   ];
 
   it("resolves a subsystem index to its identifier by matching index (not array position)", () => {
     expect(describeCustomNotification(7, subsystems)).toBe(
-      "custom:cormoran__pmw3610",
+      "custom:cormoran__watchdog",
     );
   });
 
@@ -49,12 +49,12 @@ describe("describeCustomNotification", () => {
 describe("resolveCustomSubsystemIdentifier", () => {
   const subsystems: CustomSubsystemInfo[] = [
     { index: 3, identifier: "cormoran__watchdog", uiUrl: [] },
-    { index: 7, identifier: "cormoran__pmw3610", uiUrl: [] },
+    { index: 7, identifier: "cormoran__watchdog", uiUrl: [] },
   ];
 
   it("resolves a subsystem index to its identifier by matching index", () => {
     expect(resolveCustomSubsystemIdentifier(7, subsystems)).toBe(
-      "cormoran__pmw3610",
+      "cormoran__watchdog",
     );
   });
 

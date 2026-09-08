@@ -19,7 +19,6 @@ import {
   KscanDiagnosticsHandler,
   KSCAN_DIAGNOSTICS_IDENTIFIER,
 } from "./demo-kscan-diagnostics";
-import { Pmw3610Handler, PMW3610_IDENTIFIER } from "./demo-pmw3610";
 import {
   RuntimeInputProcessorHandler,
   RUNTIME_INPUT_PROCESSOR_IDENTIFIER,
@@ -76,10 +75,6 @@ import {
   Request as KscanDiagnosticsRequest,
   Response as KscanDiagnosticsResponse,
 } from "../../proto/cormoran/kscan_diagnostics/kscan_diagnostics";
-import {
-  Request as Pmw3610Request,
-  Response as Pmw3610Response,
-} from "../../proto/cormoran/pmw3610/pmw3610";
 import {
   Request as RuntimeInputProcessorRequest,
   Response as RuntimeInputProcessorResponse,
@@ -237,7 +232,6 @@ class Keyboard {
   private deviceInfoHandler = new DeviceInfoHandler();
   private watchdogHandler = new WatchdogHandler();
   private kscanDiagnosticsHandler = new KscanDiagnosticsHandler();
-  private pmw3610Handler = new Pmw3610Handler();
   private runtimeInputProcessorHandler = new RuntimeInputProcessorHandler();
   private runtimeSensorRotateHandler = new RuntimeSensorRotateHandler();
   private runtimeComboHandler = new RuntimeComboHandler();
@@ -261,11 +255,10 @@ class Keyboard {
   private readonly CUSTOM_SETTINGS_SUBSYSTEM_INDEX = 9;
   private readonly WATCHDOG_SUBSYSTEM_INDEX = 10;
   private readonly KSCAN_DIAGNOSTICS_SUBSYSTEM_INDEX = 11;
-  private readonly PMW3610_SUBSYSTEM_INDEX = 12;
-  private readonly OS_DETECTION_SUBSYSTEM_INDEX = 13;
-  private readonly DEFAULT_LAYER_SUBSYSTEM_INDEX = 14;
-  private readonly FAST_KEYMAP_SUBSYSTEM_INDEX = 15;
-  private readonly SETTING_EXPOSE_SUBSYSTEM_INDEX = 16;
+  private readonly OS_DETECTION_SUBSYSTEM_INDEX = 12;
+  private readonly DEFAULT_LAYER_SUBSYSTEM_INDEX = 13;
+  private readonly FAST_KEYMAP_SUBSYSTEM_INDEX = 14;
+  private readonly SETTING_EXPOSE_SUBSYSTEM_INDEX = 15;
 
   constructor() {
     this.customSettingsHandler = new CustomSettingsHandler(
@@ -338,11 +331,6 @@ class Keyboard {
     {
       index: this.KSCAN_DIAGNOSTICS_SUBSYSTEM_INDEX,
       identifier: KSCAN_DIAGNOSTICS_IDENTIFIER,
-      uiUrl: [],
-    },
-    {
-      index: this.PMW3610_SUBSYSTEM_INDEX,
-      identifier: PMW3610_IDENTIFIER,
       uiUrl: [],
     },
     {
@@ -573,15 +561,6 @@ class Keyboard {
           responseData = KscanDiagnosticsResponse.encode(kscanResp).finish();
         } catch (e) {
           console.error("KScan Diagnostics subsystem error:", e);
-        }
-      } else if (subsystemIndex === this.PMW3610_SUBSYSTEM_INDEX) {
-        // PMW3610
-        try {
-          const pmw3610Req = Pmw3610Request.decode(data);
-          const pmw3610Resp = this.pmw3610Handler.process(pmw3610Req);
-          responseData = Pmw3610Response.encode(pmw3610Resp).finish();
-        } catch (e) {
-          console.error("PMW3610 subsystem error:", e);
         }
       } else if (
         subsystemIndex === this.RUNTIME_INPUT_PROCESSOR_SUBSYSTEM_INDEX
@@ -989,21 +968,6 @@ class Keyboard {
       );
     });
 
-    this.pmw3610Handler.notify((payload: Uint8Array) => {
-      callback(
-        Response.encode({
-          notification: {
-            custom: {
-              customNotification: {
-                subsystemIndex: this.PMW3610_SUBSYSTEM_INDEX,
-                payload: payload,
-              },
-            },
-          },
-        }).finish(),
-      );
-    });
-
     this.kscanDiagnosticsHandler.notify((payload: Uint8Array) => {
       callback(
         Response.encode({
@@ -1019,12 +983,6 @@ class Keyboard {
       );
     });
   }
-
-  /** Stop any demo-side background activity (e.g. the pmw3610 frame
-   * stream's interval) when the transport disconnects. */
-  disconnect() {
-    this.pmw3610Handler.disconnect();
-  }
 }
 
 /**
@@ -1033,11 +991,6 @@ class Keyboard {
 export async function connect(): Promise<RpcTransport> {
   const abort = new AbortController();
   const kb = new Keyboard();
-  // Stop any running demo-side interval (e.g. the pmw3610 frame stream) on
-  // disconnect, so it doesn't keep firing (or leak timers in tests) after
-  // the transport is torn down.
-  abort.signal.addEventListener("abort", () => kb.disconnect());
-
   // Buffer for accumulating bytes across chunks
   let buffer: number[] = [];
   let escaped = false;

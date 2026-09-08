@@ -11,13 +11,11 @@ import { useLanguage } from "../hooks/useLanguage";
 import { useDeviceInfo } from "../hooks/useDeviceInfo";
 import { useWatchdog } from "../hooks/useWatchdog";
 import { useKscanDiagnostics } from "../hooks/useKscanDiagnostics";
-import { usePmw3610 } from "../hooks/usePmw3610";
 import { useElfAnalysis } from "../hooks/useElfAnalysis";
 import { useDevtoolStackUsage } from "../hooks/useDevtoolStackUsage";
 import { DeviceInfoSection } from "../components/troubleshooting/DeviceInfoSection";
 import { WatchdogSection } from "../components/troubleshooting/WatchdogSection";
 import { KscanDiagnosticsSection } from "../components/troubleshooting/KscanDiagnosticsSection";
-import { Pmw3610Section } from "../components/troubleshooting/Pmw3610Section";
 import { DevtoolStackUsageSection } from "../components/troubleshooting/DevtoolStackUsageSection";
 import { buildSupportReport } from "../lib/troubleshootingReport";
 import { useIsTabActive } from "../hooks/useIsTabActive";
@@ -30,7 +28,6 @@ export function TroubleshootingPage() {
   const deviceInfo = useDeviceInfo();
   const watchdog = useWatchdog();
   const kscan = useKscanDiagnostics();
-  const pmw3610 = usePmw3610();
   const elfAnalysis = useElfAnalysis();
   const stackUsage = useDevtoolStackUsage();
   const [copied, setCopied] = useState(false);
@@ -51,7 +48,6 @@ export function TroubleshootingPage() {
     if (deviceInfo.isAvailable) void deviceInfo.refresh();
     if (watchdog.isAvailable) void watchdog.refresh();
     if (kscan.isAvailable) void kscan.refresh();
-    if (pmw3610.isAvailable) void pmw3610.refresh();
     if (stackUsage.isAvailable) void stackUsage.refresh();
   };
 
@@ -99,14 +95,6 @@ export function TroubleshootingPage() {
           ? { info: kscan.info, devices: kscan.devices, stats: kscan.stats }
           : null,
         error: kscan.error,
-      },
-      pmw3610: {
-        available: pmw3610.isAvailable,
-        data:
-          pmw3610.devices.length > 0 || pmw3610.diagnostics
-            ? { devices: pmw3610.devices, diagnostics: pmw3610.diagnostics }
-            : null,
-        error: pmw3610.error,
       },
     });
     await navigator.clipboard.writeText(report);
@@ -187,7 +175,6 @@ export function TroubleshootingPage() {
           <DeviceInfoSection deviceInfo={deviceInfo} />
           <WatchdogSection watchdog={watchdog} elfAnalysis={elfAnalysis} />
           <KscanDiagnosticsSection kscan={kscan} />
-          <Pmw3610Section pmw3610={pmw3610} />
           <DevtoolStackUsageSection stackUsage={stackUsage} />
         </div>
       </div>

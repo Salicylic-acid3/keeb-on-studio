@@ -124,7 +124,7 @@ export function protoByteLength<M>(
  * subscriber. The library fan-outs the *same* notification object to every
  * registered callback for a given type/subsystem (see `dispatchNotification` /
  * `dispatchCustomNotification` in `useZMKApp`), and several hooks subscribe to
- * the same stream (e.g. `core` from both {@link useKeymap} and {@link usePmw3610}).
+ * the same stream (e.g. `core` from both {@link useKeymap} and {@link useWatchdog}).
  * Keying on object identity lets us log each notification exactly once. Weak so
  * entries are collected with the notification itself.
  */

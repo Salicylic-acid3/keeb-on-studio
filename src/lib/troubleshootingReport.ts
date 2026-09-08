@@ -17,10 +17,6 @@ import type {
   Info as KscanInfo,
   PositionStats,
 } from "../proto/cormoran/kscan_diagnostics/kscan_diagnostics";
-import type {
-  DeviceInfo as Pmw3610Device,
-  ReadDiagnosticsResponse,
-} from "../proto/cormoran/pmw3610/pmw3610";
 import type { ResolvedAddress } from "./elfAnalysis";
 
 /** State of one troubleshooting section as fed into the report. */
@@ -53,11 +49,6 @@ export interface KscanReportData {
   stats: PositionStats[];
 }
 
-export interface Pmw3610ReportData {
-  devices: Pmw3610Device[];
-  diagnostics: ReadDiagnosticsResponse | null;
-}
-
 export interface SupportReportInput {
   /** ISO timestamp, passed in by the caller so the function stays pure. */
   generatedAt: string;
@@ -67,7 +58,6 @@ export interface SupportReportInput {
   deviceInfo: ReportSection<DeviceInfoResponse>;
   watchdog: ReportSection<WatchdogReportData>;
   kscan: ReportSection<KscanReportData>;
-  pmw3610: ReportSection<Pmw3610ReportData>;
 }
 
 /** Positions whose stats look like chatter or a stuck switch. */
@@ -164,11 +154,6 @@ export function buildSupportReport(input: SupportReportInput): string {
         jsonBlock({ info: data.info, devices: data.devices, suspectKeys }),
       ];
     }),
-    "",
-    "## Trackball (cormoran__pmw3610)",
-    ...sectionBody(input.pmw3610, (data) => [
-      jsonBlock({ devices: data.devices, diagnostics: data.diagnostics }),
-    ]),
     "",
   ];
   return lines.join("\n");

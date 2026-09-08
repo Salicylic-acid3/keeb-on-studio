@@ -90,75 +90,8 @@ function RetainedInput({
   );
 }
 
-// Custom subsystem identifier registered by the pmw3610 driver's settings
-// module (see src/settings/pmw3610_settings.c in the driver repository).
-export const PMW3610_CUSTOM_SETTINGS_IDENTIFIER = "cormoran__pmw3610";
-
-interface SettingGroupDef {
-  title: string;
-  description: string;
-  // Field name is the setting key without its "@<device-id>" suffix.
-  fields: string[];
-}
-
-// Groups + light descriptions for the pmw3610 driver's own settings (see
-// PMW3610_DEFINE_INST_SETTINGS in that repo's pmw3610_settings.c), so the
-// per-field keys below stay in sync with the driver's field names.
-const PMW3610_SETTING_GROUPS: SettingGroupDef[] = [
-  {
-    title: "Sensitivity",
-    description: "Tracking resolution.",
-    fields: ["cpi"],
-  },
-  {
-    title: "Orientation",
-    description: "Axis mapping for how the sensor is mounted.",
-    fields: ["swap_xy", "invert_x", "invert_y"],
-  },
-  {
-    title: "Power & Rest Mode",
-    description:
-      "Idle downshift stages that reduce sensor polling and power use while the trackball is not moving.",
-    fields: [
-      "force_awake",
-      "smart_algorithm",
-      "run_downshift_ms",
-      "rest1_downshift_ms",
-      "rest2_downshift_ms",
-      "rest1_sample_ms",
-      "rest2_sample_ms",
-      "rest3_sample_ms",
-    ],
-  },
-  {
-    title: "Reporting",
-    description: "How often motion reports are sent to the host.",
-    fields: ["report_interval_min_ms"],
-  },
-];
-
-const PMW3610_FIELD_DESCRIPTIONS: Record<string, string> = {
-  cpi: "Sensor resolution in counts per inch. Higher values move the cursor faster for the same physical motion.",
-  swap_xy: "Swap the X and Y axes.",
-  invert_x: "Invert the horizontal movement direction.",
-  invert_y: "Invert the vertical movement direction.",
-  force_awake:
-    "Keep the sensor fully powered, skipping the rest mode stages below.",
-  smart_algorithm: "Enable the sensor's adaptive positioning algorithm.",
-  run_downshift_ms:
-    "Time of continuous motion before dropping from Run mode into Rest1.",
-  rest1_downshift_ms: "Time in Rest1 before dropping into Rest2.",
-  rest2_downshift_ms: "Time in Rest2 before dropping into Rest3.",
-  rest1_sample_ms: "Sensor sampling interval while in Rest1.",
-  rest2_sample_ms: "Sensor sampling interval while in Rest2.",
-  rest3_sample_ms:
-    "Sensor sampling interval while in Rest3, the deepest idle stage.",
-  report_interval_min_ms:
-    "Minimum time between motion reports sent to the host.",
-};
-
-// Setting keys are unique per pmw3610 device instance ("<field>@<id>"); the
-// grouping/description lookups above only care about the field name.
+// A setting key can carry a per-device suffix ("<field>@<id>"); the
+// description lookup only cares about the field name.
 function fieldName(key: string): string {
   const at = key.indexOf("@");
   return at === -1 ? key : key.slice(0, at);
@@ -1027,24 +960,6 @@ export function CustomSettingsSectionCard({
     .filter((setting) => setting.source === activeSource)
     .sort((a, b) => settingSortValue(a).localeCompare(settingSortValue(b)));
 
-  const isPmw3610 = section.identifier === PMW3610_CUSTOM_SETTINGS_IDENTIFIER;
-  const groups = isPmw3610
-    ? PMW3610_SETTING_GROUPS.map((group) => ({
-        ...group,
-        settings: sortedSettings
-          .filter((setting) => group.fields.includes(fieldName(setting.key)))
-          .sort(
-            (a, b) =>
-              group.fields.indexOf(fieldName(a.key)) -
-              group.fields.indexOf(fieldName(b.key)),
-          ),
-      })).filter((group) => group.settings.length > 0)
-    : null;
-  const groupedKeys = new Set(groups?.flatMap((group) => group.settings));
-  const ungroupedSettings = groups
-    ? sortedSettings.filter((setting) => !groupedKeys.has(setting))
-    : sortedSettings;
-
   return (
     <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
       <div className="flex flex-col gap-3 border-b border-[var(--color-border)] p-4 md:flex-row md:items-center md:justify-between">
@@ -1181,35 +1096,10 @@ export function CustomSettingsSectionCard({
             </div>
           )}
 
-          {groups?.map((group) => (
-            <div key={group.title} className="mt-4 first:mt-2">
-              <div className="pb-1">
-                <h5 className="text-xs font-semibold uppercase tracking-wide text-[var(--color-electric)]">
-                  {t(group.title)}
-                </h5>
-                <p className="text-[11px] text-[var(--color-text-muted)]">
-                  {t(group.description)}
-                </p>
-              </div>
-              <div className="border-l-2 border-[var(--color-border)] pl-4">
-                <SettingRowList
-                  settings={group.settings}
-                  layers={layers}
-                  behaviors={behaviors}
-                  customSettings={customSettings}
-                  describeField={(field) => {
-                    const description = PMW3610_FIELD_DESCRIPTIONS[field];
-                    return description ? t(description) : undefined;
-                  }}
-                />
-              </div>
-            </div>
-          ))}
-
-          {ungroupedSettings.length > 0 && (
-            <div className={groups ? "mt-4" : ""}>
+          {sortedSettings.length > 0 && (
+            <div>
               <SettingRowList
-                settings={ungroupedSettings}
+                settings={sortedSettings}
                 layers={layers}
                 behaviors={behaviors}
                 customSettings={customSettings}

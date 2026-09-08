@@ -14,7 +14,6 @@ import { SETTINGS_IDENTIFIER } from "./demo-settings";
 import { DEVICE_INFO_IDENTIFIER } from "./demo-device-info";
 import { WATCHDOG_IDENTIFIER } from "./demo-watchdog";
 import { KSCAN_DIAGNOSTICS_IDENTIFIER } from "./demo-kscan-diagnostics";
-import { PMW3610_IDENTIFIER } from "./demo-pmw3610";
 import { RUNTIME_INPUT_PROCESSOR_IDENTIFIER } from "./demo-runtime-input-processor";
 import { RUNTIME_SENSOR_ROTATE_IDENTIFIER } from "./demo-runtime-sensor-rotate";
 import { CUSTOM_SETTINGS_IDENTIFIER } from "./demo-custom-settings";
@@ -131,30 +130,24 @@ export const DEMO_SUBSYSTEMS: DemoSubsystemInfo[] = [
   },
   {
     index: 12,
-    identifier: PMW3610_IDENTIFIER,
-    label: "PMW3610",
-    defaultEnabled: true,
-  },
-  {
-    index: 13,
     identifier: OS_DETECTION_IDENTIFIER,
     label: "OS Detection",
     defaultEnabled: true,
   },
   {
-    index: 14,
+    index: 13,
     identifier: DEFAULT_LAYER_IDENTIFIER,
     label: "Default Layer",
     defaultEnabled: true,
   },
   {
-    index: 15,
+    index: 14,
     identifier: FAST_KEYMAP_IDENTIFIER,
     label: "Fast Keymap",
     defaultEnabled: false,
   },
   {
-    index: 16,
+    index: 15,
     identifier: SETTING_EXPOSE_IDENTIFIER,
     label: "Setting Expose",
     defaultEnabled: true,
