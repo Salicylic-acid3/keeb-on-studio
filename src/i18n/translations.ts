@@ -56,6 +56,7 @@ const ja: Record<string, string> = {
   Blog: "ブログ",
   "Weekly notes": "週報",
   Shop: "ショップ",
+  Community: "コミュニティ",
   "Welcome to Keeb-On! Studio": "Keeb-On! Studio へようこそ",
   "Features - What you can do with Keeb-On! Studio":
     "機能 - Keeb-On! Studio でできること",
@@ -1388,6 +1389,7 @@ const zh: Record<string, string> = {
   Blog: "博客",
   "Weekly notes": "周报",
   Shop: "商店",
+  Community: "社区",
   "Welcome to Keeb-On! Studio": "欢迎使用 Keeb-On! Studio",
   "Features - What you can do with Keeb-On! Studio":
     "功能 - Keeb-On! Studio 能做什么",

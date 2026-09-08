@@ -1,4 +1,5 @@
 import {
+  IconBrandDiscord,
   IconBrandGithub,
   IconBrandX,
   IconBrandYoutube,
@@ -51,6 +52,12 @@ const AUTHOR_LINKS: {
     name: "@Salicylic_acid3",
     category: "X",
     icon: <IconBrandX size={16} />,
+  },
+  {
+    href: "https://discord.gg/y5CNqgEsNg",
+    name: "Discord",
+    category: "Community",
+    icon: <IconBrandDiscord size={16} />,
   },
 ];
 
