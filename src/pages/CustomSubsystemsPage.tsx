@@ -34,6 +34,7 @@ import { BLE_MANAGEMENT_SUBSYSTEM_IDENTIFIER } from "../hooks/useBLEProfiles";
 import { OS_DETECTION_SUBSYSTEM_IDENTIFIER } from "../hooks/useOsDetection";
 import { DEVTOOL_SUBSYSTEM_IDENTIFIER } from "../hooks/useDevtool";
 import { FAST_KEYMAP_SUBSYSTEM_IDENTIFIER } from "../hooks/useKeymapSource";
+import { HexIcon } from "../components/brand/HexIcon";
 
 // Identifiers of subsystems Keeb-On! Studio already has a dedicated UI for
 // (mirrors the `*_IDENTIFIER` constants exported by src/hooks/*.ts).
@@ -390,9 +391,9 @@ export function CustomSubsystemsPage() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
-          <div className="p-2 rounded-lg bg-[var(--color-electric)]/10 border border-[var(--color-electric)]/20">
+          <HexIcon>
             <IconPuzzle size={24} className="text-[var(--color-electric)]" />
-          </div>
+          </HexIcon>
           <div>
             <h1 className="text-xl font-medium text-[var(--color-text)]">
               {t("Custom Subsystems")}

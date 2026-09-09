@@ -27,6 +27,7 @@ import { useLanguage } from "../hooks/useLanguage";
 import { ResetVersionMenu } from "../components/versionHistory/ResetVersionMenu";
 import { VersionDiffModal } from "../components/versionHistory/VersionDiffModal";
 import { useSettingsVersionHistory } from "../hooks/versionHistory/useSettingsVersionHistory";
+import { HexIcon } from "../components/brand/HexIcon";
 
 // Helper to format milliseconds to human readable
 function formatMs(
@@ -351,9 +352,9 @@ export function SettingsPage() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
-          <div className="p-2 rounded-lg bg-[var(--color-electric)]/10 border border-[var(--color-electric)]/20">
+          <HexIcon>
             <IconSettings size={24} className="text-[var(--color-electric)]" />
-          </div>
+          </HexIcon>
           <div>
             <h1 className="text-xl font-medium text-[var(--color-text)]">
               {t("Settings")}

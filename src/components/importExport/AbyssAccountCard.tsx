@@ -9,6 +9,7 @@ import { useLanguage } from "../../hooks/useLanguage";
 import { SectionError } from "../troubleshooting/SectionCard";
 import type { UseAbyssAuthReturn } from "../../hooks/useAbyssAuth";
 import { abyssHost } from "../../lib/abyss/abyssConfig";
+import { HexIcon } from "../brand/HexIcon";
 
 export function AbyssAccountCard({ auth }: { auth: UseAbyssAuthReturn }) {
   const { t } = useLanguage();
@@ -25,9 +26,9 @@ export function AbyssAccountCard({ auth }: { auth: UseAbyssAuthReturn }) {
               className="w-9 h-9 rounded-full flex-shrink-0 object-cover"
             />
           ) : (
-            <div className="p-2 rounded-lg bg-[var(--color-electric)]/10 border border-[var(--color-electric)]/20 flex-shrink-0">
+            <HexIcon size={38} className="flex-shrink-0">
               <IconCloud size={20} className="text-[var(--color-electric)]" />
-            </div>
+            </HexIcon>
           )}
           <div className="min-w-0">
             <h3 className="text-sm font-medium text-[var(--color-text)] truncate">

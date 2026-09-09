@@ -5,6 +5,7 @@ import {
   IconChevronRight,
 } from "@tabler/icons-react";
 import { useLanguage } from "../../hooks/useLanguage";
+import { HexIcon } from "../brand/HexIcon";
 
 interface SectionCardProps {
   icon: ReactNode;
@@ -77,9 +78,7 @@ export function SectionCard({
               className="text-[var(--color-text-muted)] flex-shrink-0"
             />
           )}
-          <div className="p-2 rounded-lg bg-[var(--color-electric)]/10 border border-[var(--color-electric)]/20">
-            {icon}
-          </div>
+          <HexIcon>{icon}</HexIcon>
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <h2 className="text-sm font-medium text-[var(--color-text)]">

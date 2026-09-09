@@ -19,6 +19,7 @@ import {
   abyssKeyboardUrl,
   abyssRegisterUrl,
 } from "../../lib/abyss/abyssConfig";
+import { HexIcon } from "../brand/HexIcon";
 
 /** Every Abyss link leaves the app, so they all open in a new tab. */
 function AbyssLink({ href, children }: { href: string; children: string }) {
@@ -112,9 +113,9 @@ export function DeviceSnapshotCard({
     <div className="glass-card p-6">
       <div className="flex flex-col tablet:flex-row tablet:items-center gap-4 mb-4">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="p-2 rounded-lg bg-[var(--color-electric)]/10 border border-[var(--color-electric)]/20 flex-shrink-0">
+          <HexIcon size={38} className="flex-shrink-0">
             <IconDeviceUsb size={20} className="text-[var(--color-electric)]" />
-          </div>
+          </HexIcon>
           <div className="min-w-0">
             <h3 className="text-sm font-medium text-[var(--color-text)]">
               {t("Keyboard snapshot")}

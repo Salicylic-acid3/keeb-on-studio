@@ -50,6 +50,7 @@ import { useMacroComboVersionHistory } from "../hooks/versionHistory/useMacroCom
 import { macroDoc, comboDoc } from "../i18n/featureDocs";
 import type { Combo } from "../hooks/useRuntimeCombo";
 import type { MacroSummary } from "../proto/cormoran/runtime_macro/runtime_macro";
+import { HexIcon } from "../components/brand/HexIcon";
 
 /** What the right column currently shows. `null` renders the placeholder
  * (until the macro auto-select picks the first macro, mirroring the old
@@ -364,9 +365,9 @@ export function MacroComboPage() {
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col tablet:flex-row tablet:items-center gap-3 mb-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-[var(--color-electric)]/10 border border-[var(--color-electric)]/20">
+            <HexIcon>
               <IconWand size={24} className="text-[var(--color-electric)]" />
-            </div>
+            </HexIcon>
             <div>
               <h1 className="text-xl font-medium text-[var(--color-text)]">
                 {t("Macro&Combo")}

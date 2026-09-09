@@ -20,6 +20,7 @@ import { ExportSection } from "../components/importExport/ExportSection";
 import { ImportSection } from "../components/importExport/ImportSection";
 import { useAbyssExport } from "../hooks/useAbyssExport";
 import { useAbyssImport } from "../hooks/useAbyssImport";
+import { HexIcon } from "../components/brand/HexIcon";
 
 /** Route path for the Import/Export tab. Must equal the tab id in `App.tsx`. */
 export const IMPORT_EXPORT_TAB_ID = "import-export";
@@ -45,12 +46,12 @@ export function ImportExportPage() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
-          <div className="p-2 rounded-lg bg-[var(--color-electric)]/10 border border-[var(--color-electric)]/20">
+          <HexIcon>
             <IconCloudUpload
               size={24}
               className="text-[var(--color-electric)]"
             />
-          </div>
+          </HexIcon>
           <div>
             <h1 className="text-xl font-medium text-[var(--color-text)]">
               {t("Import/Export")}

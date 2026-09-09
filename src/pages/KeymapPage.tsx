@@ -46,6 +46,7 @@ import { ResetVersionMenu } from "../components/versionHistory/ResetVersionMenu"
 import { VersionDiffModal } from "../components/versionHistory/VersionDiffModal";
 import { useKeymapVersionHistory } from "../hooks/versionHistory/useKeymapVersionHistory";
 import { useIsTabActive } from "../hooks/useIsTabActive";
+import { HexIcon } from "../components/brand/HexIcon";
 
 export function KeymapPage() {
   const { t } = useLanguage();
@@ -405,12 +406,12 @@ export function KeymapPage() {
         {/* Header */}
         <div className="flex flex-col tablet:flex-row tablet:items-center gap-3 mb-4">
           <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 rounded-lg bg-[var(--color-electric)]/10 border border-[var(--color-electric)]/20">
+            <HexIcon>
               <IconKeyboard
                 size={24}
                 className="text-[var(--color-electric)]"
               />
-            </div>
+            </HexIcon>
             <div>
               <h1 className="text-xl font-medium text-[var(--color-text)]">
                 {t("Keymap")}
