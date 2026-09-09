@@ -8,7 +8,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import {
   IconAlertCircle,
   IconUsb,
-  IconBluetooth,
+  IconAccessPoint,
   IconCheck,
   IconX,
   IconAlertTriangleFilled,
@@ -63,7 +63,10 @@ export function ConnectionNoticeDialog({
                 <IconUsb size={32} className="text-[var(--color-electric)]" />
               )}
               {isBLE && (
-                <IconBluetooth size={32} className="text-[var(--color-neon)]" />
+                <IconAccessPoint
+                  size={32}
+                  className="text-[var(--color-neon)]"
+                />
               )}
             </div>
           </div>
@@ -148,7 +151,7 @@ export function ConnectionNoticeDialog({
           {isBLE && isBLEAvailable && (
             <div className="glass-card p-4 mb-6">
               <h4 className="text-sm font-medium text-[var(--color-text)] mb-3 flex items-center gap-2">
-                <IconBluetooth
+                <IconAccessPoint
                   size={18}
                   className="text-[var(--color-text-muted)]"
                 />

@@ -1,12 +1,18 @@
 import { motion } from "framer-motion";
-import { IconBluetooth, IconUsb, IconDeviceDesktop } from "@tabler/icons-react";
-import { useState, useCallback } from "react";
+import {
+  IconAccessPoint,
+  IconUsb,
+  IconDeviceDesktop,
+} from "@tabler/icons-react";
+import { useState, useCallback, type ReactNode } from "react";
 import type { ConnectionMethod } from "./DeviceConnection";
 import { ConnectionNoticeDialog } from "./ConnectionNoticeDialog";
 import { hasAcceptedNotice } from "../lib/connectionNoticeStorage";
 import { LanguageToggle } from "./LanguageToggle";
 import { useLanguage } from "../hooks/useLanguage";
 import { getCurrentVersion } from "../i18n/releaseNotes";
+import { KikkoField } from "./brand/KikkoField";
+import { NorenRule } from "./brand/NorenRule";
 
 interface SplashScreenProps {
   onConnect: (method: ConnectionMethod) => void;
@@ -50,6 +56,60 @@ function DisabledSlash({ color }: { color: string }) {
     <div className="absolute inset-0 flex items-center justify-center">
       <div className={`w-[70px] h-[2px] ${color} rotate-45 rounded-full`} />
     </div>
+  );
+}
+
+/**
+ * A connect button: hexagon frame, conventional glyph.
+ *
+ * The hexagon is ours to style; the symbol inside is not. USB's trident and a
+ * radiating-wave mark are what people navigate by, so redrawing them to match
+ * the brand would cost more in recognition than it gains in consistency. The
+ * clip-path sits on layers inside the button rather than the button itself,
+ * so the focus ring is not clipped away with it.
+ */
+function ConnectButton({
+  accent,
+  icon,
+  label,
+  title,
+  onClick,
+  disabled,
+}: {
+  /** CSS variable name for this connection's accent colour. */
+  accent: string;
+  icon: ReactNode;
+  label: string;
+  title: string;
+  onClick: () => void;
+  disabled: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={label}
+      title={title}
+      className="group relative h-[94px] w-[84px] transition-transform disabled:cursor-not-allowed disabled:opacity-30 enabled:hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-electric)]"
+    >
+      {/* border, then inset fill: a hexagon outline without a stroke path */}
+      <div
+        className="hex-clip absolute inset-0 opacity-[0.42]"
+        style={{ background: `var(${accent})` }}
+      />
+      <div className="hex-clip absolute inset-[2px] bg-[var(--color-surface)]" />
+      <div
+        className="hex-clip absolute inset-[2px] opacity-[0.13] transition-opacity group-enabled:group-hover:opacity-25"
+        style={{ background: `var(${accent})` }}
+      />
+      <span
+        className="relative flex items-center justify-center"
+        style={{ color: `var(${accent})` }}
+      >
+        {icon}
+      </span>
+      {disabled && <DisabledSlash color={`bg-[var(${accent})]`} />}
+    </button>
   );
 }
 
@@ -109,121 +169,70 @@ export function SplashScreen({
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5, ease: "easeInOut" }}
     >
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-cyber opacity-30" />
+      <KikkoField />
       <div className="absolute right-6 top-6 z-20">
         <LanguageToggle />
       </div>
 
-      {/* Animated rings */}
+      {/* The card is the shop entrance: noren across the top, mark below. */}
       <motion.div
-        className="absolute w-[400px] h-[400px] rounded-full border border-[var(--color-electric)]/20"
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-      />
-      <motion.div
-        className="absolute w-[500px] h-[500px] rounded-full border border-[var(--color-electric)]/10"
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 1, ease: "easeOut", delay: 0.1 }}
-      />
-      <motion.div
-        className="absolute w-[600px] h-[600px] rounded-full border border-[var(--color-electric)]/5"
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
-      />
-
-      {/* Content container */}
-      <motion.div
-        className="relative z-10 flex flex-col items-center gap-8"
-        initial={{ opacity: 0, y: 80 }}
+        className="relative z-10 w-[520px] max-w-[calc(100vw-3rem)] overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[0_18px_50px_-22px_rgba(28,35,51,0.28)] dark:shadow-[0_18px_50px_-20px_rgba(0,0,0,0.6)]"
+        initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        {/* Brand name */}
-        <motion.div
-          className="flex flex-col items-center gap-2 mt-8"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.5 }}
-        >
-          <h1 className="text-4xl font-light tracking-[0.15em] text-[var(--color-text)]">
-            Keeb-On!
-          </h1>
-          <p className="text-sm font-light tracking-[0.2em] text-[var(--color-text-muted)] uppercase">
-            Studio
-          </p>
-        </motion.div>
+        <NorenRule />
+        <div className="flex flex-col items-center gap-7 px-14 pb-11 pt-11">
+          <img
+            src="/favicon.svg"
+            alt=""
+            aria-hidden="true"
+            className="h-[104px] w-[104px]"
+          />
+          <div className="text-center">
+            <h1 className="text-[33px] font-light text-[var(--color-text)]">
+              <span className="font-medium text-[var(--color-electric)]">
+                Keeb-On!
+              </span>{" "}
+              Studio
+            </h1>
+            <p className="mt-2 text-[11px] uppercase tracking-[0.32em] text-[var(--color-text-muted)]">
+              ClickBoard &amp; GoForty
+            </p>
+          </div>
 
-        {/* Connection section */}
-        <motion.div
-          className="flex flex-col items-center gap-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8, duration: 2 }}
-        >
-          {/* Connect label */}
-          <p className="text-sm font-light tracking-wider text-[var(--color-text-secondary)] text-center uppercase">
-            {t("Connect")}
-          </p>
-
-          {/* Connection buttons */}
           <div className="flex flex-col items-center gap-4">
-            {/* Device connection buttons */}
-            <div className="flex gap-6">
-              <button
+            <p className="text-[11px] uppercase tracking-[0.28em] text-[var(--color-text-muted)]">
+              {t("Connect")}
+            </p>
+            <div className="flex gap-[22px]">
+              <ConnectButton
+                accent="--color-electric"
+                icon={<IconUsb size={30} strokeWidth={1.6} />}
+                label={t("Connect via USB")}
+                title={t("Connect via USB")}
                 onClick={() => handleConnectClick("serial")}
                 disabled={isConnecting}
-                className="relative w-16 h-16 rounded-full flex items-center justify-center border-2 transition-all disabled:opacity-30 disabled:cursor-not-allowed border-[var(--color-electric)] bg-[var(--color-electric)]/10 hover:bg-[var(--color-electric)]/20 hover:border-[var(--color-electric)] hover:shadow-[0_0_20px_rgba(173,0,45,0.3)]"
-                aria-label={t("Connect via USB")}
-                title={t("Connect via USB")}
-              >
-                <IconUsb
-                  size={28}
-                  className="text-[var(--color-electric)] relative z-10"
-                  strokeWidth={1.5}
-                />
-                {isConnecting && (
-                  <DisabledSlash color="bg-[var(--color-electric)]" />
-                )}
-              </button>
-              <button
+              />
+              <ConnectButton
+                accent="--color-neon"
+                icon={<IconAccessPoint size={30} strokeWidth={1.6} />}
+                label={t("Connect via Bluetooth")}
+                title={t("Connect via Bluetooth")}
                 onClick={() => handleConnectClick("ble")}
                 disabled={isConnecting}
-                className="relative w-16 h-16 rounded-full flex items-center justify-center border-2 transition-all disabled:opacity-30 disabled:cursor-not-allowed border-[var(--color-neon)] bg-[var(--color-neon)]/10 hover:bg-[var(--color-neon)]/20 hover:border-[var(--color-neon)] hover:shadow-[0_0_20px_rgba(201,162,39,0.3)]"
-                aria-label={t("Connect via Bluetooth")}
-                title={t("Connect via Bluetooth")}
-              >
-                <IconBluetooth
-                  size={28}
-                  className="text-[var(--color-neon)] relative z-10"
-                  strokeWidth={1.5}
-                />
-                {isConnecting && (
-                  <DisabledSlash color="bg-[var(--color-neon)]" />
-                )}
-              </button>
-              <button
+              />
+              <ConnectButton
+                accent="--color-cyber"
+                icon={<IconDeviceDesktop size={30} strokeWidth={1.6} />}
+                label={t("Try Demo Mode")}
+                title={t("Try Demo Mode (no device required)")}
                 onClick={() => handleConnectClick("demo")}
                 disabled={isConnecting}
-                className="relative w-16 h-16 rounded-full flex items-center justify-center border-2 transition-all disabled:opacity-30 disabled:cursor-not-allowed border-[var(--color-cyber)] bg-[var(--color-cyber)]/10 hover:bg-[var(--color-cyber)]/20 hover:border-[var(--color-cyber)] hover:shadow-[0_0_20px_rgba(61,111,172,0.3)]"
-                aria-label={t("Try Demo Mode")}
-                title={t("Try Demo Mode (no device required)")}
-              >
-                <IconDeviceDesktop
-                  size={28}
-                  className="text-[var(--color-cyber)] relative z-10"
-                  strokeWidth={1.5}
-                />
-                {isConnecting && (
-                  <DisabledSlash color="bg-[var(--color-cyber)]" />
-                )}
-              </button>
+              />
             </div>
           </div>
-        </motion.div>
+        </div>
       </motion.div>
       {/* Loading indicator */}
       {isConnecting && (

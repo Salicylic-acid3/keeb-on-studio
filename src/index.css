@@ -29,6 +29,10 @@
     --scrollbar-track: #1c2130;
     --scrollbar-thumb: #3a4258;
     --scrollbar-thumb-hover: #4a5570;
+
+    /* 亀甲 lattice (see components/brand/KikkoField) */
+    --color-kikko: #6f86ad;
+    --color-kikko-opacity: 0.22;
   }
 
   /* Light theme - cream (生成り) */
@@ -55,6 +59,11 @@
     --color-electric: #8f0025;
     --color-neon: #a5841f;
     --color-warning: #d97706;
+
+    /* Indigo reads as a drawn line on cream; the dark theme needs it
+       lighter than the ink colour to stay visible at all. */
+    --color-kikko: #3d6fac;
+    --color-kikko-opacity: 0.3;
   }
 
   * {
@@ -600,4 +609,10 @@
     border-radius: 0;
     border-width: 0;
   }
+}
+
+/* The product's shape: a benzene hexagon, flat-top so a row of them sits on a
+   common baseline. Used for the connect buttons and section markers. */
+.hex-clip {
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
