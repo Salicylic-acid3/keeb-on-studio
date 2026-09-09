@@ -5,12 +5,15 @@
  * for demo mode, following the firmware's paginated protocol
  * (proto/cormoran/kscan_diagnostics/kscan_diagnostics.proto).
  *
- * The single MATRIX device models a 5x12 matrix (60 cells) covering the
- * demo keyboard's DYA_DASH physical layout (59 keys, src/lib/layouts.ts) —
- * the last cell is intentionally left unmapped (0 in the position map) so
- * the interactive keyboard preview also exercises the "no wiring info"
- * path. Row lines live on "gpio0" pins 4..8, column lines on "gpio1" pins
- * 0..11.
+ * The single MATRIX device models ErgoTrack's matrix: 7 rows x 12 columns
+ * (84 cells) for its 79 keys, the same shape its `default_transform` declares
+ * in clickboard_ergotrack.dtsi. The 5 leftover cells are unmapped (0 in the
+ * position map), which is true of the real board and also exercises the
+ * interactive preview's "no wiring info" path. Row lines live on "gpio0"
+ * pins 4..10, column lines on "gpio1" pins 0..11.
+ *
+ * The key count has to match the demo keymap (see maxKeys in demo.ts), or the
+ * wiring overlay lands on the wrong keys in the preview.
  *
  * A simulated split peripheral (source=1) is also provided: a 4x6 DIRECT
  * half that answers QueryPeripheral requests via a notification. The
@@ -26,6 +29,7 @@ import {
   type PositionStats,
   KscanDriverType,
 } from "../../proto/cormoran/kscan_diagnostics/kscan_diagnostics";
+import { ERGOTRACK } from "../layouts";
 
 export const KSCAN_DIAGNOSTICS_IDENTIFIER = "cormoran__kscan_diagnostics";
 
@@ -33,10 +37,11 @@ const STATS_PAGE_SIZE = 12;
 const GPIO_PAGE_SIZE = 16;
 const POSITION_MAP_PAGE_SIZE = 16;
 
-const ROWS = 5;
+const ROWS = 7;
 const COLUMNS = 12;
-// One cell (the last one, row-major) is intentionally left unmapped.
-const POSITION_COUNT = ROWS * COLUMNS - 1;
+// Taken from the layout rather than written out, so this cannot drift away
+// from the keymap the demo hands the preview.
+const POSITION_COUNT = ERGOTRACK.keys.length;
 
 // Position that intentionally exhibits chatter, so the demo UI always shows
 // exactly one suspect-key row.
@@ -335,7 +340,7 @@ export class KscanDiagnosticsHandler {
       return {
         layout: {
           layoutIndex: 0,
-          displayName: "DYA Dash",
+          displayName: "ClickBoard ErgoTrack",
           rows: ROWS,
           columns: COLUMNS,
           keyCount: POSITION_COUNT,

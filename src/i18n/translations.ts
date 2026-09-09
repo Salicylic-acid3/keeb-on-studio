@@ -9,8 +9,6 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
-  "Keeb-On! Studio for DYA & ZMK Keyboards":
-    "DYA & ZMK キーボードのための Keeb-On! Studio",
   "The operation failed because the device is locked in ZMK Studio. Unlock the keyboard and try again.":
     "デバイスが ZMK Studio ロック状態のため操作に失敗しました。キーボードのロックを解除してから再度お試しください。",
   Home: "ホーム",
@@ -198,10 +196,6 @@ const ja: Record<string, string> = {
   "Loading trackball settings...": "トラックボール設定を読み込み中...",
   "No runtime input processor found. Make sure your firmware has the runtime input processor module enabled.":
     "ランタイム入力プロセッサーが見つかりません。ファームウェアでランタイム入力プロセッサーモジュールが有効になっていることを確認してください。",
-  "Sensor-level tuning exposed by the pmw3610 driver's custom Studio RPC":
-    "pmw3610 ドライバーのカスタム Studio RPC が公開するセンサーレベルの調整項目です",
-  "No pmw3610 driver settings were reported by the keyboard.":
-    "キーボードから pmw3610 ドライバーの設定が報告されませんでした。",
   "Select Processor": "プロセッサーを選択",
   "{{count}} processors detected": "{{count}} 個のプロセッサーを検出",
   Processors: "プロセッサー",
@@ -1374,8 +1368,6 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
-  "Keeb-On! Studio for DYA & ZMK Keyboards":
-    "面向 DYA 和 ZMK 键盘的 Keeb-On! Studio",
   "The operation failed because the device is locked in ZMK Studio. Unlock the keyboard and try again.":
     "操作失败，因为设备在 ZMK Studio 中处于锁定状态。请解锁键盘后重试。",
   Home: "首页",
@@ -1557,10 +1549,6 @@ const zh: Record<string, string> = {
   "Loading trackball settings...": "正在加载轨迹球设置...",
   "No runtime input processor found. Make sure your firmware has the runtime input processor module enabled.":
     "未找到运行时输入处理器。请确保您的固件已启用运行时输入处理器模块。",
-  "Sensor-level tuning exposed by the pmw3610 driver's custom Studio RPC":
-    "pmw3610 驱动通过自定义 Studio RPC 公开的传感器级调整",
-  "No pmw3610 driver settings were reported by the keyboard.":
-    "键盘未报告任何 pmw3610 驱动设置。",
   "Select Processor": "选择处理器",
   "{{count}} processors detected": "检测到 {{count}} 个处理器",
   Processors: "处理器",

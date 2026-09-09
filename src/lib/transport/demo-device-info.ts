@@ -30,10 +30,10 @@ export class DeviceInfoHandler {
             moduleDirty: false,
             zephyrVersion: "3.7.0",
             buildTimestamp: "2026-07-01T09:00:00Z",
-            board: "dya_dash",
+            board: "clickboard_ergotrack",
           },
           hardware: {
-            deviceId: "DYADEMO0001",
+            deviceId: "KEEBDEMO0001",
             resetCause: RESET_CAUSE_POWER_ON,
             flashSizeKb: 1024,
             sramSizeKb: 256,

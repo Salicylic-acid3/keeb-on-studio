@@ -9,6 +9,7 @@ import {
   Request,
   Response,
 } from "../../../proto/cormoran/kscan_diagnostics/kscan_diagnostics";
+import { ERGOTRACK } from "../../layouts";
 
 describe("KscanDiagnosticsHandler", () => {
   let handler: KscanDiagnosticsHandler;
@@ -35,7 +36,7 @@ describe("KscanDiagnosticsHandler", () => {
       );
 
       expect(response.device).toBeDefined();
-      expect(response.device?.rows).toBe(5);
+      expect(response.device?.rows).toBe(7);
       expect(response.device?.columns).toBe(12);
       expect(response.device?.debouncePressMs).toBe(5);
       expect(response.device?.debounceReleaseMs).toBe(5);
@@ -50,15 +51,18 @@ describe("KscanDiagnosticsHandler", () => {
   });
 
   describe("getLayout", () => {
-    it("returns the DYA Dash layout matching the demo keymap's key count", () => {
+    it("returns ErgoTrack's matrix, matching the demo keymap's key count", () => {
       const response = handler.process(
         Request.create({ getLayout: { layoutIndex: 0 } }),
       );
 
       expect(response.layout).toBeDefined();
-      expect(response.layout?.rows).toBe(5);
+      expect(response.layout?.displayName).toBe("ClickBoard ErgoTrack");
+      expect(response.layout?.rows).toBe(7);
       expect(response.layout?.columns).toBe(12);
-      expect(response.layout?.keyCount).toBe(59);
+      // Tied to the layout, not written out: the wiring overlay lands on the
+      // wrong keys if this drifts from what the demo keymap hands the preview.
+      expect(response.layout?.keyCount).toBe(ERGOTRACK.keys.length);
       expect(response.layout?.deviceIndices).toEqual([
         { leafIndex: 0, rowOffset: 0, colOffset: 0 },
       ]);
@@ -73,7 +77,7 @@ describe("KscanDiagnosticsHandler", () => {
   });
 
   describe("getPositionMap pagination", () => {
-    it("paginates through the full 5x12 position map", () => {
+    it("paginates through the full 7x12 position map", () => {
       const collected: number[] = [];
       let offset = 0;
       for (let i = 0; i < 20; i++) {
@@ -86,19 +90,20 @@ describe("KscanDiagnosticsHandler", () => {
         if (chunk.cells.length === 0 || offset >= chunk.total) break;
       }
 
-      // 5 rows x 12 columns = 60 cells total.
-      expect(collected).toHaveLength(60);
+      // 7 rows x 12 columns = 84 cells total.
+      const KEYS = ERGOTRACK.keys.length;
+      expect(collected).toHaveLength(84);
 
-      // Every non-zero cell holds position+1; every position 0..58 appears
-      // exactly once, and exactly one cell (the last) is unmapped (0).
+      // Every non-zero cell holds position+1, and every position appears
+      // exactly once; the trailing cells are unmapped, as on the real board.
       const positions = collected.filter((c) => c !== 0).map((c) => c - 1);
-      expect(positions).toHaveLength(59);
-      expect(new Set(positions).size).toBe(59);
+      expect(positions).toHaveLength(KEYS);
+      expect(new Set(positions).size).toBe(KEYS);
       for (const p of positions) {
         expect(p).toBeGreaterThanOrEqual(0);
-        expect(p).toBeLessThan(59);
+        expect(p).toBeLessThan(KEYS);
       }
-      expect(collected.filter((c) => c === 0)).toHaveLength(1);
+      expect(collected.filter((c) => c === 0)).toHaveLength(84 - KEYS);
       expect(collected[collected.length - 1]).toBe(0);
     });
 
@@ -111,19 +116,19 @@ describe("KscanDiagnosticsHandler", () => {
   });
 
   describe("getGpioPins pagination", () => {
-    it("returns 5 row lines on gpio0", () => {
+    it("returns 7 row lines on gpio0", () => {
       const response = handler.process(
         Request.create({
           getGpioPins: { deviceIndex: 0, kind: GpioLineKind.ROW, offset: 0 },
         }),
       );
-      expect(response.gpioPins?.total).toBe(5);
-      expect(response.gpioPins?.pins).toHaveLength(5);
+      expect(response.gpioPins?.total).toBe(7);
+      expect(response.gpioPins?.pins).toHaveLength(7);
       expect(response.gpioPins?.pins.every((p) => p.port === "gpio0")).toBe(
         true,
       );
       expect(response.gpioPins?.pins.map((p) => p.pin)).toEqual([
-        4, 5, 6, 7, 8,
+        4, 5, 6, 7, 8, 9, 10,
       ]);
     });
 
