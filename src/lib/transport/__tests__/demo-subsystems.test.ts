@@ -4,17 +4,30 @@ import {
   isDemoSubsystemEnabled,
   setDemoSubsystemEnabled,
 } from "../demo-subsystems";
+import { RUNTIME_SENSOR_ROTATE_IDENTIFIER } from "../demo-runtime-sensor-rotate";
 
 beforeEach(() => {
   localStorage.clear();
 });
 
 describe("demo-subsystems", () => {
-  it("defaults every subsystem on except fast-keymap", () => {
+  it("starts each subsystem at its declared default", () => {
     for (const s of DEMO_SUBSYSTEMS) {
-      const expected = s.identifier !== FAST_KEYMAP_IDENTIFIER;
-      expect(isDemoSubsystemEnabled(s.identifier)).toBe(expected);
+      expect(isDemoSubsystemEnabled(s.identifier)).toBe(s.defaultEnabled);
     }
+  });
+
+  it("leaves only fast-keymap and sensor-rotate off", () => {
+    // The two deliberate exceptions to "on by default": fast-keymap is an
+    // alternative code path the user opts into, and sensor-rotate would put an
+    // encoder editor on a demo keyboard that has no encoder. Pinned here so
+    // adding a third default-off subsystem has to be a decision, not a slip.
+    const offByDefault = DEMO_SUBSYSTEMS.filter((s) => !s.defaultEnabled)
+      .map((s) => s.identifier)
+      .sort();
+    expect(offByDefault).toEqual(
+      [RUNTIME_SENSOR_ROTATE_IDENTIFIER, FAST_KEYMAP_IDENTIFIER].sort(),
+    );
   });
 
   it("persists and honors an enable override for fast-keymap", () => {

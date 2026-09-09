@@ -374,6 +374,18 @@ export function KeymapPage() {
     }
   }, [isTabActive, isStreamEnabled, toggleStream]);
 
+  // Re-ask for the non-key modules when the active physical layout changes.
+  // A real keyboard's trackpads do not move when you switch layout, so this
+  // costs it one repeated answer; demo mode stands in for two different
+  // keyboards, and only one of them has trackpads, so without this it would
+  // draw ErgoTrack's pads underneath the GoFortyMax grid.
+  const { loadModules: loadPhysicalLayoutModules } = physicalLayoutModules;
+  const activePhysicalLayoutIndex = keymap.physicalLayouts?.activeLayoutIndex;
+  useEffect(() => {
+    if (activePhysicalLayoutIndex === undefined) return;
+    void loadPhysicalLayoutModules();
+  }, [activePhysicalLayoutIndex, loadPhysicalLayoutModules]);
+
   // Load the runtime-macro list as the FINAL step of the keymap tab load: only
   // after the keymap has fully loaded (preview + background behaviors/layers) so
   // the macro RPCs (list_macros / get_macro_global_settings) run last instead of

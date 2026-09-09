@@ -41,6 +41,7 @@ export class DeviceInfoHandler {
           zephyrDevices: [
             { name: "kscan0", ready: true },
             { name: "iqs9151@0", ready: true },
+            { name: "iqs9151@1", ready: true },
             { name: "ble_hci", ready: true },
             { name: "gpio@0", ready: true },
             { name: "i2c@0", ready: true },

@@ -52,9 +52,9 @@ export interface DemoSubsystemInfo {
 }
 
 // Canonical list, indices matching the demo transport's subsystem indices.
-// Everything defaults on EXCEPT fast-keymap, so existing demo behavior (the
-// official keymap protocol) is unchanged until the user opts into the fast
-// path from the Subsystems tab.
+// Everything defaults on EXCEPT fast-keymap (so the demo keeps using the
+// official keymap protocol until the user opts into the fast path) and
+// sensor-rotate (no supported keyboard has an encoder).
 export const DEMO_SUBSYSTEMS: DemoSubsystemInfo[] = [
   {
     index: 0,
@@ -81,10 +81,14 @@ export const DEMO_SUBSYSTEMS: DemoSubsystemInfo[] = [
     defaultEnabled: true,
   },
   {
+    // Off by default: neither keyboard this app supports has a rotary encoder,
+    // so a demo that advertised sensor rotation would put an encoder editor on
+    // a keyboard with nothing to rotate. The handler stays, and the toggle
+    // still turns it on, so the code path is still reachable for testing.
     index: 4,
     identifier: RUNTIME_SENSOR_ROTATE_IDENTIFIER,
     label: "Runtime Sensor Rotate",
-    defaultEnabled: true,
+    defaultEnabled: false,
   },
   {
     index: 5,

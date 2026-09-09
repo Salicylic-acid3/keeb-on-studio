@@ -123,15 +123,7 @@ import {
   SETTING_EXPOSE_UI_URL,
   isDemoSubsystemEnabled,
 } from "./demo-subsystems";
-import {
-  ANSI60,
-  ORTHO,
-  CORNE6,
-  DYA_DASH_ARROW,
-  DYA_DASH,
-  DYA2_ANSI,
-  DYA2_JIS,
-} from "../layouts";
+import { ERGOTRACK, GOFORTY_MAX } from "../layouts";
 import { ErrorConditions } from "@zmkfirmware/zmk-studio-ts-client/meta";
 import { KEYBOARD_KEYCODES } from "../keycodes";
 import { BEHAVIORS } from "./behaviors";
@@ -149,15 +141,10 @@ const ESC = 0xac;
 /**
  * Demo keyboard data
  */
-const LAYOUTS = [
-  DYA_DASH,
-  DYA_DASH_ARROW,
-  DYA2_ANSI,
-  DYA2_JIS,
-  ANSI60,
-  ORTHO,
-  CORNE6,
-];
+// Only the keyboards this app supports: the connection guard turns anything
+// else away, so offering a generic layout here would advertise something the
+// app will not actually talk to.
+const LAYOUTS = [ERGOTRACK, GOFORTY_MAX];
 const maxKeys = LAYOUTS.reduce(
   (max, layout) => (layout.keys.length > max ? layout.keys.length : max),
   0,
@@ -381,6 +368,9 @@ class Keyboard {
     } else if (req.keymap?.setActivePhysicalLayout !== undefined) {
       const layoutIndex = req.keymap.setActivePhysicalLayout;
       this.data.layouts.activeLayoutIndex = layoutIndex;
+      // The two demo layouts are two different keyboards, and only one of them
+      // has trackpads, so the module handler has to follow the selection.
+      this.physicalLayoutsHandler.setActiveLayoutIndex(layoutIndex);
       rr.keymap = {
         setActivePhysicalLayout: {
           ok: this.data.keymap,
