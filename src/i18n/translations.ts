@@ -67,6 +67,32 @@ const ja: Record<string, string> = {
   "Input Stream": "入力ストリーム",
   "Zephyr Settings": "Zephyr設定",
   "Device Settings": "デバイス設定",
+  Firmware: "ファームウェア",
+  "Download the latest firmware for your keyboard. Each link always points at the newest release.":
+    "お使いのキーボードの最新ファームウェアをダウンロードできます。各リンクは常に最新のリリースを指します。",
+  "How to flash": "書き込み方法",
+  "Download the .uf2 file for your keyboard below.":
+    "下の一覧から、お使いのキーボードの .uf2 ファイルをダウンロードします。",
+  "Connect the keyboard over USB and double-tap its reset switch. It restarts into the bootloader and appears as a USB drive.":
+    "キーボードを USB で接続し、リセットスイッチをすばやく2回押します。ブートローダーで起動し、USB ドライブとして認識されます。",
+  "Copy the .uf2 file onto that drive. The keyboard writes it and restarts on its own, and the drive disappears — that is normal, not an error.":
+    "そのドライブに .uf2 ファイルをコピーします。書き込みが終わるとキーボードが自動で再起動し、ドライブは消えます。これは正常な動作でエラーではありません。",
+  "On a split keyboard, repeat for the other half: each half runs its own firmware.":
+    "分割キーボードの場合は、もう一方の手側にも同じ手順で書き込みます。左右はそれぞれ別のファームウェアで動作します。",
+  "If Bluetooth misbehaves after an update, unpair the keyboard on the host and pair it again.":
+    "更新後に Bluetooth の挙動がおかしい場合は、接続先の機器でペアリングを解除してから、もう一度ペアリングしてください。",
+  "Split keyboard: flash both halves.":
+    "分割キーボードです。左右の両方に書き込んでください。",
+  "Release notes and older versions": "リリースノートと過去のバージョン",
+  "Left half": "左手側",
+  "Right half": "右手側",
+  "Flash this to the left half.": "左手側に書き込みます。",
+  "Flash this to the right half. This is the half that talks to Keeb-On! Studio.":
+    "右手側に書き込みます。Keeb-On! Studio と通信するのはこちら側です。",
+  "Flash this to the keyboard.": "キーボードに書き込みます。",
+  "Settings reset": "設定リセット",
+  "Erases stored settings, including Bluetooth pairings. Flash this only to recover, then flash the normal firmware again.":
+    "Bluetooth のペアリングを含む保存済み設定を消去します。復旧目的のときだけ書き込み、そのあと通常のファームウェアを書き直してください。",
   "Welcome to Keeb-On! Studio": "Keeb-On! Studio へようこそ",
   "Features - What you can do with Keeb-On! Studio":
     "機能 - Keeb-On! Studio でできること",
@@ -1406,6 +1432,31 @@ const zh: Record<string, string> = {
   "Input Stream": "输入流",
   "Zephyr Settings": "Zephyr 设置",
   "Device Settings": "设备设置",
+  Firmware: "固件",
+  "Download the latest firmware for your keyboard. Each link always points at the newest release.":
+    "下载键盘的最新固件。每个链接始终指向最新版本。",
+  "How to flash": "刷写方法",
+  "Download the .uf2 file for your keyboard below.":
+    "从下面的列表下载对应键盘的 .uf2 文件。",
+  "Connect the keyboard over USB and double-tap its reset switch. It restarts into the bootloader and appears as a USB drive.":
+    "用 USB 连接键盘，然后快速按两次复位开关。键盘会进入引导程序并显示为 USB 驱动器。",
+  "Copy the .uf2 file onto that drive. The keyboard writes it and restarts on its own, and the drive disappears — that is normal, not an error.":
+    "把 .uf2 文件复制到该驱动器。写入完成后键盘会自动重启，驱动器随之消失，这是正常现象而非错误。",
+  "On a split keyboard, repeat for the other half: each half runs its own firmware.":
+    "分体键盘请对另一半重复相同步骤：两半各自运行自己的固件。",
+  "If Bluetooth misbehaves after an update, unpair the keyboard on the host and pair it again.":
+    "更新后若蓝牙异常，请在主机上取消配对后重新配对。",
+  "Split keyboard: flash both halves.": "分体键盘：两半都需要刷写。",
+  "Release notes and older versions": "发行说明与历史版本",
+  "Left half": "左半边",
+  "Right half": "右半边",
+  "Flash this to the left half.": "刷写到左半边。",
+  "Flash this to the right half. This is the half that talks to Keeb-On! Studio.":
+    "刷写到右半边。与 Keeb-On! Studio 通信的是这一半。",
+  "Flash this to the keyboard.": "刷写到键盘。",
+  "Settings reset": "设置重置",
+  "Erases stored settings, including Bluetooth pairings. Flash this only to recover, then flash the normal firmware again.":
+    "会清除已保存的设置，包括蓝牙配对。仅在需要恢复时刷写，之后请重新刷写正常固件。",
   "Welcome to Keeb-On! Studio": "欢迎使用 Keeb-On! Studio",
   "Features - What you can do with Keeb-On! Studio":
     "功能 - Keeb-On! Studio 能做什么",

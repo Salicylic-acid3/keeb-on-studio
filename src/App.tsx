@@ -6,6 +6,7 @@ import {
   IconKeyboard,
   IconPlugConnected,
   IconPuzzle,
+  IconDownload,
   IconSettings,
   IconStethoscope,
   IconWand,
@@ -39,6 +40,7 @@ import {
 import { AbyssCallbackPage } from "./pages/AbyssCallbackPage";
 import { isAbyssConfigured } from "./lib/abyss/abyssConfig";
 import { OAUTH_CALLBACK_PATH } from "./lib/abyss/abyssOAuth";
+import { FirmwarePage } from "./pages/FirmwarePage";
 import { useLanguage } from "./hooks/useLanguage";
 import { useUrlTab, pathnameFromTabId } from "./hooks/useUrlTab";
 import { useDevtool } from "./hooks/useDevtool";
@@ -82,6 +84,12 @@ function getTabs(t: (key: string) => string): TabItem[] {
       label: t("Troubleshooting"),
       icon: <IconStethoscope size={18} />,
       content: <TroubleshootingPage />,
+    },
+    {
+      id: "firmware",
+      label: t("Firmware"),
+      icon: <IconDownload size={18} />,
+      content: <FirmwarePage />,
     },
     {
       id: "subsystems",
