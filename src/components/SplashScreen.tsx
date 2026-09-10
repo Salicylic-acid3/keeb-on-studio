@@ -197,7 +197,7 @@ export function SplashScreen({
               Studio
             </h1>
             <p className="mt-2 text-[11px] uppercase tracking-[0.32em] text-[var(--color-text-muted)]">
-              ClickBoard &amp; GoForty
+              Salicylic_acid3 Keyboards
             </p>
           </div>
 

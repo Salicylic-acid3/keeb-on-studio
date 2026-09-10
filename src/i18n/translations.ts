@@ -9,6 +9,7 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  "Firmware support is in progress.": "ファームウェア対応は進行中です。",
   "Keymap gallery": "キーマップギャラリー",
   "Browse the gallery…": "ギャラリーを見る…",
   "Keymaps other people published.": "他の人が公開したキーマップです。",
@@ -263,8 +264,6 @@ const ja: Record<string, string> = {
   "Coming Soon": "近日公開",
   "Q: Can my keyboard support Keeb-On! Studio?":
     "Q: 自分のキーボードは Keeb-On! Studio に対応できますか？",
-  "ClickBoard ErgoTrack and GoFortyMax firmware support is in progress.":
-    "ClickBoard ErgoTrack と GoFortyMax のファームウェア対応は現在進行中です。",
   "Warning: cormoran's ZMK fork is very experimental, optimized for DYA keyboards and may contain unstable or breaking changes. Use at your own risk. In rare cases, it may cause malfunction or damage to your keyboard hardware.":
     "警告: cormoran の ZMK fork は非常に実験的で、DYA キーボード向けに最適化されています。不安定な変更や破壊的変更を含む可能性があります。自己責任で使用してください。まれにキーボードハードウェアの誤動作や損傷につながる場合があります。",
   "Q: Can I get source code of Keeb-On! Studio?":
@@ -1522,6 +1521,7 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
+  "Firmware support is in progress.": "固件支持正在进行中。",
   "Keymap gallery": "键映射图库",
   "Browse the gallery…": "浏览图库…",
   "Keymaps other people published.": "其他人公开的键映射。",
@@ -1762,8 +1762,6 @@ const zh: Record<string, string> = {
   "Coming Soon": "即将推出",
   "Q: Can my keyboard support Keeb-On! Studio?":
     "Q: 我的键盘可以使用 Keeb-On! Studio 吗？",
-  "ClickBoard ErgoTrack and GoFortyMax firmware support is in progress.":
-    "ClickBoard ErgoTrack 和 GoFortyMax 的固件支持正在开发中。",
   "Warning: cormoran's ZMK fork is very experimental, optimized for DYA keyboards and may contain unstable or breaking changes. Use at your own risk. In rare cases, it may cause malfunction or damage to your keyboard hardware.":
     "警告：cormoran 的 ZMK 分支非常实验性，针对 DYA 键盘进行了优化，可能包含不稳定或破坏性更改。使用风险自负。在极少数情况下，可能导致键盘硬件故障或损坏。",
   "Q: Can I get source code of Keeb-On! Studio?":

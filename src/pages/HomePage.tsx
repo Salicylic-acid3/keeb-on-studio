@@ -77,8 +77,8 @@ export function HomePage() {
               <p className="text-sm text-[var(--color-text-muted)] mt-1">
                 {language === "ja" ? (
                   <>
-                    Keeb-On! Studio は ClickBoard ErgoTrack と GoFortyMax
-                    向けの、もう一つの{" "}
+                    Keeb-On! Studio は Salicylic_acid3
+                    が開発するキーボード向けの、もう一つの{" "}
                     <a
                       href="https://zmk.studio/"
                       target="_blank"
@@ -109,7 +109,7 @@ export function HomePage() {
                     >
                       ZMK Studio
                     </a>{" "}
-                    for ClickBoard ErgoTrack and GoFortyMax, forked from{" "}
+                    for the keyboards Salicylic_acid3 develops, forked from{" "}
                     <a
                       href="https://github.com/cormoran/dya-studio"
                       target="_blank"
@@ -229,8 +229,7 @@ export function HomePage() {
                 {language === "ja" ? (
                   <>
                     A: いいえ。Keeb-On! Studio は Salicylic_acid3
-                    が開発するキーボード（ClickBoard ErgoTrack、GoFortyMax
-                    など）に特化したツールで、一般の ZMK
+                    が開発するキーボードに特化したツールで、一般の ZMK
                     キーボードには対応していません。
                     <br />
                     一般的な ZMK
@@ -257,8 +256,8 @@ export function HomePage() {
                 ) : (
                   <>
                     A: No — Keeb-On! Studio is specialized for the keyboards
-                    Salicylic_acid3 develops (such as ClickBoard ErgoTrack and
-                    GoFortyMax) and does not support general ZMK keyboards.
+                    Salicylic_acid3 develops, and does not support general ZMK
+                    keyboards.
                     <br />
                     If you want a similar tool for a general ZMK keyboard,
                     please use the upstream{" "}
@@ -283,9 +282,7 @@ export function HomePage() {
                   </>
                 )}
                 <br />
-                {t(
-                  "ClickBoard ErgoTrack and GoFortyMax firmware support is in progress.",
-                )}
+                {t("Firmware support is in progress.")}
                 <div className="mt-2 p-3 rounded bg-[var(--color-warning)]/20 border border-[var(--color-warning)] text-[var(--color-warning)] text-xs">
                   {t(
                     "Warning: cormoran's ZMK fork is very experimental, optimized for DYA keyboards and may contain unstable or breaking changes. Use at your own risk. In rare cases, it may cause malfunction or damage to your keyboard hardware.",
