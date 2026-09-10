@@ -20,9 +20,14 @@ export const RUNTIME_INPUT_PROCESSOR_IDENTIFIER = "cormoran_rip";
  * `zmk-module-runtime-input-processor` ships them as
  * `mouse_runtime_input_processor` and `scroll_runtime_input_processor`, and
  * their `processor-label` is what the app lists -- so the demo uses the same
- * two names and the same starting values the shield's overlay sets. Both pads
+ * names and the same starting values the shield's overlay sets. Both pads
  * share one pair, which is why adjusting a processor moves both hands
  * together on the real keyboard.
+ *
+ * There are two pairs. The `(alt)` one is wired into the input listeners
+ * behind `layers = <1>`, so it applies only while the Alt Base layer is
+ * active -- which is how OS detection gives each operating system its own
+ * trackpad feel (scroll direction, mostly).
  */
 const MOCK_PROCESSORS: ProcessorInfo[] = [
   {
@@ -63,6 +68,46 @@ const MOCK_PROCESSORS: ProcessorInfo[] = [
     axisSnapTimeoutMs: 200,
     xInvert: false,
     yInvert: false,
+    xyToScrollEnabled: false,
+    xySwapEnabled: false,
+  },
+  {
+    id: 2,
+    name: "mouse (alt)",
+    scaleMultiplier: 1,
+    scaleDivisor: 1,
+    rotationDegrees: 0,
+    tempLayerEnabled: false,
+    tempLayerLayer: 0,
+    tempLayerActivationDelayMs: 100,
+    tempLayerDeactivationDelayMs: 500,
+    activeLayers: 0,
+    axisSnapMode: AxisSnapMode.AXIS_SNAP_MODE_NONE,
+    axisSnapThreshold: 50,
+    axisSnapTimeoutMs: 200,
+    xInvert: false,
+    yInvert: false,
+    xyToScrollEnabled: false,
+    xySwapEnabled: false,
+  },
+  {
+    id: 3,
+    name: "scroll (alt)",
+    scaleMultiplier: 1,
+    scaleDivisor: 1,
+    rotationDegrees: 0,
+    tempLayerEnabled: false,
+    tempLayerLayer: 0,
+    tempLayerActivationDelayMs: 100,
+    tempLayerDeactivationDelayMs: 500,
+    activeLayers: 0,
+    axisSnapMode: AxisSnapMode.AXIS_SNAP_MODE_NONE,
+    axisSnapThreshold: 50,
+    axisSnapTimeoutMs: 200,
+    xInvert: false,
+    // The one setting that usually differs between macOS and Windows: which
+    // way the wheel scrolls. Set here so the demo shows what the pair is for.
+    yInvert: true,
     xyToScrollEnabled: false,
     xySwapEnabled: false,
   },

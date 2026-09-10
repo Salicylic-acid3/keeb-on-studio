@@ -9,6 +9,11 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  "Per-OS settings": "OS別の設定",
+  "Processors marked (alt) apply only while the Alt Base layer is active.":
+    "(alt) が付いたプロセッサは、Alt Base レイヤーが有効なときだけ効きます。",
+  "Point an OS at that layer under Connections, and it gets its own trackpad feel — scroll direction, usually.":
+    "接続タブでそのレイヤーをOSに割り当てると、そのOSだけ別の操作感にできます（主にスクロール方向）。",
   Print: "印刷",
   "Print one page per layer": "レイヤーごとに1ページで印刷する",
   // --- Trackpad tuning (Phase 5) ---
@@ -1399,6 +1404,11 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
+  "Per-OS settings": "按操作系统的设置",
+  "Processors marked (alt) apply only while the Alt Base layer is active.":
+    "标记为 (alt) 的处理器仅在 Alt Base 层激活时生效。",
+  "Point an OS at that layer under Connections, and it gets its own trackpad feel — scroll direction, usually.":
+    "在连接标签中把某个操作系统指向该层，即可为它单独设置触控板手感（通常是滚动方向）。",
   Print: "打印",
   "Print one page per layer": "每层打印一页",
   // --- Trackpad tuning (Phase 5) ---

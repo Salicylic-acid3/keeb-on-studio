@@ -80,6 +80,17 @@ export function processorDoc(t: TranslateFn): DocTipContent {
         ],
       },
       {
+        heading: t("Per-OS settings"),
+        bullets: [
+          t(
+            "Processors marked (alt) apply only while the Alt Base layer is active.",
+          ),
+          t(
+            "Point an OS at that layer under Connections, and it gets its own trackpad feel — scroll direction, usually.",
+          ),
+        ],
+      },
+      {
         heading: t("Note"),
         bullets: [
           t(
