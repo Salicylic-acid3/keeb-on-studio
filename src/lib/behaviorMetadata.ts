@@ -572,13 +572,60 @@ BEHAVIOR_METADATA_BASE.forEach((metadata) => {
 });
 
 /**
+ * A firmware that offers the same behavior at several tap/hold thresholds
+ * names the instances after the threshold: "Mod-Tap 150ms", "Layer-Tap 280ms".
+ * ZMK has no way to say "this is a Mod-Tap with a different timing", so
+ * without this the presets fall through to the Others category with no
+ * parameter types and no label -- which is where the ones this project ships
+ * ended up.
+ */
+const TIMING_PRESET = /\s+(\d+)\s*ms$/i;
+
+/** Derived metadata is built once per name, so identity stays stable. */
+const timingPresetCache = new Map<string, BehaviorMetadata | null>();
+
+function timingPresetMetadata(displayName: string): BehaviorMetadata | null {
+  const normalized = displayName.toLowerCase();
+  const match = normalized.match(TIMING_PRESET);
+  if (!match) return null;
+
+  const base = BEHAVIOR_METADATA[normalized.replace(TIMING_PRESET, "")];
+  if (!base) return null;
+
+  const ms = match[1];
+  const baseDisplayText = base.getDisplayText;
+  return {
+    ...base,
+    // Keep the firmware's own name first: it is what tells the three presets
+    // apart in the picker, and the base name would make them look identical.
+    displayNameVariants: [displayName, ...base.displayNameVariants],
+    shortCode: `${base.shortCode}${ms}`,
+    description: base.description ? `${base.description} (${ms}ms)` : `${ms}ms`,
+    getDisplayText: baseDisplayText
+      ? (binding, context, metadata) => {
+          const text = baseDisplayText(binding, context, metadata);
+          // The threshold is the whole point of having three of these, so it
+          // belongs on the key rather than only in the picker.
+          return text === null ? null : `${text} ${ms}ms`;
+        }
+      : undefined,
+  };
+}
+
+/**
  * Get behavior metadata by displayName (case-insensitive)
  */
 export function getBehaviorMetadata(
   displayName: string,
 ): BehaviorMetadata | null {
   const normalized = displayName.toLowerCase();
-  return BEHAVIOR_METADATA[normalized] || null;
+  const direct = BEHAVIOR_METADATA[normalized];
+  if (direct) return direct;
+
+  if (!timingPresetCache.has(normalized)) {
+    timingPresetCache.set(normalized, timingPresetMetadata(displayName));
+  }
+  return timingPresetCache.get(normalized) ?? null;
 }
 
 /**

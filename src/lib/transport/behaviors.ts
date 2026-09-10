@@ -322,4 +322,156 @@ export const BEHAVIORS = [
       },
     ],
   },
+  // タップ/ホールドの判定時間プリセット。実機のキーマップが同じものを定義
+  // しているので(clickboard_ergotrack.keymap / goforty_max.keymap の
+  // behaviors ブロック)、デモでも同じ選択肢が並ぶようにしてある。
+  // hold-tap のパラメータ種別は子ビヘイビアから継承されるため、
+  // mod-tap 系は キー+キー、layer-tap 系は レイヤー+キー になる。
+  {
+    id: 40,
+    displayName: "Mod-Tap 150ms",
+    metadata: [
+      {
+        param1: [
+          {
+            name: "Key",
+            hidUsage: {
+              keyboardMax: 255,
+              consumerMax: 4095,
+            },
+          },
+        ],
+        param2: [
+          {
+            name: "Key",
+            hidUsage: {
+              keyboardMax: 255,
+              consumerMax: 4095,
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 41,
+    displayName: "Mod-Tap 200ms",
+    metadata: [
+      {
+        param1: [
+          {
+            name: "Key",
+            hidUsage: {
+              keyboardMax: 255,
+              consumerMax: 4095,
+            },
+          },
+        ],
+        param2: [
+          {
+            name: "Key",
+            hidUsage: {
+              keyboardMax: 255,
+              consumerMax: 4095,
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 42,
+    displayName: "Mod-Tap 280ms",
+    metadata: [
+      {
+        param1: [
+          {
+            name: "Key",
+            hidUsage: {
+              keyboardMax: 255,
+              consumerMax: 4095,
+            },
+          },
+        ],
+        param2: [
+          {
+            name: "Key",
+            hidUsage: {
+              keyboardMax: 255,
+              consumerMax: 4095,
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 43,
+    displayName: "Layer-Tap 150ms",
+    metadata: [
+      {
+        param1: [
+          {
+            name: "Layer",
+            layerId: {},
+          },
+        ],
+        param2: [
+          {
+            name: "Key",
+            hidUsage: {
+              keyboardMax: 255,
+              consumerMax: 4095,
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 44,
+    displayName: "Layer-Tap 200ms",
+    metadata: [
+      {
+        param1: [
+          {
+            name: "Layer",
+            layerId: {},
+          },
+        ],
+        param2: [
+          {
+            name: "Key",
+            hidUsage: {
+              keyboardMax: 255,
+              consumerMax: 4095,
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 45,
+    displayName: "Layer-Tap 280ms",
+    metadata: [
+      {
+        param1: [
+          {
+            name: "Layer",
+            layerId: {},
+          },
+        ],
+        param2: [
+          {
+            name: "Key",
+            hidUsage: {
+              keyboardMax: 255,
+              consumerMax: 4095,
+            },
+          },
+        ],
+      },
+    ],
+  },
 ].sort((a, b) => a.id - b.id);
