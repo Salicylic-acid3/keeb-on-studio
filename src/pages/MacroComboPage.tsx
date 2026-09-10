@@ -51,6 +51,7 @@ import { macroDoc, comboDoc } from "../i18n/featureDocs";
 import type { Combo } from "../hooks/useRuntimeCombo";
 import type { MacroSummary } from "../proto/cormoran/runtime_macro/runtime_macro";
 import { HexIcon } from "../components/brand/HexIcon";
+import { TapDanceSection } from "../components/tapDance/TapDanceSection";
 
 /** What the right column currently shows. `null` renders the placeholder
  * (until the macro auto-select picks the first macro, mirroring the old
@@ -769,6 +770,19 @@ export function MacroComboPage() {
                 </section>
               )}
             </div>
+          </div>
+        )}
+
+        {/* Tap dance sits with macros and combos because it is the third
+            runtime-editable behavior, not because it is a kind of macro.
+            It renders nothing when the firmware does not have the module. */}
+        {connection.isConnected && (
+          <div className="mt-6">
+            <TapDanceSection
+              behaviors={keymap.behaviors}
+              layers={layersForSelector}
+              disabled={locked}
+            />
           </div>
         )}
       </div>

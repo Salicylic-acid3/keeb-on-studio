@@ -9,6 +9,19 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  "Tap Dance": "タップダンス",
+  "What one tap, two taps and three taps each do":
+    "1回・2回・3回タップしたときの動作",
+  "Tap dance {{index}}": "タップダンス {{index}}",
+  "Wait between taps": "次のタップを待つ時間",
+  "{{count}} taps": "{{count}}回",
+  "Not set — click to choose": "未設定 — クリックして選ぶ",
+  "No taps yet — this slot does nothing when pressed. Add one to start.":
+    "まだタップがありません。押しても何も起きない状態です。追加してください。",
+  "Add a tap": "タップを追加",
+  "Remove the last tap": "最後のタップを削除",
+  "This keyboard has no tap dance slots.":
+    "このキーボードにはタップダンスのスロットがありません。",
   "Firmware support is in progress.": "ファームウェア対応は進行中です。",
   "Keymap gallery": "キーマップギャラリー",
   "Browse the gallery…": "ギャラリーを見る…",
@@ -1521,6 +1534,18 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
+  "Tap Dance": "点击舞",
+  "What one tap, two taps and three taps each do":
+    "点击 1 次、2 次、3 次分别执行什么",
+  "Tap dance {{index}}": "点击舞 {{index}}",
+  "Wait between taps": "两次点击之间的等待",
+  "{{count}} taps": "{{count}} 次",
+  "Not set — click to choose": "未设置 — 点击选择",
+  "No taps yet — this slot does nothing when pressed. Add one to start.":
+    "尚未设置任何点击。此槽位按下不会有任何反应，请先添加。",
+  "Add a tap": "添加一次点击",
+  "Remove the last tap": "删除最后一次点击",
+  "This keyboard has no tap dance slots.": "此键盘没有点击舞槽位。",
   "Firmware support is in progress.": "固件支持正在进行中。",
   "Keymap gallery": "键映射图库",
   "Browse the gallery…": "浏览图库…",

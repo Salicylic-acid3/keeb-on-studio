@@ -8,6 +8,7 @@ import {
   SettingNotificationKind,
   SettingWriteMode,
   type Setting,
+  type SettingScalarValue,
   type SettingScope,
   type SettingValue,
 } from "../proto/cormoran/zmk/custom_settings/custom_settings";
@@ -53,6 +54,13 @@ export interface UseCustomSettingsReturn {
     mode: SettingWriteMode,
   ) => Promise<Response>;
   deleteSetting: (key: string) => Promise<Response>;
+  /** Append one element to an array setting (the generic screen cannot). */
+  pushBackArrayElement: (
+    setting: Setting,
+    value: SettingScalarValue,
+  ) => Promise<void>;
+  /** Drop the last element of an array setting. */
+  popBackArrayElement: (setting: Setting) => Promise<void>;
   clearError: () => void;
 }
 
@@ -390,6 +398,80 @@ export function useCustomSettings(
     [callCustomRequest, loadSettings, t],
   );
 
+  /**
+   * Append one element to an array setting, and shorten one from the end.
+   *
+   * The generic settings screen can edit the elements an array already has
+   * but cannot change how many there are, which leaves an array that starts
+   * empty permanently uneditable -- there is no row to type into and no
+   * control that would make one. These are that missing pair, and anything
+   * built on array settings (tap dance, for one) needs them before it can be
+   * configured at all.
+   *
+   * Both write to memory, like every other edit here: the section's Save
+   * button is what persists them.
+   */
+  const pushBackArrayElement = useCallback(
+    async (setting: Setting, value: SettingScalarValue) => {
+      try {
+        await callCustomRequest(
+          Request.create({
+            pushBackArray: {
+              setting: {
+                customSubsystemIndex: setting.customSubsystemIndex,
+                key: setting.key,
+                source: setting.source,
+              },
+              value,
+              mode: SettingWriteMode.SETTING_WRITE_MODE_MEMORY,
+            },
+          }),
+        );
+        setError(null);
+      } catch (err) {
+        console.error("Failed to append to array setting:", err);
+        setError(
+          err instanceof Error
+            ? err.message
+            : t("Failed to write custom setting"),
+        );
+      }
+      // The array's length changed, so the list of elements has to be re-read
+      // rather than patched: every index after this one may have shifted.
+      await loadSettings();
+    },
+    [callCustomRequest, loadSettings, t],
+  );
+
+  const popBackArrayElement = useCallback(
+    async (setting: Setting) => {
+      try {
+        await callCustomRequest(
+          Request.create({
+            popBackArray: {
+              setting: {
+                customSubsystemIndex: setting.customSubsystemIndex,
+                key: setting.key,
+                source: setting.source,
+              },
+              mode: SettingWriteMode.SETTING_WRITE_MODE_MEMORY,
+            },
+          }),
+        );
+        setError(null);
+      } catch (err) {
+        console.error("Failed to shorten array setting:", err);
+        setError(
+          err instanceof Error
+            ? err.message
+            : t("Failed to write custom setting"),
+        );
+      }
+      await loadSettings();
+    },
+    [callCustomRequest, loadSettings, t],
+  );
+
   const createSetting = useCallback(
     async (
       key: string,
@@ -498,6 +580,8 @@ export function useCustomSettings(
       mutateScope(scopeForSection(customSubsystemIndex), "resetSettings"),
     createSetting,
     deleteSetting,
+    pushBackArrayElement,
+    popBackArrayElement,
     clearError: () => setError(null),
   };
 }
