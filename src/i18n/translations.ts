@@ -719,7 +719,10 @@ const ja: Record<string, string> = {
   Transport: "通信",
   System: "システム",
   Misc: "その他",
-  Others: "その他",
+  // "Misc" と同じ「その他」にすると、ビヘイビア選択のカテゴリ一覧に同じ名前が
+  // 2つ並んでどちらを見ればよいか分からなくなる。Others はアプリが素性を
+  // 知らないビヘイビア(ファームウェア固有のものなど)の受け皿なので「未分類」。
+  Others: "未分類",
   "Press a key": "キーを押す",
   "Activate layer while held": "押している間レイヤーを有効化",
   "Switch to layer": "レイヤーへ切り替え",
