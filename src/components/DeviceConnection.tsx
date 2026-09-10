@@ -62,6 +62,15 @@ interface ConnectionContextValue {
    * than showing it as a connection failure.
    */
   unsupportedDevice: string | null;
+  /**
+   * True when this session is demo mode rather than a real keyboard.
+   *
+   * Features that only make sense against hardware read this. Saving a keymap
+   * locally is deliberately NOT one of them -- laying out a keymap before the
+   * keyboard arrives is a real thing people do -- but publishing one to other
+   * people is: a shared keymap should come from someone who owns the board.
+   */
+  isDemo: boolean;
 }
 
 const ConnectionContext = createContext<ConnectionContextValue>({
@@ -74,6 +83,7 @@ const ConnectionContext = createContext<ConnectionContextValue>({
   isReconnecting: false,
   onCancelReconnect: () => {},
   unsupportedDevice: null,
+  isDemo: false,
 });
 
 interface DeviceConnectionProviderProps {
@@ -137,10 +147,15 @@ export function DeviceConnectionProvider({
 
   // How the *current* session was established, kept for the whole session
   // (unlike `attemptedMethodRef`, which is cleared once the attempt's outcome
-  // is reported). Only used to let demo mode past the supported-device check.
+  // is reported). Lets demo mode past the supported-device check, and tells
+  // the rest of the app whether it is talking to hardware.
   // The page-load auto-reconnect never sets it and is always paired serial,
   // so "serial" is the right default.
   const sessionMethodRef = useRef<ConnectionMethod>("serial");
+  // The ref above is what the connect path writes; this is the render-visible
+  // copy, since a ref change does not re-render the consumers.
+  const [sessionMethod, setSessionMethod] =
+    useState<ConnectionMethod>("serial");
   // Set when we hang up on a keyboard we don't support, so the connect screen
   // can say which keyboard it was.
   const [unsupportedDevice, setUnsupportedDevice] = useState<string | null>(
@@ -274,6 +289,7 @@ export function DeviceConnectionProvider({
       }
       attemptedMethodRef.current = method;
       sessionMethodRef.current = method;
+      setSessionMethod(method);
       // A fresh attempt clears the previous rejection so the notice doesn't
       // outlive it.
       setUnsupportedDevice(null);
@@ -314,6 +330,7 @@ export function DeviceConnectionProvider({
     isReconnecting,
     onCancelReconnect: handleCancelReconnect,
     unsupportedDevice,
+    isDemo: zmkApp.isConnected && sessionMethod === "demo",
   };
 
   return (

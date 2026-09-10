@@ -49,6 +49,8 @@ import { useKeymapVersionHistory } from "../hooks/versionHistory/useKeymapVersio
 import { useIsTabActive } from "../hooks/useIsTabActive";
 import { HexIcon } from "../components/brand/HexIcon";
 import { KeymapPrintSheet } from "../components/KeymapPrintSheet";
+import { SavedKeymapsMenu } from "../components/savedKeymaps/SavedKeymapsMenu";
+import { useSavedKeymaps } from "../hooks/useSavedKeymaps";
 
 export function KeymapPage() {
   const { t } = useLanguage();
@@ -109,6 +111,23 @@ export function KeymapPage() {
     return keymap.physicalLayouts.layouts[index] ?? null;
   }, [keymap.physicalLayouts]);
 
+  // Named keymaps the user keeps in this browser. Deliberately usable in demo
+  // mode: laying out a keymap before the keyboard arrives is a real thing, and
+  // the record is matched to a keyboard by shape rather than by device.
+  const savedKeymaps = useSavedKeymaps({
+    layers: keymap.keymap?.layers,
+    behaviors: keymap.behaviors,
+    connected: currentLayout
+      ? {
+          layoutName: currentLayout.name,
+          keyCount: currentLayout.keys.length,
+        }
+      : null,
+    isDemo: connection.isDemo,
+    setBinding: keymap.setBinding,
+  });
+  const [loadNotice, setLoadNotice] = useState<string | null>(null);
+
   // Layers for the selector
   const layersForSelector = useMemo(() => {
     if (!keymap.keymap?.layers) return [];
@@ -137,6 +156,40 @@ export function KeymapPage() {
       void action();
     },
     [requireUnlocked],
+  );
+
+  // Loading a saved keymap writes through the same edit path as the editor, so
+  // it lands as unsaved changes the user reviews and then Saves -- rather than
+  // going straight to the keyboard on the one action most likely to be a slip.
+  const handleLoadSaved = useCallback(
+    (record: Parameters<typeof savedKeymaps.load>[0]) =>
+      withUnlock(async () => {
+        const outcome = await savedKeymaps.load(record);
+        const notes = [
+          t("Loaded {{count}} keys as unsaved changes.", {
+            count: outcome.written,
+          }),
+        ];
+        if (outcome.unresolved.length > 0) {
+          notes.push(
+            t(
+              "{{count}} keys were left alone: this keyboard has no such behavior.",
+              {
+                count: outcome.unresolved.length,
+              },
+            ),
+          );
+        }
+        if (outcome.skippedLayers > 0) {
+          notes.push(
+            t("{{count}} layers were skipped: this keyboard has fewer.", {
+              count: outcome.skippedLayers,
+            }),
+          );
+        }
+        setLoadNotice(notes.join(" "));
+      }),
+    [savedKeymaps, t, withUnlock],
   );
 
   // Handle key click
@@ -497,6 +550,20 @@ export function KeymapPage() {
                 <>
                   {/* Reset, Discard and every captured version live in one
                       dropdown — see ResetVersionMenu. */}
+                  <SavedKeymapsMenu
+                    keymaps={savedKeymaps.keymaps}
+                    canSave={savedKeymaps.canSave}
+                    isDurable={savedKeymaps.isDurable}
+                    compatibility={savedKeymaps.compatibility}
+                    onSave={(name, description) => {
+                      void savedKeymaps.save(name, description);
+                    }}
+                    onLoad={handleLoadSaved}
+                    onDelete={(record) => {
+                      void savedKeymaps.remove(record.id);
+                    }}
+                    disabled={keymap.isLoading}
+                  />
                   <div className="flex-shrink-0">
                     <ResetVersionMenu
                       versions={versionHistory.versions}
@@ -1007,6 +1074,29 @@ export function KeymapPage() {
                       t("Layer {{id}}", { id: selectedLayerIndex }),
                   })}
                 />
+              </div>
+            )}
+
+            {/* What loading a saved keymap actually did. Worth stating rather
+                than leaving the user to spot it: a load can be partial, and
+                nothing is written to the keyboard until they Save. */}
+            {loadNotice && (
+              <div className="glass-card p-4 mt-4 flex items-start gap-3">
+                <div className="p-2">
+                  <IconInfoCircle
+                    size={20}
+                    className="text-[var(--color-electric)]"
+                  />
+                </div>
+                <p className="flex-1 text-sm text-[var(--color-text-muted)]">
+                  {loadNotice}
+                </p>
+                <button
+                  className="btn-ghost text-xs"
+                  onClick={() => setLoadNotice(null)}
+                >
+                  {t("Dismiss")}
+                </button>
               </div>
             )}
 

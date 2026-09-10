@@ -9,6 +9,31 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  "My keymaps": "マイキーマップ",
+  "Save this keymap…": "このキーマップを保存…",
+  "Keeps a named copy in this browser.":
+    "名前を付けて、このブラウザに控えを残します。",
+  "Description (optional)": "説明（任意）",
+  "Nothing saved yet.": "まだ保存されていません。",
+  "This browser will not keep saved keymaps after you close it.":
+    "このブラウザでは、閉じると保存したキーマップが消えます。",
+  "made in demo mode": "デモモードで作成",
+  "Delete {{name}}": "{{name}} を削除",
+  "Saved for {{savedFor}}, but the keys line up.":
+    "{{savedFor}} 用に保存されたものですが、キー数は一致しています。",
+  "Saved for a {{savedFor}}-key keyboard; this one has {{connected}}.":
+    "{{savedFor}}キーのキーボード用に保存されています。接続中のものは{{connected}}キーです。",
+  "Saved by a newer version of Keeb-On! Studio.":
+    "より新しいバージョンの Keeb-On! Studio で保存されています。",
+  "Loaded {{count}} keys as unsaved changes.":
+    "{{count}}キーを未保存の変更として読み込みました。",
+  "{{count}} keys were left alone: this keyboard has no such behavior.":
+    "{{count}}キーはそのままにしました。このキーボードに該当するビヘイビアがありません。",
+  "{{count}} layers were skipped: this keyboard has fewer.":
+    "{{count}}レイヤーを飛ばしました。このキーボードのレイヤー数のほうが少ないためです。",
+  "Layer name": "レイヤー名",
+  "Rename Layer": "レイヤー名を変更",
+  "Rename current layer": "現在のレイヤー名を変更する",
   "Per-OS settings": "OS別の設定",
   "Processors marked (alt) apply only while the Alt Base layer is active.":
     "(alt) が付いたプロセッサは、Alt Base レイヤーが有効なときだけ効きます。",
@@ -1404,6 +1429,30 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
+  "My keymaps": "我的键映射",
+  "Save this keymap…": "保存此键映射…",
+  "Keeps a named copy in this browser.": "在此浏览器中保留一份命名副本。",
+  "Description (optional)": "说明（可选）",
+  "Nothing saved yet.": "尚未保存任何内容。",
+  "This browser will not keep saved keymaps after you close it.":
+    "此浏览器关闭后不会保留已保存的键映射。",
+  "made in demo mode": "在演示模式中创建",
+  "Delete {{name}}": "删除 {{name}}",
+  "Saved for {{savedFor}}, but the keys line up.":
+    "这是为 {{savedFor}} 保存的，但按键数量一致。",
+  "Saved for a {{savedFor}}-key keyboard; this one has {{connected}}.":
+    "为 {{savedFor}} 键的键盘保存；当前连接的是 {{connected}} 键。",
+  "Saved by a newer version of Keeb-On! Studio.":
+    "由更新版本的 Keeb-On! Studio 保存。",
+  "Loaded {{count}} keys as unsaved changes.":
+    "已将 {{count}} 个按键作为未保存的更改载入。",
+  "{{count}} keys were left alone: this keyboard has no such behavior.":
+    "{{count}} 个按键保持原样：此键盘没有对应的行为。",
+  "{{count}} layers were skipped: this keyboard has fewer.":
+    "跳过了 {{count}} 层：此键盘的层数更少。",
+  "Layer name": "层名称",
+  "Rename Layer": "重命名层",
+  "Rename current layer": "重命名当前层",
   "Per-OS settings": "按操作系统的设置",
   "Processors marked (alt) apply only while the Alt Base layer is active.":
     "标记为 (alt) 的处理器仅在 Alt Base 层激活时生效。",
