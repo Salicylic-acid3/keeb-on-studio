@@ -9,6 +9,21 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  "What to do about chatter": "チャタリングが出たときは",
+  "Reset the statistics, then use the keyboard for a while.":
+    "まず統計をリセットして、しばらく普通に使ってみてください。",
+  "These counts cover every press since the counters were last cleared, so one bad spell — a loose connector, a knock in a bag — stays in the numbers forever. A key that is not flagged again after a reset was never chattering.":
+    "この数値は前回リセットしてからの全打鍵を含みます。コネクタの緩みやカバンの中でぶつけたときの記録もずっと残り続けます。リセット後に再び挙がってこないキーは、チャタリングではありませんでした。",
+  "Then look at the switch itself.": "次にスイッチそのものを見てください。",
+  "A key that keeps being flagged is nearly always the switch: dust, wear, or a dry solder joint. Cleaning or replacing that one switch fixes most of it.":
+    "繰り返し挙がってくるキーは、ほぼスイッチ側です。ホコリ・摩耗・イモはんだのいずれかで、そのスイッチ1個の清掃か交換でたいてい直ります。",
+  "If it survives both, it needs new firmware.":
+    "それでも残るなら、ファームウェアの更新が必要です。",
+  "How long the keyboard ignores a switch after it moves is fixed when the firmware is built, so it cannot be changed from this screen. Report the key and these numbers, and a build with a longer wait can be published — you would then update from the Firmware tab.":
+    "スイッチが動いたあと何ミリ秒無視するかは、ファームウェアをビルドするときに決まる値です。この画面からは変えられません。該当キーとこの数値を報告していただければ、待ち時間を長くしたビルドを配布できます。その後はファームウェアタブから更新してください。",
+  "A longer wait delays every key on the keyboard, not just the faulty one, which is why it is the last step rather than the first.":
+    "待ち時間を長くすると、問題のキーだけでなくキーボード全部の反応が遅くなります。最初ではなく最後の手段にしているのはそのためです。",
+  "Report it on Discord": "Discordで報告する",
   "{{count}} keys were left alone: this keyboard has no {{names}}.":
     "{{count}}個のキーはそのままにしました。このキーボードには {{names}} がありません。",
   "{{names}} and {{count}} more": "{{names}} ほか{{count}}件",
@@ -1466,6 +1481,21 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
+  "What to do about chatter": "出现抖动时怎么办",
+  "Reset the statistics, then use the keyboard for a while.":
+    "先重置统计，然后正常使用一段时间。",
+  "These counts cover every press since the counters were last cleared, so one bad spell — a loose connector, a knock in a bag — stays in the numbers forever. A key that is not flagged again after a reset was never chattering.":
+    "这些计数包含自上次清零以来的全部按键，因此接口松动、包中磕碰等一时的异常会永远留在数字里。重置后不再被标记的键，本来就没有抖动。",
+  "Then look at the switch itself.": "接着检查轴体本身。",
+  "A key that keeps being flagged is nearly always the switch: dust, wear, or a dry solder joint. Cleaning or replacing that one switch fixes most of it.":
+    "反复被标记的键几乎都是轴体问题：灰尘、磨损或虚焊。清洁或更换那一颗轴体通常就能解决。",
+  "If it survives both, it needs new firmware.":
+    "若两者都无效，就需要更新固件。",
+  "How long the keyboard ignores a switch after it moves is fixed when the firmware is built, so it cannot be changed from this screen. Report the key and these numbers, and a build with a longer wait can be published — you would then update from the Firmware tab.":
+    "键盘在轴体动作后忽略多长时间，是编译固件时确定的，无法在此界面更改。请报告该键与这些数值，即可发布等待时间更长的版本，之后从固件标签页更新即可。",
+  "A longer wait delays every key on the keyboard, not just the faulty one, which is why it is the last step rather than the first.":
+    "延长等待会让整块键盘变慢，而不只是有问题的那颗键，因此这是最后一步而非第一步。",
+  "Report it on Discord": "在 Discord 上报告",
   "{{count}} keys were left alone: this keyboard has no {{names}}.":
     "有 {{count}} 个键保持原样：本键盘没有 {{names}}。",
   "{{names}} and {{count}} more": "{{names}} 等另外 {{count}} 项",

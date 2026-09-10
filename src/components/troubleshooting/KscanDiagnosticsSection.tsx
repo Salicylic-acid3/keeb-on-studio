@@ -9,6 +9,7 @@ import { KscanDriverType } from "../../proto/cormoran/kscan_diagnostics/kscan_di
 import type { UseKscanDiagnosticsReturn } from "../../hooks/useKscanDiagnostics";
 import { useOfficialLayouts } from "../../hooks/useOfficialLayouts";
 import { useLanguage } from "../../hooks/useLanguage";
+import { ChatterGuidance } from "./ChatterGuidance";
 import { findSuspectKeys } from "../../lib/troubleshootingReport";
 import { formatUptime } from "../../lib/troubleshootingFormat";
 import { buildWiringMap } from "../../lib/kscanTopology";
@@ -300,52 +301,55 @@ export function KscanDiagnosticsSection({
                     </span>
                   </div>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <p className="text-xs text-[var(--color-text-muted)] mb-2">
-                      {t(
-                        "Suspect keys (possible chatter or stuck switch) — position numbers follow the keymap order.",
-                      )}
-                    </p>
-                    <table className="w-full text-xs">
-                      <thead>
-                        <tr className="text-left text-[var(--color-text-muted)] border-b border-[var(--color-border)]">
-                          <th className="py-2 pr-3 font-medium">
-                            {t("Position")}
-                          </th>
-                          <th className="py-2 pr-3 font-medium">
-                            {t("Presses")}
-                          </th>
-                          <th className="py-2 pr-3 font-medium">
-                            {t("Releases")}
-                          </th>
-                          <th className="py-2 pr-3 font-medium">
-                            {t("Min gap (ms)")}
-                          </th>
-                          <th className="py-2 pr-3 font-medium">&lt;5ms</th>
-                          <th className="py-2 pr-3 font-medium">&lt;10ms</th>
-                          <th className="py-2 pr-3 font-medium">&lt;20ms</th>
-                          <th className="py-2 font-medium">&lt;50ms</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {suspectKeys.map((s) => (
-                          <tr
-                            key={s.position}
-                            className="border-b border-[var(--color-border)] last:border-b-0 font-mono"
-                          >
-                            <td className="py-2 pr-3">{s.position}</td>
-                            <td className="py-2 pr-3">{s.presses}</td>
-                            <td className="py-2 pr-3">{s.releases}</td>
-                            <td className="py-2 pr-3">{s.minRepressGapMs}</td>
-                            <td className="py-2 pr-3">{s.repressLt5}</td>
-                            <td className="py-2 pr-3">{s.repressLt10}</td>
-                            <td className="py-2 pr-3">{s.repressLt20}</td>
-                            <td className="py-2">{s.repressLt50}</td>
+                  <>
+                    <div className="overflow-x-auto">
+                      <p className="text-xs text-[var(--color-text-muted)] mb-2">
+                        {t(
+                          "Suspect keys (possible chatter or stuck switch) — position numbers follow the keymap order.",
+                        )}
+                      </p>
+                      <table className="w-full text-xs">
+                        <thead>
+                          <tr className="text-left text-[var(--color-text-muted)] border-b border-[var(--color-border)]">
+                            <th className="py-2 pr-3 font-medium">
+                              {t("Position")}
+                            </th>
+                            <th className="py-2 pr-3 font-medium">
+                              {t("Presses")}
+                            </th>
+                            <th className="py-2 pr-3 font-medium">
+                              {t("Releases")}
+                            </th>
+                            <th className="py-2 pr-3 font-medium">
+                              {t("Min gap (ms)")}
+                            </th>
+                            <th className="py-2 pr-3 font-medium">&lt;5ms</th>
+                            <th className="py-2 pr-3 font-medium">&lt;10ms</th>
+                            <th className="py-2 pr-3 font-medium">&lt;20ms</th>
+                            <th className="py-2 font-medium">&lt;50ms</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                        </thead>
+                        <tbody>
+                          {suspectKeys.map((s) => (
+                            <tr
+                              key={s.position}
+                              className="border-b border-[var(--color-border)] last:border-b-0 font-mono"
+                            >
+                              <td className="py-2 pr-3">{s.position}</td>
+                              <td className="py-2 pr-3">{s.presses}</td>
+                              <td className="py-2 pr-3">{s.releases}</td>
+                              <td className="py-2 pr-3">{s.minRepressGapMs}</td>
+                              <td className="py-2 pr-3">{s.repressLt5}</td>
+                              <td className="py-2 pr-3">{s.repressLt10}</td>
+                              <td className="py-2 pr-3">{s.repressLt20}</td>
+                              <td className="py-2">{s.repressLt50}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <ChatterGuidance />
+                  </>
                 ))}
             </div>
           </details>
