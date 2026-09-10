@@ -55,6 +55,7 @@ import {
   DefaultLayerHandler,
   DEFAULT_LAYER_IDENTIFIER,
 } from "./demo-default-layer";
+import { createTapDanceSettings, TAP_DANCE_IDENTIFIER } from "./demo-tap-dance";
 import {
   Request as BLERequest,
   Response as BLEResponse,
@@ -246,10 +247,17 @@ class Keyboard {
   private readonly DEFAULT_LAYER_SUBSYSTEM_INDEX = 13;
   private readonly FAST_KEYMAP_SUBSYSTEM_INDEX = 14;
   private readonly SETTING_EXPOSE_SUBSYSTEM_INDEX = 15;
+  private readonly TAP_DANCE_SUBSYSTEM_INDEX = 16;
 
   constructor() {
+    // Tap dance has no handler of its own: the firmware module stores its
+    // slots as custom settings, so the demo only has to hand the settings
+    // handler rows owned by the tap dance subsystem index.
     this.customSettingsHandler = new CustomSettingsHandler(
       this.SETTINGS_SUBSYSTEM_INDEX,
+      isDemoSubsystemEnabled(TAP_DANCE_IDENTIFIER)
+        ? createTapDanceSettings(this.TAP_DANCE_SUBSYSTEM_INDEX)
+        : [],
     );
     this.runtimeMacroHandler = new RuntimeMacroHandler(
       this.customSettingsHandler,
@@ -342,6 +350,15 @@ class Keyboard {
       index: this.SETTING_EXPOSE_SUBSYSTEM_INDEX,
       identifier: SETTING_EXPOSE_IDENTIFIER,
       uiUrl: [SETTING_EXPOSE_UI_URL],
+    },
+    {
+      // Registered but never called. The taps are ordinary custom settings;
+      // this entry exists so their subsystem id resolves to an index, which
+      // is what makes them visible to ListSettings at all. The firmware
+      // module registers the same empty subsystem for the same reason.
+      index: this.TAP_DANCE_SUBSYSTEM_INDEX,
+      identifier: TAP_DANCE_IDENTIFIER,
+      uiUrl: [],
     },
   ];
 

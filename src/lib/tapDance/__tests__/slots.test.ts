@@ -3,12 +3,21 @@
  * of the first dance, and nothing else says so. Getting the grouping wrong
  * would attach taps to the wrong dance without any error, which is the kind
  * of bug that is only found by pressing keys.
+ *
+ * Two of these guard against assumptions that were wrong the first time
+ * round: that an empty array still lists a setting to append to (it lists
+ * nothing at all), and that an array element's `size` says how many it may
+ * hold (it says how many it does).
  */
 import { groupIntoSlots } from "../slots";
 import type { Setting } from "../../../proto/cormoran/zmk/custom_settings/custom_settings";
 
+const SUBSYSTEM = 16;
+
 function tap(slot: number, index: number, size: number, behaviorId: number) {
   return {
+    customSubsystemIndex: SUBSYSTEM,
+    source: 0,
     key: `tap_dance${slot}/taps`,
     value: {
       arrayValue: {
@@ -21,7 +30,21 @@ function tap(slot: number, index: number, size: number, behaviorId: number) {
 }
 
 function term(slot: number, ms: number) {
-  return { key: `tap_dance${slot}/term`, value: { int32Value: ms } } as Setting;
+  return {
+    customSubsystemIndex: SUBSYSTEM,
+    source: 0,
+    key: `tap_dance${slot}/term`,
+    value: { int32Value: ms },
+  } as Setting;
+}
+
+function maxTaps(count: number) {
+  return {
+    customSubsystemIndex: SUBSYSTEM,
+    source: 0,
+    key: "max_taps",
+    value: { int32Value: count },
+  } as Setting;
 }
 
 describe("grouping settings into tap dance slots", () => {
@@ -72,9 +95,36 @@ describe("grouping settings into tap dance slots", () => {
     expect(slots[0].term).not.toBeNull();
   });
 
-  it("remembers how many taps a slot can hold", () => {
-    const slots = groupIntoSlots([tap(0, 0, 3, 10)]);
+  it("can name a taps array that lists nothing", () => {
+    // An array with no elements produces no list notifications at all, so
+    // appending the first tap has to work from a reference built out of a
+    // sibling setting. Without this, a fresh slot stays empty forever.
+    const slots = groupIntoSlots([term(2, 200)]);
+    expect(slots[0].tapsRef).toEqual({
+      customSubsystemIndex: SUBSYSTEM,
+      key: "tap_dance2/taps",
+      source: 0,
+    });
+  });
+
+  it("takes the capacity from the firmware, not from an element's size", () => {
+    // An element's `size` is the array's current length. Reading it as the
+    // maximum made a full slot of every slot, so "add a tap" was never
+    // offered.
+    const slots = groupIntoSlots([maxTaps(3), tap(0, 0, 1, 10), term(0, 200)]);
+    expect(slots[0].taps).toHaveLength(1);
     expect(slots[0].maxTaps).toBe(3);
+  });
+
+  it("leaves the capacity unknown when the firmware did not say", () => {
+    // Older firmware has no max_taps setting. Zero means "no ceiling known",
+    // which the screen treats as no reason to disable adding.
+    const slots = groupIntoSlots([tap(0, 0, 1, 10)]);
+    expect(slots[0].maxTaps).toBe(0);
+  });
+
+  it("does not mistake the capacity for a slot", () => {
+    expect(groupIntoSlots([maxTaps(3)])).toEqual([]);
   });
 
   it("ignores settings that are not tap dance", () => {

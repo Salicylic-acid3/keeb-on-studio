@@ -371,10 +371,10 @@ export function MacroComboPage() {
             </HexIcon>
             <div>
               <h1 className="text-xl font-medium text-[var(--color-text)]">
-                {t("Macro&Combo")}
+                {t("Macro, Combo & Tap Dance")}
               </h1>
               <p className="text-sm text-[var(--color-text-muted)]">
-                {t("Edit runtime macro and combo slots")}
+                {t("Edit runtime macro, combo and tap dance slots")}
               </p>
             </div>
           </div>
@@ -781,6 +781,7 @@ export function MacroComboPage() {
             <TapDanceSection
               behaviors={keymap.behaviors}
               layers={layersForSelector}
+              keyboardLayout={keyboardLayoutContext.layout}
               disabled={locked}
             />
           </div>

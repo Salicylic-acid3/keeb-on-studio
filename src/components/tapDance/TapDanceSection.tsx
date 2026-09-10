@@ -7,6 +7,12 @@
  * with no taps, so through that screen there is nothing to type into and no
  * control that would make a row. This is the screen that closes that gap.
  *
+ * It has to close it without a setting to point at, too. List enumeration
+ * sends one notification per active array element, so a slot whose taps array
+ * is empty -- which is every slot on a freshly flashed keyboard -- lists no
+ * taps setting at all. The append names the array by reference instead; see
+ * `tapsRef` in lib/tapDance/slots.ts.
+ *
  * A tap is picked with the same KeycodeSelector the keymap uses. That matters
  * more than it sounds: a tap is a behavior plus two parameters, and offering
  * three raw numbers would be technically complete and practically unusable.
@@ -25,6 +31,8 @@ import {
   IconRefresh,
 } from "@tabler/icons-react";
 import { KeycodeSelector } from "../KeycodeSelector";
+import { formatBehaviorBinding } from "../../lib/behaviorMetadata";
+import type { KeyboardLayoutType } from "../../lib/keyboardLayouts";
 import { useLanguage } from "../../hooks/useLanguage";
 import { useCustomSettings } from "../../hooks/useCustomSettings";
 import type {
@@ -57,12 +65,14 @@ function bindingOf(setting: Setting | undefined): BehaviorBinding | null {
 export interface TapDanceSectionProps {
   behaviors: Map<number, BehaviorDefinition>;
   layers: Array<{ id: number; name: string }>;
+  keyboardLayout?: KeyboardLayoutType;
   disabled?: boolean;
 }
 
 export function TapDanceSection({
   behaviors,
   layers,
+  keyboardLayout,
   disabled = false,
 }: TapDanceSectionProps) {
   const { t } = useLanguage();
@@ -81,10 +91,20 @@ export function TapDanceSection({
     [section],
   );
 
-  const behaviorName = useCallback(
-    (binding: BehaviorBinding | null) =>
-      binding ? (behaviors.get(binding.behaviorId)?.displayName ?? "") : "",
-    [behaviors],
+  // The same label the keymap puts on a key. The behavior name alone is not
+  // enough to tell taps apart: two &kp taps both read "Key Press", so a dance
+  // of Escape then Tab would show the same word twice.
+  const tapLabel = useCallback(
+    (binding: BehaviorBinding | null) => {
+      if (!binding) return "";
+      const behavior = behaviors.get(binding.behaviorId) ?? null;
+      if (!behavior) return "";
+      return formatBehaviorBinding(binding, behavior, {
+        layers,
+        keyboardLayout,
+      });
+    },
+    [behaviors, layers, keyboardLayout],
   );
 
   const setTap = useCallback(
@@ -110,22 +130,20 @@ export function TapDanceSection({
 
   const addTap = useCallback(
     (slot: TapDanceSlot) => {
-      if (!slot.tapsSetting) return;
       // A new tap starts unbound rather than copying the previous one: an
       // extra tap that silently repeats the last one would be worse than an
       // obviously empty row.
       const empty: SettingScalarValue = {
         behaviorValue: { behaviorId: 0, param1: 0, param2: 0 },
       };
-      void settings.pushBackArrayElement(slot.tapsSetting, empty);
+      void settings.pushBackArrayElement(slot.tapsRef, empty);
     },
     [settings],
   );
 
   const removeTap = useCallback(
     (slot: TapDanceSlot) => {
-      if (!slot.tapsSetting) return;
-      void settings.popBackArrayElement(slot.tapsSetting);
+      void settings.popBackArrayElement(slot.tapsRef);
     },
     [settings],
   );
@@ -232,14 +250,17 @@ export function TapDanceSection({
                       &amp;rtd {slot.index}
                     </code>
                     {slot.term && (
-                      <label className="ml-auto flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
+                      <label className="ml-auto flex items-center gap-2 whitespace-nowrap text-xs text-[var(--color-text-muted)]">
                         {t("Wait between taps")}
                         <input
                           type="number"
                           min={50}
                           max={1000}
                           step={10}
-                          className="input-field w-20 text-sm"
+                          // Narrow and fixed: three digits is the whole range,
+                          // and input-field is full-width by default, which
+                          // otherwise swallows the row.
+                          className="input-field !w-20 shrink-0 px-2 py-1 text-sm"
                           value={slot.term.value?.int32Value ?? 200}
                           disabled={disabled}
                           onChange={(event) =>
@@ -261,7 +282,7 @@ export function TapDanceSection({
                     <ul className="space-y-2 mb-3">
                       {slot.taps.map((tap, tapIndex) => {
                         const binding = bindingOf(tap);
-                        const name = behaviorName(binding);
+                        const name = tapLabel(binding);
                         return (
                           <li
                             key={tap.value?.arrayValue?.index ?? tapIndex}

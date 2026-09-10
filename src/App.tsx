@@ -65,7 +65,7 @@ function getTabs(t: (key: string) => string): TabItem[] {
     },
     {
       id: "macro-combo",
-      label: t("Macro&Combo"),
+      label: t("Macro, Combo & Tap Dance"),
       icon: <IconWand size={18} />,
       content: <MacroComboPage />,
     },

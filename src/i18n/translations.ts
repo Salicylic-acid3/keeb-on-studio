@@ -9,11 +9,14 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  "Macro, Combo & Tap Dance": "マクロ・コンボ・タップダンス",
+  "Edit runtime macro, combo and tap dance slots":
+    "ランタイムマクロ・コンボ・タップダンスのスロットを編集",
   "Tap Dance": "タップダンス",
   "What one tap, two taps and three taps each do":
     "1回・2回・3回タップしたときの動作",
   "Tap dance {{index}}": "タップダンス {{index}}",
-  "Wait between taps": "次のタップを待つ時間",
+  "Wait between taps": "タップ間隔",
   "{{count}} taps": "{{count}}回",
   "Not set — click to choose": "未設定 — クリックして選ぶ",
   "No taps yet — this slot does nothing when pressed. Add one to start.":
@@ -1534,11 +1537,14 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
+  "Macro, Combo & Tap Dance": "宏 · 组合键 · 点击舞",
+  "Edit runtime macro, combo and tap dance slots":
+    "编辑运行时宏、组合键与点击舞插槽",
   "Tap Dance": "点击舞",
   "What one tap, two taps and three taps each do":
     "点击 1 次、2 次、3 次分别执行什么",
   "Tap dance {{index}}": "点击舞 {{index}}",
-  "Wait between taps": "两次点击之间的等待",
+  "Wait between taps": "点击间隔",
   "{{count}} taps": "{{count}} 次",
   "Not set — click to choose": "未设置 — 点击选择",
   "No taps yet — this slot does nothing when pressed. Add one to start.":

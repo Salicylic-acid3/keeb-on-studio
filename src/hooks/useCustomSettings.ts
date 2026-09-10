@@ -56,12 +56,27 @@ export interface UseCustomSettingsReturn {
   deleteSetting: (key: string) => Promise<Response>;
   /** Append one element to an array setting (the generic screen cannot). */
   pushBackArrayElement: (
-    setting: Setting,
+    setting: ArraySettingRef,
     value: SettingScalarValue,
   ) => Promise<void>;
   /** Drop the last element of an array setting. */
-  popBackArrayElement: (setting: Setting) => Promise<void>;
+  popBackArrayElement: (setting: ArraySettingRef) => Promise<void>;
   clearError: () => void;
+}
+
+/**
+ * What it takes to name an array setting.
+ *
+ * Deliberately not `Setting`: list enumeration sends one notification per
+ * *active* element, so an array with nothing in it produces no listed setting
+ * at all. Appending the first element therefore has to work from a reference
+ * the caller builds itself. A `Setting` satisfies this shape, so callers that
+ * do have one can keep passing it.
+ */
+export interface ArraySettingRef {
+  customSubsystemIndex: number;
+  key: string;
+  source: number;
 }
 
 function settingIdentity(setting: Setting): string {
@@ -147,25 +162,32 @@ export function useCustomSettings(
 
   const subsystemIndex = subsystem?.index;
 
+  // A subsystem's index is the number it reports, not where it happens to sit
+  // in the list. Those are usually the same and were assumed to be for a
+  // while, but a device that leaves a subsystem out sends a shorter list with
+  // the remaining indices unchanged -- and then position and index disagree
+  // for everything after the gap. The rest of the app (and the settings
+  // themselves) go by the reported number, so these do too.
   const subsystemIdentifierForIndex = useCallback(
     (index: number) =>
-      zmkApp?.state.customSubsystems?.subsystems[index]?.identifier ??
-      t("Subsystem {{index}}", { index }),
+      zmkApp?.state.customSubsystems?.subsystems?.find(
+        (candidate) => candidate?.index === index,
+      )?.identifier ?? t("Subsystem {{index}}", { index }),
     [t, zmkApp?.state.customSubsystems?.subsystems],
   );
 
   // Resolve the caller-requested subsystem identifier to the numeric index the
   // list scope expects. Undefined identifier => no scoping. A set-but-unknown
   // identifier resolves to undefined, which is treated as "subsystem absent".
-  const targetSubsystemIndex = useMemo(() => {
-    if (subsystemIdentifier === undefined) {
-      return undefined;
-    }
-    const index = zmkApp?.state.customSubsystems?.subsystems?.findIndex(
-      (candidate) => candidate?.identifier === subsystemIdentifier,
-    );
-    return index !== undefined && index >= 0 ? index : undefined;
-  }, [subsystemIdentifier, zmkApp?.state.customSubsystems?.subsystems]);
+  const targetSubsystemIndex = useMemo(
+    () =>
+      subsystemIdentifier === undefined
+        ? undefined
+        : zmkApp?.state.customSubsystems?.subsystems?.find(
+            (candidate) => candidate?.identifier === subsystemIdentifier,
+          )?.index,
+    [subsystemIdentifier, zmkApp?.state.customSubsystems?.subsystems],
+  );
 
   const callCustomRequest = useCallback(
     async (request: Request): Promise<Response> => {
@@ -412,7 +434,7 @@ export function useCustomSettings(
    * button is what persists them.
    */
   const pushBackArrayElement = useCallback(
-    async (setting: Setting, value: SettingScalarValue) => {
+    async (setting: ArraySettingRef, value: SettingScalarValue) => {
       try {
         await callCustomRequest(
           Request.create({
@@ -444,7 +466,7 @@ export function useCustomSettings(
   );
 
   const popBackArrayElement = useCallback(
-    async (setting: Setting) => {
+    async (setting: ArraySettingRef) => {
       try {
         await callCustomRequest(
           Request.create({

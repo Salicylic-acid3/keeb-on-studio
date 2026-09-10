@@ -23,6 +23,7 @@ import { PHYSICAL_LAYOUTS_IDENTIFIER } from "./demo-physical-layouts";
 import { INPUT_STREAM_IDENTIFIER } from "./demo-input-stream";
 import { OS_DETECTION_IDENTIFIER } from "./demo-os-detection";
 import { DEFAULT_LAYER_IDENTIFIER } from "./demo-default-layer";
+import { TAP_DANCE_IDENTIFIER } from "./demo-tap-dance";
 
 /** Identifier the fast-keymap module registers on the device. */
 export const FAST_KEYMAP_IDENTIFIER = "cormoran__fast_keymap";
@@ -154,6 +155,15 @@ export const DEMO_SUBSYSTEMS: DemoSubsystemInfo[] = [
     index: 15,
     identifier: SETTING_EXPOSE_IDENTIFIER,
     label: "Setting Expose",
+    defaultEnabled: true,
+  },
+  {
+    // On by default: a 30% keymap is the case tap dance exists for, and
+    // someone deciding whether one can carry the keys they need has to be
+    // able to try it before there is a keyboard to connect.
+    index: 16,
+    identifier: TAP_DANCE_IDENTIFIER,
+    label: "Runtime Tap Dance",
     defaultEnabled: true,
   },
 ];

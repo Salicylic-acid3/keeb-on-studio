@@ -299,10 +299,20 @@ export class CustomSettingsHandler {
   private pendingChunks = new Map<string, PendingChunkedWrite>();
   private keyspaceChangeCallbacks: (() => void)[] = [];
 
-  constructor(customSubsystemIndex: number) {
+  /**
+   * @param customSubsystemIndex the subsystem the demo's own sample settings
+   *   belong to.
+   * @param extra settings owned by *other* subsystems that store their state
+   *   here, the way firmware modules built on custom settings do (tap dance
+   *   is one). They are served and scoped by their own subsystem index; this
+   *   handler only holds them.
+   */
+  constructor(customSubsystemIndex: number, extra: Setting[] = []) {
     this.customSubsystemIndex = customSubsystemIndex;
-    this.defaults = createMockSettings(customSubsystemIndex);
-    const initial = createInitialSettings(customSubsystemIndex);
+    this.defaults = [...createMockSettings(customSubsystemIndex), ...extra].map(
+      cloneSetting,
+    );
+    const initial = [...createInitialSettings(customSubsystemIndex), ...extra];
     this.persistent = initial.map(cloneSetting);
     this.settings = initial.map(cloneSetting);
   }
@@ -452,7 +462,112 @@ export class CustomSettingsHandler {
       return this.handleWriteValueChunk(request.writeValueChunk);
     }
 
+    if (request.pushBackArray?.setting) {
+      return this.handlePushBackArray(request.pushBackArray);
+    }
+
+    if (request.popBackArray?.setting) {
+      return this.handlePopBackArray(request.popBackArray);
+    }
+
     return { error: { message: "Not implemented" } };
+  }
+
+  /**
+   * The rows making up one array setting, in element order.
+   *
+   * An array is stored as one Setting per active element, so growing or
+   * shrinking one means adding or dropping rows -- and re-stamping `size` on
+   * the rows that remain, since every element carries the array's length.
+   */
+  private arrayElements(ref: {
+    customSubsystemIndex?: number;
+    key?: string;
+    source?: number;
+  }): Setting[] {
+    return this.settings
+      .filter(
+        (setting) =>
+          setting.customSubsystemIndex === ref.customSubsystemIndex &&
+          setting.key === ref.key &&
+          setting.source === ref.source &&
+          setting.value?.arrayValue !== undefined,
+      )
+      .sort(
+        (a, b) =>
+          (a.value?.arrayValue?.index ?? 0) - (b.value?.arrayValue?.index ?? 0),
+      );
+  }
+
+  private restampArraySize(elements: Setting[]) {
+    for (const element of elements) {
+      if (element.value?.arrayValue) {
+        element.value.arrayValue.size = elements.length;
+      }
+    }
+  }
+
+  private handlePushBackArray(
+    pushBackArray: NonNullable<Request["pushBackArray"]>,
+  ): Response {
+    const ref = pushBackArray.setting!;
+    const elements = this.arrayElements(ref);
+
+    // An empty array lists no elements at all, so there is no row to copy
+    // metadata from. The reference plus a template covers both cases.
+    const template = elements[0];
+    const created: Setting = {
+      customSubsystemIndex: ref.customSubsystemIndex ?? 0,
+      key: ref.key ?? "",
+      source: ref.source ?? 0,
+      hasUnsavedValue: true,
+      meta: template?.meta
+        ? cloneSetting(template).meta
+        : {
+            confidentiality: 2,
+            readPermission: 0,
+            writePermission: 0,
+            constraints: [{ behaviorId: {} }],
+          },
+      value: {
+        arrayValue: {
+          index: elements.length,
+          size: elements.length + 1,
+          value: cloneValue(pushBackArray.value) ?? {},
+        },
+      },
+    };
+
+    this.settings.push(created);
+    this.restampArraySize([...elements, created]);
+    this.notifySetting(
+      created,
+      SettingNotificationKind.SETTING_NOTIFICATION_KIND_VALUE_UPDATED,
+    );
+    return { status: { affectedCount: 1, message: "appended" } };
+  }
+
+  private handlePopBackArray(
+    popBackArray: NonNullable<Request["popBackArray"]>,
+  ): Response {
+    const ref = popBackArray.setting!;
+    const elements = this.arrayElements(ref);
+    const last = elements[elements.length - 1];
+    if (!last) {
+      return { error: { message: "Array is already empty" } };
+    }
+
+    this.settings = this.settings.filter((setting) => setting !== last);
+    const remaining = elements.slice(0, -1);
+    this.restampArraySize(remaining);
+    for (const element of remaining) {
+      element.hasUnsavedValue = true;
+    }
+    // No notification: the protocol has no "element removed" kind, and
+    // notifying the dropped row as updated would put it straight back into
+    // the client's state. Callers re-list after changing an array's length,
+    // which is the only thing that reports the new shape correctly anyway.
+    return { status: { affectedCount: 1, message: "shortened" } };
   }
 
   private handleCreateSetting(
