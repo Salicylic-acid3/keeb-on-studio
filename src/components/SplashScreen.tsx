@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import {
   IconAccessPoint,
-  IconUsb,
+  IconPlugConnected,
   IconDeviceDesktop,
 } from "@tabler/icons-react";
 import { useState, useCallback, type ReactNode } from "react";
@@ -191,7 +191,7 @@ export function SplashScreen({
           />
           <div className="text-center">
             <h1 className="text-[33px] font-light text-[var(--color-text)]">
-              <span className="font-medium text-[var(--color-electric)]">
+              <span className="font-medium text-[var(--color-brand)]">
                 Keeb-On!
               </span>{" "}
               Studio
@@ -208,7 +208,7 @@ export function SplashScreen({
             <div className="flex gap-[22px]">
               <ConnectButton
                 accent="--color-electric"
-                icon={<IconUsb size={30} strokeWidth={1.6} />}
+                icon={<IconPlugConnected size={30} strokeWidth={1.6} />}
                 label={t("Connect via USB")}
                 title={t("Connect via USB")}
                 onClick={() => handleConnectClick("serial")}

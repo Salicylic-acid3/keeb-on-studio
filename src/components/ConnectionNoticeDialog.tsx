@@ -7,7 +7,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import {
   IconAlertCircle,
-  IconUsb,
+  IconPlugConnected,
   IconAccessPoint,
   IconCheck,
   IconX,
@@ -60,7 +60,10 @@ export function ConnectionNoticeDialog({
           <div className="hidden tablet:flex justify-center mb-4">
             <div className="w-16 h-16 rounded-full bg-[var(--color-electric)]/10 border border-[var(--color-electric)]/20 flex items-center justify-center">
               {isUSB && (
-                <IconUsb size={32} className="text-[var(--color-electric)]" />
+                <IconPlugConnected
+                  size={32}
+                  className="text-[var(--color-electric)]"
+                />
               )}
               {isBLE && (
                 <IconAccessPoint

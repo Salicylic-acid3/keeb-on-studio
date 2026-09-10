@@ -43,7 +43,7 @@ export function AppLayout({
         <div className="flex items-center gap-4 flex-shrink-0 mr-4">
           <KeebOnLogo className="w-8 h-8" />
           <div className="hidden sm:flex items-center gap-2">
-            <span className="text-lg font-light tracking-wide text-[var(--color-text)]">
+            <span className="text-lg font-medium tracking-wide text-[var(--color-brand)]">
               Keeb-On!
             </span>
             <span className="text-xs font-light tracking-wider text-[var(--color-text-muted)] uppercase pt-1">

@@ -7,7 +7,7 @@
  * one `getBehaviorDetails` round trip per behavior — which is slow over BLE.
  */
 import {
-  IconDeviceUsb,
+  IconPlugConnected,
   IconExternalLink,
   IconLoader2,
   IconRefresh,
@@ -114,7 +114,10 @@ export function DeviceSnapshotCard({
       <div className="flex flex-col tablet:flex-row tablet:items-center gap-4 mb-4">
         <div className="flex items-center gap-3 min-w-0">
           <HexIcon size={38} className="flex-shrink-0">
-            <IconDeviceUsb size={20} className="text-[var(--color-electric)]" />
+            <IconPlugConnected
+              size={20}
+              className="text-[var(--color-electric)]"
+            />
           </HexIcon>
           <div className="min-w-0">
             <h3 className="text-sm font-medium text-[var(--color-text)]">

@@ -38,6 +38,13 @@
        surface, so links and button labels drawn in it were unreadable.
        Lightened along the same hue to clear 4.5:1 for body text. */
     --color-electric: #e85d75;
+
+    /* ...but the mark and the wordmark are not body text, and a logo that
+       changes colour with the theme is not a logo. --color-brand is the one
+       that never moves: it is the crimson, in every theme. Use it ONLY for
+       the logo and "Keeb-On!" -- WCAG exempts logotypes from contrast, and
+       nothing else here has that excuse. */
+    --color-brand: #ad002d;
   }
 
   /* Light theme - cream (生成り) */
