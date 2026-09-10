@@ -18,6 +18,7 @@ import {
   IconRestore,
   IconAlertTriangle,
   IconInfoCircle,
+  IconLink,
   IconPencil,
   IconLock,
   IconRefresh,
@@ -51,6 +52,11 @@ import { HexIcon } from "../components/brand/HexIcon";
 import { KeymapPrintSheet } from "../components/KeymapPrintSheet";
 import { SavedKeymapsMenu } from "../components/savedKeymaps/SavedKeymapsMenu";
 import { useSavedKeymaps } from "../hooks/useSavedKeymaps";
+import {
+  parseShareCode,
+  shareCodeFromHash,
+  type SavedKeymapPayload,
+} from "../lib/savedKeymaps";
 
 export function KeymapPage() {
   const { t } = useLanguage();
@@ -127,6 +133,13 @@ export function KeymapPage() {
     setBinding: keymap.setBinding,
   });
   const [loadNotice, setLoadNotice] = useState<string | null>(null);
+  // The link produced by "Copy a share link", kept on screen so it can be
+  // copied by hand when the clipboard is unavailable (and read before sending
+  // when it is).
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  // A keymap that arrived in the address bar, waiting to be accepted. Held
+  // rather than added: opening a link is not consent to fill someone's list.
+  const [incoming, setIncoming] = useState<SavedKeymapPayload | null>(null);
 
   // Layers for the selector
   const layersForSelector = useMemo(() => {
@@ -158,6 +171,25 @@ export function KeymapPage() {
     [requireUnlocked],
   );
 
+  // Why a file or a link was refused. Shared between the two because they are
+  // the same document arriving by different roads, and so fail the same way.
+  const describeRefusal = useCallback(
+    (reason: string) => {
+      const reasons: Record<string, string> = {
+        "too-large": t("That file is too big to be a keymap."),
+        "not-json": t("That file is not JSON."),
+        "not-a-keymap": t("That file is not a Keeb-On! Studio keymap."),
+        "not-a-share-code": t("That link does not carry a keymap."),
+        "newer-format": t(
+          "That keymap was made by a newer version of Keeb-On! Studio.",
+        ),
+        malformed: t("That keymap file is damaged."),
+      };
+      return reasons[reason] ?? reasons.malformed;
+    },
+    [t],
+  );
+
   // A file that came from someone else is data, not a command: it lands in the
   // list and is only written to the keyboard if the user then loads it.
   const handleImportFile = useCallback(
@@ -169,19 +201,76 @@ export function KeymapPage() {
         );
         return;
       }
-      const reasons: Record<string, string> = {
-        "too-large": t("That file is too big to be a keymap."),
-        "not-json": t("That file is not JSON."),
-        "not-a-keymap": t("That file is not a Keeb-On! Studio keymap."),
-        "newer-format": t(
-          "That keymap was made by a newer version of Keeb-On! Studio.",
-        ),
-        malformed: t("That keymap file is damaged."),
-      };
-      setLoadNotice(reasons[result.reason] ?? reasons.malformed);
+      setLoadNotice(describeRefusal(result.reason));
+    },
+    [savedKeymaps, describeRefusal, t],
+  );
+
+  const handleShare = useCallback(
+    async (record: Parameters<typeof savedKeymaps.shareLink>[0]) => {
+      const url = await savedKeymaps.shareLink(record);
+      if (!url) return;
+      setShareUrl(url);
+      try {
+        await navigator.clipboard?.writeText(url);
+        setLoadNotice(t("Share link copied."));
+      } catch {
+        // Clipboard access is refused often enough -- an insecure origin, a
+        // permission prompt declined -- that the link is shown either way.
+        setLoadNotice(t("Copy this link to share the keymap."));
+      }
     },
     [savedKeymaps, t],
   );
+
+  // A keymap arriving in the address bar. The code is read once and the
+  // fragment is cleared straight away: it should not survive a refresh, and a
+  // page whose URL is two thousand characters of base64 is its own problem.
+  const sharedCodeHandled = useRef(false);
+  useEffect(() => {
+    if (sharedCodeHandled.current) return;
+    const code = shareCodeFromHash(window.location.hash);
+    if (!code) return;
+    sharedCodeHandled.current = true;
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}${window.location.search}`,
+    );
+    void parseShareCode(code).then((result) => {
+      if (result.ok) setIncoming(result.keymap);
+      else setLoadNotice(describeRefusal(result.reason));
+    });
+  }, [describeRefusal]);
+
+  // The offer renders under a full-height keyboard, so someone who followed a
+  // link would land on the board with the reason they came for off-screen.
+  //
+  // `isLoading` is in the dependencies because the card appears before the
+  // keymap does: scrolling at that moment moves nothing (the page is still
+  // short), and the board then loads and pushes the card below the fold. So it
+  // scrolls again once the layout has settled.
+  const incomingRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!incoming) return;
+    // Optional call: jsdom has no layout and so no scrollIntoView, and this is
+    // presentation -- not worth failing a render over.
+    incomingRef.current?.scrollIntoView?.({
+      behavior: "smooth",
+      block: "center",
+    });
+  }, [incoming, keymap.isLoading]);
+
+  const handleAcceptIncoming = useCallback(async () => {
+    if (!incoming) return;
+    const stored = await savedKeymaps.addKeymap(incoming);
+    setIncoming(null);
+    setLoadNotice(
+      stored
+        ? t('Added "{{name}}" to your keymaps.', { name: stored.name })
+        : t("That keymap could not be saved."),
+    );
+  }, [incoming, savedKeymaps, t]);
 
   // Loading a saved keymap writes through the same edit path as the editor, so
   // it lands as unsaved changes the user reviews and then Saves -- rather than
@@ -578,6 +667,7 @@ export function KeymapPage() {
                   <SavedKeymapsMenu
                     keymaps={savedKeymaps.keymaps}
                     canSave={savedKeymaps.canSave}
+                    canShare={savedKeymaps.canShare}
                     isDurable={savedKeymaps.isDurable}
                     compatibility={savedKeymaps.compatibility}
                     onSave={(name, description) => {
@@ -589,6 +679,9 @@ export function KeymapPage() {
                     }}
                     onExport={savedKeymaps.exportToFile}
                     onImport={handleImportFile}
+                    onShare={(record) => {
+                      void handleShare(record);
+                    }}
                     disabled={keymap.isLoading}
                   />
                   <div className="flex-shrink-0">
@@ -1115,15 +1208,81 @@ export function KeymapPage() {
                     className="text-[var(--color-electric)]"
                   />
                 </div>
-                <p className="flex-1 text-sm text-[var(--color-text-muted)]">
-                  {loadNotice}
-                </p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-[var(--color-text-muted)]">
+                    {loadNotice}
+                  </p>
+                  {/* Shown whether or not the clipboard worked: the copy can
+                      fail silently, and seeing the link is how you know. */}
+                  {shareUrl && (
+                    <input
+                      readOnly
+                      value={shareUrl}
+                      onFocus={(event) => event.currentTarget.select()}
+                      className="input-field w-full mt-2 text-xs font-mono"
+                      aria-label={t("Share link")}
+                    />
+                  )}
+                </div>
                 <button
                   className="btn-ghost text-xs"
-                  onClick={() => setLoadNotice(null)}
+                  onClick={() => {
+                    setLoadNotice(null);
+                    setShareUrl(null);
+                  }}
                 >
                   {t("Dismiss")}
                 </button>
+              </div>
+            )}
+
+            {/* A keymap someone sent. Nothing has been stored yet: a link is an
+                invitation, and accepting it is the user's to do. */}
+            {incoming && (
+              <div
+                ref={incomingRef}
+                className="glass-card p-4 mt-4 flex items-start gap-3"
+              >
+                <div className="p-2">
+                  <IconLink
+                    size={20}
+                    className="text-[var(--color-electric)]"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-[var(--color-text)]">
+                    {t('Someone shared the keymap "{{name}}" with you.', {
+                      name: incoming.name,
+                    })}
+                  </p>
+                  {incoming.description && (
+                    <p className="mt-1 text-xs text-[var(--color-text-muted)] line-clamp-3">
+                      {incoming.description}
+                    </p>
+                  )}
+                  <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+                    {t(
+                      "Made for {{layoutName}}. Adding it only puts it in your keymaps — nothing is written to the keyboard.",
+                      { layoutName: incoming.target.layoutName },
+                    )}
+                  </p>
+                </div>
+                <div className="flex flex-col gap-2 flex-shrink-0">
+                  <button
+                    className="btn-electric text-xs"
+                    onClick={() => {
+                      void handleAcceptIncoming();
+                    }}
+                  >
+                    {t("Add to my keymaps")}
+                  </button>
+                  <button
+                    className="btn-ghost text-xs"
+                    onClick={() => setIncoming(null)}
+                  >
+                    {t("Discard")}
+                  </button>
+                </div>
               </div>
             )}
 

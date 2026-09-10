@@ -15,13 +15,17 @@ import {
   createSavedKeymapStore,
   compatibilityOf,
   fileNameFor,
+  isShareSupported,
   parseFile,
   resolveForDevice,
   serialize,
+  shareUrlFor,
   toPayload,
+  toShareCode,
   type Compatibility,
   type ParseFailure,
   type SavedKeymap,
+  type SavedKeymapPayload,
   type SavedKeymapStore,
   type UnresolvedBinding,
 } from "../lib/savedKeymaps";
@@ -57,6 +61,15 @@ export interface UseSavedKeymapsReturn {
   error: string | null;
   /** True when there is a keymap in the tab worth saving. */
   canSave: boolean;
+  /**
+   * True when a keymap may be handed to someone else as a link.
+   *
+   * Saving works in demo mode -- laying out a keymap before the keyboard
+   * arrives is a real thing -- but sharing does not: a link is addressed to
+   * other people, and the ones this app is for are the ones holding one of
+   * these keyboards.
+   */
+  canShare: boolean;
   save: (name: string, description: string) => Promise<SavedKeymap | null>;
   rename: (id: number, name: string, description: string) => Promise<void>;
   remove: (id: number) => Promise<void>;
@@ -74,6 +87,10 @@ export interface UseSavedKeymapsReturn {
   ) => Promise<
     { ok: true; record: SavedKeymap } | ({ ok: false } & ParseFailure)
   >;
+  /** The link that carries this keymap, or null when sharing is not allowed. */
+  shareLink: (record: SavedKeymap) => Promise<string | null>;
+  /** Adds an already-checked keymap to the list. Same rule as import: the keyboard is not touched. */
+  addKeymap: (keymap: SavedKeymapPayload) => Promise<SavedKeymap | null>;
 }
 
 export function useSavedKeymaps({
@@ -231,25 +248,63 @@ export function useSavedKeymaps({
     setTimeout(() => URL.revokeObjectURL(url), 0);
   }, []);
 
-  const importFromFile = useCallback(
-    async (file: File) => {
-      const parsed = parseFile(await file.text());
-      if (!parsed.ok) return parsed;
+  const addKeymap = useCallback(
+    async (keymap: SavedKeymapPayload) => {
       const now = Date.now();
       try {
         const stored = await store.add({
-          ...parsed.keymap,
+          ...keymap,
           createdAt: now,
           updatedAt: now,
         });
         await refresh();
-        return { ok: true as const, record: stored };
+        return stored;
       } catch (cause) {
         setError(cause instanceof Error ? cause.message : String(cause));
-        return { ok: false as const, reason: "malformed" as const, field: "" };
+        return null;
       }
     },
     [store, refresh],
+  );
+
+  const importFromFile = useCallback(
+    async (file: File) => {
+      const parsed = parseFile(await file.text());
+      if (!parsed.ok) return parsed;
+      const stored = await addKeymap(parsed.keymap);
+      if (!stored) {
+        return { ok: false as const, reason: "malformed" as const, field: "" };
+      }
+      return { ok: true as const, record: stored };
+    },
+    [addKeymap],
+  );
+
+  // Demo mode can save but not share -- see `canShare`. Checked here as well as
+  // in the menu, so a link cannot be produced by any other caller either.
+  const canShare = Boolean(connected) && !isDemo && isShareSupported();
+
+  const shareLink = useCallback(
+    async (record: SavedKeymap) => {
+      if (!canShare) return null;
+      // The id and timestamps are this browser's bookkeeping rather than part
+      // of the keymap, so they stay out of the link; whoever opens it gets
+      // their own.
+      const code = await toShareCode({
+        schemaVersion: record.schemaVersion,
+        name: record.name,
+        description: record.description,
+        target: record.target,
+        behaviors: record.behaviors,
+        layers: record.layers,
+        fromDemo: record.fromDemo,
+      });
+      return shareUrlFor(
+        code,
+        `${window.location.origin}${window.location.pathname}`,
+      );
+    },
+    [canShare],
   );
 
   return {
@@ -258,6 +313,7 @@ export function useSavedKeymaps({
     isDurable: store.isDurable,
     error,
     canSave,
+    canShare,
     save,
     rename,
     remove,
@@ -265,5 +321,7 @@ export function useSavedKeymaps({
     compatibility,
     exportToFile,
     importFromFile,
+    shareLink,
+    addKeymap,
   };
 }

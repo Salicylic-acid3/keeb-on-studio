@@ -13,6 +13,7 @@ import {
   IconChevronDown,
   IconDeviceFloppy,
   IconDownload,
+  IconLink,
   IconTrash,
   IconUpload,
 } from "@tabler/icons-react";
@@ -28,6 +29,8 @@ import {
 export interface SavedKeymapsMenuProps {
   keymaps: SavedKeymap[];
   canSave: boolean;
+  /** False in demo mode: a keymap can be kept there, but not handed to anyone. */
+  canShare: boolean;
   isDurable: boolean;
   compatibility: (record: SavedKeymap) => Compatibility;
   onSave: (name: string, description: string) => void;
@@ -35,6 +38,7 @@ export interface SavedKeymapsMenuProps {
   onDelete: (record: SavedKeymap) => void;
   onExport: (record: SavedKeymap) => void;
   onImport: (file: File) => void;
+  onShare: (record: SavedKeymap) => void;
   disabled?: boolean;
 }
 
@@ -66,6 +70,7 @@ function compatibilityNote(
 export function SavedKeymapsMenu({
   keymaps,
   canSave,
+  canShare,
   isDurable,
   compatibility,
   onSave,
@@ -73,6 +78,7 @@ export function SavedKeymapsMenu({
   onDelete,
   onExport,
   onImport,
+  onShare,
   disabled = false,
 }: SavedKeymapsMenuProps) {
   const { t } = useLanguage();
@@ -239,6 +245,14 @@ export function SavedKeymapsMenu({
             </p>
           )}
 
+          {/* Say why the share button is missing rather than leaving a gap
+              where one used to be on someone else's screen. */}
+          {!canShare && keymaps.length > 0 && (
+            <p className="px-3 py-2 text-xs text-[var(--color-text-muted)]">
+              {t("Connect your keyboard to share a keymap as a link.")}
+            </p>
+          )}
+
           <div className="my-2 border-t border-[var(--color-border)]" />
 
           {keymaps.length === 0 ? (
@@ -288,6 +302,21 @@ export function SavedKeymapsMenu({
                         </span>
                       )}
                     </button>
+                    {canShare && (
+                      <button
+                        className="p-1 rounded text-[var(--color-text-muted)] hover:text-[var(--color-electric)] transition-colors"
+                        onClick={() => {
+                          onShare(record);
+                          setIsOpen(false);
+                        }}
+                        title={t("Copy a share link")}
+                        aria-label={t("Copy a share link for {{name}}", {
+                          name: record.name,
+                        })}
+                      >
+                        <IconLink size={14} />
+                      </button>
+                    )}
                     <button
                       className="p-1 rounded text-[var(--color-text-muted)] hover:text-[var(--color-electric)] transition-colors"
                       onClick={() => onExport(record)}

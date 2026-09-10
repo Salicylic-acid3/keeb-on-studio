@@ -4,7 +4,13 @@
 // learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom";
 import { TextEncoder, TextDecoder } from "util";
-import { ReadableStream, WritableStream, TransformStream } from "stream/web";
+import {
+  ReadableStream,
+  WritableStream,
+  TransformStream,
+  CompressionStream,
+  DecompressionStream,
+} from "stream/web";
 import { BroadcastChannel } from "worker_threads";
 
 // Polyfill TextEncoder and TextDecoder for protobuf support
@@ -29,6 +35,14 @@ global.WritableStream =
   WritableStream as unknown as typeof global.WritableStream;
 global.TransformStream =
   TransformStream as unknown as typeof global.TransformStream;
+
+// Same story for the compression streams, which shared keymap links use to fit
+// a keymap into a URL. Every browser that can reach a keyboard over WebSerial
+// or Web Bluetooth has had `deflate-raw` for years; jsdom simply has neither.
+global.CompressionStream =
+  CompressionStream as unknown as typeof global.CompressionStream;
+global.DecompressionStream =
+  DecompressionStream as unknown as typeof global.DecompressionStream;
 
 // jsdom does not implement BroadcastChannel, which the Abyss OAuth popup uses
 // to hand the callback URL back to the tab that started the login. Node's

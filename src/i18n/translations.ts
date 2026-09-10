@@ -9,6 +9,22 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  "Copy a share link": "共有リンクをコピー",
+  "Copy a share link for {{name}}": "「{{name}}」の共有リンクをコピー",
+  "Share link": "共有リンク",
+  "Share link copied.": "共有リンクをコピーしました。",
+  "Copy this link to share the keymap.":
+    "このリンクをコピーして共有してください。",
+  "Connect your keyboard to share a keymap as a link.":
+    "リンクでの共有は、キーボードを接続しているときに使えます。",
+  "That link does not carry a keymap.":
+    "このリンクにはキーマップが入っていません。",
+  'Someone shared the keymap "{{name}}" with you.':
+    "キーマップ「{{name}}」が共有されました。",
+  "Made for {{layoutName}}. Adding it only puts it in your keymaps — nothing is written to the keyboard.":
+    "{{layoutName}} 向けのキーマップです。追加してもマイキーマップに入るだけで、キーボードには書き込みません。",
+  "Add to my keymaps": "マイキーマップに追加",
+  "That keymap could not be saved.": "このキーマップを保存できませんでした。",
   "Import from a file…": "ファイルから読み込む…",
   "Adds it to this list. Nothing is written to the keyboard.":
     "この一覧に追加するだけです。キーボードには何も書き込みません。",
@@ -1444,6 +1460,20 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
+  "Copy a share link": "复制分享链接",
+  "Copy a share link for {{name}}": "复制“{{name}}”的分享链接",
+  "Share link": "分享链接",
+  "Share link copied.": "已复制分享链接。",
+  "Copy this link to share the keymap.": "复制此链接即可分享该键映射。",
+  "Connect your keyboard to share a keymap as a link.":
+    "连接键盘后即可通过链接分享键映射。",
+  "That link does not carry a keymap.": "该链接中没有键映射。",
+  'Someone shared the keymap "{{name}}" with you.':
+    "有人向你分享了键映射“{{name}}”。",
+  "Made for {{layoutName}}. Adding it only puts it in your keymaps — nothing is written to the keyboard.":
+    "这是为 {{layoutName}} 制作的键映射。添加后只会进入我的键映射，不会写入键盘。",
+  "Add to my keymaps": "添加到我的键映射",
+  "That keymap could not be saved.": "无法保存该键映射。",
   "Import from a file…": "从文件导入…",
   "Adds it to this list. Nothing is written to the keyboard.":
     "仅添加到此列表，不会写入键盘。",
