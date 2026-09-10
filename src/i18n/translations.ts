@@ -9,6 +9,12 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  "Copy from Base": "Baseからコピー",
+  "Copy Base onto this layer?": "Baseをこのレイヤーにコピーしますか？",
+  "This layer already matches Base": "このレイヤーはすでにBaseと同じです",
+  "Copying… {{done}} / {{total}}": "コピー中… {{done}} / {{total}}",
+  "{{overwrites}} of the {{writes}} keys this changes already have something other than transparent on them, and those will be replaced. Nothing is written to the keyboard until you press Save.":
+    "変更する {{writes}} キーのうち {{overwrites}} キーにはTRANS以外が設定されており、上書きされます。保存を押すまでキーボードには書き込まれません。",
   "Macro, Combo & Tap Dance": "マクロ・コンボ・タップダンス",
   "Edit runtime macro, combo and tap dance slots":
     "ランタイムマクロ・コンボ・タップダンスのスロットを編集",
@@ -1537,6 +1543,12 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
+  "Copy from Base": "从 Base 复制",
+  "Copy Base onto this layer?": "将 Base 复制到此层？",
+  "This layer already matches Base": "此层已与 Base 相同",
+  "Copying… {{done}} / {{total}}": "复制中… {{done}} / {{total}}",
+  "{{overwrites}} of the {{writes}} keys this changes already have something other than transparent on them, and those will be replaced. Nothing is written to the keyboard until you press Save.":
+    "将要更改的 {{writes}} 个键中，有 {{overwrites}} 个已设置了非透明的内容，它们会被覆盖。按下保存前不会写入键盘。",
   "Macro, Combo & Tap Dance": "宏 · 组合键 · 点击舞",
   "Edit runtime macro, combo and tap dance slots":
     "编辑运行时宏、组合键与点击舞插槽",

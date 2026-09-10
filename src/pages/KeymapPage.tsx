@@ -17,6 +17,7 @@ import {
   IconTrash,
   IconRestore,
   IconAlertTriangle,
+  IconCopy,
   IconInfoCircle,
   IconLink,
   IconPencil,
@@ -43,6 +44,13 @@ import { useInputStream } from "../hooks/useInputStream";
 import { getAvailableLayouts, getLayoutLabel } from "../lib/keyboardLayouts";
 import type { BehaviorBinding } from "../hooks/useKeymap";
 import { useStudioUnlock } from "../hooks/useStudioUnlock";
+import {
+  findBaseLayer,
+  findTransparentBehaviorId,
+  isAltBaseLayer,
+  planCopyFromBase,
+  type CopyPlan,
+} from "../lib/keymap/copyLayer";
 import { useLanguage } from "../hooks/useLanguage";
 import { ResetVersionMenu } from "../components/versionHistory/ResetVersionMenu";
 import { VersionDiffModal } from "../components/versionHistory/VersionDiffModal";
@@ -107,6 +115,11 @@ export function KeymapPage() {
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [showRenameDialog, setShowRenameDialog] = useState(false);
+  // "Copy from Base", offered on Alt Base only. `copyProgress` is non-null
+  // while it runs: one key is one RPC, so on a 79-key board this is a visible
+  // stretch of time rather than an instant, and it has to say so.
+  const [copyPlan, setCopyPlan] = useState<CopyPlan | null>(null);
+  const [copyProgress, setCopyProgress] = useState<number | null>(null);
   // Popup listing the device's deleted (restorable) layers, opened from the
   // restore button in the layer toolbar.
   const [showRestoreMenu, setShowRestoreMenu] = useState(false);
@@ -556,6 +569,62 @@ export function KeymapPage() {
   );
 
   // Handle layer move up
+  // Whether "Copy from Base" belongs on screen right now, and what it would do.
+  // Recomputed as the layer changes so the button can say the real numbers
+  // rather than a generic warning.
+  const copyFromBase = useMemo(() => {
+    const layers = keymap.keymap?.layers;
+    if (!layers || !currentLayer || !isAltBaseLayer(currentLayer)) return null;
+    const base = findBaseLayer(layers);
+    if (!base || base.id === currentLayer.id) return null;
+    return {
+      base,
+      plan: planCopyFromBase(
+        base,
+        currentLayer,
+        findTransparentBehaviorId(keymap.behaviors),
+      ),
+    };
+  }, [keymap.keymap?.layers, keymap.behaviors, currentLayer]);
+
+  const runCopyFromBase = useCallback(
+    async (plan: CopyPlan) => {
+      if (!currentLayer) return;
+      setCopyPlan(null);
+      setCopyProgress(0);
+      try {
+        // One key at a time and in order: the RPC is per-binding, and firing
+        // them all at once would race the transport rather than go faster.
+        // A key the device refuses stops the run -- finishing a half-copied
+        // layer silently would be worse than stopping where it broke.
+        for (const [index, write] of plan.writes.entries()) {
+          const ok = await keymap.setBinding(
+            currentLayer.id,
+            write.keyPosition,
+            write.binding,
+          );
+          if (!ok) break;
+          setCopyProgress(index + 1);
+        }
+      } finally {
+        setCopyProgress(null);
+      }
+    },
+    [currentLayer, keymap],
+  );
+
+  const handleCopyFromBase = useCallback(() => {
+    if (!copyFromBase) return;
+    withUnlock(() => {
+      // Nothing to destroy means nothing to ask about. A confirmation that
+      // always appears is one nobody reads by the third time.
+      if (copyFromBase.plan.overwrites === 0) {
+        return runCopyFromBase(copyFromBase.plan);
+      }
+      setCopyPlan(copyFromBase.plan);
+    });
+  }, [copyFromBase, runCopyFromBase, withUnlock]);
+
   const handleMoveLayerUp = useCallback(
     () =>
       withUnlock(async () => {
@@ -1036,6 +1105,53 @@ export function KeymapPage() {
 
                 {/* Layer Add/Delete/Restore Buttons */}
                 <div className="flex items-center gap-1 border-l border-[var(--color-border)] pl-2">
+                  {/* Copy from Base — only on Alt Base, which is the one layer
+                      meant to hold a whole layout rather than a few keys over
+                      a transparent field. */}
+                  {copyFromBase && (
+                    <Tooltip.Root>
+                      <Tooltip.Trigger asChild>
+                        <button
+                          className="p-2 rounded-lg hover:bg-[var(--color-border)] disabled:opacity-30 disabled:cursor-not-allowed"
+                          onClick={handleCopyFromBase}
+                          disabled={
+                            copyProgress !== null ||
+                            copyFromBase.plan.writes.length === 0
+                          }
+                          aria-label={t("Copy from Base")}
+                        >
+                          {copyProgress !== null ? (
+                            <IconLoader2
+                              size={16}
+                              className="animate-spin text-[var(--color-electric)]"
+                            />
+                          ) : (
+                            <IconCopy
+                              size={16}
+                              className="text-[var(--color-text-muted)]"
+                            />
+                          )}
+                        </button>
+                      </Tooltip.Trigger>
+                      <Tooltip.Portal>
+                        <Tooltip.Content
+                          className="px-2 py-1 rounded bg-[var(--color-surface-elevated)] border border-[var(--color-border)] text-xs text-[var(--color-text-secondary)] shadow-lg z-50"
+                          sideOffset={5}
+                        >
+                          {copyProgress !== null
+                            ? t("Copying… {{done}} / {{total}}", {
+                                done: copyProgress,
+                                total: copyFromBase.plan.writes.length,
+                              })
+                            : copyFromBase.plan.writes.length === 0
+                              ? t("This layer already matches Base")
+                              : t("Copy from Base")}
+                          <Tooltip.Arrow className="fill-[var(--color-surface-elevated)]" />
+                        </Tooltip.Content>
+                      </Tooltip.Portal>
+                    </Tooltip.Root>
+                  )}
+
                   {/* Rename Layer Button */}
                   <Tooltip.Root>
                     <Tooltip.Trigger asChild>
@@ -1554,6 +1670,54 @@ export function KeymapPage() {
                   <IconLoader2 size={16} className="animate-spin" />
                 )}
                 {t("Rename")}
+              </button>
+            </div>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+
+      {/* Copy-from-Base confirmation. Only shown when the copy would replace
+          keys the user configured on this layer; a transparent layer is filled
+          without asking. */}
+      <Dialog.Root
+        open={copyPlan !== null}
+        onOpenChange={(open) => {
+          if (!open) setCopyPlan(null);
+        }}
+      >
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" />
+          <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-md bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] shadow-2xl z-50 p-6">
+            <Dialog.Title className="text-base font-medium text-[var(--color-text)] mb-2 flex items-center gap-2">
+              <IconAlertTriangle
+                size={18}
+                className="text-[var(--color-warning)]"
+              />
+              {t("Copy Base onto this layer?")}
+            </Dialog.Title>
+            <Dialog.Description className="text-sm text-[var(--color-text-muted)] mb-5">
+              {t(
+                "{{overwrites}} of the {{writes}} keys this changes already have something other than transparent on them, and those will be replaced. Nothing is written to the keyboard until you press Save.",
+                {
+                  overwrites: copyPlan?.overwrites ?? 0,
+                  writes: copyPlan?.writes.length ?? 0,
+                },
+              )}
+            </Dialog.Description>
+            <div className="flex gap-3">
+              <button
+                className="flex-1 btn-ghost border border-[var(--color-border)]"
+                onClick={() => setCopyPlan(null)}
+              >
+                {t("Cancel")}
+              </button>
+              <button
+                className="flex-1 btn-electric"
+                onClick={() => {
+                  if (copyPlan) void runCopyFromBase(copyPlan);
+                }}
+              >
+                {t("Copy from Base")}
               </button>
             </div>
           </Dialog.Content>

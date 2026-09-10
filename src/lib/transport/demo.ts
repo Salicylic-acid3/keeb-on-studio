@@ -173,13 +173,19 @@ const DEMO = {
         })),
       },
       {
+        // Named as the real ClickBoard ErgoTrack names it, because the app
+        // treats "Alt Base" as a layer with a job: it is the per-OS base
+        // (what the trackpad's `layers = <1>` keys off) and the one layer
+        // offered a copy of Base. A demo whose layers were called something
+        // else would hide that button from anyone trying the app before
+        // buying a keyboard.
         id: 1,
-        name: "Lower",
+        name: "Alt Base",
         bindings: Array(maxKeys).fill({ behaviorId: 35, param1: 0, param2: 0 }),
       },
       {
         id: 2,
-        name: "Raise",
+        name: "Drag",
         bindings: Array(maxKeys).fill({ behaviorId: 35, param1: 0, param2: 0 }),
       },
     ],
