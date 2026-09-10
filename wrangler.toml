@@ -15,15 +15,16 @@ name = "keeb-on-studio-dev"
 
 # Created with:
 #   npx wrangler kv namespace create GALLERY --env dev
-# and the id it prints goes here. The two environments get separate
-# namespaces so testing against dev cannot publish into the real gallery.
+# The two environments get separate namespaces so testing against dev cannot
+# publish into the real gallery. `wrangler dev --local` uses neither -- it
+# keeps its own KV under .wrangler/.
 [[env.dev.kv_namespaces]]
 binding = "GALLERY"
-id = "REPLACE_WITH_DEV_NAMESPACE_ID"
+id = "a5a001fa10554fb29a5bdaef1b8210c8"
 
 [env.release]
 name = "keeb-on-studio"
 
 [[env.release.kv_namespaces]]
 binding = "GALLERY"
-id = "REPLACE_WITH_RELEASE_NAMESPACE_ID"
+id = "58e6d49d2131473897f4aac8fda0119d"
