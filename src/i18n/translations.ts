@@ -9,6 +9,8 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  Print: "印刷",
+  "Print one page per layer": "レイヤーごとに1ページで印刷する",
   // --- Trackpad tuning (Phase 5) ---
   Trackpad: "トラックパッド",
   "Trackpad Settings": "トラックパッド設定",
@@ -1397,6 +1399,8 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
+  Print: "打印",
+  "Print one page per layer": "每层打印一页",
   // --- Trackpad tuning (Phase 5) ---
   Trackpad: "触控板",
   "Trackpad Settings": "触控板设置",

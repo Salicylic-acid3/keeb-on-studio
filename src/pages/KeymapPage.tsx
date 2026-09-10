@@ -21,6 +21,7 @@ import {
   IconPencil,
   IconLock,
   IconRefresh,
+  IconPrinter,
 } from "@tabler/icons-react";
 import { useStudioLockState } from "@cormoran/zmk-studio-react-hook";
 import * as Tooltip from "@radix-ui/react-tooltip";
@@ -47,6 +48,7 @@ import { VersionDiffModal } from "../components/versionHistory/VersionDiffModal"
 import { useKeymapVersionHistory } from "../hooks/versionHistory/useKeymapVersionHistory";
 import { useIsTabActive } from "../hooks/useIsTabActive";
 import { HexIcon } from "../components/brand/HexIcon";
+import { KeymapPrintSheet } from "../components/KeymapPrintSheet";
 
 export function KeymapPage() {
   const { t } = useLanguage();
@@ -413,7 +415,7 @@ export function KeymapPage() {
   ]);
 
   return (
-    <div className="p-6 h-full overflow-auto">
+    <div className="keymap-print-root p-6 h-full overflow-auto">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex flex-col tablet:flex-row tablet:items-center gap-3 mb-4">
@@ -467,6 +469,18 @@ export function KeymapPage() {
                 />
                 {t("Reload")}
               </button>
+              {/* The sheet is always rendered (hidden on screen), so Cmd+P
+                  produces the same pages without going through this button. */}
+              {currentLayout && keymap.keymap && (
+                <button
+                  className="btn-ghost text-sm flex items-center gap-1.5 flex-shrink-0"
+                  onClick={() => window.print()}
+                  title={t("Print one page per layer")}
+                >
+                  <IconPrinter size={16} />
+                  {t("Print")}
+                </button>
+              )}
               {/* When Studio is locked, editing is disabled — show a lock badge
                   (click to unlock) instead of the Save / Reset controls. */}
               {locked ? (
@@ -1155,6 +1169,22 @@ export function KeymapPage() {
         keyboardLayout={keyboardLayoutContext.layout}
         runtimeMacros={runtimeMacro.macros}
       />
+
+      {currentLayout && keymap.keymap && (
+        <KeymapPrintSheet
+          layout={currentLayout}
+          layers={keymap.keymap.layers}
+          behaviors={keymap.behaviors}
+          keyboardLayout={keyboardLayoutContext.layout}
+          modules={
+            physicalLayoutModules.isAvailable
+              ? physicalLayoutModules.modules
+              : []
+          }
+          runtimeMacros={runtimeMacro.macros}
+          deviceName={connection.deviceName}
+        />
+      )}
     </div>
   );
 }

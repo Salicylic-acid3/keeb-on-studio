@@ -626,3 +626,113 @@
 .hex-clip {
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
+
+/* ---------------------------------------------------------------------------
+   Printing the keymap.
+
+   The sheet (KeymapPrintSheet) is always in the DOM but hidden on screen, so
+   Cmd+P works whether or not the user went through the tab's Print button.
+   It is portalled onto <body>, which is what lets one rule hide the entire
+   app: the sheet has no ancestors to spare.
+
+   The board is drawn in px by KeyboardLayout, which sizes itself to its
+   container -- and a print layout does not re-run that measurement reliably.
+   So the page gets a fixed-width board and `zoom` brings it down to the
+   printable width instead, which the print engines do apply to layout.
+   ------------------------------------------------------------------------ */
+.keymap-print-portal {
+  display: none;
+}
+
+@media print {
+  /* Colors are the point of the sheet's key states; without this the browser
+     drops every background and the keys print as outlines. */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  @page {
+    size: A4 landscape;
+    margin: 10mm;
+  }
+
+  /* The app scrolls inside a fixed-height shell on screen; on paper that would
+     clip everything after the first page. */
+  html,
+  body {
+    height: auto !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+
+  body > *:not(.keymap-print-portal) {
+    display: none !important;
+  }
+
+  /* Paper is white whatever the screen is set to, so the sheet always prints
+     from the light palette -- a dark-mode user would otherwise get pages of
+     ink. White surfaces rather than the cream ones: the cream is there to be
+     easy on the eyes, and on paper it only costs toner. */
+  .keymap-print-portal {
+    display: block;
+
+    --color-bg: #ffffff;
+    --color-surface: #ffffff;
+    --color-surface-elevated: #f4f4f4;
+    --color-text: #111111;
+    --color-text-secondary: rgba(17, 17, 17, 0.75);
+    --color-text-muted: rgba(17, 17, 17, 0.55);
+    --color-border: rgba(17, 17, 17, 0.35);
+    --color-border-hover: rgba(17, 17, 17, 0.5);
+    --glass-bg: #ffffff;
+    --glass-border: rgba(17, 17, 17, 0.35);
+    --color-electric: #8f0025;
+    --color-neon: #7a6217;
+    --color-cyber: #1f4d7a;
+
+    color: #111;
+  }
+
+  .keymap-print-page {
+    /* `break-after` is the current property; `page-break-after` is kept for
+       print engines that still only understand the old one. */
+    page-break-after: always;
+    break-after: page;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .keymap-print-page:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+
+  .keymap-print-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 6mm;
+    border-bottom: 1px solid #999;
+    padding-bottom: 2mm;
+  }
+
+  .keymap-print-header h2 {
+    font-size: 14pt;
+    font-weight: 600;
+  }
+
+  .keymap-print-header span {
+    font-size: 8pt;
+    color: #555;
+  }
+
+  /* A4 landscape with 10mm margins leaves ~277mm ≈ 1047px of printable width
+     at 96dpi. The board is given just under that so KeyboardLayout's own
+     fit-to-container scale lands near 1.0 and the keys print at a readable
+     size -- the earlier version shrank them to a third of the page. */
+  .keymap-print-board {
+    width: 1020px;
+  }
+}
