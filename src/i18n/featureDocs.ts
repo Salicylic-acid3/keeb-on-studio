@@ -57,6 +57,40 @@ export function comboDoc(t: TranslateFn): DocTipContent {
   };
 }
 
+/** Explains the trackpad's input processors, shown next to the Processors header. */
+export function processorDoc(t: TranslateFn): DocTipContent {
+  return {
+    title: t("What are Processors?"),
+    intro: t(
+      "Input processors transform trackpad motion before it becomes pointer or scroll output, and can be turned on per layer.",
+    ),
+    sections: [
+      {
+        heading: t("Typical uses"),
+        bullets: [
+          t("Switch the trackpad between moving the cursor and scrolling"),
+          t("Adjust sensitivity, or swap and invert the axes"),
+        ],
+      },
+      {
+        heading: t("Layers"),
+        bullets: [
+          t("Choose which layers each processor is active on"),
+          t("Optionally hold a temporary layer while the trackpad moves"),
+        ],
+      },
+      {
+        heading: t("Note"),
+        bullets: [
+          t(
+            "This sets the base sensitivity. The speed keys on the keyboard still adjust on top of it, so the two multiply.",
+          ),
+        ],
+      },
+    ],
+  };
+}
+
 /** Explains default layers, shown next to the Connections header. */
 export function defaultLayerDoc(t: TranslateFn): DocTipContent {
   return {

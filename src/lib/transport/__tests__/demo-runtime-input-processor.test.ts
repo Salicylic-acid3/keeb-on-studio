@@ -82,7 +82,9 @@ describe("RuntimeInputProcessorHandler", () => {
       expect(response.getProcessor).toBeDefined();
       expect(response.getProcessor?.processor).toBeDefined();
       expect(response.getProcessor?.processor?.id).toBe(0);
-      expect(response.getProcessor?.processor?.name).toBe("trackpad");
+      // Named after the firmware's own processor-label, so the demo lists the
+      // same two entries a connected ErgoTrack does.
+      expect(response.getProcessor?.processor?.name).toBe("mouse");
       expect(response.error).toBeUndefined();
     });
 

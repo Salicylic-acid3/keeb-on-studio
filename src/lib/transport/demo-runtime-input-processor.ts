@@ -15,13 +15,19 @@ import {
 export const RUNTIME_INPUT_PROCESSOR_IDENTIFIER = "cormoran_rip";
 
 /**
- * Mock runtime input processor data
- * Simulates a trackball processor with default settings
+ * The two processors ErgoTrack's firmware registers.
+ *
+ * `zmk-module-runtime-input-processor` ships them as
+ * `mouse_runtime_input_processor` and `scroll_runtime_input_processor`, and
+ * their `processor-label` is what the app lists -- so the demo uses the same
+ * two names and the same starting values the shield's overlay sets. Both pads
+ * share one pair, which is why adjusting a processor moves both hands
+ * together on the real keyboard.
  */
 const MOCK_PROCESSORS: ProcessorInfo[] = [
   {
     id: 0,
-    name: "trackpad",
+    name: "mouse",
     scaleMultiplier: 1,
     scaleDivisor: 1,
     rotationDegrees: 0,
@@ -38,16 +44,37 @@ const MOCK_PROCESSORS: ProcessorInfo[] = [
     xyToScrollEnabled: false,
     xySwapEnabled: false,
   },
+  {
+    id: 1,
+    name: "scroll",
+    scaleMultiplier: 1,
+    // The module's own default is 1/60. ErgoTrack overrides it back to 1:1
+    // in the shield overlay, because the wheel is already scaled by
+    // `zip_scroll_scaler 1 16` earlier in the chain.
+    scaleDivisor: 1,
+    rotationDegrees: 0,
+    tempLayerEnabled: false,
+    tempLayerLayer: 0,
+    tempLayerActivationDelayMs: 100,
+    tempLayerDeactivationDelayMs: 500,
+    activeLayers: 0,
+    axisSnapMode: AxisSnapMode.AXIS_SNAP_MODE_NONE,
+    axisSnapThreshold: 50,
+    axisSnapTimeoutMs: 200,
+    xInvert: false,
+    yInvert: false,
+    xyToScrollEnabled: false,
+    xySwapEnabled: false,
+  },
 ];
 
 /**
  * Mock layer information
  */
 const MOCK_LAYERS = [
-  { id: 0, name: "Default" },
-  { id: 1, name: "Lower" },
-  { id: 2, name: "Raise" },
-  { id: 3, name: "Adjust" },
+  { id: 0, name: "Base" },
+  { id: 1, name: "Alt Base" },
+  { id: 2, name: "Drag" },
 ];
 
 /**

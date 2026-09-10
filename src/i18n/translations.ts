@@ -9,6 +9,32 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  // --- Trackpad tuning (Phase 5) ---
+  Trackpad: "トラックパッド",
+  "Trackpad Settings": "トラックパッド設定",
+  "Loading trackpad settings...": "トラックパッドの設定を読み込み中...",
+  "What are Processors?": "プロセッサとは？",
+  "Input processors transform trackpad motion before it becomes pointer or scroll output, and can be turned on per layer.":
+    "入力プロセッサは、トラックパッドの動きがポインタやスクロールになる前に変換します。レイヤーごとに有効・無効を切り替えられます。",
+  "Switch the trackpad between moving the cursor and scrolling":
+    "トラックパッドをカーソル移動とスクロールで切り替える",
+  "Adjust sensitivity, or swap and invert the axes":
+    "感度を調整したり、軸を入れ替え・反転したりする",
+  "Choose which layers each processor is active on":
+    "各プロセッサを有効にするレイヤーを選ぶ",
+  "Optionally hold a temporary layer while the trackpad moves":
+    "トラックパッドの操作中だけ一時レイヤーを保持する（任意）",
+  Note: "補足",
+  "This sets the base sensitivity. The speed keys on the keyboard still adjust on top of it, so the two multiply.":
+    "ここで決めるのは基準の感度です。キーボードの速度キーはこの上に掛かるので、両者は掛け算になります。",
+  "Auto-activate layer when the trackpad is in use":
+    "トラックパッド操作中にレイヤーを自動で有効にする",
+  "Delay before activating layer when the trackpad moves":
+    "トラックパッドが動き出してからレイヤーを有効にするまでの待ち時間",
+  "Delay before deactivating layer when the trackpad stops":
+    "トラックパッドが止まってからレイヤーを無効にするまでの待ち時間",
+  "Transform trackpad movement into different input types":
+    "トラックパッドの動きを別の入力に変換する",
   "The operation failed because the device is locked in ZMK Studio. Unlock the keyboard and try again.":
     "デバイスが ZMK Studio ロック状態のため操作に失敗しました。キーボードのロックを解除してから再度お試しください。",
   Home: "ホーム",
@@ -1371,6 +1397,30 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
+  // --- Trackpad tuning (Phase 5) ---
+  Trackpad: "触控板",
+  "Trackpad Settings": "触控板设置",
+  "Loading trackpad settings...": "正在加载触控板设置...",
+  "What are Processors?": "什么是处理器？",
+  "Input processors transform trackpad motion before it becomes pointer or scroll output, and can be turned on per layer.":
+    "输入处理器在触控板的动作成为指针或滚动输出之前对其进行转换，并可按层启用。",
+  "Switch the trackpad between moving the cursor and scrolling":
+    "在移动光标和滚动之间切换触控板",
+  "Adjust sensitivity, or swap and invert the axes":
+    "调整灵敏度，或交换和反转轴",
+  "Choose which layers each processor is active on": "为每个处理器选择激活的层",
+  "Optionally hold a temporary layer while the trackpad moves":
+    "在触控板移动时可选地保持一个临时层",
+  Note: "备注",
+  "This sets the base sensitivity. The speed keys on the keyboard still adjust on top of it, so the two multiply.":
+    "这里设置的是基准灵敏度。键盘上的速度键会在此基础上叠加，两者相乘。",
+  "Auto-activate layer when the trackpad is in use": "使用触控板时自动激活层",
+  "Delay before activating layer when the trackpad moves":
+    "触控板开始移动后激活层的延迟",
+  "Delay before deactivating layer when the trackpad stops":
+    "触控板停止后取消激活层的延迟",
+  "Transform trackpad movement into different input types":
+    "将触控板的动作转换为其他输入类型",
   "The operation failed because the device is locked in ZMK Studio. Unlock the keyboard and try again.":
     "操作失败，因为设备在 ZMK Studio 中处于锁定状态。请解锁键盘后重试。",
   Home: "首页",
