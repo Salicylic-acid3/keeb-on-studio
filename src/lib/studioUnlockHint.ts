@@ -21,9 +21,9 @@
 
 /** Keyed by `CONFIG_ZMK_KEYBOARD_NAME`, lower-cased. */
 const UNLOCK_HINTS: Record<string, string> = {
-  // config/clickboard_ergotrack.keymap -> combos { studio_unlock_combo }
+  // config/clickboard_ergotrack.keymap -> drag_layer, position 13
   ergotrack:
-    "Press the two right-hand trackpad speed keys together — cursor speed − and speed reset.",
+    "Hold a left-click key and press the top-right key on the right half (Delete on the base layer).",
   // config/goforty_max.keymap -> layer 1, first position
   "goforty-max":
     "Hold the layer 1 key and press the top-left key (the Bluetooth previous-profile key on the base layer).",

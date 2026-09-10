@@ -9,8 +9,8 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
-  "Press the two right-hand trackpad speed keys together — cursor speed − and speed reset.":
-    "右手側トラックパッドの速度キー2つを同時に押す（カーソル速度− と 速度リセット）。",
+  "Hold a left-click key and press the top-right key on the right half (Delete on the base layer).":
+    "左クリックのキーを押しながら、右手側の一番右上のキーを押す（Baseでは Delete）。",
   "Hold the layer 1 key and press the top-left key (the Bluetooth previous-profile key on the base layer).":
     "レイヤー1キーを押しながら左上のキーを押す（Baseでは Bluetooth 前のプロファイルのキー）。",
   "This dialog closes on its own once the keyboard reports it. Press Retry if it does not.":
@@ -1549,8 +1549,8 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
-  "Press the two right-hand trackpad speed keys together — cursor speed − and speed reset.":
-    "同时按下右手触控板的两个速度键（光标速度 − 与速度重置）。",
+  "Hold a left-click key and press the top-right key on the right half (Delete on the base layer).":
+    "按住左键单击的按键，再按右手侧最右上角的键（Base 层上是 Delete）。",
   "Hold the layer 1 key and press the top-left key (the Bluetooth previous-profile key on the base layer).":
     "按住第 1 层键并按左上角的键（在 Base 层上是蓝牙上一个配置的键）。",
   "This dialog closes on its own once the keyboard reports it. Press Retry if it does not.":
