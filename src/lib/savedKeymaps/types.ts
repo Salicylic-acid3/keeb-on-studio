@@ -9,7 +9,22 @@
  * The same format is what a shared keymap will travel in, so it has to survive
  * leaving this browser.
  */
-import type { BehaviorBinding } from "../../hooks/useKeymap";
+/**
+ * A binding, as both the editor and a stored record hold it.
+ *
+ * Declared here rather than imported from the device layer on purpose: this
+ * format is also what the gallery Worker validates, and a Worker has neither
+ * React nor the ZMK client. Importing the app's own binding type for these
+ * three numbers would drag the whole device stack into that build.
+ *
+ * The two are structurally identical, and a test asserts they stay assignable
+ * in both directions, so nothing can drift without failing.
+ */
+export interface KeymapBinding {
+  behaviorId: number;
+  param1: number;
+  param2: number;
+}
 
 /** Bumped whenever the shape below changes. Older records are hidden, not deleted. */
 export const SAVED_KEYMAP_SCHEMA_VERSION = 1;
@@ -138,7 +153,7 @@ export function toPayload(input: {
   description: string;
   target: SavedKeymapTarget;
   fromDemo: boolean;
-  layers: Array<{ name: string; bindings: BehaviorBinding[] }>;
+  layers: Array<{ name: string; bindings: KeymapBinding[] }>;
   behaviorName: (behaviorId: number) => string;
 }): SavedKeymapPayload {
   const behaviors: string[] = [];
@@ -206,7 +221,7 @@ export interface ResolvedKeymap {
    * dropped, because a binding's index IS its key position and closing the gap
    * would shift every key after it.
    */
-  layers: Array<{ name: string; bindings: Array<BehaviorBinding | null> }>;
+  layers: Array<{ name: string; bindings: Array<KeymapBinding | null> }>;
   /**
    * The `null`s above, listed. The caller can say which keys it is about to
    * leave alone before it writes anything.
@@ -227,10 +242,7 @@ export function resolveForDevice(
   const layers = record.layers.map((layer, layerIndex) => ({
     name: layer.name,
     bindings: layer.bindings.map(
-      (
-        [behaviorIndex, param1, param2],
-        keyPosition,
-      ): BehaviorBinding | null => {
+      ([behaviorIndex, param1, param2], keyPosition): KeymapBinding | null => {
         const behaviorName = record.behaviors[behaviorIndex] ?? "";
         const behaviorId = behaviorIdByName.get(behaviorName);
         if (behaviorId === undefined) {

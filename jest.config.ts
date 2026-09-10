@@ -3,7 +3,9 @@ import type { Config } from "jest";
 const config: Config = {
   preset: "ts-jest",
   testEnvironment: "jsdom",
-  roots: ["<rootDir>/src"],
+  // The Worker shares the app's keymap validator, so its tests live with the
+  // app's rather than in a second runner.
+  roots: ["<rootDir>/src", "<rootDir>/worker"],
   setupFilesAfterEnv: ["<rootDir>/src/setupTests.ts"],
   moduleNameMapper: {
     // Map the base paths first

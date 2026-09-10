@@ -10,12 +10,14 @@
 import { useEffect, useRef, useState } from "react";
 import {
   IconBookmark,
+  IconBuildingStore,
   IconChevronDown,
   IconDeviceFloppy,
   IconDownload,
   IconLink,
   IconTrash,
   IconUpload,
+  IconWorldUpload,
 } from "@tabler/icons-react";
 import { useLanguage } from "../../hooks/useLanguage";
 import {
@@ -39,6 +41,8 @@ export interface SavedKeymapsMenuProps {
   onExport: (record: SavedKeymap) => void;
   onImport: (file: File) => void;
   onShare: (record: SavedKeymap) => void;
+  onPublish: (record: SavedKeymap) => void;
+  onBrowseGallery: () => void;
   disabled?: boolean;
 }
 
@@ -79,6 +83,8 @@ export function SavedKeymapsMenu({
   onExport,
   onImport,
   onShare,
+  onPublish,
+  onBrowseGallery,
   disabled = false,
 }: SavedKeymapsMenuProps) {
   const { t } = useLanguage();
@@ -224,6 +230,25 @@ export function SavedKeymapsMenu({
             </button>
           )}
 
+          {!isNaming && (
+            <button
+              className="w-full text-left p-3 rounded-lg hover:bg-[var(--color-border)] transition-colors"
+              onClick={() => {
+                onBrowseGallery();
+                setIsOpen(false);
+              }}
+              role="menuitem"
+            >
+              <span className="flex items-center gap-2 text-sm text-[var(--color-text)]">
+                <IconBuildingStore size={16} />
+                {t("Browse the gallery…")}
+              </span>
+              <span className="block mt-0.5 text-xs text-[var(--color-text-muted)]">
+                {t("Keymaps other people published.")}
+              </span>
+            </button>
+          )}
+
           <input
             ref={fileInputRef}
             type="file"
@@ -249,7 +274,7 @@ export function SavedKeymapsMenu({
               where one used to be on someone else's screen. */}
           {!canShare && keymaps.length > 0 && (
             <p className="px-3 py-2 text-xs text-[var(--color-text-muted)]">
-              {t("Connect your keyboard to share a keymap as a link.")}
+              {t("Connect your keyboard to share or publish a keymap.")}
             </p>
           )}
 
@@ -302,6 +327,21 @@ export function SavedKeymapsMenu({
                         </span>
                       )}
                     </button>
+                    {canShare && (
+                      <button
+                        className="p-1 rounded text-[var(--color-text-muted)] hover:text-[var(--color-electric)] transition-colors"
+                        onClick={() => {
+                          onPublish(record);
+                          setIsOpen(false);
+                        }}
+                        title={t("Publish to the gallery")}
+                        aria-label={t("Publish {{name}} to the gallery", {
+                          name: record.name,
+                        })}
+                      >
+                        <IconWorldUpload size={14} />
+                      </button>
+                    )}
                     {canShare && (
                       <button
                         className="p-1 rounded text-[var(--color-text-muted)] hover:text-[var(--color-electric)] transition-colors"

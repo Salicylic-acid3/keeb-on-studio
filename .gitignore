@@ -30,3 +30,8 @@ coverage
 _codeql_detected_source_root
 original_img
 *.code-workspace
+
+# Wrangler's local state and local secrets. `.dev.vars` holds the maintainer
+# token used by `wrangler dev`; the deployed one is a Worker secret.
+.wrangler
+.dev.vars

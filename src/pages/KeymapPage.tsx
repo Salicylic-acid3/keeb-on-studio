@@ -59,6 +59,17 @@ import {
   type SavedKeymap,
   type SavedKeymapPayload,
 } from "../lib/savedKeymaps";
+import { GalleryDialog } from "../components/gallery/GalleryDialog";
+import { useGallery } from "../hooks/useGallery";
+import {
+  fetchGalleryKeymap,
+  forgetPost,
+  galleryErrorMessage,
+  myPostIds,
+  publishToGallery,
+  rememberPost,
+  type GalleryCard,
+} from "../lib/gallery";
 
 export function KeymapPage() {
   const { t, language } = useLanguage();
@@ -143,6 +154,16 @@ export function KeymapPage() {
   // A keymap that arrived in the address bar, waiting to be accepted. Held
   // rather than added: opening a link is not consent to fill someone's list.
   const [incoming, setIncoming] = useState<SavedKeymapPayload | null>(null);
+
+  // The public gallery. Opened from the My keymaps menu rather than given a
+  // tab of its own: it is a way a keymap arrives, like a file or a link, not a
+  // separate place in the app.
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const gallery = useGallery();
+  const [myPosts, setMyPosts] = useState<ReadonlySet<string>>(() =>
+    myPostIds(),
+  );
+  const [galleryBusyId, setGalleryBusyId] = useState<string | null>(null);
 
   // Layers for the selector
   const layersForSelector = useMemo(() => {
@@ -263,6 +284,91 @@ export function KeymapPage() {
       block: "center",
     });
   }, [incoming, keymap.isLoading]);
+
+  // Publishing follows exactly the rule a share link follows: it needs a real
+  // keyboard. The button is not rendered in demo mode, and the Worker refuses
+  // a board it does not know -- neither is a security boundary, both are the
+  // gallery staying about these keyboards.
+  const handlePublish = useCallback(
+    async (record: SavedKeymap) => {
+      const board = connection.deviceName;
+      if (!board) return;
+      const result = await publishToGallery(
+        {
+          schemaVersion: record.schemaVersion,
+          name: record.name,
+          description: record.description,
+          target: record.target,
+          behaviors: record.behaviors,
+          layers: record.layers,
+          fromDemo: record.fromDemo,
+        },
+        board,
+      );
+      if (!result.ok) {
+        setLoadNotice(galleryErrorMessage(result.error, t, result.limit));
+        return;
+      }
+      setMyPosts(rememberPost(result.value.id));
+      setLoadNotice(
+        t('Published "{{name}}" to the gallery.', { name: record.name }),
+      );
+      // The list this browser is holding is now one post out of date.
+      void gallery.refresh();
+    },
+    [connection.deviceName, gallery, t],
+  );
+
+  // Same rule as a file and a link: it lands in My keymaps, and putting it on
+  // the keyboard stays a separate, deliberate step.
+  const handleOpenFromGallery = useCallback(
+    async (post: GalleryCard) => {
+      setGalleryBusyId(post.id);
+      const result = await fetchGalleryKeymap(post.id);
+      setGalleryBusyId(null);
+      if (!result.ok) {
+        setLoadNotice(galleryErrorMessage(result.error, t));
+        return;
+      }
+      const stored = await savedKeymaps.addKeymap(result.value);
+      setGalleryOpen(false);
+      setLoadNotice(
+        stored
+          ? t('Added "{{name}}" to your keymaps.', { name: stored.name })
+          : t("That keymap could not be saved."),
+      );
+    },
+    [savedKeymaps, t],
+  );
+
+  const handleReportPost = useCallback(
+    async (post: GalleryCard) => {
+      setGalleryBusyId(post.id);
+      const error = await gallery.report(post.id);
+      setGalleryBusyId(null);
+      setLoadNotice(
+        error
+          ? galleryErrorMessage(error, t)
+          : t("Reported. The maintainer will take a look."),
+      );
+    },
+    [gallery, t],
+  );
+
+  const handleDeletePost = useCallback(
+    async (post: GalleryCard) => {
+      setGalleryBusyId(post.id);
+      const error = await gallery.remove(post.id);
+      setGalleryBusyId(null);
+      if (error) {
+        setLoadNotice(galleryErrorMessage(error, t));
+        return;
+      }
+      setMyPosts(forgetPost(post.id));
+      setLoadNotice(t("Removed from the gallery."));
+    },
+    [gallery, t],
+  );
 
   const handleAcceptIncoming = useCallback(async () => {
     if (!incoming) return;
@@ -734,6 +840,13 @@ export function KeymapPage() {
                     onImport={handleImportFile}
                     onShare={(record) => {
                       void handleShare(record);
+                    }}
+                    onPublish={(record) => {
+                      void handlePublish(record);
+                    }}
+                    onBrowseGallery={() => {
+                      setGalleryOpen(true);
+                      void gallery.refresh();
                     }}
                     disabled={keymap.isLoading}
                   />
@@ -1496,6 +1609,30 @@ export function KeymapPage() {
       <VersionDiffModal
         {...versionHistory.diffModalProps}
         labeler={versionHistory.labeler}
+      />
+
+      <GalleryDialog
+        open={galleryOpen}
+        onOpenChange={setGalleryOpen}
+        posts={gallery.posts}
+        isLoading={gallery.isLoading}
+        isLoadingMore={gallery.isLoadingMore}
+        hasMore={gallery.hasMore}
+        error={gallery.error}
+        mine={myPosts}
+        busyId={galleryBusyId}
+        onOpenPost={(post) => {
+          void handleOpenFromGallery(post);
+        }}
+        onReport={(post) => {
+          void handleReportPost(post);
+        }}
+        onDelete={(post) => {
+          void handleDeletePost(post);
+        }}
+        onLoadMore={() => {
+          void gallery.loadMore();
+        }}
       />
 
       {/* Keycode Selector Dialog */}

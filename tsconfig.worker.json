@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    // "jest" because this config also checks the Worker's own tests; it is a
+    // noEmit typecheck config, not what wrangler builds from.
+    "types": ["@cloudflare/workers-types", "jest"],
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "composite": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.worker.tsbuildinfo"
+  },
+  // The Worker shares the app's keymap validator and its supported-keyboard
+  // list, so those files are compiled here too -- both are free of DOM and of
+  // React, which is what makes sharing them possible.
+  "include": [
+    "worker",
+    "src/lib/savedKeymaps/file.ts",
+    "src/lib/savedKeymaps/types.ts",
+    "src/lib/supportedDevices.ts"
+  ]
+}

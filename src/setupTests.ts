@@ -12,6 +12,7 @@ import {
   DecompressionStream,
 } from "stream/web";
 import { BroadcastChannel } from "worker_threads";
+import { webcrypto } from "crypto";
 
 // Polyfill TextEncoder and TextDecoder for protobuf support
 global.TextEncoder = TextEncoder;
@@ -51,6 +52,17 @@ global.DecompressionStream =
 // still guards on `typeof BroadcastChannel` for browsers without it.
 global.BroadcastChannel =
   BroadcastChannel as unknown as typeof global.BroadcastChannel;
+
+// jsdom's `crypto` has getRandomValues but no `subtle`, which the gallery uses
+// to hash an author's token rather than store it. Node's WebCrypto is the same
+// implementation the Workers runtime exposes.
+if (!globalThis.crypto?.subtle) {
+  Object.defineProperty(globalThis, "crypto", {
+    value: webcrypto,
+    configurable: true,
+    writable: true,
+  });
+}
 
 // jsdom implements no layout, so it has no ResizeObserver. Radix's floating
 // primitives (Popover, and anything else positioned against a trigger) construct

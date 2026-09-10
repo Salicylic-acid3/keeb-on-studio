@@ -9,6 +9,47 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  "Keymap gallery": "キーマップギャラリー",
+  "Browse the gallery…": "ギャラリーを見る…",
+  "Keymaps other people published.": "他の人が公開したキーマップです。",
+  "Keymaps other people published. Opening one adds it to your keymaps — nothing is written to your keyboard.":
+    "他の人が公開したキーマップです。追加してもマイキーマップに入るだけで、キーボードには書き込みません。",
+  "Publish to the gallery": "ギャラリーに公開",
+  "Publish {{name}} to the gallery": "「{{name}}」をギャラリーに公開",
+  'Published "{{name}}" to the gallery.':
+    "「{{name}}」をギャラリーに公開しました。",
+  "Nothing has been published yet.": "まだ何も公開されていません。",
+  "Load more": "もっと読む",
+  Add: "追加",
+  "{{count}} layers": "{{count}}レイヤー",
+  "published from this browser": "このブラウザから公開",
+  "Report this keymap": "このキーマップを通報",
+  "Report {{name}}": "「{{name}}」を通報",
+  "Report this keymap for the maintainer to look at?":
+    "このキーマップを管理者に確認してもらいますか？",
+  Report: "通報",
+  "Reported. The maintainer will take a look.":
+    "通報しました。管理者が確認します。",
+  "Remove from the gallery": "ギャラリーから削除",
+  "Remove {{name}} from the gallery": "「{{name}}」をギャラリーから削除",
+  "Removed from the gallery.": "ギャラリーから削除しました。",
+  "Could not reach the gallery.": "ギャラリーに接続できませんでした。",
+  "The gallery is not set up on this server yet.":
+    "このサーバーではギャラリーがまだ有効になっていません。",
+  "You already have {{count}} keymaps in the gallery.":
+    "ギャラリーに公開できるのは{{count}}件までです。",
+  "The gallery is for ClickBoard ErgoTrack and GoFortyMax.":
+    "ギャラリーは ClickBoard ErgoTrack と GoFortyMax 向けです。",
+  "That keymap is too big to publish.":
+    "このキーマップは大きすぎて公開できません。",
+  "That keymap could not be read.": "このキーマップを読み取れませんでした。",
+  "That keymap was published from another browser.":
+    "このキーマップは別のブラウザから公開されたものです。",
+  "That keymap is no longer in the gallery.":
+    "このキーマップはギャラリーにもうありません。",
+  "The gallery refused that.": "ギャラリーに拒否されました。",
+  "Connect your keyboard to share or publish a keymap.":
+    "共有と公開は、キーボードを接続しているときに使えます。",
   "What to do about chatter": "チャタリングが出たときは",
   "Reset the statistics, then use the keyboard for a while.":
     "まず統計をリセットして、しばらく普通に使ってみてください。",
@@ -1481,6 +1522,42 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
+  "Keymap gallery": "键映射图库",
+  "Browse the gallery…": "浏览图库…",
+  "Keymaps other people published.": "其他人公开的键映射。",
+  "Keymaps other people published. Opening one adds it to your keymaps — nothing is written to your keyboard.":
+    "其他人公开的键映射。添加后只会进入我的键映射，不会写入键盘。",
+  "Publish to the gallery": "发布到图库",
+  "Publish {{name}} to the gallery": "将“{{name}}”发布到图库",
+  'Published "{{name}}" to the gallery.': "已将“{{name}}”发布到图库。",
+  "Nothing has been published yet.": "目前还没有任何发布。",
+  "Load more": "加载更多",
+  Add: "添加",
+  "{{count}} layers": "{{count}} 层",
+  "published from this browser": "由本浏览器发布",
+  "Report this keymap": "举报此键映射",
+  "Report {{name}}": "举报“{{name}}”",
+  "Report this keymap for the maintainer to look at?":
+    "要举报此键映射，交由维护者查看吗？",
+  Report: "举报",
+  "Reported. The maintainer will take a look.": "已举报，维护者会查看。",
+  "Remove from the gallery": "从图库中删除",
+  "Remove {{name}} from the gallery": "将“{{name}}”从图库中删除",
+  "Removed from the gallery.": "已从图库中删除。",
+  "Could not reach the gallery.": "无法连接到图库。",
+  "The gallery is not set up on this server yet.": "此服务器尚未启用图库。",
+  "You already have {{count}} keymaps in the gallery.":
+    "图库中最多只能发布 {{count}} 个键映射。",
+  "The gallery is for ClickBoard ErgoTrack and GoFortyMax.":
+    "图库面向 ClickBoard ErgoTrack 与 GoFortyMax。",
+  "That keymap is too big to publish.": "该键映射过大，无法发布。",
+  "That keymap could not be read.": "无法读取该键映射。",
+  "That keymap was published from another browser.":
+    "该键映射由其他浏览器发布。",
+  "That keymap is no longer in the gallery.": "该键映射已不在图库中。",
+  "The gallery refused that.": "图库拒绝了该操作。",
+  "Connect your keyboard to share or publish a keymap.":
+    "连接键盘后即可分享或发布键映射。",
   "What to do about chatter": "出现抖动时怎么办",
   "Reset the statistics, then use the keyboard for a while.":
     "先重置统计，然后正常使用一段时间。",
