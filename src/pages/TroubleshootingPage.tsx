@@ -14,6 +14,7 @@ import { useKscanDiagnostics } from "../hooks/useKscanDiagnostics";
 import { useElfAnalysis } from "../hooks/useElfAnalysis";
 import { useDevtoolStackUsage } from "../hooks/useDevtoolStackUsage";
 import { DeviceInfoSection } from "../components/troubleshooting/DeviceInfoSection";
+import { BatterySection } from "../components/troubleshooting/BatterySection";
 import { WatchdogSection } from "../components/troubleshooting/WatchdogSection";
 import { KscanDiagnosticsSection } from "../components/troubleshooting/KscanDiagnosticsSection";
 import { DevtoolStackUsageSection } from "../components/troubleshooting/DevtoolStackUsageSection";
@@ -174,6 +175,9 @@ export function TroubleshootingPage() {
         {/* Section cards */}
         <div className="space-y-6">
           <DeviceInfoSection deviceInfo={deviceInfo} />
+          {/* Near the top: on a keyboard that is dropping input, a flat cell
+              is both the most likely cause and the cheapest one to rule out. */}
+          <BatterySection deviceName={zmkApp?.state.deviceInfo?.name} />
           <WatchdogSection watchdog={watchdog} elfAnalysis={elfAnalysis} />
           <KscanDiagnosticsSection kscan={kscan} />
           <DevtoolStackUsageSection stackUsage={stackUsage} />

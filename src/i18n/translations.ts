@@ -9,6 +9,14 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  Battery: "電池",
+  "How much charge each half has left": "左右それぞれの電池残量",
+  "This keyboard does not report its battery level.":
+    "このキーボードは電池残量を報告しません。",
+  "The keyboard measures this about once a minute, so 0% just after connecting means it has not measured yet.":
+    "キーボードは1分に1回ほど測るので、接続直後の 0% は「まだ測っていない」という意味です。",
+  "A cell this low can still run the keys while failing to run a trackpad — the pointer goes first.":
+    "ここまで減った電池でもキーは動きますが、トラックパッドには足りなくなります。ポインタから先に落ちます。",
   "Hold a left-click key and press the top-right key on the right half (Delete on the base layer).":
     "左クリックのキーを押しながら、右手側の一番右上のキーを押す（Baseでは Delete）。",
   "Hold the layer 1 key and press the top-left key (the Bluetooth previous-profile key on the base layer).":
@@ -1549,6 +1557,13 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
+  Battery: "电池",
+  "How much charge each half has left": "左右两侧各自的剩余电量",
+  "This keyboard does not report its battery level.": "此键盘不报告电池电量。",
+  "The keyboard measures this about once a minute, so 0% just after connecting means it has not measured yet.":
+    "键盘约每分钟测量一次，因此刚连接时的 0% 表示尚未测量。",
+  "A cell this low can still run the keys while failing to run a trackpad — the pointer goes first.":
+    "电量低到这个程度时按键仍可工作，但已不足以驱动触控板——指针会先失效。",
   "Hold a left-click key and press the top-right key on the right half (Delete on the base layer).":
     "按住左键单击的按键，再按右手侧最右上角的键（Base 层上是 Delete）。",
   "Hold the layer 1 key and press the top-left key (the Bluetooth previous-profile key on the base layer).":

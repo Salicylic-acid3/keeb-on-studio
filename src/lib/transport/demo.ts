@@ -56,6 +56,7 @@ import {
   DEFAULT_LAYER_IDENTIFIER,
 } from "./demo-default-layer";
 import { createTapDanceSettings, TAP_DANCE_IDENTIFIER } from "./demo-tap-dance";
+import { createBatterySettings, BATTERY_IDENTIFIER } from "./demo-battery";
 import {
   Request as BLERequest,
   Response as BLEResponse,
@@ -254,6 +255,7 @@ class Keyboard {
   private readonly FAST_KEYMAP_SUBSYSTEM_INDEX = 14;
   private readonly SETTING_EXPOSE_SUBSYSTEM_INDEX = 15;
   private readonly TAP_DANCE_SUBSYSTEM_INDEX = 16;
+  private readonly BATTERY_SUBSYSTEM_INDEX = 17;
 
   constructor() {
     // Tap dance has no handler of its own: the firmware module stores its
@@ -261,9 +263,14 @@ class Keyboard {
     // handler rows owned by the tap dance subsystem index.
     this.customSettingsHandler = new CustomSettingsHandler(
       this.SETTINGS_SUBSYSTEM_INDEX,
-      isDemoSubsystemEnabled(TAP_DANCE_IDENTIFIER)
-        ? createTapDanceSettings(this.TAP_DANCE_SUBSYSTEM_INDEX)
-        : [],
+      [
+        ...(isDemoSubsystemEnabled(TAP_DANCE_IDENTIFIER)
+          ? createTapDanceSettings(this.TAP_DANCE_SUBSYSTEM_INDEX)
+          : []),
+        ...(isDemoSubsystemEnabled(BATTERY_IDENTIFIER)
+          ? createBatterySettings(this.BATTERY_SUBSYSTEM_INDEX)
+          : []),
+      ],
     );
     this.runtimeMacroHandler = new RuntimeMacroHandler(
       this.customSettingsHandler,
@@ -364,6 +371,14 @@ class Keyboard {
       // module registers the same empty subsystem for the same reason.
       index: this.TAP_DANCE_SUBSYSTEM_INDEX,
       identifier: TAP_DANCE_IDENTIFIER,
+      uiUrl: [],
+    },
+    {
+      // Registered but never called, for the same reason as tap dance: the
+      // levels are custom settings, and their subsystem id has to resolve to
+      // an index or they are dropped from ListSettings.
+      index: this.BATTERY_SUBSYSTEM_INDEX,
+      identifier: BATTERY_IDENTIFIER,
       uiUrl: [],
     },
   ];
