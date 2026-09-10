@@ -158,6 +158,31 @@ export function KeymapPage() {
     [requireUnlocked],
   );
 
+  // A file that came from someone else is data, not a command: it lands in the
+  // list and is only written to the keyboard if the user then loads it.
+  const handleImportFile = useCallback(
+    async (file: File) => {
+      const result = await savedKeymaps.importFromFile(file);
+      if (result.ok) {
+        setLoadNotice(
+          t('Added "{{name}}" to your keymaps.', { name: result.record.name }),
+        );
+        return;
+      }
+      const reasons: Record<string, string> = {
+        "too-large": t("That file is too big to be a keymap."),
+        "not-json": t("That file is not JSON."),
+        "not-a-keymap": t("That file is not a Keeb-On! Studio keymap."),
+        "newer-format": t(
+          "That keymap was made by a newer version of Keeb-On! Studio.",
+        ),
+        malformed: t("That keymap file is damaged."),
+      };
+      setLoadNotice(reasons[result.reason] ?? reasons.malformed);
+    },
+    [savedKeymaps, t],
+  );
+
   // Loading a saved keymap writes through the same edit path as the editor, so
   // it lands as unsaved changes the user reviews and then Saves -- rather than
   // going straight to the keyboard on the one action most likely to be a slip.
@@ -562,6 +587,8 @@ export function KeymapPage() {
                     onDelete={(record) => {
                       void savedKeymaps.remove(record.id);
                     }}
+                    onExport={savedKeymaps.exportToFile}
+                    onImport={handleImportFile}
                     disabled={keymap.isLoading}
                   />
                   <div className="flex-shrink-0">

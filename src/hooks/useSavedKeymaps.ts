@@ -14,9 +14,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   createSavedKeymapStore,
   compatibilityOf,
+  fileNameFor,
+  parseFile,
   resolveForDevice,
+  serialize,
   toPayload,
   type Compatibility,
+  type ParseFailure,
   type SavedKeymap,
   type SavedKeymapStore,
   type UnresolvedBinding,
@@ -58,6 +62,18 @@ export interface UseSavedKeymapsReturn {
   remove: (id: number) => Promise<void>;
   load: (record: SavedKeymap) => Promise<LoadOutcome>;
   compatibility: (record: SavedKeymap) => Compatibility;
+  /** Hands the record to the browser as a .json download. */
+  exportToFile: (record: SavedKeymap) => void;
+  /**
+   * Reads a file into the list. Deliberately does NOT touch the keyboard:
+   * importing is "add this to my keymaps", and putting one on the board stays
+   * a separate, deliberate step.
+   */
+  importFromFile: (
+    file: File,
+  ) => Promise<
+    { ok: true; record: SavedKeymap } | ({ ok: false } & ParseFailure)
+  >;
 }
 
 export function useSavedKeymaps({
@@ -195,6 +211,47 @@ export function useSavedKeymaps({
     [connected],
   );
 
+  const exportToFile = useCallback((record: SavedKeymap) => {
+    const blob = new Blob([serialize(record)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileNameFor(record.name);
+    // The anchor has to be in the document for `download` to be honoured --
+    // clicked detached, the browser saves the blob under a generic name and
+    // the keymap arrives as "download".
+    link.style.display = "none";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    // Revoking immediately can race the download in some browsers; a tick is
+    // enough for the click to have been taken up.
+    setTimeout(() => URL.revokeObjectURL(url), 0);
+  }, []);
+
+  const importFromFile = useCallback(
+    async (file: File) => {
+      const parsed = parseFile(await file.text());
+      if (!parsed.ok) return parsed;
+      const now = Date.now();
+      try {
+        const stored = await store.add({
+          ...parsed.keymap,
+          createdAt: now,
+          updatedAt: now,
+        });
+        await refresh();
+        return { ok: true as const, record: stored };
+      } catch (cause) {
+        setError(cause instanceof Error ? cause.message : String(cause));
+        return { ok: false as const, reason: "malformed" as const, field: "" };
+      }
+    },
+    [store, refresh],
+  );
+
   return {
     keymaps,
     isLoading,
@@ -206,5 +263,7 @@ export function useSavedKeymaps({
     remove,
     load,
     compatibility,
+    exportToFile,
+    importFromFile,
   };
 }

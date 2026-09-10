@@ -9,6 +9,21 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  "Import from a file…": "ファイルから読み込む…",
+  "Adds it to this list. Nothing is written to the keyboard.":
+    "この一覧に追加するだけです。キーボードには何も書き込みません。",
+  "Export to a file": "ファイルに書き出す",
+  "Export {{name}}": "{{name}} を書き出す",
+  'Added "{{name}}" to your keymaps.':
+    "「{{name}}」をマイキーマップに追加しました。",
+  "That file is too big to be a keymap.":
+    "このファイルはキーマップにしては大きすぎます。",
+  "That file is not JSON.": "このファイルは JSON ではありません。",
+  "That file is not a Keeb-On! Studio keymap.":
+    "このファイルは Keeb-On! Studio のキーマップではありません。",
+  "That keymap was made by a newer version of Keeb-On! Studio.":
+    "このキーマップは、より新しいバージョンの Keeb-On! Studio で作られています。",
+  "That keymap file is damaged.": "このキーマップファイルは壊れています。",
   "My keymaps": "マイキーマップ",
   "Save this keymap…": "このキーマップを保存…",
   "Keeps a named copy in this browser.":
@@ -1429,6 +1444,19 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
+  "Import from a file…": "从文件导入…",
+  "Adds it to this list. Nothing is written to the keyboard.":
+    "仅添加到此列表，不会写入键盘。",
+  "Export to a file": "导出为文件",
+  "Export {{name}}": "导出 {{name}}",
+  'Added "{{name}}" to your keymaps.': "已将“{{name}}”添加到我的键映射。",
+  "That file is too big to be a keymap.": "该文件过大，不像是键映射。",
+  "That file is not JSON.": "该文件不是 JSON。",
+  "That file is not a Keeb-On! Studio keymap.":
+    "该文件不是 Keeb-On! Studio 的键映射。",
+  "That keymap was made by a newer version of Keeb-On! Studio.":
+    "该键映射由更新版本的 Keeb-On! Studio 创建。",
+  "That keymap file is damaged.": "该键映射文件已损坏。",
   "My keymaps": "我的键映射",
   "Save this keymap…": "保存此键映射…",
   "Keeps a named copy in this browser.": "在此浏览器中保留一份命名副本。",

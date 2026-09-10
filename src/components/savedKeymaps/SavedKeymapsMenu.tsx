@@ -12,7 +12,9 @@ import {
   IconBookmark,
   IconChevronDown,
   IconDeviceFloppy,
+  IconDownload,
   IconTrash,
+  IconUpload,
 } from "@tabler/icons-react";
 import { useLanguage } from "../../hooks/useLanguage";
 import {
@@ -31,6 +33,8 @@ export interface SavedKeymapsMenuProps {
   onSave: (name: string, description: string) => void;
   onLoad: (record: SavedKeymap) => void;
   onDelete: (record: SavedKeymap) => void;
+  onExport: (record: SavedKeymap) => void;
+  onImport: (file: File) => void;
   disabled?: boolean;
 }
 
@@ -67,6 +71,8 @@ export function SavedKeymapsMenu({
   onSave,
   onLoad,
   onDelete,
+  onExport,
+  onImport,
   disabled = false,
 }: SavedKeymapsMenuProps) {
   const { t } = useLanguage();
@@ -76,6 +82,7 @@ export function SavedKeymapsMenu({
   const [description, setDescription] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -193,6 +200,37 @@ export function SavedKeymapsMenu({
             </button>
           )}
 
+          {!isNaming && (
+            <button
+              className="w-full text-left p-3 rounded-lg hover:bg-[var(--color-border)] transition-colors"
+              onClick={() => fileInputRef.current?.click()}
+              role="menuitem"
+            >
+              <span className="flex items-center gap-2 text-sm text-[var(--color-text)]">
+                <IconUpload size={16} />
+                {t("Import from a file…")}
+              </span>
+              <span className="block mt-0.5 text-xs text-[var(--color-text-muted)]">
+                {/* Adding to the list, not writing to the keyboard: putting a
+                    keymap on the board stays a separate, deliberate step. */}
+                {t("Adds it to this list. Nothing is written to the keyboard.")}
+              </span>
+            </button>
+          )}
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/json,.json"
+            className="hidden"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              // Clearing lets the same file be picked again after a failure.
+              event.target.value = "";
+              if (file) onImport(file);
+            }}
+          />
+
           {!isDurable && (
             <p className="px-3 py-2 text-xs text-[var(--color-warning)]">
               {t(
@@ -249,6 +287,14 @@ export function SavedKeymapsMenu({
                           {note}
                         </span>
                       )}
+                    </button>
+                    <button
+                      className="p-1 rounded text-[var(--color-text-muted)] hover:text-[var(--color-electric)] transition-colors"
+                      onClick={() => onExport(record)}
+                      title={t("Export to a file")}
+                      aria-label={t("Export {{name}}", { name: record.name })}
+                    >
+                      <IconDownload size={14} />
                     </button>
                     <button
                       className="p-1 rounded text-[var(--color-text-muted)] hover:text-[var(--color-electric)] transition-colors"
