@@ -176,6 +176,29 @@ export interface UnresolvedBinding {
   behaviorName: string;
 }
 
+/**
+ * The distinct behaviors a load could not match, in the order they were met.
+ *
+ * A count on its own ("3 keys were left alone") leaves the user to work out
+ * which behavior is missing by comparing two keyboards key by key. The name is
+ * the whole answer, and it is already in hand.
+ */
+export function unresolvedBehaviorNames(
+  unresolved: UnresolvedBinding[],
+): string[] {
+  const seen = new Set<string>();
+  const names: string[] = [];
+  for (const { behaviorName } of unresolved) {
+    const name = behaviorName.trim();
+    // A behavior the device never described has no name worth showing. The
+    // count still covers it, so nothing is hidden -- only unnamed.
+    if (!name || seen.has(name)) continue;
+    seen.add(name);
+    names.push(name);
+  }
+  return names;
+}
+
 export interface ResolvedKeymap {
   /**
    * One entry per key position, in position order. `null` marks a binding the

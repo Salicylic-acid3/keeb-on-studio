@@ -38,6 +38,19 @@ export interface LoadOutcome {
   unresolved: UnresolvedBinding[];
   /** Layers in the record that the keyboard does not have. */
   skippedLayers: number;
+  /** Layers created to make room, when the caller asked for that. */
+  addedLayers: number;
+}
+
+export interface LoadOptions {
+  /**
+   * Create the layers the record needs but the keyboard does not have.
+   *
+   * Off by default. Filling keys someone already has is one thing; changing
+   * how many layers their keyboard has is another, and it should follow a
+   * button they pressed knowing that is what it does.
+   */
+  addMissingLayers?: boolean;
 }
 
 export interface UseSavedKeymapsOptions {
@@ -51,6 +64,8 @@ export interface UseSavedKeymapsOptions {
     keyPosition: number,
     binding: { behaviorId: number; param1: number; param2: number },
   ) => Promise<boolean>;
+  /** Adds one layer to the keyboard, or returns null when there are no free slots. */
+  addLayer: () => Promise<{ index: number; layer: Layer } | null>;
 }
 
 export interface UseSavedKeymapsReturn {
@@ -73,7 +88,7 @@ export interface UseSavedKeymapsReturn {
   save: (name: string, description: string) => Promise<SavedKeymap | null>;
   rename: (id: number, name: string, description: string) => Promise<void>;
   remove: (id: number) => Promise<void>;
-  load: (record: SavedKeymap) => Promise<LoadOutcome>;
+  load: (record: SavedKeymap, options?: LoadOptions) => Promise<LoadOutcome>;
   compatibility: (record: SavedKeymap) => Compatibility;
   /** Hands the record to the browser as a .json download. */
   exportToFile: (record: SavedKeymap) => void;
@@ -99,6 +114,7 @@ export function useSavedKeymaps({
   connected,
   isDemo,
   setBinding,
+  addLayer,
 }: UseSavedKeymapsOptions): UseSavedKeymapsReturn {
   // One store for the life of the page; opening IndexedDB per render would be
   // a new connection each time.
@@ -198,9 +214,29 @@ export function useSavedKeymaps({
   );
 
   const load = useCallback(
-    async (record: SavedKeymap): Promise<LoadOutcome> => {
+    async (
+      record: SavedKeymap,
+      options?: LoadOptions,
+    ): Promise<LoadOutcome> => {
       const resolved = resolveForDevice(record, behaviorIdByName);
-      const target = layers ?? [];
+      // A local copy rather than the state: layers added below are needed
+      // within this same call, and React state does not update mid-callback.
+      const target = [...(layers ?? [])];
+      let addedLayers = 0;
+
+      if (options?.addMissingLayers) {
+        while (target.length < resolved.layers.length) {
+          const added = await addLayer();
+          // Null means the keyboard has no free slots left. Stop asking and
+          // let the remaining layers be reported as skipped.
+          if (!added) break;
+          // The device chooses where a restored layer lands, so mirror the
+          // same splice useKeymap does rather than assuming it appends.
+          target.splice(added.index, 0, added.layer);
+          addedLayers++;
+        }
+      }
+
       let written = 0;
       let skippedLayers = 0;
 
@@ -218,9 +254,14 @@ export function useSavedKeymaps({
         }
       }
 
-      return { written, unresolved: resolved.unresolved, skippedLayers };
+      return {
+        written,
+        unresolved: resolved.unresolved,
+        skippedLayers,
+        addedLayers,
+      };
     },
-    [behaviorIdByName, layers, setBinding],
+    [behaviorIdByName, layers, setBinding, addLayer],
   );
 
   const compatibility = useCallback(

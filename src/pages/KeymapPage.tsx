@@ -55,11 +55,13 @@ import { useSavedKeymaps } from "../hooks/useSavedKeymaps";
 import {
   parseShareCode,
   shareCodeFromHash,
+  unresolvedBehaviorNames,
+  type SavedKeymap,
   type SavedKeymapPayload,
 } from "../lib/savedKeymaps";
 
 export function KeymapPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const connection = useContext(ConnectionContext);
   const keyboardLayoutContext = useContext(KeyboardLayoutContext);
   const keymap = useKeymap();
@@ -131,6 +133,7 @@ export function KeymapPage() {
       : null,
     isDemo: connection.isDemo,
     setBinding: keymap.setBinding,
+    addLayer: keymap.addLayer,
   });
   const [loadNotice, setLoadNotice] = useState<string | null>(null);
   // The link produced by "Copy a share link", kept on screen so it can be
@@ -272,26 +275,63 @@ export function KeymapPage() {
     );
   }, [incoming, savedKeymaps, t]);
 
+  // Names the behaviors a load could not match. The list is capped because the
+  // point is to recognise what is missing, not to read every instance of it.
+  const formatBehaviorNames = useCallback(
+    (names: string[]) => {
+      const shown = names.slice(0, 3);
+      const listed = new Intl.ListFormat(language, {
+        style: "long",
+        type: "conjunction",
+      }).format(shown);
+      const rest = names.length - shown.length;
+      return rest > 0
+        ? t("{{names}} and {{count}} more", { names: listed, count: rest })
+        : listed;
+    },
+    [language, t],
+  );
+
+  // A record whose layers did not all fit, kept so the notice can offer to make
+  // room and load it again.
+  const [needsLayers, setNeedsLayers] = useState<SavedKeymap | null>(null);
+
   // Loading a saved keymap writes through the same edit path as the editor, so
   // it lands as unsaved changes the user reviews and then Saves -- rather than
   // going straight to the keyboard on the one action most likely to be a slip.
-  const handleLoadSaved = useCallback(
-    (record: Parameters<typeof savedKeymaps.load>[0]) =>
+  const runLoad = useCallback(
+    (record: SavedKeymap, options?: { addMissingLayers?: boolean }) =>
       withUnlock(async () => {
-        const outcome = await savedKeymaps.load(record);
+        const outcome = await savedKeymaps.load(record, options);
         const notes = [
           t("Loaded {{count}} keys as unsaved changes.", {
             count: outcome.written,
           }),
         ];
-        if (outcome.unresolved.length > 0) {
+        if (outcome.addedLayers > 0) {
           notes.push(
-            t(
-              "{{count}} keys were left alone: this keyboard has no such behavior.",
-              {
-                count: outcome.unresolved.length,
-              },
-            ),
+            t("Added {{count}} layers to make room.", {
+              count: outcome.addedLayers,
+            }),
+          );
+        }
+        if (outcome.unresolved.length > 0) {
+          // Naming the behavior is the whole answer; a bare count leaves the
+          // user comparing two keyboards key by key to find it.
+          const names = unresolvedBehaviorNames(outcome.unresolved);
+          notes.push(
+            names.length > 0
+              ? t(
+                  "{{count}} keys were left alone: this keyboard has no {{names}}.",
+                  {
+                    count: outcome.unresolved.length,
+                    names: formatBehaviorNames(names),
+                  },
+                )
+              : t(
+                  "{{count}} keys were left alone: this keyboard has no such behavior.",
+                  { count: outcome.unresolved.length },
+                ),
           );
         }
         if (outcome.skippedLayers > 0) {
@@ -302,8 +342,21 @@ export function KeymapPage() {
           );
         }
         setLoadNotice(notes.join(" "));
+        // Only offer to add layers when adding them is what is missing --
+        // after a run that already tried, a remaining shortfall means the
+        // keyboard is out of slots and the button would just fail again.
+        setNeedsLayers(
+          outcome.skippedLayers > 0 && !options?.addMissingLayers
+            ? record
+            : null,
+        );
       }),
-    [savedKeymaps, t, withUnlock],
+    [savedKeymaps, t, withUnlock, formatBehaviorNames],
+  );
+
+  const handleLoadSaved = useCallback(
+    (record: SavedKeymap) => runLoad(record),
+    [runLoad],
   );
 
   // Handle key click
@@ -1224,11 +1277,25 @@ export function KeymapPage() {
                     />
                   )}
                 </div>
+                {/* Adding layers changes the shape of the keyboard, not just
+                    what is on it, so it waits behind a button rather than
+                    happening as a side effect of loading. */}
+                {needsLayers && (
+                  <button
+                    className="btn-electric text-xs flex-shrink-0"
+                    onClick={() => {
+                      void runLoad(needsLayers, { addMissingLayers: true });
+                    }}
+                  >
+                    {t("Add the layers and load again")}
+                  </button>
+                )}
                 <button
                   className="btn-ghost text-xs"
                   onClick={() => {
                     setLoadNotice(null);
                     setShareUrl(null);
+                    setNeedsLayers(null);
                   }}
                 >
                   {t("Dismiss")}

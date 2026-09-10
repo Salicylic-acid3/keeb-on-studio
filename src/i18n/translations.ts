@@ -9,6 +9,12 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  "{{count}} keys were left alone: this keyboard has no {{names}}.":
+    "{{count}}個のキーはそのままにしました。このキーボードには {{names}} がありません。",
+  "{{names}} and {{count}} more": "{{names}} ほか{{count}}件",
+  "Added {{count}} layers to make room.":
+    "レイヤーを{{count}}枚追加して場所を作りました。",
+  "Add the layers and load again": "レイヤーを追加して読み込む",
   "Copy a share link": "共有リンクをコピー",
   "Copy a share link for {{name}}": "「{{name}}」の共有リンクをコピー",
   "Share link": "共有リンク",
@@ -1460,6 +1466,11 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
+  "{{count}} keys were left alone: this keyboard has no {{names}}.":
+    "有 {{count}} 个键保持原样：本键盘没有 {{names}}。",
+  "{{names}} and {{count}} more": "{{names}} 等另外 {{count}} 项",
+  "Added {{count}} layers to make room.": "已添加 {{count}} 个层以腾出位置。",
+  "Add the layers and load again": "添加层并重新载入",
   "Copy a share link": "复制分享链接",
   "Copy a share link for {{name}}": "复制“{{name}}”的分享链接",
   "Share link": "分享链接",

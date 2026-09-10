@@ -10,6 +10,7 @@ import {
   isLoadable,
   resolveForDevice,
   toPayload,
+  unresolvedBehaviorNames,
   NAME_MAX_LENGTH,
   DESCRIPTION_MAX_LENGTH,
 } from "../types";
@@ -125,6 +126,34 @@ describe("saved keymap format", () => {
     });
     expect(payload.name).toHaveLength(NAME_MAX_LENGTH);
     expect(payload.description).toHaveLength(DESCRIPTION_MAX_LENGTH);
+  });
+});
+
+describe("naming what could not be loaded", () => {
+  it("names each missing behavior once, in the order met", () => {
+    expect(
+      unresolvedBehaviorNames([
+        { layerIndex: 0, keyPosition: 4, behaviorName: "drag_lclk" },
+        { layerIndex: 0, keyPosition: 9, behaviorName: "dual_pad" },
+        { layerIndex: 1, keyPosition: 4, behaviorName: "drag_lclk" },
+      ]),
+    ).toEqual(["drag_lclk", "dual_pad"]);
+  });
+
+  it("leaves out behaviors the device never named", () => {
+    // The count still covers these; there is simply no name to show, and a
+    // blank in a sentence reads as a bug.
+    expect(
+      unresolvedBehaviorNames([
+        { layerIndex: 0, keyPosition: 0, behaviorName: "" },
+        { layerIndex: 0, keyPosition: 1, behaviorName: "   " },
+        { layerIndex: 0, keyPosition: 2, behaviorName: "drag_lclk" },
+      ]),
+    ).toEqual(["drag_lclk"]);
+  });
+
+  it("has nothing to say when everything resolved", () => {
+    expect(unresolvedBehaviorNames([])).toEqual([]);
   });
 });
 
