@@ -9,6 +9,12 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  "Press the two right-hand trackpad speed keys together — cursor speed − and speed reset.":
+    "右手側トラックパッドの速度キー2つを同時に押す（カーソル速度− と 速度リセット）。",
+  "Hold the layer 1 key and press the top-left key (the Bluetooth previous-profile key on the base layer).":
+    "レイヤー1キーを押しながら左上のキーを押す（Baseでは Bluetooth 前のプロファイルのキー）。",
+  "This dialog closes on its own once the keyboard reports it. Press Retry if it does not.":
+    "キーボードから通知が届くとこのダイアログは自動で閉じます。閉じない場合は「再試行」を押してください。",
   "Copy from Base": "Baseからコピー",
   "Copy Base onto this layer?": "Baseをこのレイヤーにコピーしますか？",
   "This layer already matches Base": "このレイヤーはすでにBaseと同じです",
@@ -1543,6 +1549,12 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
+  "Press the two right-hand trackpad speed keys together — cursor speed − and speed reset.":
+    "同时按下右手触控板的两个速度键（光标速度 − 与速度重置）。",
+  "Hold the layer 1 key and press the top-left key (the Bluetooth previous-profile key on the base layer).":
+    "按住第 1 层键并按左上角的键（在 Base 层上是蓝牙上一个配置的键）。",
+  "This dialog closes on its own once the keyboard reports it. Press Retry if it does not.":
+    "键盘报告解锁后此对话框会自动关闭。若未关闭，请按“重试”。",
   "Copy from Base": "从 Base 复制",
   "Copy Base onto this layer?": "将 Base 复制到此层？",
   "This layer already matches Base": "此层已与 Base 相同",

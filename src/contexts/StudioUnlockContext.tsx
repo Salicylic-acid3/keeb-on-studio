@@ -29,12 +29,16 @@ import type { ReactNode } from "react";
 import {
   createContext,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
-import { useStudioLockState } from "@cormoran/zmk-studio-react-hook";
+import {
+  useStudioLockState,
+  ZMKAppContext,
+} from "@cormoran/zmk-studio-react-hook";
 import { UnlockPrompt } from "../components/UnlockPrompt";
 import {
   StudioUnlockCancelledError,
@@ -96,6 +100,10 @@ export function StudioUnlockProvider({
   quietMs?: number;
 }) {
   const { locked, lockState } = useStudioLockState();
+  // Only to name the keyboard's own unlock gesture in the prompt. Read here
+  // rather than passed in because the provider wraps the whole app and the
+  // modal has no other route to it.
+  const deviceName = useContext(ZMKAppContext)?.state.deviceInfo?.name;
 
   // All bookkeeping lives in refs so every gate helper below can be a *stable*
   // useCallback. The context value must never change identity: if it did, every
@@ -307,7 +315,12 @@ export function StudioUnlockProvider({
   return (
     <StudioUnlockContext.Provider value={value}>
       {children}
-      <UnlockPrompt open={isOpen} onClose={cancel} onRetry={retryAll} />
+      <UnlockPrompt
+        open={isOpen}
+        deviceName={deviceName}
+        onClose={cancel}
+        onRetry={retryAll}
+      />
     </StudioUnlockContext.Provider>
   );
 }

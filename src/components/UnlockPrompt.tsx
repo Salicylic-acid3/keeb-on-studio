@@ -7,18 +7,32 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { IconLock, IconKeyboard, IconRefresh } from "@tabler/icons-react";
 import { useLanguage } from "../hooks/useLanguage";
+import { unlockHintFor } from "../lib/studioUnlockHint";
 
 interface UnlockPromptProps {
   /** Whether the dialog is open */
   open: boolean;
+  /**
+   * The keyboard's reported name, used to name its actual unlock gesture.
+   * Undefined falls back to the generic wording.
+   */
+  deviceName?: string | null;
   /** Callback when dialog should close */
   onClose: () => void;
   /** Callback to retry the operation after unlock */
   onRetry: () => void;
 }
 
-export function UnlockPrompt({ open, onClose, onRetry }: UnlockPromptProps) {
+export function UnlockPrompt({
+  open,
+  deviceName,
+  onClose,
+  onRetry,
+}: UnlockPromptProps) {
   const { t } = useLanguage();
+  // What to actually press. Only this app's own keyboards can be named; for
+  // anything else the generic line is the honest answer.
+  const hint = unlockHintFor(deviceName);
 
   return (
     <Dialog.Root open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
@@ -59,36 +73,41 @@ export function UnlockPrompt({ open, onClose, onRetry }: UnlockPromptProps) {
                   1
                 </span>
                 <span>
-                  {t(
-                    "Press the studio unlock key combination on your keyboard",
-                  )}
+                  {hint
+                    ? t(hint)
+                    : t(
+                        "Press the studio unlock key combination on your keyboard",
+                      )}
                 </span>
               </li>
+              {/* No LED step: neither of these keyboards has an indicator for
+                  this, and the app notices the unlock by itself — the device
+                  sends a lock-state change, which closes this dialog and
+                  resumes whatever the user was doing. Retry is for when that
+                  notification does not arrive. */}
               <li className="flex gap-2">
                 <span className="flex-shrink-0 w-5 h-5 rounded-full bg-[var(--color-electric)]/20 text-[var(--color-electric)] text-xs flex items-center justify-center">
                   2
                 </span>
                 <span>
                   {t(
-                    "Look for a notification or LED indication that confirms unlock",
+                    "This dialog closes on its own once the keyboard reports it. Press Retry if it does not.",
                   )}
                 </span>
-              </li>
-              <li className="flex gap-2">
-                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-[var(--color-electric)]/20 text-[var(--color-electric)] text-xs flex items-center justify-center">
-                  3
-                </span>
-                <span>{t("Click Retry below to continue")}</span>
               </li>
             </ol>
           </div>
 
-          {/* Note */}
-          <p className="text-xs text-[var(--color-text-muted)] mb-6 text-center">
-            {t(
-              "The unlock key combination is typically configured in your ZMK keymap. Check your firmware configuration if you're unsure.",
-            )}
-          </p>
+          {/* Note: only for a keyboard we could not name a gesture for.
+              Telling someone to go read their keymap is unhelpful when we
+              already told them which keys to press. */}
+          {!hint && (
+            <p className="text-xs text-[var(--color-text-muted)] mb-6 text-center">
+              {t(
+                "The unlock key combination is typically configured in your ZMK keymap. Check your firmware configuration if you're unsure.",
+              )}
+            </p>
+          )}
 
           {/* Actions */}
           <div className="flex gap-3">
