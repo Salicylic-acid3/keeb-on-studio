@@ -35,8 +35,14 @@ export class PhysicalLayoutsHandler {
           // ErgoTrack carries a trackpad per hand. The demo used to
           // advertise a trackball and a rotary encoder as well; neither is on
           // a keyboard this app supports, and rotary encoders are explicitly
-          // not planned. Pad positions are indicative -- the firmware's
-          // layout file describes keys, not input devices.
+          // not planned.
+          //
+          // Geometry matches what the firmware reports (see the touchpad
+          // nodes in clickboard_ergotrack_right.overlay): each pad fills the
+          // gap between that hand's two drag_lclk bars, which sit at y 25..125
+          // and y 375..475 in the same 100-per-unit coordinate space the key
+          // layout uses. Keep the two in step, or the demo teaches the wrong
+          // shape of the keyboard.
           devices: [
             {
               identifier: "touchpad_left",
@@ -50,10 +56,10 @@ export class PhysicalLayoutsHandler {
               ],
               touchPad: {
                 attrs: {
-                  width: 240,
-                  height: 150,
-                  x: 200,
-                  y: 570,
+                  width: 268,
+                  height: 250,
+                  x: 650,
+                  y: 125,
                   r: 0,
                   rx: 0,
                   ry: 0,
@@ -72,10 +78,10 @@ export class PhysicalLayoutsHandler {
               ],
               touchPad: {
                 attrs: {
-                  width: 240,
-                  height: 150,
-                  x: 1480,
-                  y: 570,
+                  width: 268,
+                  height: 250,
+                  x: 1010,
+                  y: 125,
                   r: 0,
                   rx: 0,
                   ry: 0,
