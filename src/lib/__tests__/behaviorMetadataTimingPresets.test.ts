@@ -30,6 +30,27 @@ describe("timing presets", () => {
     expect(preset!.param1Type).toBe("layer");
   });
 
+  it("files a preset that also names its flavor", () => {
+    // Timing is not the only thing two otherwise identical hold-taps differ
+    // in: ZMK's `flavor` decides what happens when another key is pressed
+    // mid-hold, and it is just as invisible on the wire. A firmware shipping
+    // both spells it out in brackets, and a preset that fell through to Others
+    // over those brackets would be worse off than one with no flavor at all.
+    const preset = getBehaviorMetadata("Mod-Tap 180ms (Permissive)");
+    const base = getBehaviorMetadata("Mod-Tap");
+
+    expect(preset).not.toBeNull();
+    expect(preset!.category).toBe(base!.category);
+    expect(preset!.param1Type).toBe(base!.param1Type);
+    expect(preset!.param2Type).toBe(base!.param2Type);
+    // The bracket is the only thing telling it apart from a plain "Mod-Tap
+    // 180ms", so it has to survive into the picker.
+    expect(preset!.displayNameVariants[0]).toBe("Mod-Tap 180ms (Permissive)");
+    expect(
+      getBehaviorMetadata("Layer-Tap 180ms (Permissive)")!.param1Type,
+    ).toBe("layer");
+  });
+
   it("keeps the firmware's own name so the presets stay distinguishable", () => {
     // Falling back to the base name would print "Mod-Tap" three times in the
     // picker with no way to tell which threshold you were choosing.

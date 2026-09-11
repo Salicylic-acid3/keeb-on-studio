@@ -578,8 +578,15 @@ BEHAVIOR_METADATA_BASE.forEach((metadata) => {
  * without this the presets fall through to the Others category with no
  * parameter types and no label -- which is where the ones this project ships
  * ended up.
+ *
+ * The optional bracket at the end is for the other thing a preset can differ
+ * in. ZMK's `flavor` decides what happens when another key is pressed during
+ * the hold, and it is no more visible on the wire than the timing is, so a
+ * firmware shipping both a hold-preferred and a balanced Mod-Tap has to say
+ * which is which in the name: "Mod-Tap 180ms (Permissive)". What goes in the
+ * brackets is the firmware's to word; this only has to not be thrown by it.
  */
-const TIMING_PRESET = /\s+(\d+)\s*ms$/i;
+const TIMING_PRESET = /\s+(\d+)\s*ms(?:\s*\([^)]*\))?$/i;
 
 /** Derived metadata is built once per name, so identity stays stable. */
 const timingPresetCache = new Map<string, BehaviorMetadata | null>();

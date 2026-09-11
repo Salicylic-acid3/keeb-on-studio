@@ -31,7 +31,7 @@ function attr(partialAttr: Partial<KeyPhysicalAttrs>): KeyPhysicalAttrs {
   };
 }
 
-/** ClickBoard ErgoTrack: 79 keys; the 4 rotated ones are the thumb cluster. */
+/** ClickBoard ErgoTrack: 81 keys; the 4 rotated ones are the thumb cluster. */
 export const ERGOTRACK: PhysicalLayout = {
   name: "ClickBoard ErgoTrack",
   keys: [
@@ -114,6 +114,10 @@ export const ERGOTRACK: PhysicalLayout = {
     { width: 100, height: 100, x: 1050, y: 700 },
     { width: 100, height: 100, x: 1150, y: 700 },
     { width: 100, height: 100, x: 1250, y: 700 },
+    // The two-finger horizontal swipe, added in firmware v0.7.4. Like the rest
+    // of this row these sit under no switch and are hidden on the board.
+    { width: 100, height: 100, x: 1350, y: 700 },
+    { width: 100, height: 100, x: 1450, y: 700 },
   ].map(attr),
 };
 

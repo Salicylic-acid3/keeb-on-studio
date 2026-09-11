@@ -2,15 +2,15 @@
  * Trackpad gestures, as keys.
  *
  * ErgoTrack's firmware does not emit a keystroke for a swipe or a pinch
- * directly. It presses a key position that no switch sits under — seven of
+ * directly. It presses a key position that no switch sits under — nine of
  * them, drawn in a row below the board — and lets the keymap decide what that
  * means. The reason is per-OS switching: a position is resolved through the
  * layer stack, so Alt Base can give the same pinch a different modifier
  * without a rebuild.
  *
- * The cost is that the gestures show up in the keymap editor as seven unlabeled
- * keys sitting under the board with nothing to say what they are. This file is
- * what turns them back into gestures.
+ * The cost is that the gestures show up in the keymap editor as unlabeled keys
+ * sitting under the board with nothing to say what they are. This file is what
+ * turns them back into gestures.
  *
  * Two things are deliberately not claimed here:
  *
@@ -76,23 +76,24 @@ interface GestureSet {
 const GESTURE_SETS: Record<string, GestureSet> = {
   // boards/shields/clickboard_ergotrack/clickboard_ergotrack_right.overlay:
   //   trackpad_gestures -> &tp_to_pos 72..76 (BTN_7, BTN_3..BTN_6)
+  //                        &tp_to_pos 79, 80 (BTN_SIDE, BTN_EXTRA)
   //   dual_pad          -> &tp_to_pos 77
-  // Two of the seven are not listed, for the same reason in both cases: an
-  // editable row for a key nothing presses is just a trap.
   //
-  //   78 is bound to &none — a two-handed trigger that was tried and dropped.
-  //   72 is the one-pad pinch modifier, and the firmware stopped sending it in
-  //      v0.7.4. Two fingers pinching on a pad this size kept being read as a
-  //      two-finger scroll, and the two-handed zoom below does the same job
-  //      without the ambiguity, so CONFIG_INPUT_IQS9151_2F_PINCH_ENABLE is n on
-  //      both halves. The switch is still there for a model with a larger pad;
-  //      a keyboard that turns it back on gets its own entry here.
+  // 78 is the one position not listed: it is bound to &none — a two-handed
+  // trigger that was tried and dropped — and an editable row for a key nothing
+  // presses is just a trap. It stays hidden on the board with the rest.
   "clickboard ergotrack": {
-    keyCount: 79,
-    // 72..78: the gestures below, plus the two positions listed above that
-    // nothing presses. All of them are hidden on the keymap board.
+    keyCount: 81,
+    // 72..80: the gestures below, plus 78. All hidden on the keymap board.
     pseudoKeysFrom: 72,
     gestures: [
+      {
+        position: 72,
+        label: "Pinch, two fingers on one pad",
+        detail:
+          "Held down for as long as the pinch lasts. A modifier here is what turns the pinch into a zoom, because the pinch itself sends wheel scroll. Off by default — turn it on under Axes.",
+        held: true,
+      },
       {
         position: 73,
         label: "Three-finger swipe, vertical A",
@@ -123,6 +124,19 @@ const GESTURE_SETS: Record<string, GestureSet> = {
         detail:
           "Held down for as long as the zoom lasts. This is the modifier the two-handed zoom holds while it scrolls.",
         held: true,
+      },
+      {
+        position: 79,
+        label: "Two-finger swipe, horizontal A",
+        detail:
+          "Tapped once when the swipe is recognised. Browser back and forward are the usual pair. Enabling this costs two-finger horizontal scroll — a sideways movement cannot both scroll at once and be held back long enough to be recognised as a swipe.",
+        held: false,
+      },
+      {
+        position: 80,
+        label: "Two-finger swipe, horizontal B",
+        detail: "The other direction of the same gesture.",
+        held: false,
       },
     ],
   },
