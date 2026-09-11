@@ -17,9 +17,14 @@
  * The four swipe positions are two pairs, one per axis of the *sensor*, and
  * every input chain on this keyboard starts with INPUT_TRANSFORM_XY_SWAP — so
  * the sensor's x-axis swipe is the vertical one on screen. Which end of each
- * axis is which, though, is decided by how the sensor is mounted, and the two
- * pads invert different axes (the right pad X, the left pad Y). So a swipe that
- * sends one of a pair on one pad may well send the other on the other pad. The
+ * axis is which, though, is decided by how the sensor is mounted. The two pads
+ * used to disagree: the left one carries the same part fitted the other way
+ * round, and a swipe on it came out backwards on both axes. The firmware now
+ * flips the left pad's classification back
+ * (CONFIG_INPUT_IQS9151_3F_SWIPE_INVERT_X/Y), so a gesture sends the same
+ * position whichever pad it was made on.
+ *
+ * What is still not claimed is which end of each pair is which on screen. The
  * UI says "A" and "B" and lets the live key view settle it, because a confident
  * "up" that turns out to be "down" is worse than a label that admits it.
  *
@@ -72,22 +77,22 @@ const GESTURE_SETS: Record<string, GestureSet> = {
   // boards/shields/clickboard_ergotrack/clickboard_ergotrack_right.overlay:
   //   trackpad_gestures -> &tp_to_pos 72..76 (BTN_7, BTN_3..BTN_6)
   //   dual_pad          -> &tp_to_pos 77
-  // Position 78 is bound to &none and has no gesture behind it, so it is not
-  // listed: an editable row for a key nothing presses is just a trap.
+  // Two of the seven are not listed, for the same reason in both cases: an
+  // editable row for a key nothing presses is just a trap.
+  //
+  //   78 is bound to &none — a two-handed trigger that was tried and dropped.
+  //   72 is the one-pad pinch modifier, and the firmware stopped sending it in
+  //      v0.7.4. Two fingers pinching on a pad this size kept being read as a
+  //      two-finger scroll, and the two-handed zoom below does the same job
+  //      without the ambiguity, so CONFIG_INPUT_IQS9151_2F_PINCH_ENABLE is n on
+  //      both halves. The switch is still there for a model with a larger pad;
+  //      a keyboard that turns it back on gets its own entry here.
   "clickboard ergotrack": {
     keyCount: 79,
-    // 72..78. The last of them, 78, is bound to &none: a two-handed trigger
-    // that was tried and dropped. It has no gesture and no switch, so it is
-    // hidden with the rest and listed below with neither.
+    // 72..78: the gestures below, plus the two positions listed above that
+    // nothing presses. All of them are hidden on the keymap board.
     pseudoKeysFrom: 72,
     gestures: [
-      {
-        position: 72,
-        label: "Pinch, two fingers on one pad",
-        detail:
-          "Held down for as long as the pinch lasts. A modifier here is what turns the pinch into a zoom, because the pinch itself sends wheel scroll.",
-        held: true,
-      },
       {
         position: 73,
         label: "Three-finger swipe, vertical A",

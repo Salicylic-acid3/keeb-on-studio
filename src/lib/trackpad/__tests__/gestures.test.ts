@@ -11,7 +11,22 @@ describe("finding a keyboard's trackpad gestures", () => {
     // The positions were written against that layout. If it ever grows or
     // loses a key, this test fails here rather than in someone's keymap.
     const gestures = trackpadGesturesFor(ERGOTRACK.name, ERGOTRACK.keys.length);
-    expect(gestures.map((g) => g.position)).toEqual([72, 73, 74, 75, 76, 77]);
+    expect(gestures.map((g) => g.position)).toEqual([73, 74, 75, 76, 77]);
+  });
+
+  it("offers no row for a gesture the firmware stopped sending", () => {
+    // 72 was the one-pad pinch modifier. The firmware turned that gesture off
+    // (CONFIG_INPUT_IQS9151_2F_PINCH_ENABLE=n on both halves), so a row for it
+    // would invite putting a modifier on a key that is never pressed. It stays
+    // hidden on the keymap board rather than reappearing there.
+    const positions = trackpadGesturesFor(
+      ERGOTRACK.name,
+      ERGOTRACK.keys.length,
+    ).map((g) => g.position);
+    expect(positions).not.toContain(72);
+    expect(
+      pseudoKeyPositionsFor(ERGOTRACK.name, ERGOTRACK.keys.length).has(72),
+    ).toBe(true);
   });
 
   it("keeps the gesture positions past the end of the physical keys", () => {
@@ -40,7 +55,7 @@ describe("finding a keyboard's trackpad gestures", () => {
 
   it("matches the layout name whatever its case and spacing", () => {
     // The name comes off the wire from the firmware's display-name.
-    expect(trackpadGesturesFor("  clickboard ergotrack  ", 79)).toHaveLength(6);
+    expect(trackpadGesturesFor("  clickboard ergotrack  ", 79)).toHaveLength(5);
   });
 
   it("lists no position twice", () => {
@@ -50,7 +65,7 @@ describe("finding a keyboard's trackpad gestures", () => {
     expect(new Set(positions).size).toBe(positions.length);
   });
 
-  it("covers every gesture position and the unused spare", () => {
+  it("covers every gesture position and the two unused spares", () => {
     // The keymap editor hides exactly this set. A gesture left out of it would
     // stay drawn as a blank key; a real key wrongly in it would vanish.
     const hidden = pseudoKeyPositionsFor(ERGOTRACK.name, ERGOTRACK.keys.length);
@@ -70,13 +85,13 @@ describe("finding a keyboard's trackpad gestures", () => {
     expect(pseudoKeyPositionsFor(undefined, undefined).size).toBe(0);
   });
 
-  it("marks the two modifiers as held and the swipes as taps", () => {
+  it("marks the zoom modifier as held and the swipes as taps", () => {
     // This is not cosmetic: only a held key can carry the modifier that turns
-    // a pinch's wheel scroll into a zoom. A tapped one would do nothing.
+    // the two-handed zoom's wheel scroll into a zoom. A tapped one would do
+    // nothing.
     const byPosition = new Map(
       trackpadGesturesFor(ERGOTRACK.name, 79).map((g) => [g.position, g]),
     );
-    expect(byPosition.get(72)?.held).toBe(true);
     expect(byPosition.get(77)?.held).toBe(true);
     expect(byPosition.get(73)?.held).toBe(false);
     expect(byPosition.get(76)?.held).toBe(false);
