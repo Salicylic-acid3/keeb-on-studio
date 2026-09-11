@@ -24,14 +24,38 @@ const KEY_PRESS_NAMES = ["Key Press", "kp"];
 /**
  * The key-press behavior's id on this device, or null if it has none.
  *
- * Behavior ids are assigned per device and the demo numbers them its own way,
- * so the name is the only stable handle — the same reason saved keymaps store
- * behaviors by name. Null means quick assign cannot work here and should not
- * be offered: writing a guessed id would land on some unrelated behavior.
+ * Behavior ids are assigned per device, so the name is the only handle the
+ * app has to start from. The name alone turned out not to be enough: a real
+ * keyboard reported a behavior called "Key Press" whose id the firmware then
+ * refused to bind ("Invalid behavior ID: 50397"). Listing a behavior and
+ * accepting it in a binding are not the same thing.
+ *
+ * So the keymap is asked first. A binding already on the board is proof that
+ * this device accepts that id — it is what the device itself sent back when
+ * the keymap was read. Only when the board has no key press anywhere does
+ * this fall back to matching a listed behavior by name.
+ *
+ * Null means quick assign cannot work here and should not be offered. A
+ * guessed id would land on some unrelated behavior, and the keymap would look
+ * correct until a key was pressed.
+ *
+ * @param bindings every binding on the board, in any order. Cheap to pass and
+ *   worth passing: it is the only evidence available of what the firmware
+ *   will actually take.
  */
 export function findKeyPressBehaviorId(
   behaviors: Map<number, BehaviorDefinition>,
+  bindings?: readonly { behaviorId: number }[],
 ): number | null {
+  const isKeyPress = (id: number) =>
+    KEY_PRESS_NAMES.includes(behaviors.get(id)?.displayName ?? "");
+
+  for (const binding of bindings ?? []) {
+    if (isKeyPress(binding.behaviorId)) {
+      return binding.behaviorId;
+    }
+  }
+
   for (const [id, behavior] of behaviors) {
     if (KEY_PRESS_NAMES.includes(behavior.displayName ?? "")) {
       return id;

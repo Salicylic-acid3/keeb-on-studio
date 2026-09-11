@@ -36,6 +36,32 @@ describe("finding the key press behavior", () => {
     expect(findKeyPressBehaviorId(behaviors([[7, "kp"]]))).toBe(7);
   });
 
+  it("prefers an id the board is already using", () => {
+    // A real keyboard listed a behavior called "Key Press" whose id the
+    // firmware then refused to bind. A binding already on the board is proof
+    // the device accepts that id, so it wins over anything merely listed.
+    const map = behaviors([
+      [50397, "Key Press"],
+      [10, "Key Press"],
+    ]);
+    expect(findKeyPressBehaviorId(map, [{ behaviorId: 10 }])).toBe(10);
+  });
+
+  it("ignores bindings that are not key presses", () => {
+    const map = behaviors([
+      [35, "Transparent"],
+      [10, "Key Press"],
+    ]);
+    expect(
+      findKeyPressBehaviorId(map, [{ behaviorId: 35 }, { behaviorId: 10 }]),
+    ).toBe(10);
+  });
+
+  it("falls back to the listed behavior when the board has no key press", () => {
+    const map = behaviors([[10, "Key Press"]]);
+    expect(findKeyPressBehaviorId(map, [{ behaviorId: 35 }])).toBe(10);
+  });
+
   it("returns null rather than guessing", () => {
     // A device without it should not be offered quick assign at all; a
     // fallback id would write some unrelated behavior onto every key.

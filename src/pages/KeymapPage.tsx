@@ -516,9 +516,21 @@ export function KeymapPage() {
     [currentLayout],
   );
 
+  // Every binding on the board, so the key-press behavior can be identified
+  // by what this device already accepted rather than by name alone. Current
+  // layer first: if this keyboard binds key presses anywhere, it binds them
+  // on the layer being looked at.
+  const allBindings = useMemo(() => {
+    const layers = keymap.keymap?.layers ?? [];
+    return [
+      ...(currentLayer?.bindings ?? []),
+      ...layers.flatMap((layer) => layer.bindings),
+    ];
+  }, [keymap.keymap?.layers, currentLayer]);
+
   const keyPressBehaviorId = useMemo(
-    () => findKeyPressBehaviorId(keymap.behaviors),
-    [keymap.behaviors],
+    () => findKeyPressBehaviorId(keymap.behaviors, allBindings),
+    [keymap.behaviors, allBindings],
   );
 
   // The keycode currently on the selected key, so the bottom keyboard can
