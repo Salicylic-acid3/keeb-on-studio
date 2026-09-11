@@ -76,7 +76,7 @@ export function processorDoc(t: TranslateFn): DocTipContent {
         heading: t("Layers"),
         bullets: [
           t("Choose which layers each processor is active on"),
-          t("Optionally hold a temporary layer while the trackpad moves"),
+          t("Optionally hold a layer while the trackpad is in use"),
         ],
       },
       {

@@ -74,7 +74,7 @@ describe("TrackpadPage", () => {
     expect(screen.getByText("Trackpad Settings")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Adjust sensitivity and behavior via runtime input processor",
+        "How the pads move the pointer, and what the gestures do",
       ),
     ).toBeInTheDocument();
   });

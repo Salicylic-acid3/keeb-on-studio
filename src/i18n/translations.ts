@@ -14,6 +14,16 @@ const ja: Record<string, string> = {
   "Pick a key on the board to start.": "盤面のキーを選ぶと始まります。",
   "That was the last key.": "最後のキーでした。",
   Gestures: "ジェスチャー",
+  "{{layer}} — auto-track layer target":
+    "{{layer}} — オートトラックレイヤーの対象",
+  "Auto-track": "オートトラック",
+  "Optionally hold a layer while the trackpad is in use":
+    "必要ならトラックパッド使用中だけレイヤーを保持します",
+  "Processor settings": "プロセッサー設定",
+  "These apply to the processor selected on the left.":
+    "左で選んだプロセッサーに対する設定です。",
+  "How the pads move the pointer, and what the gestures do":
+    "パッドがポインターをどう動かすか、ジェスチャーが何をするか",
   Axes: "軸",
   "How movement on the pad reaches the computer":
     "パッドの動きをどうパソコンに届けるか",
@@ -220,8 +230,6 @@ const ja: Record<string, string> = {
     "感度を調整したり、軸を入れ替え・反転したりする",
   "Choose which layers each processor is active on":
     "各プロセッサを有効にするレイヤーを選ぶ",
-  "Optionally hold a temporary layer while the trackpad moves":
-    "トラックパッドの操作中だけ一時レイヤーを保持する（任意）",
   Note: "補足",
   "This sets the base sensitivity. The speed keys on the keyboard still adjust on top of it, so the two multiply.":
     "ここで決めるのは基準の感度です。キーボードの速度キーはこの上に掛かるので、両者は掛け算になります。",
@@ -409,8 +417,6 @@ const ja: Record<string, string> = {
   "Connect your keyboard to edit keymaps. Click on a key to modify its binding.":
     "キーマップを編集するにはキーボードを接続してください。キーをクリックすると割り当てを変更できます。",
 
-  "Adjust sensitivity and behavior via runtime input processor":
-    "ランタイム入力プロセッサーで感度と動作を調整します",
   "Runtime input processor subsystem is not available for your keyboard.":
     "このキーボードではランタイム入力プロセッサーサブシステムを利用できません。",
   "Make sure your firmware has the {{module}} enabled.":
@@ -427,10 +433,8 @@ const ja: Record<string, string> = {
   "This driver is no longer available.":
     "このドライバーは利用できなくなりました。",
   "Active on layer": "有効なレイヤー",
-  "Temp layer": "一時レイヤー",
   "{{layer}} — active": "{{layer}} — 有効",
   "{{layer}} — inactive": "{{layer}} — 無効",
-  "{{layer}} — temporary layer target": "{{layer}} — 一時レイヤーの対象",
   "Active on Layers": "有効にするレイヤー",
   "Configure which layers this processor is active on":
     "このプロセッサーを有効にするレイヤーを設定します",
@@ -1600,6 +1604,15 @@ const zh: Record<string, string> = {
   "Pick a key on the board to start.": "先在键盘图上选一个键。",
   "That was the last key.": "这是最后一个键。",
   Gestures: "手势",
+  "{{layer}} — auto-track layer target": "{{layer}} — 自动跟踪层目标",
+  "Auto-track": "自动跟踪",
+  "Optionally hold a layer while the trackpad is in use":
+    "可选：在使用触控板期间保持某个层",
+  "Processor settings": "处理器设置",
+  "These apply to the processor selected on the left.":
+    "这些设置针对左侧选中的处理器。",
+  "How the pads move the pointer, and what the gestures do":
+    "触控板如何移动指针，以及手势的作用",
   Axes: "坐标轴",
   "How movement on the pad reaches the computer": "触控板的移动如何传给电脑",
   "The keyboard presses a key of its own for each of these. Whatever is bound here is what the gesture does — and because it goes through a layer, Alt Base can give the same gesture a different key for the other OS.":
@@ -1788,8 +1801,6 @@ const zh: Record<string, string> = {
   "Adjust sensitivity, or swap and invert the axes":
     "调整灵敏度，或交换和反转轴",
   "Choose which layers each processor is active on": "为每个处理器选择激活的层",
-  "Optionally hold a temporary layer while the trackpad moves":
-    "在触控板移动时可选地保持一个临时层",
   Note: "备注",
   "This sets the base sensitivity. The speed keys on the keyboard still adjust on top of it, so the two multiply.":
     "这里设置的是基准灵敏度。键盘上的速度键会在此基础上叠加，两者相乘。",
@@ -1970,8 +1981,6 @@ const zh: Record<string, string> = {
   "Connect your keyboard to edit keymaps. Click on a key to modify its binding.":
     "连接键盘以编辑键位。点击按键以修改其绑定。",
 
-  "Adjust sensitivity and behavior via runtime input processor":
-    "通过运行时输入处理器调整灵敏度和行为",
   "Runtime input processor subsystem is not available for your keyboard.":
     "您的键盘不支持运行时输入处理器子系统。",
   "Make sure your firmware has the {{module}} enabled.":
@@ -1987,10 +1996,8 @@ const zh: Record<string, string> = {
   "Loading...": "加载中...",
   "This driver is no longer available.": "此驱动已不可用。",
   "Active on layer": "在层上激活",
-  "Temp layer": "临时层",
   "{{layer}} — active": "{{layer}} — 已激活",
   "{{layer}} — inactive": "{{layer}} — 未激活",
-  "{{layer}} — temporary layer target": "{{layer}} — 临时层目标",
   "Active on Layers": "激活的层",
   "Configure which layers this processor is active on": "配置此处理器激活的层",
   "Processor is active on all layers": "处理器在所有层上都处于激活状态",

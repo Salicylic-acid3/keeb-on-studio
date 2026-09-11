@@ -72,7 +72,7 @@ function LayerGrid({
             key={layer.id}
             title={
               isTemp
-                ? t("{{layer}} — temporary layer target", { layer: label })
+                ? t("{{layer}} — auto-track layer target", { layer: label })
                 : isActive
                   ? t("{{layer}} — active", { layer: label })
                   : t("{{layer}} — inactive", { layer: label })
@@ -568,7 +568,7 @@ export function TrackpadPage() {
               {t("Trackpad Settings")}
             </h1>
             <p className="text-sm text-[var(--color-text-muted)]">
-              {t("Adjust sensitivity and behavior via runtime input processor")}
+              {t("How the pads move the pointer, and what the gestures do")}
             </p>
           </div>
           {isAvailable && (
@@ -582,6 +582,15 @@ export function TrackpadPage() {
               />
             </div>
           )}
+        </div>
+
+        <div className="mb-3 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+          <h2 className="text-sm font-medium text-[var(--color-text)]">
+            {t("Processor settings")}
+          </h2>
+          <p className="text-xs text-[var(--color-text-muted)]">
+            {t("These apply to the processor selected on the left.")}
+          </p>
         </div>
 
         <div className="grid grid-cols-1 desktop:grid-cols-[300px_1fr] gap-4 min-w-0">
@@ -673,7 +682,7 @@ export function TrackpadPage() {
                   </span>
                   <span className="flex items-center gap-1">
                     <span className="h-3 w-3 rounded border border-[var(--color-border)] ring-2 ring-[var(--color-cyber)]" />
-                    {t("Temp layer")}
+                    {t("Auto-track")}
                   </span>
                 </div>
               )}
@@ -1334,7 +1343,7 @@ export function TrackpadPage() {
             drawn for a keyboard whose gesture positions we know — see
             gestures.ts for why that has to be checked rather than assumed. */}
         {gestures.length > 0 && (
-          <div className="mt-4">
+          <div className="mt-8 border-t border-[var(--color-border)] pt-6">
             <GestureSection
               gestures={gestures}
               layers={keymap.keymap?.layers ?? []}
