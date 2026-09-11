@@ -24,6 +24,17 @@
  * point is that someone else's keyboard fails with an explanation and a
  * pointer to DYA Studio, rather than half-working and turning into a support
  * request.
+ *
+ * One consequence is deliberate and was weighed. This app is for the ZMK
+ * keyboards from this workshop, but the vendor id is shared with every
+ * keyboard here, ZMK or not — ClickBoard ErgoMini, for one, reports 0x355D on
+ * USB. So a keyboard that speaks no ZMK Studio protocol can still be offered
+ * in the picker and then fail the handshake. Filtering on product ids as well
+ * would stop that, and would also undo the point of the change: a keyboard
+ * designed next month would be refused by its own configurator until someone
+ * remembered to add its number here. The owner's call (2026-09-11) is to leave
+ * it, and to improve the message someone actually meets if it turns out to
+ * confuse people.
  */
 
 /**

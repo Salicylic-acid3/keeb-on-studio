@@ -75,12 +75,18 @@ Inspect battery levels, firmware build info, and uptime for both halves. Hunt do
 
 ## Does it work with my keyboard?
 
-**Only if Salicylic_acid3 designed it.** Every keyboard from this workshop is
-built with USB vendor id `0x355D`, and that is what the app checks: the
-browser's port picker only lists keyboards that match, so a keyboard from
-anywhere else is never offered. A keyboard designed next month works without
-the app being told about it first; a keyboard from elsewhere does not work at
-all. This is not a general ZMK configurator.
+**Only if it is one of Salicylic_acid3's ZMK keyboards.** Every keyboard from
+this workshop is built with USB vendor id `0x355D`, and that is what the app
+checks: the browser's port picker only lists keyboards that match, so a
+keyboard from anywhere else is never offered. A keyboard designed next month
+works without the app being told about it first; a keyboard from elsewhere does
+not work at all. This is not a general ZMK configurator.
+
+The vendor id is shared with this workshop's non-ZMK keyboards too, so one of
+those can be offered in the picker and then fail to connect — it speaks no ZMK
+Studio protocol. Filtering on product ids would stop that at the cost of
+refusing every keyboard not yet listed in the app, which is the thing the
+vendor-id rule exists to avoid.
 
 If you have a different ZMK keyboard, use **[DYA Studio](https://studio.dya.cormoran.works)**,
 the project this one is forked from. It supports any ZMK Studio keyboard, and
