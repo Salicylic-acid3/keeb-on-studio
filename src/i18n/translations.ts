@@ -40,6 +40,18 @@ const ja: Record<string, string> = {
   "To find out which swipe is which, turn on the live key view in the Keymap tab and swipe on a pad: the row it triggers lights up.":
     "どのスワイプがどれかを確かめるには、キーマップタブでキー入力表示をオンにしてパッドでスワイプしてください。対応する行が光ります。",
   "Pinch, two fingers on one pad": "片手2本指ピンチ",
+  "One-pad pinch": "片手ピンチ",
+  "Pinch with two fingers on one pad": "片手2本指でピンチする",
+  "Two fingers closing or spreading on a single pad zooms. On a small pad this is easy to confuse with a two-finger scroll, and the two-handed zoom \u2014 one finger on each pad \u2014 does the same job without the ambiguity. Off by default for that reason.":
+    "片方のパッドの上で2本指を開閉するとズームします。小さいパッドでは2本指スクロールと紛らわしく、両手ズーム(左右のパッドに1本ずつ)なら同じことが曖昧さなしにできます。そのため既定はオフです。",
+  "Reverse the pinch direction": "ピンチの向きを逆にする",
+  "Spreading the fingers zooms out instead of in. Which way round is right is the host's convention rather than anything about the pad, so there is no setting that is correct on every machine.":
+    "指を開いたときに拡大ではなく縮小します。どちらが正しいかはパッドではなくホスト側の流儀で決まるので、どの環境でも正解という設定はありません。",
+  "Two-finger swipe, horizontal A": "2本指スワイプ・横 A",
+  "Tapped once when the swipe is recognised. Browser back and forward are the usual pair. Enabling this costs two-finger horizontal scroll \u2014 a sideways movement cannot both scroll at once and be held back long enough to be recognised as a swipe.":
+    "スワイプが認識された時点で1回だけ押されます。ブラウザの戻る/進むを割り当てるのが定番です。これを有効にすると2本指の横スクロールは使えなくなります。横向きの動きを、すぐスクロールに回しつつジェスチャーとして見届けることは両立しないためです。",
+  "Two-finger swipe, horizontal B": "2本指スワイプ・横 B",
+  "The other direction of the same gesture.": "同じジェスチャーの逆向きです。",
   "Held down for as long as the pinch lasts. A modifier here is what turns the pinch into a zoom, because the pinch itself sends wheel scroll.":
     "ピンチしている間ずっと押されたままになります。ピンチ自体はホイールを送るので、ここに修飾キーを置くとズームになります。",
   "Three-finger swipe, vertical A": "3本指スワイプ・縦 A",
@@ -1629,6 +1641,18 @@ const zh: Record<string, string> = {
   "To find out which swipe is which, turn on the live key view in the Keymap tab and swipe on a pad: the row it triggers lights up.":
     "要弄清哪一个滑动对应哪一行，请在键位映射标签页打开实时按键显示，然后在触控板上滑动：触发的行会亮起。",
   "Pinch, two fingers on one pad": "单手双指捏合",
+  "One-pad pinch": "单手捏合",
+  "Pinch with two fingers on one pad": "在单侧触控板上双指捏合",
+  "Two fingers closing or spreading on a single pad zooms. On a small pad this is easy to confuse with a two-finger scroll, and the two-handed zoom \u2014 one finger on each pad \u2014 does the same job without the ambiguity. Off by default for that reason.":
+    "在一侧触控板上开合双指进行缩放。在小尺寸触控板上这与双指滚动很难区分，而双手缩放（左右各一根手指）可以毫不含糊地完成同样的操作，因此默认关闭。",
+  "Reverse the pinch direction": "反转捏合方向",
+  "Spreading the fingers zooms out instead of in. Which way round is right is the host's convention rather than anything about the pad, so there is no setting that is correct on every machine.":
+    "张开手指时缩小而不是放大。哪个方向正确取决于主机的惯例而非触控板本身，因此没有在所有设备上都正确的设置。",
+  "Two-finger swipe, horizontal A": "双指滑动 · 横向 A",
+  "Tapped once when the swipe is recognised. Browser back and forward are the usual pair. Enabling this costs two-finger horizontal scroll \u2014 a sideways movement cannot both scroll at once and be held back long enough to be recognised as a swipe.":
+    "在识别到滑动时点击一次。通常配成浏览器的后退/前进。启用后将无法使用双指横向滚动：横向移动无法既立刻开始滚动、又等到足以被识别为手势。",
+  "Two-finger swipe, horizontal B": "双指滑动 · 横向 B",
+  "The other direction of the same gesture.": "同一手势的相反方向。",
   "Held down for as long as the pinch lasts. A modifier here is what turns the pinch into a zoom, because the pinch itself sends wheel scroll.":
     "在捏合期间保持按下。捏合本身发送滚轮事件，因此在此放一个修饰键即可变成缩放。",
   "Three-finger swipe, vertical A": "三指滑动 · 纵向 A",

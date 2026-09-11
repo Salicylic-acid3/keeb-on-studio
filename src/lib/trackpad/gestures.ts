@@ -91,7 +91,7 @@ const GESTURE_SETS: Record<string, GestureSet> = {
         position: 72,
         label: "Pinch, two fingers on one pad",
         detail:
-          "Held down for as long as the pinch lasts. A modifier here is what turns the pinch into a zoom, because the pinch itself sends wheel scroll. Off by default — turn it on under Axes.",
+          "Held down for as long as the pinch lasts. A modifier here is what turns the pinch into a zoom, because the pinch itself sends wheel scroll.",
         held: true,
       },
       {

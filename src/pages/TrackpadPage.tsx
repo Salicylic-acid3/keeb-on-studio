@@ -28,6 +28,7 @@ import { useStudioUnlock } from "../hooks/useStudioUnlock";
 import { KeyboardLayoutContext } from "../contexts/KeyboardLayoutContext";
 import { KeycodeSelector } from "../components/KeycodeSelector";
 import { GestureSection } from "../components/trackpad/GestureSection";
+import { PinchSettings } from "../components/trackpad/PinchSettings";
 import { trackpadGesturesFor } from "../lib/trackpad/gestures";
 
 interface LayerInfo {
@@ -1343,7 +1344,11 @@ export function TrackpadPage() {
             drawn for a keyboard whose gesture positions we know — see
             gestures.ts for why that has to be checked rather than assumed. */}
         {gestures.length > 0 && (
-          <div className="mt-8 border-t border-[var(--color-border)] pt-6">
+          <div className="mt-8 space-y-6 border-t border-[var(--color-border)] pt-6">
+            {/* Above the gesture bindings, because it decides whether one of
+                them happens at all. Draws nothing on firmware that does not
+                publish the settings. */}
+            <PinchSettings />
             <GestureSection
               gestures={gestures}
               layers={keymap.keymap?.layers ?? []}

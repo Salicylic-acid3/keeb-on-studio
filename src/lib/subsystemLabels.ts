@@ -40,6 +40,7 @@ const SUBSYSTEM_LABELS: Record<string, string> = {
   // Keeb-On!'s own modules
   keebon__battery: "Battery",
   keebon__runtime_tap_dance: "Tap Dance",
+  keebon__trackpad: "Trackpad",
   // upstream-shaped identifiers
   zmk__device_info: "Device Info",
   zmk__input_stream: "Input Stream",

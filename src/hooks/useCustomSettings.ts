@@ -35,6 +35,27 @@ export interface CustomSettingsSection {
   settings: Setting[];
 }
 
+export interface WriteSettingOptions {
+  /**
+   * Write to every split side rather than only the one this copy was reported
+   * from.
+   *
+   * A setting registered on both halves is listed twice, once per source, and
+   * a plain write changes the half it was listed from. That is right for
+   * anything each half owns separately, and wrong for a setting the two halves
+   * are meant to agree about — a trackpad gesture that is on for one pad and
+   * off for the other is a keyboard behaving inconsistently, not a keyboard
+   * configured two ways.
+   *
+   * Setting this sends the request with source = every side, which the
+   * firmware's split relay applies locally and forwards to each peripheral.
+   * It needs CONFIG_ZMK_CUSTOM_SETTINGS_SPLIT_RPC_RELAY on both halves; on a
+   * keyboard without it the write still lands on the central, which is what
+   * would have happened anyway.
+   */
+  allSources?: boolean;
+}
+
 export interface UseCustomSettingsReturn {
   isAvailable: boolean;
   sections: CustomSettingsSection[];
@@ -44,6 +65,7 @@ export interface UseCustomSettingsReturn {
   writeSettingToMemory: (
     setting: Setting,
     value: SettingValue,
+    options?: WriteSettingOptions,
   ) => Promise<void>;
   saveSection: (customSubsystemIndex: number) => Promise<void>;
   discardSection: (customSubsystemIndex: number) => Promise<void>;
@@ -353,12 +375,25 @@ export function useCustomSettings(
   }, [collectListSettings, ready, t]);
 
   const writeSettingToMemory = useCallback(
-    async (setting: Setting, value: SettingValue) => {
+    async (
+      setting: Setting,
+      value: SettingValue,
+      options?: WriteSettingOptions,
+    ) => {
       const nextValue = valueWithArrayShape(setting, value);
+      const allSources = options?.allSources === true;
 
       setSettings((prev) =>
         prev.map((candidate) =>
-          settingIdentity(candidate) === settingIdentity(setting)
+          // Writing to every side changes every side's copy, so every copy in
+          // the list has to move with it — otherwise the source tabs would
+          // disagree with the keyboard until the next load.
+          (
+            allSources
+              ? candidate.customSubsystemIndex ===
+                  setting.customSubsystemIndex && candidate.key === setting.key
+              : settingIdentity(candidate) === settingIdentity(setting)
+          )
             ? { ...candidate, value: nextValue, hasUnsavedValue: true }
             : candidate,
         ),
@@ -367,7 +402,7 @@ export function useCustomSettings(
       const settingRef = {
         customSubsystemIndex: setting.customSubsystemIndex,
         key: setting.key,
-        source: setting.source,
+        source: allSources ? CUSTOM_SETTINGS_SOURCE_ALL : setting.source,
         arrayIndex: setting.value?.arrayValue?.index,
       };
 
