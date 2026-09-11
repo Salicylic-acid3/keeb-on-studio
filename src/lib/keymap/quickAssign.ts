@@ -22,46 +22,42 @@ import type { BehaviorDefinition } from "../../hooks/useKeymap";
 const KEY_PRESS_NAMES = ["Key Press", "kp"];
 
 /**
- * The key-press behavior's id on this device, or null if it has none.
+ * Every id on this device that claims to be a key press, best first.
  *
- * Behavior ids are assigned per device, so the name is the only handle the
- * app has to start from. The name alone turned out not to be enough: a real
- * keyboard reported a behavior called "Key Press" whose id the firmware then
- * refused to bind ("Invalid behavior ID: 50397"). Listing a behavior and
- * accepting it in a binding are not the same thing.
+ * There is no reliable way to know which one the firmware will accept. A real
+ * keyboard reported a behavior called "Key Press" and then refused to bind it
+ * ("Invalid behavior ID: 50397") — listing a behavior and accepting it in a
+ * binding are not the same thing, and nothing in the listing says which is
+ * which. Picking one and hoping is what produced that error twice.
  *
- * So the keymap is asked first. A binding already on the board is proof that
- * this device accepts that id — it is what the device itself sent back when
- * the keymap was read. Only when the board has no key press anywhere does
- * this fall back to matching a listed behavior by name.
+ * So the caller gets all of them and finds out by asking the device, keeping
+ * whichever works. The order is the order of decreasing evidence:
  *
- * Null means quick assign cannot work here and should not be offered. A
- * guessed id would land on some unrelated behavior, and the keymap would look
- * correct until a key was pressed.
+ * 1. ids already bound on the board — the device sent these back itself when
+ *    the keymap was read, so it demonstrably knows them;
+ * 2. anything else listed under a key-press name.
  *
- * @param bindings every binding on the board, in any order. Cheap to pass and
- *   worth passing: it is the only evidence available of what the firmware
- *   will actually take.
+ * An empty list means quick assign cannot work here and should not be
+ * offered. It never guesses an id that nothing named: that would land on some
+ * unrelated behavior and the keymap would look right until a key was pressed.
+ *
+ * @param bindings every binding on the board, in any order.
  */
-export function findKeyPressBehaviorId(
+export function keyPressCandidates(
   behaviors: Map<number, BehaviorDefinition>,
   bindings?: readonly { behaviorId: number }[],
-): number | null {
-  const isKeyPress = (id: number) =>
+): number[] {
+  const named = (id: number) =>
     KEY_PRESS_NAMES.includes(behaviors.get(id)?.displayName ?? "");
 
-  for (const binding of bindings ?? []) {
-    if (isKeyPress(binding.behaviorId)) {
-      return binding.behaviorId;
-    }
-  }
+  const ordered: number[] = [];
+  const add = (id: number) => {
+    if (named(id) && !ordered.includes(id)) ordered.push(id);
+  };
 
-  for (const [id, behavior] of behaviors) {
-    if (KEY_PRESS_NAMES.includes(behavior.displayName ?? "")) {
-      return id;
-    }
-  }
-  return null;
+  for (const binding of bindings ?? []) add(binding.behaviorId);
+  for (const id of behaviors.keys()) add(id);
+  return ordered;
 }
 
 /**

@@ -8,7 +8,7 @@
  * looking at the keyboard, not at a counter, and a wrap would start
  * overwriting the keys they just set without anything on screen changing.
  */
-import { findKeyPressBehaviorId, nextKeyPosition } from "../quickAssign";
+import { keyPressCandidates, nextKeyPosition } from "../quickAssign";
 import type { BehaviorDefinition } from "../../../hooks/useKeymap";
 
 function behaviors(entries: [number, string][]) {
@@ -20,53 +20,52 @@ function behaviors(entries: [number, string][]) {
   );
 }
 
-describe("finding the key press behavior", () => {
-  it("finds it by name, since ids differ per device", () => {
-    expect(
-      findKeyPressBehaviorId(
-        behaviors([
-          [35, "Transparent"],
-          [10, "Key Press"],
-        ]),
-      ),
-    ).toBe(10);
-  });
-
-  it("accepts the short name too", () => {
-    expect(findKeyPressBehaviorId(behaviors([[7, "kp"]]))).toBe(7);
-  });
-
-  it("prefers an id the board is already using", () => {
-    // A real keyboard listed a behavior called "Key Press" whose id the
-    // firmware then refused to bind. A binding already on the board is proof
-    // the device accepts that id, so it wins over anything merely listed.
+describe("listing the key press candidates", () => {
+  it("puts ids the board already binds first", () => {
+    // A real keyboard listed "Key Press" as 50397 and then refused to bind
+    // it. An id the device itself sent back is the better bet, so it is
+    // tried first — but the other is kept, because the first one may fail.
     const map = behaviors([
       [50397, "Key Press"],
       [10, "Key Press"],
     ]);
-    expect(findKeyPressBehaviorId(map, [{ behaviorId: 10 }])).toBe(10);
+    expect(keyPressCandidates(map, [{ behaviorId: 10 }])).toEqual([10, 50397]);
   });
 
-  it("ignores bindings that are not key presses", () => {
+  it("still offers a listed id when the board binds none", () => {
     const map = behaviors([
       [35, "Transparent"],
       [10, "Key Press"],
     ]);
-    expect(
-      findKeyPressBehaviorId(map, [{ behaviorId: 35 }, { behaviorId: 10 }]),
-    ).toBe(10);
+    expect(keyPressCandidates(map, [{ behaviorId: 35 }])).toEqual([10]);
   });
 
-  it("falls back to the listed behavior when the board has no key press", () => {
+  it("accepts the short name too", () => {
+    expect(keyPressCandidates(behaviors([[7, "kp"]]))).toEqual([7]);
+  });
+
+  it("lists an id once however often it is bound", () => {
+    // The board is mostly key presses; without this the list would be
+    // hundreds of copies of the same id and every retry would repeat it.
     const map = behaviors([[10, "Key Press"]]);
-    expect(findKeyPressBehaviorId(map, [{ behaviorId: 35 }])).toBe(10);
+    expect(
+      keyPressCandidates(map, [
+        { behaviorId: 10 },
+        { behaviorId: 10 },
+        { behaviorId: 10 },
+      ]),
+    ).toEqual([10]);
   });
 
-  it("returns null rather than guessing", () => {
-    // A device without it should not be offered quick assign at all; a
-    // fallback id would write some unrelated behavior onto every key.
-    expect(findKeyPressBehaviorId(behaviors([[35, "Transparent"]]))).toBeNull();
-    expect(findKeyPressBehaviorId(new Map())).toBeNull();
+  it("offers nothing rather than guessing", () => {
+    // A device with no key press should not be offered quick assign at all;
+    // a fallback id would write some unrelated behavior onto every key.
+    expect(keyPressCandidates(behaviors([[35, "Transparent"]]))).toEqual([]);
+    expect(keyPressCandidates(new Map())).toEqual([]);
+  });
+
+  it("ignores bindings naming a behavior the device never listed", () => {
+    expect(keyPressCandidates(behaviors([]), [{ behaviorId: 99 }])).toEqual([]);
   });
 });
 

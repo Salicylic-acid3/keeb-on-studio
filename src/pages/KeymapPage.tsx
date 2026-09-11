@@ -51,10 +51,7 @@ import {
   planCopyFromBase,
   type CopyPlan,
 } from "../lib/keymap/copyLayer";
-import {
-  findKeyPressBehaviorId,
-  nextKeyPosition,
-} from "../lib/keymap/quickAssign";
+import { keyPressCandidates, nextKeyPosition } from "../lib/keymap/quickAssign";
 import { QuickAssignBar } from "../components/keymap/QuickAssignBar";
 import { useLanguage } from "../hooks/useLanguage";
 import { ResetVersionMenu } from "../components/versionHistory/ResetVersionMenu";
@@ -528,39 +525,50 @@ export function KeymapPage() {
     ];
   }, [keymap.keymap?.layers, currentLayer]);
 
-  const keyPressBehaviorId = useMemo(
-    () => findKeyPressBehaviorId(keymap.behaviors, allBindings),
+  // Every id that claims to be a key press. Which one the firmware will
+  // actually accept is not knowable from the listing — see quickAssign.ts —
+  // so the first write tries them in order and the winner is kept for the
+  // rest of the session.
+  const keyPressIds = useMemo(
+    () => keyPressCandidates(keymap.behaviors, allBindings),
     [keymap.behaviors, allBindings],
   );
+  const acceptedKeyPressId = useRef<number | null>(null);
 
   // The keycode currently on the selected key, so the bottom keyboard can
   // highlight it. Only meaningful when that key is a plain key press.
   const quickAssignSelectedCode = useMemo(() => {
-    if (!currentBinding || currentBinding.behaviorId !== keyPressBehaviorId) {
+    if (!currentBinding || !keyPressIds.includes(currentBinding.behaviorId)) {
       return -1;
     }
     return currentBinding.param1;
-  }, [currentBinding, keyPressBehaviorId]);
+  }, [currentBinding, keyPressIds]);
 
   const handleQuickAssign = useCallback(
     (code: number) =>
       withUnlock(async () => {
-        if (
-          !currentLayer ||
-          selectedKeyPosition === null ||
-          keyPressBehaviorId === null
-        ) {
-          return;
-        }
-        const ok = await keymap.setBinding(
-          currentLayer.id,
-          selectedKeyPosition,
-          {
-            behaviorId: keyPressBehaviorId,
+        if (!currentLayer || selectedKeyPosition === null) return;
+
+        // Once one id has been accepted, stop asking. Before that, work down
+        // the candidates: the device is the only thing that knows which of
+        // them it will take.
+        const toTry =
+          acceptedKeyPressId.current !== null
+            ? [acceptedKeyPressId.current]
+            : keyPressIds;
+
+        let ok = false;
+        for (const behaviorId of toTry) {
+          ok = await keymap.setBinding(currentLayer.id, selectedKeyPosition, {
+            behaviorId,
             param1: code,
             param2: 0,
-          },
-        );
+          });
+          if (ok) {
+            acceptedKeyPressId.current = behaviorId;
+            break;
+          }
+        }
         // Only advance when the key actually took. Moving on after a refusal
         // would leave a gap the user has no reason to look for.
         if (ok) {
@@ -572,7 +580,7 @@ export function KeymapPage() {
     [
       currentLayer,
       selectedKeyPosition,
-      keyPressBehaviorId,
+      keyPressIds,
       keymap,
       layoutPositions,
       withUnlock,
@@ -1588,7 +1596,7 @@ export function KeymapPage() {
                   onAssign={handleQuickAssign}
                   keyboardLayout={keyboardLayoutContext.layout}
                   finished={quickAssignFinished}
-                  disabled={locked || keyPressBehaviorId === null}
+                  disabled={locked || keyPressIds.length === 0}
                 />
               </div>
             )}
