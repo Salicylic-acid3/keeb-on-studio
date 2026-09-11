@@ -8,6 +8,7 @@ import { useState, useCallback, type ReactNode } from "react";
 import type { ConnectionMethod } from "./DeviceConnection";
 import { ConnectionNoticeDialog } from "./ConnectionNoticeDialog";
 import { hasAcceptedNotice } from "../lib/connectionNoticeStorage";
+import { BLE_CONNECTION_ENABLED } from "../lib/connectionMethods";
 import { LanguageToggle } from "./LanguageToggle";
 import { useLanguage } from "../hooks/useLanguage";
 import { getCurrentVersion } from "../i18n/releaseNotes";
@@ -214,14 +215,19 @@ export function SplashScreen({
                 onClick={() => handleConnectClick("serial")}
                 disabled={isConnecting}
               />
-              <ConnectButton
-                accent="--color-neon"
-                icon={<IconAccessPoint size={30} strokeWidth={1.6} />}
-                label={t("Connect via Bluetooth")}
-                title={t("Connect via Bluetooth")}
-                onClick={() => handleConnectClick("ble")}
-                disabled={isConnecting}
-              />
+              {/* Bluetooth is not offered — see connectionMethods.ts. Left as
+                  a condition rather than deleted so the path can come back in
+                  one line if the firmware ever makes it worth having. */}
+              {BLE_CONNECTION_ENABLED && (
+                <ConnectButton
+                  accent="--color-neon"
+                  icon={<IconAccessPoint size={30} strokeWidth={1.6} />}
+                  label={t("Connect via Bluetooth")}
+                  title={t("Connect via Bluetooth")}
+                  onClick={() => handleConnectClick("ble")}
+                  disabled={isConnecting}
+                />
+              )}
               <ConnectButton
                 accent="--color-cyber"
                 icon={<IconDeviceDesktop size={30} strokeWidth={1.6} />}
