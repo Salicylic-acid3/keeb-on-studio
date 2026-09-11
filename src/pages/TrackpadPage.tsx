@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback, useContext, useMemo } from "react";
 import {
   IconAlertTriangleFilled,
   IconChevronLeft,
@@ -21,6 +21,13 @@ import { useLanguage } from "../hooks/useLanguage";
 import { ResetVersionMenu } from "../components/versionHistory/ResetVersionMenu";
 import { VersionDiffModal } from "../components/versionHistory/VersionDiffModal";
 import { useTrackpadVersionHistory } from "../hooks/versionHistory/useTrackpadVersionHistory";
+import { useKeymap, type BehaviorBinding } from "../hooks/useKeymap";
+import { useInputStream } from "../hooks/useInputStream";
+import { useStudioUnlock } from "../hooks/useStudioUnlock";
+import { KeyboardLayoutContext } from "../contexts/KeyboardLayoutContext";
+import { KeycodeSelector } from "../components/KeycodeSelector";
+import { GestureSection } from "../components/trackpad/GestureSection";
+import { trackpadGesturesFor } from "../lib/trackpad/gestures";
 
 interface LayerInfo {
   id: number;
@@ -175,6 +182,52 @@ export function TrackpadPage() {
     isLoaded: !isLoading && (!isAvailable || processors.length > 0),
     t,
   });
+
+  // --- Gestures -----------------------------------------------------------
+  // The keymap is loaded here rather than shared from the keymap tab, which is
+  // how every other consumer of useKeymap in this app works. It costs a read
+  // when this tab opens; the fast-keymap subsystem makes that cheap, and the
+  // alternative is a cross-tab cache with its own staleness to get wrong.
+  const keymap = useKeymap();
+  const inputStream = useInputStream();
+  const keyboardLayoutContext = useContext(KeyboardLayoutContext);
+  const { runWithUnlock } = useStudioUnlock();
+
+  const activeLayout =
+    keymap.physicalLayouts?.layouts?.[keymap.physicalLayouts.activeLayoutIndex];
+  const gestures = useMemo(
+    () => trackpadGesturesFor(activeLayout?.name, activeLayout?.keys?.length),
+    [activeLayout],
+  );
+
+  /** Which gesture binding the dialog is open on, or null. */
+  const [editing, setEditing] = useState<{
+    layerId: number;
+    position: number;
+  } | null>(null);
+
+  const editingBinding = useMemo(() => {
+    if (!editing) return null;
+    const layer = keymap.keymap?.layers.find((l) => l.id === editing.layerId);
+    return layer?.bindings?.[editing.position] ?? null;
+  }, [editing, keymap.keymap?.layers]);
+
+  const handleEditGesture = useCallback(
+    (layerId: number, position: number) => setEditing({ layerId, position }),
+    [],
+  );
+
+  const handleGestureBindingSelect = useCallback(
+    (binding: BehaviorBinding) => {
+      const target = editing;
+      setEditing(null);
+      if (!target) return;
+      void runWithUnlock(() =>
+        keymap.setBinding(target.layerId, target.position, binding),
+      );
+    },
+    [editing, keymap, runWithUnlock],
+  );
 
   // Selected processor index
   const [selectedProcessorIndex, setSelectedProcessorIndex] = useState(0);
@@ -1293,12 +1346,44 @@ export function TrackpadPage() {
             )}
           </div>
         </div>
+
+        {/* Below the processor tuning, because it answers a different question:
+            the tuning is how the pad feels, this is what a gesture does. Only
+            drawn for a keyboard whose gesture positions we know — see
+            gestures.ts for why that has to be checked rather than assumed. */}
+        {gestures.length > 0 && (
+          <div className="mt-4">
+            <GestureSection
+              gestures={gestures}
+              layers={keymap.keymap?.layers ?? []}
+              behaviors={keymap.behaviors}
+              highlightedKeys={inputStream.highlightedKeys}
+              liveViewOn={inputStream.isEnabled}
+              keyboardLayout={keyboardLayoutContext.layout}
+              onEdit={handleEditGesture}
+              disabled={keymap.isLoading}
+            />
+          </div>
+        )}
       </div>
 
       {/* Restore-a-version diff modal (opened from the versions dropdown) */}
       <VersionDiffModal
         {...versionHistory.diffModalProps}
         labeler={versionHistory.labeler}
+      />
+
+      {/* The same dialog the keymap editor uses. A gesture binding is an
+          ordinary binding, so it deserves the whole behavior picker rather
+          than a cut-down one that would quietly rule out a macro or a mod-tap. */}
+      <KeycodeSelector
+        open={editing !== null}
+        onClose={() => setEditing(null)}
+        onSelect={handleGestureBindingSelect}
+        currentBinding={editingBinding}
+        behaviors={keymap.behaviors}
+        layers={keymap.keymap?.layers ?? []}
+        keyboardLayout={keyboardLayoutContext.layout}
       />
     </div>
   );

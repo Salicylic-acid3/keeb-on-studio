@@ -13,9 +13,31 @@ const ja: Record<string, string> = {
   "Setting: {{key}}": "設定中: {{key}}",
   "Pick a key on the board to start.": "盤面のキーを選ぶと始まります。",
   "That was the last key.": "最後のキーでした。",
-  "That key does not exist on this layer.": "そのキーはこのレイヤーにありません。",
-  "This keyboard does not know that behavior.": "このキーボードはその動作を知りません。",
-  "This keyboard refused that setting for this behavior.": "このキーボードはその動作にその設定を受け付けませんでした。",
+  Gestures: "ジェスチャー",
+  "The keyboard presses a key of its own for each of these. Whatever is bound here is what the gesture does — and because it goes through a layer, Alt Base can give the same gesture a different key for the other OS.":
+    "これらのジェスチャーでは、キーボードが専用のキーを押します。ここに割り当てたものがそのジェスチャーの動作になります。レイヤーを通るので、Alt Base で同じジェスチャーにもう一方の OS 用のキーを割り当てられます。",
+  "Swipe on a pad and the row it triggers will light up. The two pads may not agree on which is A and which is B.":
+    "パッドでスワイプすると、対応する行が光ります。A と B がどちらになるかは、左右のパッドで食い違うことがあります。",
+  "To find out which swipe is which, turn on the live key view in the Keymap tab and swipe on a pad: the row it triggers lights up.":
+    "どのスワイプがどれかを確かめるには、キーマップタブでキー入力表示をオンにしてパッドでスワイプしてください。対応する行が光ります。",
+  "Pinch, two fingers on one pad": "片手2本指ピンチ",
+  "Held down for as long as the pinch lasts. A modifier here is what turns the pinch into a zoom, because the pinch itself sends wheel scroll.":
+    "ピンチしている間ずっと押されたままになります。ピンチ自体はホイールを送るので、ここに修飾キーを置くとズームになります。",
+  "Three-finger swipe, vertical A": "3本指スワイプ・縦 A",
+  "Three-finger swipe, vertical B": "3本指スワイプ・縦 B",
+  "Three-finger swipe, horizontal A": "3本指スワイプ・横 A",
+  "Three-finger swipe, horizontal B": "3本指スワイプ・横 B",
+  "Tapped once when the swipe is recognised.":
+    "スワイプを認識した瞬間に1回だけ押されます。",
+  "Zoom, one finger on each pad": "両手ズーム（左右のパッドに1本ずつ）",
+  "Held down for as long as the zoom lasts. This is the modifier the two-handed zoom holds while it scrolls.":
+    "ズームしている間ずっと押されたままになります。両手ズームがホイールを送るあいだ保持する修飾キーです。",
+  "That key does not exist on this layer.":
+    "そのキーはこのレイヤーにありません。",
+  "This keyboard does not know that behavior.":
+    "このキーボードはその動作を知りません。",
+  "This keyboard refused that setting for this behavior.":
+    "このキーボードはその動作にその設定を受け付けませんでした。",
   "The key could not be set.": "キーを設定できませんでした。",
   "Choosing a key here sets it and moves to the next one. Use the key dialog for anything other than a plain key press.":
     "ここでキーを選ぶと設定され、次のキーへ進みます。通常のキー入力以外はキーの設定ダイアログを使ってください。",
@@ -1572,9 +1594,28 @@ const zh: Record<string, string> = {
   "Setting: {{key}}": "正在设置：{{key}}",
   "Pick a key on the board to start.": "先在键盘图上选一个键。",
   "That was the last key.": "这是最后一个键。",
+  Gestures: "手势",
+  "The keyboard presses a key of its own for each of these. Whatever is bound here is what the gesture does — and because it goes through a layer, Alt Base can give the same gesture a different key for the other OS.":
+    "键盘会为每个手势按下一个专用按键。这里绑定的内容就是该手势的动作；由于要经过层解析，Alt Base 可以为同一手势指定另一套系统的按键。",
+  "Swipe on a pad and the row it triggers will light up. The two pads may not agree on which is A and which is B.":
+    "在触控板上滑动，触发的那一行会亮起。左右两块触控板对 A 与 B 的对应可能并不一致。",
+  "To find out which swipe is which, turn on the live key view in the Keymap tab and swipe on a pad: the row it triggers lights up.":
+    "要弄清哪一个滑动对应哪一行，请在键位映射标签页打开实时按键显示，然后在触控板上滑动：触发的行会亮起。",
+  "Pinch, two fingers on one pad": "单手双指捏合",
+  "Held down for as long as the pinch lasts. A modifier here is what turns the pinch into a zoom, because the pinch itself sends wheel scroll.":
+    "在捏合期间保持按下。捏合本身发送滚轮事件，因此在此放一个修饰键即可变成缩放。",
+  "Three-finger swipe, vertical A": "三指滑动 · 纵向 A",
+  "Three-finger swipe, vertical B": "三指滑动 · 纵向 B",
+  "Three-finger swipe, horizontal A": "三指滑动 · 横向 A",
+  "Three-finger swipe, horizontal B": "三指滑动 · 横向 B",
+  "Tapped once when the swipe is recognised.": "识别到滑动时按下一次。",
+  "Zoom, one finger on each pad": "双手缩放（左右触控板各一指）",
+  "Held down for as long as the zoom lasts. This is the modifier the two-handed zoom holds while it scrolls.":
+    "在缩放期间保持按下。这是双手缩放滚动时所保持的修饰键。",
   "That key does not exist on this layer.": "该键在此层中不存在。",
   "This keyboard does not know that behavior.": "此键盘不认识该行为。",
-  "This keyboard refused that setting for this behavior.": "此键盘拒绝了该行为的这个设置。",
+  "This keyboard refused that setting for this behavior.":
+    "此键盘拒绝了该行为的这个设置。",
   "The key could not be set.": "无法设置该键。",
   "Choosing a key here sets it and moves to the next one. Use the key dialog for anything other than a plain key press.":
     "在这里选择按键会直接设置并跳到下一个。普通按键以外的绑定请使用按键设置对话框。",
