@@ -1,4 +1,5 @@
 import type { RpcTransport } from "@zmkfirmware/zmk-studio-ts-client/transport/index";
+import { KEEB_ON_USB_VENDOR_ID } from "../supportedDevices";
 
 type WebUsbDeviceFilterLike = {
   classCode?: number;
@@ -81,9 +82,11 @@ type NavigatorWithWebUsb = Navigator & {
   };
 };
 
+// Vendor id, not device class. The class filter offered every CDC device on
+// the machine and left the app to object after connecting; this shows only
+// keyboards this app can drive. See supportedDevices.ts.
 const webUsbCdcFilters: WebUsbDeviceFilterLike[] = [
-  { classCode: 0x02 },
-  { classCode: 0x0a },
+  { vendorId: KEEB_ON_USB_VENDOR_ID },
 ];
 
 export async function connect(): Promise<RpcTransport> {

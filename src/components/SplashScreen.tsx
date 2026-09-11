@@ -22,11 +22,12 @@ interface SplashScreenProps {
   /** Navigate to the standalone release notes page. */
   onShowReleaseNotes: () => void;
   /**
-   * Keyboard we hung up on because Keeb-On! Studio does not support it, or
-   * `null`. Shown as an explanation with a pointer to DYA Studio rather than
-   * as a connection error, because nothing actually went wrong.
+   * True when the last attempt was refused for not being one of this
+   * workshop's keyboards. Shown as an explanation with a pointer to DYA Studio
+   * rather than as a connection error, because nothing went wrong — the app
+   * simply does not drive that keyboard, and never connected to it.
    */
-  unsupportedDevice: string | null;
+  unsupportedDevice: boolean;
 }
 
 function LoadingDots() {
@@ -259,9 +260,7 @@ export function SplashScreen({
           animate={{ opacity: 1, y: 0 }}
         >
           <p className="text-sm font-medium text-[var(--color-text)]">
-            {t("{{name}} is not a keyboard that Keeb-On! Studio supports.", {
-              name: unsupportedDevice,
-            })}
+            {t("That is not a keyboard Keeb-On! Studio can configure.")}
           </p>
           <p className="mt-1 text-xs text-[var(--color-text-muted)]">
             {t(

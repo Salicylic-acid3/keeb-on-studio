@@ -5,7 +5,11 @@
     "useDefineForClassFields": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "types": ["vite/client", "gtag.js"],
+    /* w3c-web-serial types `navigator.serial`, which this app now calls
+       directly so the port picker can be filtered by vendor id. It arrives
+       as a dependency of @cormoran/zmk-studio-react-hook; naming it here is
+       what makes the global visible, since "types" is an explicit list. */
+    "types": ["vite/client", "gtag.js", "w3c-web-serial"],
     "skipLibCheck": true,
 
     /* Bundler mode */

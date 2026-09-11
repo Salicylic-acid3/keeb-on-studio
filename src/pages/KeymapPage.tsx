@@ -36,6 +36,7 @@ import { BrowserKeyInputOverlay } from "../components/BrowserKeyInputOverlay";
 import { KeycodeSelector } from "../components/KeycodeSelector";
 import { SensorRotationConfig } from "../components/SensorRotationConfig";
 import { LoadingIndicator } from "../components/LoadingIndicator";
+import { InfoTip } from "../components/InfoTip";
 import { useKeymap, getKeymapLoadingLabel } from "../hooks/useKeymap";
 import { usePhysicalLayoutModules } from "../hooks/usePhysicalLayoutModules";
 import { useRuntimeSensorRotate } from "../hooks/useRuntimeSensorRotate";
@@ -946,14 +947,23 @@ export function KeymapPage() {
             <div className="flex items-center gap-2 ml-auto">
               {inputStream.isAvailable && (
                 <div className="flex items-center gap-2 px-2 py-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
-                  <span className="text-xs text-[var(--color-text-muted)]">
-                    {t("Stream")}
+                  {/* "Stream" named the subsystem, which tells someone who
+                      already knows what it is that it is there. This names
+                      what it does. The gesture editor points at it by this
+                      name too. */}
+                  <span className="text-xs text-[var(--color-text-muted)] flex items-center gap-1">
+                    {t("Live keys")}
+                    <InfoTip
+                      text={t(
+                        "Highlights each key on the board as you press it on the keyboard, and follows the layer the keyboard is actually on. Useful for checking a key registers, and for finding which trackpad gesture is which.",
+                      )}
+                    />
                   </span>
                   <Switch.Root
                     checked={inputStream.isEnabled}
                     onCheckedChange={() => void inputStream.toggleStream()}
                     disabled={inputStream.isToggling || keymap.isLoading}
-                    aria-label={t("Toggle stream mode")}
+                    aria-label={t("Live keys")}
                     className="w-10 h-5 rounded-full relative data-[state=checked]:bg-[var(--color-electric)] bg-[var(--color-border)] border border-[var(--color-border)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Switch.Thumb className="block w-4 h-4 rounded-full transition-transform data-[state=checked]:translate-x-5 translate-x-0.5 will-change-transform bg-white border border-[var(--color-border)]" />

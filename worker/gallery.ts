@@ -25,7 +25,7 @@
  */
 import { parseFile } from "../src/lib/savedKeymaps/file";
 import type { SavedKeymapPayload } from "../src/lib/savedKeymaps/types";
-import { isSupportedDevice } from "../src/lib/supportedDevices";
+import { isKnownDeviceName } from "../src/lib/supportedDevices";
 
 /** Posts one author may have at a time. */
 export const POSTS_PER_AUTHOR = 10;
@@ -198,7 +198,7 @@ export async function publish(
   if (!authorTokenLooksValid(input.author)) {
     return { ok: false, reason: "invalid-author" };
   }
-  if (typeof input.board !== "string" || !isSupportedDevice(input.board)) {
+  if (typeof input.board !== "string" || !isKnownDeviceName(input.board)) {
     // Not a security boundary -- the name is self-reported and forgeable, the
     // same as it is over the wire from a keyboard. It keeps the gallery to the
     // keyboards this app is for without identifying anyone's device.

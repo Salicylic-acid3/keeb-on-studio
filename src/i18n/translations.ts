@@ -14,6 +14,11 @@ const ja: Record<string, string> = {
   "Pick a key on the board to start.": "盤面のキーを選ぶと始まります。",
   "That was the last key.": "最後のキーでした。",
   Gestures: "ジェスチャー",
+  "Live keys": "キー入力表示",
+  "Highlights each key on the board as you press it on the keyboard, and follows the layer the keyboard is actually on. Useful for checking a key registers, and for finding which trackpad gesture is which.":
+    "キーボードで押したキーを盤面で光らせます。キーボードが実際にいるレイヤーにも追従します。キーがちゃんと入るかの確認と、どのトラックパッドジェスチャーがどれかを調べるのに使えます。",
+  "That is not a keyboard Keeb-On! Studio can configure.":
+    "それは Keeb-On! Studio が設定できるキーボードではありません。",
   "On sale soon": "近日発売",
   "{{layer}} — auto-track layer target":
     "{{layer}} — オートトラックレイヤーの対象",
@@ -279,8 +284,6 @@ const ja: Record<string, string> = {
   Dismiss: "閉じる",
   Loading: "読み込み中",
   "Never show again": "今後表示しない",
-  "{{name}} is not a keyboard that Keeb-On! Studio supports.":
-    "「{{name}}」は Keeb-On! Studio の対応キーボードではありません。",
   "Keeb-On! Studio is specialized for the keyboards Salicylic_acid3 develops. For any other ZMK keyboard, please use the upstream DYA Studio.":
     "Keeb-On! Studio は Salicylic_acid3 が開発するキーボードに特化したツールです。その他の ZMK キーボードには、本家の DYA Studio をご利用ください。",
   "Links by Salicylic_acid3": "サリチル酸のリンク",
@@ -354,8 +357,6 @@ const ja: Record<string, string> = {
   Saved: "保存済み",
   "Saved — changed from the default keymap":
     "保存済み — デフォルトのキーマップから変更されています",
-  Stream: "ストリーム",
-  "Toggle stream mode": "ストリームモードを切り替え",
   "Discard unsaved changes and reload the keymap":
     "未保存の変更を破棄してキーマップを再読み込みします",
   "Reset the saved keymap to the default keymap":
@@ -1604,6 +1605,11 @@ const zh: Record<string, string> = {
   "Pick a key on the board to start.": "先在键盘图上选一个键。",
   "That was the last key.": "这是最后一个键。",
   Gestures: "手势",
+  "Live keys": "实时按键",
+  "Highlights each key on the board as you press it on the keyboard, and follows the layer the keyboard is actually on. Useful for checking a key registers, and for finding which trackpad gesture is which.":
+    "在键盘上按下按键时，会在键盘图上高亮显示，并跟随键盘当前所在的层。可用于确认按键是否生效，以及分辨各个触控板手势。",
+  "That is not a keyboard Keeb-On! Studio can configure.":
+    "这不是 Keeb-On! Studio 能够配置的键盘。",
   "On sale soon": "即将发售",
   "{{layer}} — auto-track layer target": "{{layer}} — 自动跟踪层目标",
   "Auto-track": "自动跟踪",
@@ -1849,8 +1855,6 @@ const zh: Record<string, string> = {
   Dismiss: "关闭",
   Loading: "加载中",
   "Never show again": "不再显示",
-  "{{name}} is not a keyboard that Keeb-On! Studio supports.":
-    "「{{name}}」不是 Keeb-On! Studio 支持的键盘。",
   "Keeb-On! Studio is specialized for the keyboards Salicylic_acid3 develops. For any other ZMK keyboard, please use the upstream DYA Studio.":
     "Keeb-On! Studio 是为 Salicylic_acid3 开发的键盘定制的工具。其他 ZMK 键盘请使用上游的 DYA Studio。",
   "Links by Salicylic_acid3": "Salicylic_acid3 的链接",
@@ -1923,7 +1927,6 @@ const zh: Record<string, string> = {
   Saved: "已保存",
   "Saved — changed from the default keymap": "已保存 — 与默认键位不同",
   Stream: "流模式",
-  "Toggle stream mode": "切换流模式",
   "Discard unsaved changes and reload the keymap":
     "放弃未保存的更改并重新加载键位",
   "Reset the saved keymap to the default keymap":

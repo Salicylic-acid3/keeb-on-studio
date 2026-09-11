@@ -1,42 +1,85 @@
 /**
  * Which keyboards Keeb-On! Studio will talk to.
  *
- * Keeb-On! Studio is deliberately narrowed to the keyboards Salicylic_acid3
- * develops; every other ZMK keyboard is pointed at upstream DYA Studio instead
- * (see the home page Q&A). This module is the one place that decides which is
- * which, so the rule and the list live together.
+ * Keeb-On! Studio drives Salicylic_acid3's keyboards and nothing else. The
+ * test is the **USB vendor id**: every keyboard from this workshop is built
+ * with VID 0x355D, and no other keyboard is. So the rule is a single number
+ * rather than a list of names, and a keyboard designed next month works
+ * without this app being told about it first.
  *
- * The check is on the keyboard name the device reports over the ZMK Studio
- * protocol (`CONFIG_ZMK_KEYBOARD_NAME`), not on the USB vendor ID, because:
+ * It used to be a list of names, for a reason that has since expired: a BLE
+ * connection has no USB vendor id at all, so while Bluetooth was offered a
+ * VID rule would have let any keyboard in over the air. Configuration is
+ * USB-only now (see connectionMethods.ts), and a transport that always has a
+ * vendor id can be gated on one.
  *
- * - the name is available over *every* transport. A BLE connection has no USB
- *   vendor ID to test at all, so a VID-only rule would let any keyboard in
- *   over Bluetooth;
- * - it needs no firmware change, so it also covers boards already flashed with
- *   an older build.
+ * The vendor id is better than the name in two ways. It is checked *before*
+ * connecting -- the browser's port picker only lists keyboards that match, so
+ * a stranger's keyboard is never picked rather than picked and then hung up
+ * on. And it does not go stale: adding a keyboard to the line-up means giving
+ * it a product id in the numbering table, not editing this file.
  *
- * The firmware does now carry its own USB identity (VID 0x355D; PID 0x1028 for
- * ErgoTrack, 0x1029 for GoFortyMax), which would let the browser's serial port
- * picker be filtered down to these keyboards before the user picks one --
- * nicer than connecting and then rejecting. That needs a filter argument on
- * `connectSerial()` in @cormoran/zmk-studio-react-hook, which today calls
- * `navigator.serial.requestPort()` with no options, so it waits on a change
- * upstream (or on this app owning the serial-connect path itself).
- *
- * This is a guard against picking the wrong keyboard, not a security boundary:
- * the name is self-reported and anyone building their own firmware can claim
- * it. That is fine -- the point is that someone else's keyboard fails with an
- * explanation and a pointer to DYA Studio, rather than half-working and
- * turning into a support request.
+ * This is a guard against talking to the wrong keyboard, not a security
+ * boundary. Anyone building their own firmware can claim any vendor id; the
+ * point is that someone else's keyboard fails with an explanation and a
+ * pointer to DYA Studio, rather than half-working and turning into a support
+ * request.
  */
 
 /**
- * `CONFIG_ZMK_KEYBOARD_NAME` of every supported keyboard, lower-cased.
+ * The USB vendor id every Salicylic_acid3 keyboard is built with.
  *
- * Keep these in sync with `Kconfig.defconfig` in the firmware repositories.
- * Note the names are intentionally the lower-case identifiers rather than the
- * marketing names: the same string keys each device's saved version history,
- * so renaming a keyboard would orphan its stored snapshots.
+ * Set in each shield's `Kconfig.defconfig`. Registered to moimate inc. and
+ * used with permission. Product ids are per-keyboard (ErgoTrack 0x1028,
+ * GoFortyMax 0x1029) and are deliberately *not* checked: the whole point of
+ * gating on the vendor id is that a new keyboard needs no app change.
+ */
+export const KEEB_ON_USB_VENDOR_ID = 0x355d;
+
+/**
+ * A `filters` array for `navigator.serial.requestPort()`, so the browser's own
+ * picker only offers keyboards this app can drive.
+ */
+export const KEEB_ON_SERIAL_FILTERS = [{ usbVendorId: KEEB_ON_USB_VENDOR_ID }];
+
+/** The same filter in the shape `navigator.usb.requestDevice()` wants. */
+export const KEEB_ON_WEBUSB_FILTERS = [{ vendorId: KEEB_ON_USB_VENDOR_ID }];
+
+/**
+ * Whether a USB vendor id is one of this workshop's keyboards.
+ *
+ * An absent id is *not* supported. Web Serial reports no vendor id for a plain
+ * serial adapter, which is exactly the case worth refusing: the app would
+ * otherwise happily start speaking the Studio protocol to whatever it is.
+ */
+export function isSupportedVendorId(
+  vendorId: number | undefined | null,
+): boolean {
+  return vendorId === KEEB_ON_USB_VENDOR_ID;
+}
+
+/**
+ * The keyboards this app knows by name, lower-cased
+ * (`CONFIG_ZMK_KEYBOARD_NAME`).
+ *
+ * This is a **roster, not the gate.** Whether a keyboard may connect is
+ * decided by {@link isSupportedVendorId}, so a keyboard designed tomorrow
+ * works without being listed here. What this list is for is everything that
+ * genuinely is per-keyboard and cannot be derived:
+ *
+ * - the firmware downloads, which need each board's repository and file names;
+ * - the gallery's board field, which is validated against a fixed set so a
+ *   post cannot claim to be for a keyboard that does not exist;
+ * - per-keyboard tables elsewhere (battery half naming, trackpad gestures),
+ *   which key off the name or the layout and simply show less when it is not
+ *   one they know.
+ *
+ * A new keyboard connects and edits fine without an entry. It gains firmware
+ * downloads and a gallery board when one is added.
+ *
+ * The names are the lower-case identifiers rather than the marketing names:
+ * the same string keys each device's saved version history, so renaming a
+ * keyboard would orphan its stored snapshots.
  */
 export const SUPPORTED_DEVICE_NAMES = [
   // Salicylic-acid3/zmk-keyboard-clickboard-ergotrack
@@ -46,14 +89,14 @@ export const SUPPORTED_DEVICE_NAMES = [
 ] as const;
 
 /**
- * Whether `name` is a keyboard Keeb-On! Studio supports.
+ * Whether `name` is a keyboard on the roster above.
  *
- * A missing name is *not* supported, but callers must only ask once the device
- * info has actually loaded -- during connection the name is briefly undefined,
- * and treating that as "unsupported" would reject every keyboard.
+ * Not a connection check -- see {@link isSupportedVendorId} for that. Callers
+ * use this where a keyboard has to be one of the *known* ones: the gallery's
+ * board field, and anything keyed to a specific board's data.
  */
-export function isSupportedDevice(name: string | undefined | null): boolean {
+export function isKnownDeviceName(name: string | undefined | null): boolean {
   if (!name) return false;
   const normalized = name.trim().toLowerCase();
-  return SUPPORTED_DEVICE_NAMES.some((supported) => supported === normalized);
+  return SUPPORTED_DEVICE_NAMES.some((known) => known === normalized);
 }

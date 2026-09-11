@@ -503,7 +503,7 @@ describe("KeymapPage", () => {
         }),
       );
 
-      expect(screen.getByLabelText("Toggle stream mode")).toBeInTheDocument();
+      expect(screen.getByLabelText("Live keys")).toBeInTheDocument();
     });
 
     it("should disable save button when no unsaved changes", () => {

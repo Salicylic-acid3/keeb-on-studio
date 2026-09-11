@@ -16,6 +16,8 @@ import {
   CONNECT_TIMEOUT_ERROR,
 } from "@cormoran/zmk-studio-react-hook";
 import { setupZMKMocks } from "@cormoran/zmk-studio-react-hook/testing";
+import { KEEB_ON_USB_VENDOR_ID } from "../../lib/supportedDevices";
+import { UnsupportedKeyboardError } from "../../lib/transport/usb";
 
 // Mock the ZMK Studio client
 jest.mock("@zmkfirmware/zmk-studio-ts-client", () => ({
@@ -28,8 +30,11 @@ jest.mock("@zmkfirmware/zmk-studio-ts-client/transport/serial", () => ({
   connect: jest.fn(),
 }));
 
-// Mock the app-level USB transport selector
+// Only the picker is stubbed. getPairedKeebOnPorts/reconnectToKeebOnPort stay
+// real so the auto-reconnect tests exercise the actual vendor-id filtering
+// rather than a mock that always agrees with them.
 jest.mock("../../lib/transport/usb", () => ({
+  ...jest.requireActual("../../lib/transport/usb"),
   connect: jest.fn(),
 }));
 
@@ -56,9 +61,7 @@ function TestComponent() {
         <div data-testid="reconnecting">Reconnecting...</div>
       )}
       {connection.unsupportedDevice && (
-        <div data-testid="unsupported-device">
-          {connection.unsupportedDevice}
-        </div>
+        <div data-testid="unsupported-device">unsupported</div>
       )}
       <button
         onClick={() => connection.onConnect("serial")}
@@ -90,9 +93,10 @@ function createMockSerialPort(overrides: Record<string, unknown> = {}) {
   return {
     open: jest.fn().mockResolvedValue(undefined),
     close: jest.fn().mockResolvedValue(undefined),
-    getInfo: jest
-      .fn()
-      .mockReturnValue({ usbVendorId: 0x1234, usbProductId: 0x5678 }),
+    getInfo: jest.fn().mockReturnValue({
+      usbVendorId: KEEB_ON_USB_VENDOR_ID,
+      usbProductId: 0x1028,
+    }),
     // A real ReadableStream so the connect flow can `pipeThrough` it to track
     // packet activity (the serial transport forwards `port.readable` verbatim).
     // `cancel` is stubbed: once the connect flow pipes this stream it becomes
@@ -172,15 +176,19 @@ describe("DeviceConnection", () => {
   });
 
   describe("Unsupported keyboards", () => {
-    // Keeb-On! Studio only drives the keyboards Salicylic_acid3 develops;
-    // anything else is hung up on with an explanation rather than half-working.
-    test("hangs up on a keyboard that is not on the supported list", async () => {
+    // Keeb-On! Studio drives this workshop's keyboards, gated on the USB
+    // vendor id. The refusal now happens in the connect path, before a
+    // transport exists -- so this shows the explanation rather than an error,
+    // and never reports a failed connection attempt.
+    test("shows the explanation when the port is not one of ours", async () => {
       const user = userEvent.setup();
 
-      mocks.mockSuccessfulConnection({
-        deviceName: "Corne",
-        subsystems: [],
-      });
+      // No mockSuccessfulConnection here: nothing connects, and queueing RPC
+      // responses that are never consumed leaves them for the next test.
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      require("../../lib/transport/usb").connect.mockRejectedValue(
+        new UnsupportedKeyboardError(),
+      );
 
       render(
         <DeviceConnectionProvider>
@@ -191,13 +199,13 @@ describe("DeviceConnection", () => {
       await user.click(screen.getByTestId("connect-button"));
 
       await waitFor(() => {
-        expect(screen.getByTestId("unsupported-device")).toHaveTextContent(
-          "Corne",
-        );
+        expect(screen.getByTestId("unsupported-device")).toBeInTheDocument();
       });
       expect(screen.getByTestId("connection-status")).toHaveTextContent(
         "Disconnected",
       );
+      // Not an error: nothing went wrong, the app simply does not drive it.
+      expect(screen.queryByTestId("error")).not.toBeInTheDocument();
     });
 
     test("keeps a supported keyboard connected", async () => {

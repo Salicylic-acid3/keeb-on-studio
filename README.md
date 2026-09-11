@@ -75,12 +75,12 @@ Inspect battery levels, firmware build info, and uptime for both halves. Hunt do
 
 ## Does it work with my keyboard?
 
-**Only if it is a ClickBoard ErgoTrack or a GoFortyMax.** This is not a general
-ZMK configurator: a keyboard that names itself as anything else is disconnected
-as soon as it says so, rather than half-supported. Everything here — the
-trackpad gestures, the per-OS layers, the battery readout, the firmware
-downloads — is built against these two boards' firmware and would be wrong or
-absent on another.
+**Only if Salicylic_acid3 designed it.** Every keyboard from this workshop is
+built with USB vendor id `0x355D`, and that is what the app checks: the
+browser's port picker only lists keyboards that match, so a keyboard from
+anywhere else is never offered. A keyboard designed next month works without
+the app being told about it first; a keyboard from elsewhere does not work at
+all. This is not a general ZMK configurator.
 
 If you have a different ZMK keyboard, use **[DYA Studio](https://studio.dya.cormoran.works)**,
 the project this one is forked from. It supports any ZMK Studio keyboard, and

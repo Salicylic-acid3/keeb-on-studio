@@ -8,15 +8,15 @@ import {
   useState,
 } from "react";
 import type { RpcTransport } from "@zmkfirmware/zmk-studio-ts-client/transport/index";
-import {
-  useZMKApp,
-  ZMKAppContext,
-  getPairedSerialPorts,
-  connectToPairedSerial,
-} from "@cormoran/zmk-studio-react-hook";
+import { useZMKApp, ZMKAppContext } from "@cormoran/zmk-studio-react-hook";
 import type { UseZMKAppOptions } from "@cormoran/zmk-studio-react-hook";
 import { connect as connectBLE } from "@zmkfirmware/zmk-studio-ts-client/transport/gatt";
-import { connect as connectUSB } from "../lib/transport/usb";
+import {
+  connect as connectUSB,
+  getPairedKeebOnPorts,
+  reconnectToKeebOnPort,
+  UnsupportedKeyboardError,
+} from "../lib/transport/usb";
 import { connect as connectDemo } from "../lib/transport/demo";
 import {
   resolveCustomSubsystemIdentifier,
@@ -27,7 +27,6 @@ import {
   trackConnectFailed,
   classifyConnectError,
 } from "../lib/analytics";
-import { isSupportedDevice } from "../lib/supportedDevices";
 
 export type ConnectionMethod = "serial" | "ble" | "demo";
 
@@ -61,7 +60,8 @@ interface ConnectionContextValue {
    * screen can explain the narrowed scope and point at DYA Studio, rather
    * than showing it as a connection failure.
    */
-  unsupportedDevice: string | null;
+  /** True when the last attempt was refused for not being one of ours. */
+  unsupportedDevice: boolean;
   /**
    * True when this session is demo mode rather than a real keyboard.
    *
@@ -82,7 +82,7 @@ const ConnectionContext = createContext<ConnectionContextValue>({
   error: null,
   isReconnecting: false,
   onCancelReconnect: () => {},
-  unsupportedDevice: null,
+  unsupportedDevice: false,
   isDemo: false,
 });
 
@@ -158,9 +158,7 @@ export function DeviceConnectionProvider({
     useState<ConnectionMethod>("serial");
   // Set when we hang up on a keyboard we don't support, so the connect screen
   // can say which keyboard it was.
-  const [unsupportedDevice, setUnsupportedDevice] = useState<string | null>(
-    null,
-  );
+  const [unsupportedDevice, setUnsupportedDevice] = useState(false);
   // `zmkApp` is a fresh object each render, so the check effect below reads
   // disconnect through a ref instead of depending on it.
   const disconnectRef = useRef(zmkApp.disconnect);
@@ -196,22 +194,6 @@ export function DeviceConnectionProvider({
     }
   }, [zmkApp.state.error, reportConnectFailed]);
 
-  // Keeb-On! Studio only drives the keyboards Salicylic_acid3 develops. Hang
-  // up on anything else as soon as the device tells us what it is, so a
-  // stranger's keyboard fails with an explanation instead of half-working.
-  //
-  // Waits for the name: it is undefined for a moment after the transport is up
-  // but before the device info arrives, and rejecting then would drop every
-  // keyboard. Demo mode is exempt -- it reports a fake keyboard on purpose.
-  useEffect(() => {
-    const name = zmkApp.state.deviceInfo?.name;
-    if (!zmkApp.isConnected || !name) return;
-    if (sessionMethodRef.current === "demo") return;
-    if (isSupportedDevice(name)) return;
-    setUnsupportedDevice(name);
-    disconnectRef.current();
-  }, [zmkApp.isConnected, zmkApp.state.deviceInfo?.name]);
-
   useEffect(() => {
     if (autoReconnectAttemptedRef.current) return;
     autoReconnectAttemptedRef.current = true;
@@ -226,7 +208,7 @@ export function DeviceConnectionProvider({
     };
 
     (async () => {
-      const ports = await getPairedSerialPorts();
+      const ports = await getPairedKeebOnPorts();
       if (ports.length === 0 || cancelledState.current) {
         // Nothing paired (or already cancelled): stay disconnected, show
         // the normal connect screen immediately.
@@ -239,8 +221,10 @@ export function DeviceConnectionProvider({
         // Run the reconnect attempt and the minimum-display timer in
         // parallel so the indicator never flashes shorter than intended,
         // but also never waits longer than necessary once both settle.
+        // Reconnect to one of *those* ports rather than asking the library
+        // for "the paired port", which knows nothing about vendor ids.
         [transport] = await Promise.all([
-          connectToPairedSerial(),
+          reconnectToKeebOnPort(ports),
           sleep(reconnectMinDisplayMs),
         ]);
 
@@ -292,10 +276,25 @@ export function DeviceConnectionProvider({
       setSessionMethod(method);
       // A fresh attempt clears the previous rejection so the notice doesn't
       // outlive it.
-      setUnsupportedDevice(null);
+      setUnsupportedDevice(false);
       try {
-        await zmkApp.connect(connectFn);
+        // For USB the transport is obtained here rather than inside
+        // `zmkApp.connect`, so that "not one of our keyboards" stays a refusal
+        // we handle. Handed to the library it becomes `state.error`, and the
+        // user gets a red failure message for a keyboard that never failed —
+        // it was simply never connected to.
+        const transport = connectFn === connectUSB ? await connectUSB() : null;
+        await zmkApp.connect(
+          transport ? () => Promise.resolve(transport) : connectFn,
+        );
       } catch (error) {
+        // Picking a keyboard that is not one of ours is not a failure to
+        // report -- nothing went wrong, the app simply does not drive it. Show
+        // the explanation and the pointer to DYA Studio instead.
+        if (error instanceof UnsupportedKeyboardError) {
+          setUnsupportedDevice(true);
+          return;
+        }
         // Covers errors thrown before the library commits them to `state.error`
         // (e.g. the user dismissing the browser device picker). `reportConnectFailed`
         // dedupes against the `state.error` effect so the attempt counts once.
