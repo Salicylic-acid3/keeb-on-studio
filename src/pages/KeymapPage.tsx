@@ -51,6 +51,11 @@ import {
   planCopyFromBase,
   type CopyPlan,
 } from "../lib/keymap/copyLayer";
+import {
+  findKeyPressBehaviorId,
+  nextKeyPosition,
+} from "../lib/keymap/quickAssign";
+import { QuickAssignBar } from "../components/keymap/QuickAssignBar";
 import { useLanguage } from "../hooks/useLanguage";
 import { ResetVersionMenu } from "../components/versionHistory/ResetVersionMenu";
 import { VersionDiffModal } from "../components/versionHistory/VersionDiffModal";
@@ -120,6 +125,13 @@ export function KeymapPage() {
   // stretch of time rather than an instant, and it has to say so.
   const [copyPlan, setCopyPlan] = useState<CopyPlan | null>(null);
   const [copyProgress, setCopyProgress] = useState<number | null>(null);
+  // The bottom keyboard: off until asked for. See QuickAssignBar for why it
+  // is not the default way to edit a key.
+  const [quickAssignOpen, setQuickAssignOpen] = useState(false);
+  // True only after a run has walked off the end of the board. Kept apart
+  // from "no key selected", which is also how the panel starts — saying "that
+  // was the last key" to someone who has not set one yet would be nonsense.
+  const [quickAssignFinished, setQuickAssignFinished] = useState(false);
   // Popup listing the device's deleted (restorable) layers, opened from the
   // restore button in the layer toolbar.
   const [showRestoreMenu, setShowRestoreMenu] = useState(false);
@@ -483,9 +495,76 @@ export function KeymapPage() {
     (keyPosition: number) =>
       withUnlock(() => {
         setSelectedKeyPosition(keyPosition);
-        setShowKeycodeSelector(true);
+        setQuickAssignFinished(false);
+        // With the bottom keyboard open, a click on the board chooses what to
+        // set next rather than opening the dialog over it. Opening both would
+        // put a modal on top of the panel the user is working in.
+        if (!quickAssignOpen) {
+          setShowKeycodeSelector(true);
+        }
       }),
-    [withUnlock],
+    [withUnlock, quickAssignOpen],
+  );
+
+  // --- The bottom keyboard -------------------------------------------------
+
+  // Key positions in the order the layout draws them. A layout may skip
+  // numbers (ErgoTrack's gesture positions sit above its physical keys), so
+  // "the next key" means the next one here, not the next integer.
+  const layoutPositions = useMemo(
+    () => currentLayout?.keys.map((_, index) => index) ?? [],
+    [currentLayout],
+  );
+
+  const keyPressBehaviorId = useMemo(
+    () => findKeyPressBehaviorId(keymap.behaviors),
+    [keymap.behaviors],
+  );
+
+  // The keycode currently on the selected key, so the bottom keyboard can
+  // highlight it. Only meaningful when that key is a plain key press.
+  const quickAssignSelectedCode = useMemo(() => {
+    if (!currentBinding || currentBinding.behaviorId !== keyPressBehaviorId) {
+      return -1;
+    }
+    return currentBinding.param1;
+  }, [currentBinding, keyPressBehaviorId]);
+
+  const handleQuickAssign = useCallback(
+    (code: number) =>
+      withUnlock(async () => {
+        if (
+          !currentLayer ||
+          selectedKeyPosition === null ||
+          keyPressBehaviorId === null
+        ) {
+          return;
+        }
+        const ok = await keymap.setBinding(
+          currentLayer.id,
+          selectedKeyPosition,
+          {
+            behaviorId: keyPressBehaviorId,
+            param1: code,
+            param2: 0,
+          },
+        );
+        // Only advance when the key actually took. Moving on after a refusal
+        // would leave a gap the user has no reason to look for.
+        if (ok) {
+          const next = nextKeyPosition(layoutPositions, selectedKeyPosition);
+          setSelectedKeyPosition(next);
+          setQuickAssignFinished(next === null);
+        }
+      }),
+    [
+      currentLayer,
+      selectedKeyPosition,
+      keyPressBehaviorId,
+      keymap,
+      layoutPositions,
+      withUnlock,
+    ],
   );
 
   // Handle key reset
@@ -1475,6 +1554,29 @@ export function KeymapPage() {
                       currentLayer.name ||
                       t("Layer {{id}}", { id: selectedLayerIndex }),
                   })}
+                />
+
+                {/* Under the board, because that is what it edits: you look
+                    at the key that is about to change, then at the keyboard
+                    you are choosing from, and both stay put. */}
+                <QuickAssignBar
+                  open={quickAssignOpen}
+                  onOpenChange={(next) => {
+                    setQuickAssignOpen(next);
+                    if (next) setQuickAssignFinished(false);
+                  }}
+                  targetLabel={
+                    selectedKeyPosition === null
+                      ? null
+                      : t("Key {{position}}", {
+                          position: selectedKeyPosition + 1,
+                        })
+                  }
+                  selectedCode={quickAssignSelectedCode}
+                  onAssign={handleQuickAssign}
+                  keyboardLayout={keyboardLayoutContext.layout}
+                  finished={quickAssignFinished}
+                  disabled={locked || keyPressBehaviorId === null}
                 />
               </div>
             )}

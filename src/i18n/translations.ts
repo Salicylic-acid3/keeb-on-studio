@@ -9,6 +9,13 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  "Set keys one after another": "キーを続けて設定",
+  "Setting: {{key}}": "設定中: {{key}}",
+  "Pick a key on the board to start.": "盤面のキーを選ぶと始まります。",
+  "That was the last key.": "最後のキーでした。",
+  "Choosing a key here sets it and moves to the next one. Use the key dialog for anything other than a plain key press.":
+    "ここでキーを選ぶと設定され、次のキーへ進みます。通常のキー入力以外はキーの設定ダイアログを使ってください。",
+  "Key {{position}}": "キー {{position}}",
   Battery: "電池",
   "How much charge each half has left": "左右それぞれの電池残量",
   "This keyboard does not report its battery level.":
@@ -1557,6 +1564,13 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
+  "Set keys one after another": "连续设置按键",
+  "Setting: {{key}}": "正在设置：{{key}}",
+  "Pick a key on the board to start.": "先在键盘图上选一个键。",
+  "That was the last key.": "这是最后一个键。",
+  "Choosing a key here sets it and moves to the next one. Use the key dialog for anything other than a plain key press.":
+    "在这里选择按键会直接设置并跳到下一个。普通按键以外的绑定请使用按键设置对话框。",
+  "Key {{position}}": "键 {{position}}",
   Battery: "电池",
   "How much charge each half has left": "左右两侧各自的剩余电量",
   "This keyboard does not report its battery level.": "此键盘不报告电池电量。",
