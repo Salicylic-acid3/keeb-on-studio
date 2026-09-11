@@ -20,7 +20,7 @@
 import type {
   BehaviorBindingParametersSet,
   BehaviorParameterValueDescription,
-} from "@zmkfirmware/zmk-studio-ts-client/lib/behaviors";
+} from "@zmkfirmware/zmk-studio-ts-client/behaviors";
 
 /** HID usage pages ZMK will take in a binding parameter. */
 const USAGE_PAGE_KEYBOARD = 0x07;

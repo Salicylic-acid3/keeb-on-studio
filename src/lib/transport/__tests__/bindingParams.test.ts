@@ -8,7 +8,7 @@
  * anything this cannot judge is allowed through deliberately.
  */
 import { bindingParamsValid } from "../bindingParams";
-import type { BehaviorBindingParametersSet } from "@zmkfirmware/zmk-studio-ts-client/lib/behaviors";
+import type { BehaviorBindingParametersSet } from "@zmkfirmware/zmk-studio-ts-client/behaviors";
 
 const key: BehaviorBindingParametersSet[] = [
   {

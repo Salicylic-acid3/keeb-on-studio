@@ -43,7 +43,7 @@ import { assertOfficialKeymapRpcAllowed } from "../lib/officialKeymapRpcGuard";
  * behavior ID: <id>" while the firmware was complaining about the *value* — so
  * three rounds of debugging went after a behavior id that had been correct all
  * along. The authority is SetLayerBindingResponse in
- * @zmkfirmware/zmk-studio-ts-client/lib/keymap; do not restate it from memory.
+ * @zmkfirmware/zmk-studio-ts-client/keymap; do not restate it from memory.
  */
 const SetLayerBindingResp = {
   OK: 0,
