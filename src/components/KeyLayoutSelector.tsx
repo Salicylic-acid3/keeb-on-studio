@@ -6,7 +6,7 @@
  * KeycodeValueSelector.
  */
 import {
-  KEY_LAYOUT_70,
+  getKeyLayout,
   ROW_UNITS,
   isSpacer,
   type KeyLayoutItem,
@@ -33,6 +33,10 @@ export function KeyLayoutSelector({
   keyboardLayout,
 }: KeyLayoutSelectorProps) {
   const { t } = useLanguage();
+  // The picture follows the OS Layout setting, not just the legends on it: on
+  // JIS three keys exist that ANSI has nowhere to put, so a relabelled ANSI
+  // board would leave them unreachable from here.
+  const rows = getKeyLayout(keyboardLayout);
 
   const renderKey = (item: KeyLayoutItem, index: number) => {
     if (isSpacer(item)) {
@@ -54,7 +58,9 @@ export function KeyLayoutSelector({
 
     return (
       <div
-        key={`key-${item.code}`}
+        // Index, not code: the JIS layout draws Enter twice, as the two arms of
+        // the L-shaped key it cannot draw as one.
+        key={`key-${index}-${item.code}`}
         className="p-[2px]"
         style={{ width: widthPercent(w) }}
       >
@@ -81,7 +87,7 @@ export function KeyLayoutSelector({
   return (
     <div className="flex-1 overflow-auto">
       <div className="mx-auto min-w-[540px] max-w-3xl px-1 py-2">
-        {KEY_LAYOUT_70.map((row, rowIndex) => (
+        {rows.map((row, rowIndex) => (
           <div key={rowIndex} className="flex w-full">
             {row.map((item, index) => renderKey(item, index))}
           </div>

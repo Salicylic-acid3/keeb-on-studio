@@ -52,6 +52,19 @@ describe("keyboardLayouts", () => {
       expect(getLayoutDisplayName(0x91, "JIS")).toBe("英数");
     });
 
+    it.each(["JIS", "US_JP"] as const)(
+      "labels 変換 and 無変換 the right way round on %s",
+      (layout) => {
+        // These two were swapped, and a swap here is invisible: both legends
+        // look plausible on either key, and the picker would quietly offer a
+        // key that does the opposite of what it says. The authority is the HID
+        // usage table, which keycodes.ts already follows — International4 is
+        // 変換 (henkan, "convert") and International5 is 無変換.
+        expect(getLayoutDisplayName(0x8a, layout)).toBe("変換");
+        expect(getLayoutDisplayName(0x8b, layout)).toBe("無変換");
+      },
+    );
+
     it("should return US_JP display names for Japanese language keycodes", () => {
       expect(getLayoutDisplayName(0x90, "US_JP")).toBe("かな");
       expect(getLayoutDisplayName(0x91, "US_JP")).toBe("英数");

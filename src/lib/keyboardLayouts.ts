@@ -157,20 +157,30 @@ const JIS_LAYOUT_MAPPINGS: KeycodeLayoutMapping[] = [
     displayName: "英数",
   },
   {
+    // International2, the カタカナ/ひらがな key on a PC JIS keyboard. Labelled
+    // カナ rather than かな because LANG1 below is *also* かな -- that is the
+    // key an Apple JIS keyboard sends from the same side of the space bar --
+    // and two adjacent keys reading the same word is worse than an abbreviation.
     code: 0x88,
-    displayName: "かな/カナ",
+    displayName: "カナ",
   },
   {
     code: 0x89,
     displayName: "￥",
   },
   {
+    // International4. The pair below is the one most often written down the
+    // wrong way round, and was here: 0x8a is 変換 (henkan, "convert") and 0x8b
+    // is 無変換 (muhenkan, "no convert"), per the HID usage table and the
+    // INT_HENKAN / INT_MUHENKAN aliases in keycodes.ts. Swapped, the picker
+    // offers a key that does the opposite of its legend.
     code: 0x8a,
-    displayName: "無変換",
+    displayName: "変換",
   },
   {
+    // International5.
     code: 0x8b,
-    displayName: "変換",
+    displayName: "無変換",
   },
 ];
 
@@ -185,7 +195,7 @@ const US_FOR_JP_LAYOUT_MAPPINGS: KeycodeLayoutMapping[] = [
   },
   {
     code: 0x88,
-    displayName: "かな/カナ",
+    displayName: "カナ",
   },
   {
     code: 0x89,
@@ -193,11 +203,11 @@ const US_FOR_JP_LAYOUT_MAPPINGS: KeycodeLayoutMapping[] = [
   },
   {
     code: 0x8a,
-    displayName: "無変換",
+    displayName: "変換",
   },
   {
     code: 0x8b,
-    displayName: "変換",
+    displayName: "無変換",
   },
 ];
 
