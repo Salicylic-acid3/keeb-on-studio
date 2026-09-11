@@ -51,7 +51,12 @@ import {
   planCopyFromBase,
   type CopyPlan,
 } from "../lib/keymap/copyLayer";
-import { keyPressCandidates, nextKeyPosition } from "../lib/keymap/quickAssign";
+import {
+  keyPressCandidates,
+  keyPressParam,
+  nextKeyPosition,
+} from "../lib/keymap/quickAssign";
+import { extractBaseKeycode } from "../lib/keycodes";
 import { QuickAssignBar } from "../components/keymap/QuickAssignBar";
 import { useLanguage } from "../hooks/useLanguage";
 import { ResetVersionMenu } from "../components/versionHistory/ResetVersionMenu";
@@ -525,23 +530,23 @@ export function KeymapPage() {
     ];
   }, [keymap.keymap?.layers, currentLayer]);
 
-  // Every id that claims to be a key press. Which one the firmware will
-  // actually accept is not knowable from the listing — see quickAssign.ts —
-  // so the first write tries them in order and the winner is kept for the
-  // rest of the session.
+  // Every id that claims to be a key press, best first: quick assign writes
+  // with keyPressIds[0], and the rest of the list is how a key already on the
+  // board is recognised as a plain key press.
   const keyPressIds = useMemo(
     () => keyPressCandidates(keymap.behaviors, allBindings),
     [keymap.behaviors, allBindings],
   );
-  const acceptedKeyPressId = useRef<number | null>(null);
 
   // The keycode currently on the selected key, so the bottom keyboard can
-  // highlight it. Only meaningful when that key is a plain key press.
+  // highlight it. Only meaningful when that key is a plain key press, and
+  // stripped back to a bare usage id because that is what the picker's keys
+  // are — the same asymmetry keyPressParam exists for, in the other direction.
   const quickAssignSelectedCode = useMemo(() => {
     if (!currentBinding || !keyPressIds.includes(currentBinding.behaviorId)) {
       return -1;
     }
-    return currentBinding.param1;
+    return extractBaseKeycode(currentBinding.param1);
   }, [currentBinding, keyPressIds]);
 
   const handleQuickAssign = useCallback(
@@ -549,26 +554,17 @@ export function KeymapPage() {
       withUnlock(async () => {
         if (!currentLayer || selectedKeyPosition === null) return;
 
-        // Once one id has been accepted, stop asking. Before that, work down
-        // the candidates: the device is the only thing that knows which of
-        // them it will take.
-        const toTry =
-          acceptedKeyPressId.current !== null
-            ? [acceptedKeyPressId.current]
-            : keyPressIds;
+        const behaviorId = keyPressIds[0];
+        if (behaviorId === undefined) return;
 
-        let ok = false;
-        for (const behaviorId of toTry) {
-          ok = await keymap.setBinding(currentLayer.id, selectedKeyPosition, {
-            behaviorId,
-            param1: code,
-            param2: 0,
-          });
-          if (ok) {
-            acceptedKeyPressId.current = behaviorId;
-            break;
-          }
-        }
+        // keyPressParam, not the bare code: the picker speaks bare usage ids
+        // and a binding wants the full HID usage. That one conversion is what
+        // the whole "Invalid behavior ID" hunt was actually about.
+        const ok = await keymap.setBinding(
+          currentLayer.id,
+          selectedKeyPosition,
+          { behaviorId, param1: keyPressParam(code), param2: 0 },
+        );
         // Only advance when the key actually took. Moving on after a refusal
         // would leave a gap the user has no reason to look for.
         if (ok) {

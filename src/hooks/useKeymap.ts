@@ -35,12 +35,21 @@ import {
 } from "./useKeymapSource";
 import { assertOfficialKeymapRpcAllowed } from "../lib/officialKeymapRpcGuard";
 
-// Error response constants for better readability
+/**
+ * The SetLayerBinding response codes, as ZMK actually defines them.
+ *
+ * These were wrong here, and the cost was high: code 3 is INVALID_PARAMETERS,
+ * not "invalid behavior id". A refused write therefore reported "Invalid
+ * behavior ID: <id>" while the firmware was complaining about the *value* — so
+ * three rounds of debugging went after a behavior id that had been correct all
+ * along. The authority is SetLayerBindingResponse in
+ * @zmkfirmware/zmk-studio-ts-client/lib/keymap; do not restate it from memory.
+ */
 const SetLayerBindingResp = {
   OK: 0,
-  INVALID_LAYER_ID: 1,
-  INVALID_KEY_POSITION: 2,
-  INVALID_BEHAVIOR_ID: 3,
+  INVALID_LOCATION: 1,
+  INVALID_BEHAVIOR: 2,
+  INVALID_PARAMETERS: 3,
 } as const;
 
 // Re-export types for convenience
@@ -618,14 +627,28 @@ export function useKeymap(): UseKeymapReturn {
         setHasUnsavedChanges(true);
         clearError();
         return true;
-      } else if (result === SetLayerBindingResp.INVALID_LAYER_ID) {
-        setErrorWithAutoClear(`Invalid layer ID: ${layerId}`);
-      } else if (result === SetLayerBindingResp.INVALID_KEY_POSITION) {
-        setErrorWithAutoClear(`Invalid key position: ${keyPosition}`);
-      } else if (result === SetLayerBindingResp.INVALID_BEHAVIOR_ID) {
-        setErrorWithAutoClear(`Invalid behavior ID: ${binding.behaviorId}`);
+      }
+
+      // The numbers are for whoever is debugging; the sentence is for whoever
+      // is using the keyboard. Putting the ids in the message meant a refusal
+      // read as a code to look up rather than as something that happened.
+      console.warn("SetLayerBinding refused", {
+        result,
+        layerId,
+        keyPosition,
+        binding,
+      });
+
+      if (result === SetLayerBindingResp.INVALID_LOCATION) {
+        setErrorWithAutoClear("That key does not exist on this layer.");
+      } else if (result === SetLayerBindingResp.INVALID_BEHAVIOR) {
+        setErrorWithAutoClear("This keyboard does not know that behavior.");
+      } else if (result === SetLayerBindingResp.INVALID_PARAMETERS) {
+        setErrorWithAutoClear(
+          "This keyboard refused that setting for this behavior.",
+        );
       } else {
-        setErrorWithAutoClear(`Failed to set binding: unknown error`);
+        setErrorWithAutoClear("The key could not be set.");
       }
 
       return false;

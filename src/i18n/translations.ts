@@ -13,6 +13,10 @@ const ja: Record<string, string> = {
   "Setting: {{key}}": "設定中: {{key}}",
   "Pick a key on the board to start.": "盤面のキーを選ぶと始まります。",
   "That was the last key.": "最後のキーでした。",
+  "That key does not exist on this layer.": "そのキーはこのレイヤーにありません。",
+  "This keyboard does not know that behavior.": "このキーボードはその動作を知りません。",
+  "This keyboard refused that setting for this behavior.": "このキーボードはその動作にその設定を受け付けませんでした。",
+  "The key could not be set.": "キーを設定できませんでした。",
   "Choosing a key here sets it and moves to the next one. Use the key dialog for anything other than a plain key press.":
     "ここでキーを選ぶと設定され、次のキーへ進みます。通常のキー入力以外はキーの設定ダイアログを使ってください。",
   "Key {{position}}": "キー {{position}}",
@@ -1568,6 +1572,10 @@ const zh: Record<string, string> = {
   "Setting: {{key}}": "正在设置：{{key}}",
   "Pick a key on the board to start.": "先在键盘图上选一个键。",
   "That was the last key.": "这是最后一个键。",
+  "That key does not exist on this layer.": "该键在此层中不存在。",
+  "This keyboard does not know that behavior.": "此键盘不认识该行为。",
+  "This keyboard refused that setting for this behavior.": "此键盘拒绝了该行为的这个设置。",
+  "The key could not be set.": "无法设置该键。",
   "Choosing a key here sets it and moves to the next one. Use the key dialog for anything other than a plain key press.":
     "在这里选择按键会直接设置并跳到下一个。普通按键以外的绑定请使用按键设置对话框。",
   "Key {{position}}": "键 {{position}}",

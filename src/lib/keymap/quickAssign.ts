@@ -17,29 +17,46 @@
  * actually is on *this* device, and which key comes next.
  */
 import type { BehaviorDefinition } from "../../hooks/useKeymap";
+import { combineWithModifiers } from "../keycodes";
 
 /** Display names ZMK uses for the key-press behavior. */
 const KEY_PRESS_NAMES = ["Key Press", "kp"];
 
 /**
+ * The param1 a key-press binding takes for a keycode from the on-screen
+ * keyboard.
+ *
+ * The on-screen keyboard speaks bare HID usage ids — 0x1A for W — because that
+ * is what the key dialog's grid and its highlighting use. A binding does not:
+ * &kp wants the full usage with the page in the high half, 0x0007001A. Writing
+ * the bare id produced three rounds of "Invalid behavior ID: 50397", which was
+ * this app mislabelling the firmware's INVALID_PARAMETERS: the behavior id was
+ * right every time and the value was out of range. Nothing caught it earlier
+ * because the demo transport validates no parameters at all, so quick assign
+ * worked perfectly everywhere except on a real keyboard.
+ *
+ * No modifiers: quick assign is for plain keys, and anything with a modifier
+ * goes through the dialog.
+ */
+export function keyPressParam(code: number): number {
+  return combineWithModifiers(code, 0);
+}
+
+/**
  * Every id on this device that claims to be a key press, best first.
  *
- * There is no reliable way to know which one the firmware will accept. A real
- * keyboard reported a behavior called "Key Press" and then refused to bind it
- * ("Invalid behavior ID: 50397") — listing a behavior and accepting it in a
- * binding are not the same thing, and nothing in the listing says which is
- * which. Picking one and hoping is what produced that error twice.
- *
- * So the caller gets all of them and finds out by asking the device, keeping
- * whichever works. The order is the order of decreasing evidence:
+ * Behavior ids are device-local, so the name is the only handle the app has.
+ * The order is the order of decreasing evidence:
  *
  * 1. ids already bound on the board — the device sent these back itself when
  *    the keymap was read, so it demonstrably knows them;
  * 2. anything else listed under a key-press name.
  *
- * An empty list means quick assign cannot work here and should not be
- * offered. It never guesses an id that nothing named: that would land on some
- * unrelated behavior and the keymap would look right until a key was pressed.
+ * The caller writes with the first and uses the whole list to decide whether
+ * the key it is looking at is a plain key press. An empty list means quick
+ * assign cannot work here and should not be offered; it never falls back to a
+ * guessed id, which would land on some unrelated behavior and look right until
+ * the key was pressed.
  *
  * @param bindings every binding on the board, in any order.
  */

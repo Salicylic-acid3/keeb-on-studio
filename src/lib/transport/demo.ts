@@ -127,8 +127,13 @@ import {
 } from "./demo-subsystems";
 import { ERGOTRACK, GOFORTY_MAX } from "../layouts";
 import { ErrorConditions } from "@zmkfirmware/zmk-studio-ts-client/meta";
-import { KEYBOARD_KEYCODES } from "../keycodes";
+import {
+  KEYBOARD_KEYCODES,
+  createHidUsage,
+  HID_USAGE_PAGE_KEYBOARD,
+} from "../keycodes";
 import { BEHAVIORS } from "./behaviors";
+import { bindingParamsValid } from "./bindingParams";
 import {
   MoveLayerErrorCode,
   RestoreLayerErrorCode,
@@ -167,9 +172,18 @@ const DEMO = {
       {
         id: 0,
         name: "Base",
-        bindings: KEYBOARD_KEYCODES.splice(0, maxKeys).map((code) => ({
+        // slice, not splice: splice mutates the exported keycode list, which
+        // is shared with the key picker. It happens to be harmless only
+        // because keycodes.ts finishes building its lookups before this module
+        // loads — that is luck, not a design.
+        //
+        // createHidUsage, because a binding carries the full usage with its
+        // page. The demo used to store the bare id here, which is a binding no
+        // keyboard would accept; now that the demo checks parameters, its own
+        // starting keymap has to be one a keyboard could have.
+        bindings: KEYBOARD_KEYCODES.slice(0, maxKeys).map((code) => ({
           behaviorId: 10,
-          param1: code.code,
+          param1: createHidUsage(HID_USAGE_PAGE_KEYBOARD, code.code),
           param2: 0,
         })),
       },
@@ -419,12 +433,26 @@ class Keyboard {
       const layer = this.data.keymap.layers.find(
         (l: { id: number }) => l.id === layerId,
       );
-      if (layer && keyPosition >= 0 && keyPosition < layer.bindings.length) {
+      const behavior = DEMO.behaviors.find((b) => b.id === binding?.behaviorId);
+      if (!layer || keyPosition < 0 || keyPosition >= layer.bindings.length) {
+        rr.keymap = { setLayerBinding: 1 }; // INVALID_LOCATION
+      } else if (!behavior) {
+        rr.keymap = { setLayerBinding: 2 }; // INVALID_BEHAVIOR
+      } else if (
+        // The demo used to store whatever it was handed, so a binding that no
+        // keyboard would accept looked fine here and failed only on hardware.
+        // See bindingParams.ts.
+        !bindingParamsValid(
+          behavior.metadata,
+          binding?.param1 ?? 0,
+          binding?.param2 ?? 0,
+        )
+      ) {
+        rr.keymap = { setLayerBinding: 3 }; // INVALID_PARAMETERS
+      } else {
         layer.bindings[keyPosition] = binding;
         this.dirty = true;
         rr.keymap = { setLayerBinding: 0 };
-      } else {
-        rr.keymap = { setLayerBinding: 1 };
       }
     } else if (req.keymap?.saveChanges !== undefined) {
       this.persistent = JSON.parse(JSON.stringify(this.data));

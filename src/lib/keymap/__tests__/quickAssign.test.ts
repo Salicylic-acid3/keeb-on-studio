@@ -8,7 +8,11 @@
  * looking at the keyboard, not at a counter, and a wrap would start
  * overwriting the keys they just set without anything on screen changing.
  */
-import { keyPressCandidates, nextKeyPosition } from "../quickAssign";
+import {
+  keyPressCandidates,
+  keyPressParam,
+  nextKeyPosition,
+} from "../quickAssign";
 import type { BehaviorDefinition } from "../../../hooks/useKeymap";
 
 function behaviors(entries: [number, string][]) {
@@ -20,11 +24,34 @@ function behaviors(entries: [number, string][]) {
   );
 }
 
+describe("the keycode a binding is written with", () => {
+  // This is the whole of the bug that took three rounds to find. The picker
+  // hands out bare usage ids; a binding wants the page in the high half. The
+  // demo transport validates nothing, so only real hardware ever said no —
+  // and it said INVALID_PARAMETERS, which the app printed as "Invalid
+  // behavior ID: 50397", sending the search after the wrong thing entirely.
+  it("puts the keyboard page on a bare usage id", () => {
+    expect(keyPressParam(0x1a)).toBe(0x0007001a); // W
+    expect(keyPressParam(0x04)).toBe(0x00070004); // A
+  });
+
+  it("leaves a code that already carries its page alone", () => {
+    // Consumer-page keys come through the picker fully formed; wrapping one
+    // again would move the page and write some unrelated usage.
+    expect(keyPressParam(0x000c00b5)).toBe(0x000c00b5); // next track
+  });
+
+  it("adds no modifiers", () => {
+    // Quick assign is plain keys only. A stray modifier flag here would be
+    // invisible on the board and only show up when the key was pressed.
+    expect(keyPressParam(0x1a) >>> 24).toBe(0);
+  });
+});
+
 describe("listing the key press candidates", () => {
   it("puts ids the board already binds first", () => {
-    // A real keyboard listed "Key Press" as 50397 and then refused to bind
-    // it. An id the device itself sent back is the better bet, so it is
-    // tried first — but the other is kept, because the first one may fail.
+    // An id the device sent back itself is better evidence than a name match,
+    // since the names are ours and the ids are the device's.
     const map = behaviors([
       [50397, "Key Press"],
       [10, "Key Press"],
