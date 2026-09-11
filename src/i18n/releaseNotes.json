@@ -5,157 +5,95 @@
       "date": null,
       "changes": {
         "major": [],
-        "minor": [
-          {
-            "en": "Add Chinese (中文) UI translation alongside English and Japanese",
-            "ja": "英語と日本語に加えて中国語（中文）のUI翻訳を追加",
-            "zh": "在英语和日语之外新增中文（中文）界面翻译"
-          },
-          {
-            "en": "Add Electron desktop app build support with macOS/Windows installers",
-            "ja": "macOS / Windows インストーラー対応のElectronデスクトップアプリビルドサポートを追加",
-            "zh": "新增 Electron 桌面应用构建支持，可生成 macOS/Windows 安装包"
-          }
-        ],
-        "patch": []
-      }
-    },
-    {
-      "version": "2026.08.11.1",
-      "date": "2026-08-11",
-      "changes": {
-        "major": [],
         "minor": [],
         "patch": []
       }
     },
     {
-      "version": "2026.08.11.0",
-      "date": "2026-08-11",
-      "changes": {
-        "major": [],
-        "minor": [],
-        "patch": []
-      }
-    },
-    {
-      "version": "2026.08.09.0",
-      "date": "2026-08-09",
+      "version": "2026.09.11.0",
+      "date": "2026-09-11",
       "summary": {
         "lead": {
-          "en": "A big update across the board.",
-          "ja": "全体的に大規模にアップデートしました。"
-        },
-        "highlights": [
-          {
-            "en": "Added the long-awaited Macro and Combo features.",
-            "ja": "待望のマクロ・コンボ機能を追加しました。"
-          },
-          {
-            "en": "Dramatically faster loading over wireless — especially the second and later loads are now fast enough for everyday use.",
-            "ja": "無線接続での読み込みを爆速化。特に 2 回目以降の読み込みが超高速になり、実用的になりました。"
-          },
-          {
-            "en": "Added a Troubleshooting tab — smoother support, plus tools that help debug keyboards during development.",
-            "ja": "トラブルシューティング用のタブを追加。サポート対応を円滑にするほか、キーボード開発時のデバッグを支援する機能も含みます。"
-          }
-        ]
+          "en": "The first release under Keeb-On! Studio's own version history. Everything before this lives in DYA Studio's release notes, upstream.",
+          "ja": "Keeb-On! Studio 自身のバージョン履歴としての最初のリリースです。これ以前の履歴は本家 DYA Studio のリリースノートにあります。",
+          "zh": "这是 Keeb-On! Studio 自有版本历史的首个发布。在此之前的历史请见上游 DYA Studio 的发布说明。"
+        }
       },
       "changes": {
         "major": [
           {
-            "en": "Version history: each tab now saves what it reads from the keyboard, so you can pick an earlier version from the reset dropdown, review the differences, and write it back.",
-            "ja": "バージョン管理に対応。各タブがキーボードから読み込んだ内容を保存するようになり、リセットのドロップダウンから以前のバージョンを選び、差分を確認して書き戻せます。"
+            "en": "Specialized for ClickBoard ErgoTrack and GoFortyMax — other keyboards are turned away at connection rather than half-supported",
+            "ja": "ClickBoard ErgoTrack と GoFortyMax に特化。他のキーボードは中途半端に対応せず、接続の時点でお断りします",
+            "zh": "专为 ClickBoard ErgoTrack 与 GoFortyMax 打造——其他键盘在连接时即被拒绝，而非半吊子支持"
           },
           {
-            "en": "New Connection tab (evolved from the BLE tab) with OS detection and a default-layer selector for supported keyboards.",
-            "ja": "接続タブを刷新（旧 BLE タブ）。対応キーボード向けに OS 検出とデフォルトレイヤー選択の UI を追加しました。"
+            "en": "Edit the trackpad's gestures by name: what a pinch or a three-finger swipe sends, per layer",
+            "ja": "トラックパッドのジェスチャーを名前で編集。ピンチや3本指スワイプが何を送るかを、レイヤーごとに設定できます",
+            "zh": "按名称编辑触控板手势：捏合与三指滑动各自发送什么，可按层设置"
           },
           {
-            "en": "Redesigned Trackball tab with live sensor streaming and advanced PMW3610 driver settings.",
-            "ja": "トラックボールタブを再設計。センサーのライブストリーミング表示と PMW3610 ドライバの詳細設定に対応しました。",
-            "pr": 138
+            "en": "Tap dance, editable without rebuilding the firmware",
+            "ja": "タップダンス。ファームウェアを焼き直さずに変更できます",
+            "zh": "点击舞蹈，无需重新烧录固件即可修改"
           },
           {
-            "en": "Added Macro and Combo support — a unified Macro & Combo tab with runtime macro and combo editors.",
-            "ja": "マクロ・コンボに対応。統合された Macro & Combo タブと、ランタイムマクロ・コンボエディタを追加しました。",
-            "pr": 136
+            "en": "Set a run of keys one after another from a keyboard at the bottom of the screen",
+            "ja": "画面下のキーボードから、キーを次々に設定できる連続入力モード",
+            "zh": "通过屏幕下方的键盘连续设置多个按键"
           },
           {
-            "en": "Custom Subsystems support: browse and edit vendor-specific settings (e.g. fast-keymap, setting-expose) exposed by the keyboard.",
-            "ja": "カスタムサブシステムに対応。キーボードが公開するベンダー独自設定（fast-keymap、setting-expose など）を参照・編集できます。"
+            "en": "Copy Base onto Alt Base in one action, for the per-OS layer",
+            "ja": "OS別レイヤーのために、Base を Alt Base へ一括コピー",
+            "zh": "一键将 Base 复制到 Alt Base，用于按系统区分的层"
           },
           {
-            "en": "New Troubleshooting tab (replacing the Battery tab) with human-readable crash reasons and accurate device counts.",
-            "ja": "トラブルシューティングタブを追加（旧バッテリータブを置き換え）。クラッシュ理由を分かりやすく表示し、デバイス数を正確に集計します。"
+            "en": "Each half's battery level, over USB as well as Bluetooth",
+            "ja": "左右それぞれの電池残量を表示。USB接続でも見えます",
+            "zh": "显示左右两侧的电量，USB 连接时同样可见"
           },
           {
-            "en": "Japanese localization: the entire UI is now available in Japanese, auto-detected from your browser.",
-            "ja": "日本語ローカライズに対応。UI 全体が日本語で利用でき、ブラウザ設定から自動判定します。",
-            "pr": 142
+            "en": "Save keymaps locally, export them as files, share them by link, and publish them to a public gallery",
+            "ja": "キーマップのローカル保存・ファイル書き出し・リンク共有・公開ギャラリー",
+            "zh": "键映射的本地保存、文件导出、链接分享与公开图库"
           },
           {
-            "en": "Faster keymap loading via the fast-keymap module with incremental per-layer loading and an official-protocol fallback.",
-            "ja": "fast-keymap モジュールによりキーマップ読み込みを高速化。レイヤーごとの逐次読み込みに対応し、非対応時は公式プロトコルにフォールバックします。"
-          },
-          {
-            "en": "New Import/Export tab: sign in to Keyboard Abyss to upload your keymap, or write a saved keymap back to the keyboard after reviewing exactly what changes.",
-            "ja": "インポート／エクスポートタブを追加。Keyboard Abyss にサインインしてキーマップをアップロードしたり、保存済みキーマップの変更内容を確認したうえでキーボードに書き戻せます。"
+            "en": "Download firmware for both keyboards from the app",
+            "ja": "両キーボードのファームウェアをアプリからダウンロード",
+            "zh": "可在应用内下载两款键盘的固件"
           }
         ],
         "minor": [
           {
-            "en": "URL-based routing for tabs — every tab is now directly linkable, shareable, and works with browser back/forward.",
-            "ja": "タブの URL ルーティングに対応。各タブに直接リンク・共有でき、ブラウザの戻る/進むにも対応しました。"
+            "en": "Trackpad tuning: sensitivity, axis inversion, rotation, axis snapping — with separate settings per OS",
+            "ja": "トラックパッド調整: 感度・軸反転・回転・軸スナップ。OSごとに別々の設定を持てます",
+            "zh": "触控板调节：灵敏度、轴反转、旋转、轴吸附，并可按系统分别设置"
           },
           {
-            "en": "Keymap: rename layers, delete and individually restore layers, and a key-layout mode in the keycode selector.",
-            "ja": "キーマップ：レイヤー名の変更、レイヤーの削除と個別復元、キーコードセレクタのキーレイアウト表示モードを追加しました。",
-            "pr": 143
+            "en": "Tap-hold presets at 150 / 200 / 280 ms, choosable per key",
+            "ja": "タップホールドの判定時間プリセット(150 / 200 / 280ms)をキーごとに選択",
+            "zh": "点击保持判定时间预设（150 / 200 / 280 毫秒），可逐键选择"
           },
           {
-            "en": "Keymap: highlight keys that differ from the default, per-key reset-to-default, and Discard/Reset controls.",
-            "ja": "キーマップ：デフォルトと異なるキーのハイライト、キー単位のデフォルト復元、破棄/リセット操作を追加しました。"
+            "en": "Print a keymap, one layer per page",
+            "ja": "キーマップの印刷。1レイヤー1ページ",
+            "zh": "打印键映射，每层一页"
           },
           {
-            "en": "Settings: factory reset action and a redesigned, lazy-loaded advanced settings table.",
-            "ja": "設定：ファクトリーリセット操作と、遅延読み込み対応の刷新された詳細設定テーブルを追加しました。",
-            "pr": [150, 128]
+            "en": "Faster keymap loading, and the trackpads drawn on the board",
+            "ja": "キーマップの高速読み込みと、盤面へのトラックパッド描画",
+            "zh": "更快的键映射加载，并在键盘图上绘出触控板"
           },
           {
-            "en": "Auto-reconnect to the last used serial port on page load, with a reconnecting indicator.",
-            "ja": "ページ読み込み時に前回使用したシリアルポートへ自動再接続し、再接続中インジケータを表示します。"
-          },
-          {
-            "en": "Feature-doc tooltips on card headers explaining what each feature does.",
-            "ja": "各カード見出しに機能説明のツールチップを追加しました。"
-          },
-          {
-            "en": "Unified studio-unlock retry flow with a clear \"device is locked\" message across all tabs.",
-            "ja": "全タブで共通の Studio ロック解除リトライフローと、分かりやすい「デバイスがロックされています」表示を追加しました。"
-          },
-          {
-            "en": "Anonymous usage analytics to help prioritize improvements (no keymap or configuration data is ever sent).",
-            "ja": "改善の優先度付けのため匿名の利用状況分析を追加しました（キーマップや設定データは一切送信されません）。",
-            "pr": 145
-          },
-          {
-            "en": "Switching tabs no longer discards what a tab was showing: each tab keeps its loaded data and in-progress edits, so returning to it is instant. Keymap, Settings and Trackball gained a Reload button for re-reading from the keyboard on demand.",
-            "ja": "タブを切り替えても、そのタブの読み込み済みデータや編集途中の内容が破棄されなくなりました。戻ったときの再読み込み待ちがなくなります。キーマップ・設定・トラックボールには、必要なときにキーボードから読み直せる再読み込みボタンを追加しました。"
+            "en": "A look of its own: hexagon and onsen-town palette, with DYA Studio credited in full",
+            "ja": "独自の意匠: 六角形と温泉街のパレット。DYA Studio への帰属表示は明記しています",
+            "zh": "独立的视觉设计：六边形与温泉街配色，并完整标注 DYA Studio 的来源"
           }
         ],
         "patch": [
           {
-            "en": "Numerous stability fixes for the studio-unlock flow, including stopping infinite request loops while the device is locked.",
-            "ja": "Studio ロック解除まわりの安定性を多数改善。ロック中にリクエストが無限ループする問題などを修正しました。"
-          },
-          {
-            "en": "Rewrote the README and refreshed the on-app FAQ and home content for end users.",
-            "ja": "README を書き直し、アプリ内の FAQ・ホーム内容をエンドユーザー向けに更新しました。"
-          },
-          {
-            "en": "Improved combo validation warning contrast and various UI polish across tabs.",
-            "ja": "コンボ検証警告のコントラストを改善し、各タブの UI を細かく調整しました。"
+            "en": "Studio is configured over USB only, with the lock off — wireless configuration and an openable lock cannot both exist on this firmware",
+            "ja": "Studio への接続は有線のみ、ロックは無効。このファームでは「無線で繋がる」と「ロックが無い」は両立しません",
+            "zh": "Studio 仅通过 USB 配置且不加锁——本固件无法同时做到无线连接与无锁"
           }
         ]
       }

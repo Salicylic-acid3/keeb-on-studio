@@ -46,8 +46,14 @@ export interface ReleaseSummary {
   highlights?: LocalizedText[];
 }
 
-/** GitHub repository the release notes link back to. */
-export const GITHUB_REPO_URL = "https://github.com/cormoran/dya-studio";
+/**
+ * GitHub repository the release notes link back to.
+ *
+ * This fork's, not the upstream one: a `pr` number in the notes below is a
+ * pull request against *this* repository, and pointing them at dya-studio
+ * would send a reader to an unrelated change that happens to share a number.
+ */
+export const GITHUB_REPO_URL = "https://github.com/Salicylic-acid3/keeb-on-studio";
 
 /** Normalize a change's optional `pr` field to a list of PR numbers. */
 export function prNumbers(change: LocalizedChange): number[] {

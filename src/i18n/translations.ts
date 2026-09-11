@@ -14,6 +14,7 @@ const ja: Record<string, string> = {
   "Pick a key on the board to start.": "盤面のキーを選ぶと始まります。",
   "That was the last key.": "最後のキーでした。",
   Gestures: "ジェスチャー",
+  "On sale soon": "近日発売",
   "{{layer}} — auto-track layer target":
     "{{layer}} — オートトラックレイヤーの対象",
   "Auto-track": "オートトラック",
@@ -341,7 +342,6 @@ const ja: Record<string, string> = {
     "マウス用スイッチを採用した、ClickBoard シリーズの極薄キーボード。",
   "From the GoForty small-form-factor keyboard line.":
     "小型キーボードの GoForty シリーズから。",
-  "Coming Soon": "近日公開",
   "Q: Can my keyboard support Keeb-On! Studio?":
     "Q: 自分のキーボードは Keeb-On! Studio に対応できますか？",
   "Warning: cormoran's ZMK fork is very experimental, optimized for DYA keyboards and may contain unstable or breaking changes. Use at your own risk. In rare cases, it may cause malfunction or damage to your keyboard hardware.":
@@ -1604,6 +1604,7 @@ const zh: Record<string, string> = {
   "Pick a key on the board to start.": "先在键盘图上选一个键。",
   "That was the last key.": "这是最后一个键。",
   Gestures: "手势",
+  "On sale soon": "即将发售",
   "{{layer}} — auto-track layer target": "{{layer}} — 自动跟踪层目标",
   "Auto-track": "自动跟踪",
   "Optionally hold a layer while the trackpad is in use":
@@ -1910,7 +1911,6 @@ const zh: Record<string, string> = {
     "采用鼠标微动开关的 ClickBoard 系列超薄键盘。",
   "From the GoForty small-form-factor keyboard line.":
     "来自小型键盘系列 GoForty。",
-  "Coming Soon": "即将推出",
   "Q: Can my keyboard support Keeb-On! Studio?":
     "Q: 我的键盘可以使用 Keeb-On! Studio 吗？",
   "Warning: cormoran's ZMK fork is very experimental, optimized for DYA keyboards and may contain unstable or breaking changes. Use at your own risk. In rare cases, it may cause malfunction or damage to your keyboard hardware.":

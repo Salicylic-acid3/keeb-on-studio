@@ -191,7 +191,7 @@ export function HomePage() {
                     )}
                   </span>
                   <span className="text-xs font-medium uppercase text-[var(--color-cyber)] sm:ml-auto">
-                    {t("Coming Soon")}
+                    {t("On sale soon")}
                   </span>
                 </div>
               </div>
@@ -208,7 +208,7 @@ export function HomePage() {
                     {t("From the GoForty small-form-factor keyboard line.")}
                   </span>
                   <span className="text-xs font-medium uppercase text-[var(--color-cyber)] sm:ml-auto">
-                    {t("Coming Soon")}
+                    {t("On sale soon")}
                   </span>
                 </div>
               </div>

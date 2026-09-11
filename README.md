@@ -1,12 +1,12 @@
 <h1 align="center">⌨️ Keeb-On! Studio</h1>
 
 <p align="center">
-  A web-based configuration tool for <strong>ClickBoard ErgoTrack</strong> and <strong>GoFortyMax</strong> (and any ZMK keyboard).<br />
-  Tune your keymap and connections — right from your browser. No install required.
+  A web-based configuration tool for <strong>ClickBoard ErgoTrack</strong> and <strong>GoFortyMax</strong>.<br />
+  Tune your keymap, trackpads and connections — right from your browser. No install required.
 </p>
 
 <p align="center">
-  <sub>🚧 Not hosted anywhere yet (run it locally, see <a href="#development">Development</a>) — see <a href="#status--roadmap">Status &amp; Roadmap</a> below.</sub>
+  <sub>Hosted at <a href="https://keeb-on.studio">keeb-on.studio</a> — or run it locally, see <a href="#development">Development</a>.</sub>
   <br />
   <sub>No keyboard at hand? Hit the <em>Demo</em> button on the splash screen to explore every feature with a simulated keyboard.</sub>
 </p>
@@ -75,13 +75,25 @@ Inspect battery levels, firmware build info, and uptime for both halves. Hunt do
 
 ## Does it work with my keyboard?
 
-- **Any ZMK keyboard with [ZMK Studio](https://zmk.dev/docs/features/studio) enabled**: the keymap editor works out of the box.
-- **DYA keyboards, and keyboards built on [cormoran's ZMK fork + modules](https://github.com/cormoran)**: connection management, per-OS default layers, diagnostics, and more. See the [developer guide](https://studio.dya.cormoran.works/developer-guide) (upstream) for how to add support to your own board.
+**Only if it is a ClickBoard ErgoTrack or a GoFortyMax.** This is not a general
+ZMK configurator: a keyboard that names itself as anything else is disconnected
+as soon as it says so, rather than half-supported. Everything here — the
+trackpad gestures, the per-OS layers, the battery readout, the firmware
+downloads — is built against these two boards' firmware and would be wrong or
+absent on another.
 
-> [!WARNING]
-> cormoran's ZMK fork is experimental and optimized for DYA keyboards. It may contain unstable or breaking changes — use it with other keyboards at your own risk.
+If you have a different ZMK keyboard, use **[DYA Studio](https://studio.dya.cormoran.works)**,
+the project this one is forked from. It supports any ZMK Studio keyboard, and
+it is where the architecture this fork depends on was written.
 
-Bringing this to Hiroki's own ClickBoard / GoForty lines means those boards' firmware moving onto ZMK + cormoran's Custom Studio Protocol modules first — see [Status & Roadmap](#status--roadmap).
+**No keyboard at hand?** The _Demo_ button on the splash screen opens a
+simulated ErgoTrack with every feature live, including saving keymaps — the
+part of the app people want before buying a board.
+
+Configuration is **over USB**. The firmware ships with ZMK Studio's lock
+disabled, and wireless configuration and a lockless keyboard cannot both exist:
+ZMK stops advertising once a keyboard is bonded and connected, and the setting
+that works around that only takes effect at the moment a lock is opened.
 
 ## Development
 
@@ -106,24 +118,39 @@ npm run test:coverage  # Test coverage
 
 ## Status & Roadmap
 
-Done so far:
+Live at [keeb-on.studio](https://keeb-on.studio), and in use on real hardware.
 
-- Rebranded (name, colors — indigo/vermillion/gold/cream instead of the upstream cyan/green/purple "cybernetic" theme, real Keeb-On! logo/favicon)
-- Removed DYA Studio's self-promotion (Booth links, photo galleries, X/hashtag campaigns) and repointed the "Supported keyboards" section at ClickBoard ErgoTrack and GoFortyMax
-- Repo created and pushed to [github.com/Salicylic-acid3/keeb-on-studio](https://github.com/Salicylic-acid3/keeb-on-studio) (public, AGPL-3.0)
-- Build and full test suite (83 suites / 688 tests) confirmed passing, unmodified
+What this fork added on top of DYA Studio:
 
-Not yet done, roughly in order:
+- **Narrowed to two keyboards.** Unsupported boards are turned away at connect;
+  the tabs and settings that do not apply to ErgoTrack / GoFortyMax are gone
+- **Trackpad work** — per-OS tuning, the pads drawn on the board, and an editor
+  for the gestures (pinch, three-finger swipe) that names them instead of
+  showing seven blank keys
+- **Tap dance** and **battery level per half**, both as purpose-built ZMK
+  modules published alongside this app
+- **Keymaps you can keep**: named local saves, JSON export, link sharing, a
+  public gallery, and printing
+- **Firmware downloads** for both boards, straight from a release permalink
+- **A continuous entry mode** for setting a run of keys without a dialog each
+  time, and a one-action copy from Base to the per-OS Alt Base layer
+- **Its own look** — hexagon and onsen-town palette, with DYA Studio credited
+  in full rather than painted over
 
-- [ ] Decide on and apply real UX changes (the goal is "easier than ZMK Studio," not just a reskin — needs a concrete list of pain points to fix)
-- [ ] Set up a hosting domain and CI/deploy (upstream's `.github/workflows/` were dropped rather than carried over as-is — they target cormoran's Cloudflare account)
-- [ ] Real product photos, specs, and purchase links for ClickBoard ErgoTrack / GoFortyMax (currently placeholder "Coming Soon" cards)
-- [ ] The "Abyss" cloud import/export tab talks to cormoran's own backend (`abyss.keyboard-hub.com`) via an OAuth client id that's only valid for the upstream app — it's already disabled in this fork (no client id configured) until/unless that's addressed separately
-- [ ] Longer term, if ClickBoard/GoForty move to ZMK: build/adapt the cormoran-fork modules for those boards so this tool can actually configure them
+Still open:
+
+- [ ] Acid Caps keycap legends: warn when a keymap needs a legend the set does
+      not have (waiting on legend data for the three sets)
+- [ ] Trackpad diagnostics — raw touch data and register values, which needs a
+      Studio RPC added to the IQS9151 driver
+- [ ] Product photos, specs and purchase links for both boards
+- [ ] The "Abyss" cloud import/export tab talks to cormoran's own backend via an
+      OAuth client id only valid for the upstream app — disabled here (no client
+      id configured), and not planned
 
 ## Attribution
 
-Keeb-On! Studio is a fork of **[DYA Studio](https://github.com/cormoran/dya-studio)**, created by **cormoran ([@cormoran707](https://x.com/cormoran707))**. The keymap/macro/combo editor, the ZMK Studio protocol client, the trackball/connection/diagnostics tooling, and the underlying "Custom Studio Protocol" extensions to ZMK are all upstream work. This fork's changes so far are limited to branding (name, color palette); substantive feature work has not started.
+Keeb-On! Studio is a fork of **[DYA Studio](https://github.com/cormoran/dya-studio)**, created by **cormoran ([@cormoran707](https://x.com/cormoran707))**. The keymap/macro/combo editor, the ZMK Studio protocol client, the connection and diagnostics tooling, and the underlying "Custom Studio Protocol" extensions to ZMK are all upstream work, and this fork still rests on them — including cormoran's ZMK fork and the modules it loads. The work listed under [Status & Roadmap](#status--roadmap) is this fork's; the foundation it is built on is not.
 
 Licensed under [AGPL-3.0](LICENSE), same as upstream — any modified version of this app made available over a network must offer its complete corresponding source, per the license's terms.
 
