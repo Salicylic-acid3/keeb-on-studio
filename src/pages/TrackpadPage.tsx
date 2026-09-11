@@ -36,7 +36,7 @@ interface LayerInfo {
 }
 
 // Visualizes a processor's "Active on Layers" (filled squares) and its
-// "Temporary Layer" target (ringed square) as a compact grid of layer cells.
+// auto-track layer target (ringed square) as a compact grid of layer cells.
 function LayerGrid({
   layers,
   activeLayers,
@@ -751,6 +751,7 @@ export function TrackpadPage() {
                     </div>
                     <div className="flex-shrink-0">
                       <Switch.Root
+                        aria-label={t("Active on Layers")}
                         checked={activeLayersMode === "specific"}
                         onCheckedChange={(checked) =>
                           handleActiveLayersModeChange(
@@ -876,104 +877,12 @@ export function TrackpadPage() {
                   </div>
                 </div>
 
-                {/* Rotation Setting */}
+                {/* Auto-Track Layer */}
                 <div className="glass-card p-4">
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="text-sm font-medium text-[var(--color-text)] flex items-center gap-1.5">
-                        {t("Sensor Rotation")}
-                        <InfoTip
-                          text={t("Rotate input for different mounting angles")}
-                        />
-                      </h3>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-lg font-mono text-[var(--color-electric)]">
-                        {displayRotation}°
-                      </span>
-                      <div className="flex-shrink-0">
-                        <Switch.Root
-                          checked={rotationEnabled}
-                          onCheckedChange={handleRotationEnabledChange}
-                          className="w-11 h-6 rounded-full relative data-[state=checked]:bg-[var(--color-electric)] bg-[var(--color-surface)] border border-[var(--color-border)] transition-colors cursor-pointer"
-                        >
-                          <Switch.Thumb className="block w-5 h-5 rounded-full transition-transform data-[state=checked]:translate-x-5 translate-x-0.5 will-change-transform bg-white border border-[var(--color-border)]" />
-                        </Switch.Root>
-                      </div>
-                    </div>
-                  </div>
-
-                  {rotationEnabled && (
-                    <div className="mt-4 flex items-center gap-3">
-                      <button
-                        type="button"
-                        aria-label={t("Decrease rotation")}
-                        onClick={() =>
-                          handleRotationChange(displayRotation - ROTATION_STEP)
-                        }
-                        disabled={displayRotation <= ROTATION_MIN}
-                        className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border)] hover:text-[var(--color-text)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                      >
-                        <IconChevronLeft size={18} />
-                      </button>
-
-                      {/* Slider centered at 0, ranging from -180 to +180 */}
-                      <div className="min-w-0 flex-1">
-                        <input
-                          type="range"
-                          aria-label={t("Sensor Rotation")}
-                          min={ROTATION_MIN}
-                          max={ROTATION_MAX}
-                          step={ROTATION_STEP}
-                          value={displayRotation}
-                          onChange={(e) =>
-                            handleRotationChange(Number(e.target.value))
-                          }
-                          className="w-full h-2 rounded-lg appearance-none cursor-pointer
-                      bg-[var(--color-border)]
-                      [&::-webkit-slider-thumb]:appearance-none
-                      [&::-webkit-slider-thumb]:w-4
-                      [&::-webkit-slider-thumb]:h-4
-                      [&::-webkit-slider-thumb]:rounded-full
-                      [&::-webkit-slider-thumb]:bg-[var(--color-electric)]
-                      [&::-webkit-slider-thumb]:cursor-pointer
-                      [&::-webkit-slider-thumb]:shadow-[0_0_8px_var(--color-electric)]
-                      [&::-moz-range-thumb]:w-4
-                      [&::-moz-range-thumb]:h-4
-                      [&::-moz-range-thumb]:rounded-full
-                      [&::-moz-range-thumb]:bg-[var(--color-electric)]
-                      [&::-moz-range-thumb]:border-0
-                      [&::-moz-range-thumb]:cursor-pointer
-                      [&::-moz-range-thumb]:shadow-[0_0_8px_var(--color-electric)]"
-                        />
-                        <div className="flex justify-between mt-2 text-xs text-[var(--color-text-muted)]">
-                          <span>-180°</span>
-                          <span>0°</span>
-                          <span>+180°</span>
-                        </div>
-                      </div>
-
-                      <button
-                        type="button"
-                        aria-label={t("Increase rotation")}
-                        onClick={() =>
-                          handleRotationChange(displayRotation + ROTATION_STEP)
-                        }
-                        disabled={displayRotation >= ROTATION_MAX}
-                        className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border)] hover:text-[var(--color-text)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                      >
-                        <IconChevronRight size={18} />
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {/* Temp Layer Settings */}
-                <div className="glass-card p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-sm font-medium text-[var(--color-text)] flex items-center gap-1.5">
-                        {t("Temporary Layer")}
+                        {t("Auto-Track Layer")}
                         <InfoTip
                           text={t(
                             "Auto-activate layer when the trackpad is in use",
@@ -983,6 +892,7 @@ export function TrackpadPage() {
                     </div>
                     <div className="flex-shrink-0">
                       <Switch.Root
+                        aria-label={t("Auto-Track Layer")}
                         checked={displayTempLayerEnabled}
                         onCheckedChange={handleTempLayerEnabledChange}
                         className="w-11 h-6 rounded-full relative data-[state=checked]:bg-[var(--color-electric)] bg-[var(--color-surface)] border border-[var(--color-border)] transition-colors cursor-pointer"
@@ -1114,168 +1024,16 @@ export function TrackpadPage() {
                   )}
                 </div>
 
-                {/* Axis Snapping */}
-                <div className="glass-card p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-sm font-medium text-[var(--color-text)] flex items-center gap-1.5">
-                        {t("Axis Snapping")}
-                        <InfoTip
-                          text={t(
-                            "Constrain movement to a single axis for precision scrolling",
-                          )}
-                        />
-                      </h3>
-                    </div>
-                    <div className="flex-shrink-0">
-                      <Switch.Root
-                        checked={
-                          displayAxisSnapMode !==
-                          AxisSnapMode.AXIS_SNAP_MODE_NONE
-                        }
-                        onCheckedChange={handleAxisSnapEnabledChange}
-                        className="w-11 h-6 rounded-full relative data-[state=checked]:bg-[var(--color-electric)] bg-[var(--color-surface)] border border-[var(--color-border)] transition-colors cursor-pointer"
-                      >
-                        <Switch.Thumb className="block w-5 h-5 rounded-full transition-transform data-[state=checked]:translate-x-5 translate-x-0.5 will-change-transform bg-white border border-[var(--color-border)]" />
-                      </Switch.Root>
-                    </div>
-                  </div>
-
-                  {displayAxisSnapMode !== AxisSnapMode.AXIS_SNAP_MODE_NONE && (
-                    <div className="space-y-4 mt-6">
-                      {/* Axis Selection */}
-                      <div>
-                        <label className="text-sm text-[var(--color-text-secondary)] mb-3 block">
-                          {t("Snap Axis")}
-                        </label>
-                        <div className="grid grid-cols-2 gap-2">
-                          <button
-                            onClick={() =>
-                              handleAxisSnapModeChange(
-                                AxisSnapMode.AXIS_SNAP_MODE_Y,
-                              )
-                            }
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                              displayAxisSnapMode ===
-                              AxisSnapMode.AXIS_SNAP_MODE_Y
-                                ? "bg-[var(--color-electric)] text-white"
-                                : "bg-[var(--color-surface)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border)]"
-                            }`}
-                          >
-                            {t("Y Axis (Vertical)")}
-                          </button>
-                          <button
-                            onClick={() =>
-                              handleAxisSnapModeChange(
-                                AxisSnapMode.AXIS_SNAP_MODE_X,
-                              )
-                            }
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                              displayAxisSnapMode ===
-                              AxisSnapMode.AXIS_SNAP_MODE_X
-                                ? "bg-[var(--color-electric)] text-white"
-                                : "bg-[var(--color-surface)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border)]"
-                            }`}
-                          >
-                            {t("X Axis (Horizontal)")}
-                          </button>
-                        </div>
-                      </div>
-                      {/* Snap Threshold */}
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <label className="text-sm text-[var(--color-text-secondary)]">
-                            {t("Snap Threshold")}
-                          </label>
-                          <span className="text-sm font-mono text-[var(--color-electric)]">
-                            {displayAxisSnapThreshold}
-                          </span>
-                        </div>
-                        <input
-                          type="range"
-                          min={0}
-                          max={1000}
-                          step={1}
-                          value={displayAxisSnapThreshold}
-                          onChange={(e) =>
-                            handleAxisSnapThresholdChange(
-                              Number(e.target.value),
-                            )
-                          }
-                          className="w-full h-2 rounded-lg appearance-none cursor-pointer
-                      bg-[var(--color-border)]
-                      [&::-webkit-slider-thumb]:appearance-none
-                      [&::-webkit-slider-thumb]:w-4
-                      [&::-webkit-slider-thumb]:h-4
-                      [&::-webkit-slider-thumb]:rounded-full
-                      [&::-webkit-slider-thumb]:bg-[var(--color-electric)]
-                      [&::-webkit-slider-thumb]:cursor-pointer
-                      [&::-webkit-slider-thumb]:shadow-[0_0_8px_var(--color-electric)]
-                      [&::-moz-range-thumb]:w-4
-                      [&::-moz-range-thumb]:h-4
-                      [&::-moz-range-thumb]:rounded-full
-                      [&::-moz-range-thumb]:bg-[var(--color-electric)]
-                      [&::-moz-range-thumb]:border-0
-                      [&::-moz-range-thumb]:cursor-pointer
-                      [&::-moz-range-thumb]:shadow-[0_0_8px_var(--color-electric)]"
-                        />
-                        <p className="text-xs text-[var(--color-text-muted)] mt-2">
-                          {t("Threshold for unsnapping from the locked axis")}
-                        </p>
-                      </div>
-
-                      {/* Snap Timeout */}
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <label className="text-sm text-[var(--color-text-secondary)]">
-                            {t("Snap Timeout")}
-                          </label>
-                          <span className="text-sm font-mono text-[var(--color-electric)]">
-                            {displayAxisSnapTimeout}ms
-                          </span>
-                        </div>
-                        <input
-                          type="range"
-                          min={0}
-                          max={600}
-                          step={50}
-                          value={displayAxisSnapTimeout}
-                          onChange={(e) =>
-                            handleAxisSnapTimeoutChange(Number(e.target.value))
-                          }
-                          className="w-full h-2 rounded-lg appearance-none cursor-pointer
-                      bg-[var(--color-border)]
-                      [&::-webkit-slider-thumb]:appearance-none
-                      [&::-webkit-slider-thumb]:w-4
-                      [&::-webkit-slider-thumb]:h-4
-                      [&::-webkit-slider-thumb]:rounded-full
-                      [&::-webkit-slider-thumb]:bg-[var(--color-electric)]
-                      [&::-webkit-slider-thumb]:cursor-pointer
-                      [&::-webkit-slider-thumb]:shadow-[0_0_8px_var(--color-electric)]
-                      [&::-moz-range-thumb]:w-4
-                      [&::-moz-range-thumb]:h-4
-                      [&::-moz-range-thumb]:rounded-full
-                      [&::-moz-range-thumb]:bg-[var(--color-electric)]
-                      [&::-moz-range-thumb]:border-0
-                      [&::-moz-range-thumb]:cursor-pointer
-                      [&::-moz-range-thumb]:shadow-[0_0_8px_var(--color-electric)]"
-                        />
-                        <p className="text-xs text-[var(--color-text-muted)] mt-2">
-                          {t("Time window for threshold check")}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Axis Inversion and Code Mapping were two cards of two
-                    switches each, every switch carrying a heading, a label and
-                    a caption. Eight lines of prose to say four yes/no things,
-                    and the tab has grown a gesture editor below them that
-                    people now scroll past all of this to reach. The
-                    explanations are not gone, they are on the info icons —
-                    which is where an explanation you have already read
-                    belongs. */}
+                {/* Everything about which way the pad's movement points.
+                    This was five cards — Axis Inversion, Code Mapping, Sensor
+                    Rotation, Axis Snapping — each with a heading, a caption and
+                    in two cases two switches carrying captions of their own:
+                    a dozen lines of prose for what is really one question asked
+                    six ways. They are one card now, with the four plain
+                    switches first and the two that open into something below a
+                    hairline. The explanations are not gone; they are on the
+                    info icons, which is where an explanation you have already
+                    read belongs. */}
                 <div className="glass-card p-4">
                   <div className="mb-3">
                     <h3 className="text-sm font-medium text-[var(--color-text)] flex items-center gap-1.5">
@@ -1311,6 +1069,259 @@ export function TrackpadPage() {
                       checked={displayXySwapEnabled}
                       onCheckedChange={handleXySwapEnabledChange}
                     />
+                  </div>
+                  <div className="mt-3 border-t border-[var(--color-border)] pt-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="text-sm font-medium text-[var(--color-text)] flex items-center gap-1.5">
+                          {t("Pad Rotation")}
+                          <InfoTip
+                            text={t(
+                              "Rotate input for different mounting angles",
+                            )}
+                          />
+                        </h4>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-lg font-mono text-[var(--color-electric)]">
+                          {displayRotation}°
+                        </span>
+                        <div className="flex-shrink-0">
+                          <Switch.Root
+                            aria-label={t("Pad Rotation")}
+                            checked={rotationEnabled}
+                            onCheckedChange={handleRotationEnabledChange}
+                            className="w-11 h-6 rounded-full relative data-[state=checked]:bg-[var(--color-electric)] bg-[var(--color-surface)] border border-[var(--color-border)] transition-colors cursor-pointer"
+                          >
+                            <Switch.Thumb className="block w-5 h-5 rounded-full transition-transform data-[state=checked]:translate-x-5 translate-x-0.5 will-change-transform bg-white border border-[var(--color-border)]" />
+                          </Switch.Root>
+                        </div>
+                      </div>
+                    </div>
+
+                    {rotationEnabled && (
+                      <div className="mt-4 flex items-center gap-3">
+                        <button
+                          type="button"
+                          aria-label={t("Decrease rotation")}
+                          onClick={() =>
+                            handleRotationChange(
+                              displayRotation - ROTATION_STEP,
+                            )
+                          }
+                          disabled={displayRotation <= ROTATION_MIN}
+                          className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border)] hover:text-[var(--color-text)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                        >
+                          <IconChevronLeft size={18} />
+                        </button>
+
+                        {/* Slider centered at 0, ranging from -180 to +180 */}
+                        <div className="min-w-0 flex-1">
+                          <input
+                            type="range"
+                            aria-label={t("Rotation angle")}
+                            min={ROTATION_MIN}
+                            max={ROTATION_MAX}
+                            step={ROTATION_STEP}
+                            value={displayRotation}
+                            onChange={(e) =>
+                              handleRotationChange(Number(e.target.value))
+                            }
+                            className="w-full h-2 rounded-lg appearance-none cursor-pointer
+                        bg-[var(--color-border)]
+                        [&::-webkit-slider-thumb]:appearance-none
+                        [&::-webkit-slider-thumb]:w-4
+                        [&::-webkit-slider-thumb]:h-4
+                        [&::-webkit-slider-thumb]:rounded-full
+                        [&::-webkit-slider-thumb]:bg-[var(--color-electric)]
+                        [&::-webkit-slider-thumb]:cursor-pointer
+                        [&::-webkit-slider-thumb]:shadow-[0_0_8px_var(--color-electric)]
+                        [&::-moz-range-thumb]:w-4
+                        [&::-moz-range-thumb]:h-4
+                        [&::-moz-range-thumb]:rounded-full
+                        [&::-moz-range-thumb]:bg-[var(--color-electric)]
+                        [&::-moz-range-thumb]:border-0
+                        [&::-moz-range-thumb]:cursor-pointer
+                        [&::-moz-range-thumb]:shadow-[0_0_8px_var(--color-electric)]"
+                          />
+                          <div className="flex justify-between mt-2 text-xs text-[var(--color-text-muted)]">
+                            <span>-180°</span>
+                            <span>0°</span>
+                            <span>+180°</span>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          aria-label={t("Increase rotation")}
+                          onClick={() =>
+                            handleRotationChange(
+                              displayRotation + ROTATION_STEP,
+                            )
+                          }
+                          disabled={displayRotation >= ROTATION_MAX}
+                          className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border)] hover:text-[var(--color-text)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                        >
+                          <IconChevronRight size={18} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <div className="mt-3 border-t border-[var(--color-border)] pt-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="text-sm font-medium text-[var(--color-text)] flex items-center gap-1.5">
+                          {t("Axis Snapping")}
+                          <InfoTip
+                            text={t(
+                              "Constrain movement to a single axis for precision scrolling",
+                            )}
+                          />
+                        </h4>
+                      </div>
+                      <div className="flex-shrink-0">
+                        <Switch.Root
+                          aria-label={t("Axis Snapping")}
+                          checked={
+                            displayAxisSnapMode !==
+                            AxisSnapMode.AXIS_SNAP_MODE_NONE
+                          }
+                          onCheckedChange={handleAxisSnapEnabledChange}
+                          className="w-11 h-6 rounded-full relative data-[state=checked]:bg-[var(--color-electric)] bg-[var(--color-surface)] border border-[var(--color-border)] transition-colors cursor-pointer"
+                        >
+                          <Switch.Thumb className="block w-5 h-5 rounded-full transition-transform data-[state=checked]:translate-x-5 translate-x-0.5 will-change-transform bg-white border border-[var(--color-border)]" />
+                        </Switch.Root>
+                      </div>
+                    </div>
+
+                    {displayAxisSnapMode !==
+                      AxisSnapMode.AXIS_SNAP_MODE_NONE && (
+                      <div className="space-y-4 mt-6">
+                        {/* Axis Selection */}
+                        <div>
+                          <label className="text-sm text-[var(--color-text-secondary)] mb-3 block">
+                            {t("Snap Axis")}
+                          </label>
+                          <div className="grid grid-cols-2 gap-2">
+                            <button
+                              onClick={() =>
+                                handleAxisSnapModeChange(
+                                  AxisSnapMode.AXIS_SNAP_MODE_Y,
+                                )
+                              }
+                              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                displayAxisSnapMode ===
+                                AxisSnapMode.AXIS_SNAP_MODE_Y
+                                  ? "bg-[var(--color-electric)] text-white"
+                                  : "bg-[var(--color-surface)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border)]"
+                              }`}
+                            >
+                              {t("Y Axis (Vertical)")}
+                            </button>
+                            <button
+                              onClick={() =>
+                                handleAxisSnapModeChange(
+                                  AxisSnapMode.AXIS_SNAP_MODE_X,
+                                )
+                              }
+                              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                displayAxisSnapMode ===
+                                AxisSnapMode.AXIS_SNAP_MODE_X
+                                  ? "bg-[var(--color-electric)] text-white"
+                                  : "bg-[var(--color-surface)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border)]"
+                              }`}
+                            >
+                              {t("X Axis (Horizontal)")}
+                            </button>
+                          </div>
+                        </div>
+                        {/* Snap Threshold */}
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <label className="text-sm text-[var(--color-text-secondary)]">
+                              {t("Snap Threshold")}
+                            </label>
+                            <span className="text-sm font-mono text-[var(--color-electric)]">
+                              {displayAxisSnapThreshold}
+                            </span>
+                          </div>
+                          <input
+                            type="range"
+                            min={0}
+                            max={1000}
+                            step={1}
+                            value={displayAxisSnapThreshold}
+                            onChange={(e) =>
+                              handleAxisSnapThresholdChange(
+                                Number(e.target.value),
+                              )
+                            }
+                            className="w-full h-2 rounded-lg appearance-none cursor-pointer
+                        bg-[var(--color-border)]
+                        [&::-webkit-slider-thumb]:appearance-none
+                        [&::-webkit-slider-thumb]:w-4
+                        [&::-webkit-slider-thumb]:h-4
+                        [&::-webkit-slider-thumb]:rounded-full
+                        [&::-webkit-slider-thumb]:bg-[var(--color-electric)]
+                        [&::-webkit-slider-thumb]:cursor-pointer
+                        [&::-webkit-slider-thumb]:shadow-[0_0_8px_var(--color-electric)]
+                        [&::-moz-range-thumb]:w-4
+                        [&::-moz-range-thumb]:h-4
+                        [&::-moz-range-thumb]:rounded-full
+                        [&::-moz-range-thumb]:bg-[var(--color-electric)]
+                        [&::-moz-range-thumb]:border-0
+                        [&::-moz-range-thumb]:cursor-pointer
+                        [&::-moz-range-thumb]:shadow-[0_0_8px_var(--color-electric)]"
+                          />
+                          <p className="text-xs text-[var(--color-text-muted)] mt-2">
+                            {t("Threshold for unsnapping from the locked axis")}
+                          </p>
+                        </div>
+
+                        {/* Snap Timeout */}
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <label className="text-sm text-[var(--color-text-secondary)]">
+                              {t("Snap Timeout")}
+                            </label>
+                            <span className="text-sm font-mono text-[var(--color-electric)]">
+                              {displayAxisSnapTimeout}ms
+                            </span>
+                          </div>
+                          <input
+                            type="range"
+                            min={0}
+                            max={600}
+                            step={50}
+                            value={displayAxisSnapTimeout}
+                            onChange={(e) =>
+                              handleAxisSnapTimeoutChange(
+                                Number(e.target.value),
+                              )
+                            }
+                            className="w-full h-2 rounded-lg appearance-none cursor-pointer
+                        bg-[var(--color-border)]
+                        [&::-webkit-slider-thumb]:appearance-none
+                        [&::-webkit-slider-thumb]:w-4
+                        [&::-webkit-slider-thumb]:h-4
+                        [&::-webkit-slider-thumb]:rounded-full
+                        [&::-webkit-slider-thumb]:bg-[var(--color-electric)]
+                        [&::-webkit-slider-thumb]:cursor-pointer
+                        [&::-webkit-slider-thumb]:shadow-[0_0_8px_var(--color-electric)]
+                        [&::-moz-range-thumb]:w-4
+                        [&::-moz-range-thumb]:h-4
+                        [&::-moz-range-thumb]:rounded-full
+                        [&::-moz-range-thumb]:bg-[var(--color-electric)]
+                        [&::-moz-range-thumb]:border-0
+                        [&::-moz-range-thumb]:cursor-pointer
+                        [&::-moz-range-thumb]:shadow-[0_0_8px_var(--color-electric)]"
+                          />
+                          <p className="text-xs text-[var(--color-text-muted)] mt-2">
+                            {t("Time window for threshold check")}
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

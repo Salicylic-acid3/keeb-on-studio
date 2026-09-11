@@ -158,7 +158,7 @@ describe("TrackpadPage", () => {
 
     render(<TrackpadPage />);
 
-    expect(screen.getByText("Sensor Rotation")).toBeInTheDocument();
+    expect(screen.getByText("Pad Rotation")).toBeInTheDocument();
     // Check for rotation toggle - rotation should be enabled when degrees != 0
     const switches = screen.getAllByRole("switch");
     // The rotation switch should be checked (rotation is 90 degrees)
@@ -240,12 +240,11 @@ describe("TrackpadPage", () => {
 
     render(<TrackpadPage />);
 
-    // Find all switches (active layers toggle, rotation toggle, temp layer toggle)
-    const switches = screen.getAllByRole("switch");
-    // Second switch is rotation toggle (first is active layers mode), should be enabled since rotation is 90
-    const rotationToggle = switches[1];
-    // Toggle it off
-    await user.click(rotationToggle);
+    // By name, not by index. These switches were told apart by their position
+    // in the page until moving two unrelated sections renumbered them and
+    // broke this test, which is also exactly what a screen reader was up
+    // against. Every switch on the page has a name now.
+    await user.click(screen.getByRole("switch", { name: "Pad Rotation" }));
 
     // Fast-forward time to trigger debounced auto-save (1500ms)
     await act(async () => {
