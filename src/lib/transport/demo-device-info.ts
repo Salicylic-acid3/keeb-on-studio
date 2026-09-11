@@ -21,16 +21,26 @@ export class DeviceInfoHandler {
     if (request.getDeviceInfo !== undefined) {
       return {
         deviceInfo: {
+          // Two rules for the numbers below. Where the real ErgoTrack reports
+          // a fixed value, the demo reports the same one -- this is the
+          // troubleshooting tab, and a demo that shows different values than
+          // the hardware teaches people to expect the wrong thing. Where the
+          // value is a build identity that only a real build has, the demo
+          // says "demo" rather than inventing a plausible hash: the keyboard
+          // calls itself Keeb-On! Demo Keyboard, and its build should agree.
           build: {
-            zmkVersion: "3.5-cormoran-abc1234",
+            zmkVersion: "3.5.0-demo",
             zmkDirty: false,
-            zmkConfigVersion: "v1.4.0",
+            zmkConfigVersion: "demo",
             zmkConfigDirty: false,
             moduleVersion: "demo-0001",
             moduleDirty: false,
-            zephyrVersion: "3.7.0",
+            // config/west.yml pins zephyr v4.1.0+zmk-fixes+nrf-half-duplex-uart
+            zephyrVersion: "4.1.0",
             buildTimestamp: "2026-07-01T09:00:00Z",
-            board: "clickboard_ergotrack",
+            // CONFIG_BOARD, which is the board -- not the shield. ErgoTrack is
+            // shield clickboard_ergotrack_right on board acdb.
+            board: "acdb",
           },
           hardware: {
             deviceId: "KEEBDEMO0001",
@@ -47,7 +57,9 @@ export class DeviceInfoHandler {
             { name: "i2c@0", ready: true },
           ],
           zmkConfig: {
-            kscanCompatible: "cormoran,kscan-diagnostics",
+            // clickboard_ergotrack.dtsi. The diagnostics module wraps the
+            // kscan driver; it does not replace what the node is.
+            kscanCompatible: "zmk,kscan-gpio-matrix",
             bleEnabled: true,
             bleProfileCount: 5,
             usbEnabled: true,
