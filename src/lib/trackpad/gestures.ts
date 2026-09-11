@@ -52,6 +52,18 @@ interface GestureSet {
    * A layout of any other size is a layout these numbers do not describe.
    */
   keyCount: number;
+  /**
+   * The first position with no switch under it. Everything from here to the
+   * end of the layout is a pseudo-key: the gestures, plus any the firmware
+   * reserved and has not used.
+   *
+   * The keymap editor draws the physical layout, and the firmware reports
+   * these as part of it, so they arrive as a row of keys under the board that
+   * nothing can press. Now that the gestures have a proper editor, the board
+   * hides them — including the reserved ones, which never had anything behind
+   * them at all.
+   */
+  pseudoKeysFrom: number;
   gestures: TrackpadGesture[];
 }
 
@@ -64,6 +76,10 @@ const GESTURE_SETS: Record<string, GestureSet> = {
   // listed: an editable row for a key nothing presses is just a trap.
   "clickboard ergotrack": {
     keyCount: 79,
+    // 72..78. The last of them, 78, is bound to &none: a two-handed trigger
+    // that was tried and dropped. It has no gesture and no switch, so it is
+    // hidden with the rest and listed below with neither.
+    pseudoKeysFrom: 72,
     gestures: [
       {
         position: 72,
@@ -119,8 +135,41 @@ export function trackpadGesturesFor(
   layoutName: string | undefined | null,
   keyCount: number | undefined,
 ): TrackpadGesture[] {
-  if (!layoutName || keyCount === undefined) return [];
+  return gestureSetFor(layoutName, keyCount)?.gestures ?? [];
+}
+
+/**
+ * The positions on this layout that no switch sits under.
+ *
+ * The keymap editor hides these: they are the gestures, which now have their
+ * own editor, and the firmware's reserved spares, which have never had
+ * anything behind them. Both used to be drawn as ordinary keys under the
+ * board, which is an invitation to bind something to a key nobody can press.
+ *
+ * Empty for a keyboard or layout that has not been checked, and empty is the
+ * safe answer: every position stays visible and the editor behaves as before.
+ */
+export function pseudoKeyPositionsFor(
+  layoutName: string | undefined | null,
+  keyCount: number | undefined,
+): ReadonlySet<number> {
+  const set = gestureSetFor(layoutName, keyCount);
+  if (!set) return EMPTY;
+  const positions = new Set<number>();
+  for (let position = set.pseudoKeysFrom; position < set.keyCount; position++) {
+    positions.add(position);
+  }
+  return positions;
+}
+
+const EMPTY: ReadonlySet<number> = new Set();
+
+function gestureSetFor(
+  layoutName: string | undefined | null,
+  keyCount: number | undefined,
+): GestureSet | undefined {
+  if (!layoutName || keyCount === undefined) return undefined;
   const set = GESTURE_SETS[layoutName.trim().toLowerCase()];
-  if (!set || set.keyCount !== keyCount) return [];
-  return set.gestures;
+  if (!set || set.keyCount !== keyCount) return undefined;
+  return set;
 }

@@ -14,6 +14,9 @@ const ja: Record<string, string> = {
   "Pick a key on the board to start.": "盤面のキーを選ぶと始まります。",
   "That was the last key.": "最後のキーでした。",
   Gestures: "ジェスチャー",
+  Axes: "軸",
+  "How movement on the pad reaches the computer":
+    "パッドの動きをどうパソコンに届けるか",
   "The keyboard presses a key of its own for each of these. Whatever is bound here is what the gesture does — and because it goes through a layer, Alt Base can give the same gesture a different key for the other OS.":
     "これらのジェスチャーでは、キーボードが専用のキーを押します。ここに割り当てたものがそのジェスチャーの動作になります。レイヤーを通るので、Alt Base で同じジェスチャーにもう一方の OS 用のキーを割り当てられます。",
   "Swipe on a pad and the row it triggers will light up. The two pads may not agree on which is A and which is B.":
@@ -1595,6 +1598,8 @@ const zh: Record<string, string> = {
   "Pick a key on the board to start.": "先在键盘图上选一个键。",
   "That was the last key.": "这是最后一个键。",
   Gestures: "手势",
+  Axes: "坐标轴",
+  "How movement on the pad reaches the computer": "触控板的移动如何传给电脑",
   "The keyboard presses a key of its own for each of these. Whatever is bound here is what the gesture does — and because it goes through a layer, Alt Base can give the same gesture a different key for the other OS.":
     "键盘会为每个手势按下一个专用按键。这里绑定的内容就是该手势的动作；由于要经过层解析，Alt Base 可以为同一手势指定另一套系统的按键。",
   "Swipe on a pad and the row it triggers will light up. The two pads may not agree on which is A and which is B.":

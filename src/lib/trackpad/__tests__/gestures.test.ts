@@ -3,7 +3,7 @@
  * no longer means what the table says would let the gesture editor overwrite
  * an ordinary key while showing a gesture's name above it.
  */
-import { trackpadGesturesFor } from "../gestures";
+import { trackpadGesturesFor, pseudoKeyPositionsFor } from "../gestures";
 import { ERGOTRACK } from "../../layouts";
 
 describe("finding a keyboard's trackpad gestures", () => {
@@ -48,6 +48,26 @@ describe("finding a keyboard's trackpad gestures", () => {
       (g) => g.position,
     );
     expect(new Set(positions).size).toBe(positions.length);
+  });
+
+  it("covers every gesture position and the unused spare", () => {
+    // The keymap editor hides exactly this set. A gesture left out of it would
+    // stay drawn as a blank key; a real key wrongly in it would vanish.
+    const hidden = pseudoKeyPositionsFor(ERGOTRACK.name, ERGOTRACK.keys.length);
+    expect([...hidden].sort((a, b) => a - b)).toEqual([
+      72, 73, 74, 75, 76, 77, 78,
+    ]);
+    for (const gesture of trackpadGesturesFor(ERGOTRACK.name, 79)) {
+      expect(hidden.has(gesture.position)).toBe(true);
+    }
+  });
+
+  it("hides nothing on a layout it cannot vouch for", () => {
+    // Hiding a key nobody asked to hide is worse than drawing a spare one, so
+    // an unknown keyboard keeps every position.
+    expect(pseudoKeyPositionsFor(ERGOTRACK.name, 80).size).toBe(0);
+    expect(pseudoKeyPositionsFor("Someone Else's Board", 79).size).toBe(0);
+    expect(pseudoKeyPositionsFor(undefined, undefined).size).toBe(0);
   });
 
   it("marks the two modifiers as held and the swipes as taps", () => {

@@ -3,17 +3,22 @@
  * anything up: their keyboard is refusing to be edited and the app is asking
  * them to press something. Naming the wrong keys there would be worse than
  * the generic line, so a keyboard we do not recognise gets no guess.
+ *
+ * Neither keyboard ships locked any more, so there is nothing to name — and
+ * that is what these now check: that the stale instructions are gone, and
+ * that the lookup still behaves when a locked keyboard turns up again.
  */
 import { unlockHintFor } from "../studioUnlockHint";
 import { SUPPORTED_DEVICE_NAMES } from "../supportedDevices";
 
 describe("naming a keyboard's unlock gesture", () => {
-  it("has an instruction for every keyboard this app supports", () => {
-    // The list of keyboards and the list of unlock gestures drift apart
-    // silently otherwise: a new keyboard would connect fine and then show the
-    // useless generic wording the first time it locked.
+  it("names no gesture, because neither keyboard has one", () => {
+    // Both ship with CONFIG_ZMK_STUDIO_LOCKING off and no &studio_unlock in
+    // their keymaps. The instructions that used to be here named a key on
+    // ErgoTrack's Drag layer that has since been removed — a dialog telling
+    // someone to press it would send them hunting for a key that does nothing.
     for (const name of SUPPORTED_DEVICE_NAMES) {
-      expect(unlockHintFor(name)).toEqual(expect.any(String));
+      expect(unlockHintFor(name)).toBeNull();
     }
   });
 
@@ -24,10 +29,10 @@ describe("naming a keyboard's unlock gesture", () => {
     expect(unlockHintFor("")).toBeNull();
   });
 
-  it("matches the name however the device reports it", () => {
-    // The name arrives from the device; the guard elsewhere normalises it the
-    // same way, and the two disagreeing would show the generic line to a
-    // keyboard that has an instruction.
+  it("still normalises the name it is given", () => {
+    // The name arrives from the device, and the guard elsewhere normalises it
+    // the same way. Kept under test so an entry added later works the first
+    // time rather than after someone notices the casing.
     expect(unlockHintFor("ErgoTrack")).toBe(unlockHintFor("ergotrack"));
     expect(unlockHintFor("  goforty-max ")).toBe(unlockHintFor("goforty-max"));
   });

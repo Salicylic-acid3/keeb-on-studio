@@ -12,6 +12,7 @@ import * as Switch from "@radix-ui/react-switch";
 import { useRuntimeInputProcessor } from "../hooks/useRuntimeInputProcessor";
 import { LoadingIndicator } from "../components/LoadingIndicator";
 import { DocTip } from "../components/DocTip";
+import { InfoTip } from "../components/InfoTip";
 import { HexIcon } from "../components/brand/HexIcon";
 import { processorDoc } from "../i18n/featureDocs";
 import { AxisSnapMode } from "../proto/zmk/runtime_input_processor/runtime_input_processor";
@@ -86,6 +87,42 @@ function LayerGrid({
           </span>
         );
       })}
+    </div>
+  );
+}
+
+/**
+ * A yes/no setting on one line: name, an info icon, a switch.
+ *
+ * The caption under each of these used to be a second line of prose, which is
+ * right the first time someone meets the setting and noise every time after.
+ * The words are the same words, moved onto the icon.
+ */
+function ToggleRow({
+  label,
+  info,
+  checked,
+  onCheckedChange,
+}: {
+  label: string;
+  info: string;
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <span className="text-sm text-[var(--color-text-secondary)] flex items-center gap-1.5 min-w-0">
+        <span className="truncate">{label}</span>
+        <InfoTip text={info} />
+      </span>
+      <Switch.Root
+        checked={checked}
+        onCheckedChange={onCheckedChange}
+        aria-label={label}
+        className="w-11 h-6 flex-shrink-0 rounded-full relative data-[state=checked]:bg-[var(--color-electric)] bg-[var(--color-surface)] border border-[var(--color-border)] transition-colors cursor-pointer"
+      >
+        <Switch.Thumb className="block w-5 h-5 rounded-full transition-transform data-[state=checked]:translate-x-5 translate-x-0.5 will-change-transform bg-white border border-[var(--color-border)]" />
+      </Switch.Root>
     </div>
   );
 }
@@ -700,17 +737,17 @@ export function TrackpadPage() {
             {processor && (
               <div className="space-y-6">
                 {/* Active Layers Selection */}
-                <div className="glass-card p-6">
-                  <div className="flex items-center justify-between mb-4">
+                <div className="glass-card p-4">
+                  <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-medium text-[var(--color-text)]">
+                      <h3 className="text-sm font-medium text-[var(--color-text)] flex items-center gap-1.5">
                         {t("Active on Layers")}
+                        <InfoTip
+                          text={t(
+                            "Configure which layers this processor is active on",
+                          )}
+                        />
                       </h3>
-                      <p className="text-xs text-[var(--color-text-muted)]">
-                        {t(
-                          "Configure which layers this processor is active on",
-                        )}
-                      </p>
                     </div>
                     <div className="flex-shrink-0">
                       <Switch.Root
@@ -767,22 +804,22 @@ export function TrackpadPage() {
                 </div>
 
                 {/* Scaling Setting */}
-                <div className="glass-card p-6">
-                  <div className="flex items-center justify-between mb-4">
+                <div className="glass-card p-4">
+                  <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-medium text-[var(--color-text)]">
+                      <h3 className="text-sm font-medium text-[var(--color-text)] flex items-center gap-1.5">
                         {t("Scaling")}
+                        <InfoTip
+                          text={t("Adjust sensitivity from 0.01x to 10x")}
+                        />
                       </h3>
-                      <p className="text-xs text-[var(--color-text-muted)]">
-                        {t("Adjust sensitivity from 0.01x to 10x")}
-                      </p>
                     </div>
                     <span className="text-lg font-mono text-[var(--color-electric)]">
                       {formatScalingValue(finalScalingValue)}x
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="mt-4 flex items-center gap-3">
                     <button
                       type="button"
                       aria-label={t("Decrease scaling")}
@@ -840,15 +877,15 @@ export function TrackpadPage() {
                 </div>
 
                 {/* Rotation Setting */}
-                <div className="glass-card p-6">
-                  <div className="flex items-center justify-between mb-4">
+                <div className="glass-card p-4">
+                  <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-medium text-[var(--color-text)]">
+                      <h3 className="text-sm font-medium text-[var(--color-text)] flex items-center gap-1.5">
                         {t("Sensor Rotation")}
+                        <InfoTip
+                          text={t("Rotate input for different mounting angles")}
+                        />
                       </h3>
-                      <p className="text-xs text-[var(--color-text-muted)]">
-                        {t("Rotate input for different mounting angles")}
-                      </p>
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="text-lg font-mono text-[var(--color-electric)]">
@@ -867,7 +904,7 @@ export function TrackpadPage() {
                   </div>
 
                   {rotationEnabled && (
-                    <div className="flex items-center gap-3">
+                    <div className="mt-4 flex items-center gap-3">
                       <button
                         type="button"
                         aria-label={t("Decrease rotation")}
@@ -932,15 +969,17 @@ export function TrackpadPage() {
                 </div>
 
                 {/* Temp Layer Settings */}
-                <div className="glass-card p-6">
-                  <div className="flex items-center justify-between mb-4">
+                <div className="glass-card p-4">
+                  <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-medium text-[var(--color-text)]">
+                      <h3 className="text-sm font-medium text-[var(--color-text)] flex items-center gap-1.5">
                         {t("Temporary Layer")}
+                        <InfoTip
+                          text={t(
+                            "Auto-activate layer when the trackpad is in use",
+                          )}
+                        />
                       </h3>
-                      <p className="text-xs text-[var(--color-text-muted)]">
-                        {t("Auto-activate layer when the trackpad is in use")}
-                      </p>
                     </div>
                     <div className="flex-shrink-0">
                       <Switch.Root
@@ -1076,17 +1115,17 @@ export function TrackpadPage() {
                 </div>
 
                 {/* Axis Snapping */}
-                <div className="glass-card p-6">
-                  <div className="flex items-center justify-between mb-4">
+                <div className="glass-card p-4">
+                  <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-medium text-[var(--color-text)]">
+                      <h3 className="text-sm font-medium text-[var(--color-text)] flex items-center gap-1.5">
                         {t("Axis Snapping")}
+                        <InfoTip
+                          text={t(
+                            "Constrain movement to a single axis for precision scrolling",
+                          )}
+                        />
                       </h3>
-                      <p className="text-xs text-[var(--color-text-muted)]">
-                        {t(
-                          "Constrain movement to a single axis for precision scrolling",
-                        )}
-                      </p>
                     </div>
                     <div className="flex-shrink-0">
                       <Switch.Root
@@ -1229,117 +1268,49 @@ export function TrackpadPage() {
                   )}
                 </div>
 
-                {/* Axis Inversion */}
-                <div className="glass-card p-6">
-                  <div className="mb-4">
-                    <h3 className="text-sm font-medium text-[var(--color-text)]">
-                      {t("Axis Inversion")}
+                {/* Axis Inversion and Code Mapping were two cards of two
+                    switches each, every switch carrying a heading, a label and
+                    a caption. Eight lines of prose to say four yes/no things,
+                    and the tab has grown a gesture editor below them that
+                    people now scroll past all of this to reach. The
+                    explanations are not gone, they are on the info icons —
+                    which is where an explanation you have already read
+                    belongs. */}
+                <div className="glass-card p-4">
+                  <div className="mb-3">
+                    <h3 className="text-sm font-medium text-[var(--color-text)] flex items-center gap-1.5">
+                      {t("Axes")}
+                      <InfoTip
+                        text={t("How movement on the pad reaches the computer")}
+                      />
                     </h3>
-                    <p className="text-xs text-[var(--color-text-muted)]">
-                      {t("Reverse the direction of X or Y axis movement")}
-                    </p>
                   </div>
 
-                  <div className="space-y-4">
-                    {/* X Invert */}
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-[var(--color-text-secondary)]">
-                          {t("Invert X Axis")}
-                        </p>
-                        <p className="text-xs text-[var(--color-text-muted)]">
-                          {t("Reverse horizontal movement direction")}
-                        </p>
-                      </div>
-                      <div className="flex-shrink-0">
-                        <Switch.Root
-                          checked={displayXInvert}
-                          onCheckedChange={handleXInvertChange}
-                          className="w-11 h-6 rounded-full relative data-[state=checked]:bg-[var(--color-electric)] bg-[var(--color-surface)] border border-[var(--color-border)] transition-colors cursor-pointer"
-                        >
-                          <Switch.Thumb className="block w-5 h-5 rounded-full transition-transform data-[state=checked]:translate-x-5 translate-x-0.5 will-change-transform bg-white border border-[var(--color-border)]" />
-                        </Switch.Root>
-                      </div>
-                    </div>
-
-                    {/* Y Invert */}
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-[var(--color-text-secondary)]">
-                          {t("Invert Y Axis")}
-                        </p>
-                        <p className="text-xs text-[var(--color-text-muted)]">
-                          {t("Reverse vertical movement direction")}
-                        </p>
-                      </div>
-                      <div className="flex-shrink-0">
-                        <Switch.Root
-                          checked={displayYInvert}
-                          onCheckedChange={handleYInvertChange}
-                          className="w-11 h-6 rounded-full relative data-[state=checked]:bg-[var(--color-electric)] bg-[var(--color-surface)] border border-[var(--color-border)] transition-colors cursor-pointer"
-                        >
-                          <Switch.Thumb className="block w-5 h-5 rounded-full transition-transform data-[state=checked]:translate-x-5 translate-x-0.5 will-change-transform bg-white border border-[var(--color-border)]" />
-                        </Switch.Root>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Code Mapping */}
-                <div className="glass-card p-6">
-                  <div className="mb-4">
-                    <h3 className="text-sm font-medium text-[var(--color-text)]">
-                      {t("Code Mapping")}
-                    </h3>
-                    <p className="text-xs text-[var(--color-text-muted)]">
-                      {t(
-                        "Transform trackpad movement into different input types",
-                      )}
-                    </p>
-                  </div>
-
-                  <div className="space-y-4">
-                    {/* XY to Scroll */}
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-[var(--color-text-secondary)]">
-                          {t("XY-to-Scroll")}
-                        </p>
-                        <p className="text-xs text-[var(--color-text-muted)]">
-                          {t("Map X/Y movement to horizontal/vertical scroll")}
-                        </p>
-                      </div>
-                      <div className="flex-shrink-0">
-                        <Switch.Root
-                          checked={displayXyToScrollEnabled}
-                          onCheckedChange={handleXyToScrollEnabledChange}
-                          className="w-11 h-6 rounded-full relative data-[state=checked]:bg-[var(--color-electric)] bg-[var(--color-surface)] border border-[var(--color-border)] transition-colors cursor-pointer"
-                        >
-                          <Switch.Thumb className="block w-5 h-5 rounded-full transition-transform data-[state=checked]:translate-x-5 translate-x-0.5 will-change-transform bg-white border border-[var(--color-border)]" />
-                        </Switch.Root>
-                      </div>
-                    </div>
-
-                    {/* XY Swap */}
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-[var(--color-text-secondary)]">
-                          {t("XY-Swap")}
-                        </p>
-                        <p className="text-xs text-[var(--color-text-muted)]">
-                          {t("Swap X and Y axes")}
-                        </p>
-                      </div>
-                      <div className="flex-shrink-0">
-                        <Switch.Root
-                          checked={displayXySwapEnabled}
-                          onCheckedChange={handleXySwapEnabledChange}
-                          className="w-11 h-6 rounded-full relative data-[state=checked]:bg-[var(--color-electric)] bg-[var(--color-surface)] border border-[var(--color-border)] transition-colors cursor-pointer"
-                        >
-                          <Switch.Thumb className="block w-5 h-5 rounded-full transition-transform data-[state=checked]:translate-x-5 translate-x-0.5 will-change-transform bg-white border border-[var(--color-border)]" />
-                        </Switch.Root>
-                      </div>
-                    </div>
+                  <div className="grid grid-cols-1 tablet:grid-cols-2 gap-x-6 gap-y-3">
+                    <ToggleRow
+                      label={t("Invert X Axis")}
+                      info={t("Reverse horizontal movement direction")}
+                      checked={displayXInvert}
+                      onCheckedChange={handleXInvertChange}
+                    />
+                    <ToggleRow
+                      label={t("Invert Y Axis")}
+                      info={t("Reverse vertical movement direction")}
+                      checked={displayYInvert}
+                      onCheckedChange={handleYInvertChange}
+                    />
+                    <ToggleRow
+                      label={t("XY-to-Scroll")}
+                      info={t("Map X/Y movement to horizontal/vertical scroll")}
+                      checked={displayXyToScrollEnabled}
+                      onCheckedChange={handleXyToScrollEnabledChange}
+                    />
+                    <ToggleRow
+                      label={t("XY-Swap")}
+                      info={t("Swap X and Y axes")}
+                      checked={displayXySwapEnabled}
+                      onCheckedChange={handleXySwapEnabledChange}
+                    />
                   </div>
                 </div>
               </div>

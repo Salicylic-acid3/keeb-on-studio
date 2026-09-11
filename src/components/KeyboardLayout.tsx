@@ -75,6 +75,15 @@ interface KeyboardLayoutProps {
   modules?: PhysicalLayoutModulePresentation[];
   /** Key positions currently highlighted in the preview */
   highlightedKeys?: ReadonlySet<number>;
+  /**
+   * Positions to leave out of the board entirely.
+   *
+   * For positions the firmware reports as part of the layout but that no
+   * switch sits under — ErgoTrack's trackpad gestures and its reserved spares.
+   * They are left out of the drawn bounds as well as the keys, so the board
+   * does not keep a band of empty space where they used to be.
+   */
+  hiddenKeys?: ReadonlySet<number>;
   /** Runtime macro summaries for macro behavior display */
   runtimeMacros?: Array<{ slot: number; name?: string }>;
   /** Accessible name for the keyboard preview region */
@@ -133,6 +142,7 @@ export function KeyboardLayout({
   keyboardLayout,
   modules = [],
   highlightedKeys,
+  hiddenKeys,
   runtimeMacros = [],
   ariaLabel,
 }: KeyboardLayoutProps) {
@@ -146,8 +156,12 @@ export function KeyboardLayout({
       maxX = -Infinity,
       maxY = -Infinity;
 
+    // Hidden keys are left out of the bounds too, not just the drawing.
+    // ErgoTrack's pseudo-keys sit in a row well below the board, so leaving
+    // them in the measurement would keep a strip of empty space and shrink
+    // everything else to fit around nothing.
     const geometries: LayoutGeometry[] = [
-      ...layout.keys,
+      ...layout.keys.filter((_, position) => !hiddenKeys?.has(position)),
       ...modules.map((module) => module.attrs),
     ];
 
@@ -176,7 +190,7 @@ export function KeyboardLayout({
       offsetX: -minX + 10,
       offsetY: -minY + 30,
     };
-  }, [layout.keys, modules]);
+  }, [layout.keys, modules, hiddenKeys]);
 
   // Calculate responsive scale based on container width
   useEffect(() => {
@@ -319,6 +333,7 @@ export function KeyboardLayout({
         }}
       >
         {layout.keys.map((key, position) => {
+          if (hiddenKeys?.has(position)) return null;
           const binding = layer.bindings[position];
           const modified = isBindingModified(layer.id, position);
           const originalKnown =

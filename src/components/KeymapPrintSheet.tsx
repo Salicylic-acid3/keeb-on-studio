@@ -33,6 +33,7 @@ import type {
 import type { PhysicalLayoutModulePresentation } from "../hooks/usePhysicalLayoutModules";
 import type { KeyboardLayoutType } from "../lib/keyboardLayouts";
 import { useLanguage } from "../hooks/useLanguage";
+import { pseudoKeyPositionsFor } from "../lib/trackpad/gestures";
 
 interface KeymapPrintSheetProps {
   layout: PhysicalLayout;
@@ -62,6 +63,10 @@ export function KeymapPrintSheet({
   const isPrinting = usePrintMode();
   const printedOn = new Date().toLocaleDateString();
 
+  // Derived here rather than passed in, so a printed sheet and the board on
+  // screen can never disagree about which positions are real keys.
+  const hiddenKeys = pseudoKeyPositionsFor(layout.name, layout.keys.length);
+
   if (!isPrinting) return null;
 
   return createPortal(
@@ -87,6 +92,7 @@ export function KeymapPrintSheet({
               getOriginalBinding={noBinding}
               keyboardLayout={keyboardLayout}
               modules={modules}
+              hiddenKeys={hiddenKeys}
               runtimeMacros={runtimeMacros}
               ariaLabel={t("Keyboard layout for {{layer}}", {
                 layer: layer.name || t("Layer {{id}}", { id: index }),

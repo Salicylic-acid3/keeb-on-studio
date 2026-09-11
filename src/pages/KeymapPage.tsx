@@ -57,6 +57,7 @@ import {
   nextKeyPosition,
 } from "../lib/keymap/quickAssign";
 import { extractBaseKeycode } from "../lib/keycodes";
+import { pseudoKeyPositionsFor } from "../lib/trackpad/gestures";
 import { QuickAssignBar } from "../components/keymap/QuickAssignBar";
 import { useLanguage } from "../hooks/useLanguage";
 import { ResetVersionMenu } from "../components/versionHistory/ResetVersionMenu";
@@ -510,12 +511,26 @@ export function KeymapPage() {
 
   // --- The bottom keyboard -------------------------------------------------
 
-  // Key positions in the order the layout draws them. A layout may skip
-  // numbers (ErgoTrack's gesture positions sit above its physical keys), so
-  // "the next key" means the next one here, not the next integer.
-  const layoutPositions = useMemo(
-    () => currentLayout?.keys.map((_, index) => index) ?? [],
+  // Positions the firmware reports but no switch sits under: ErgoTrack's
+  // trackpad gestures, which have their own editor on the Trackpad tab, and
+  // the spares reserved next to them. They used to be drawn as a row of blank
+  // keys under the board, which invited binding something to a key nobody can
+  // press.
+  const hiddenKeys = useMemo(
+    () =>
+      pseudoKeyPositionsFor(currentLayout?.name, currentLayout?.keys.length),
     [currentLayout],
+  );
+
+  // Key positions in the order the layout draws them, which is also the order
+  // a run of keys walks. Hidden ones are left out: walking onto a key that is
+  // not on screen would look like the run had stopped for no reason.
+  const layoutPositions = useMemo(
+    () =>
+      currentLayout?.keys
+        .map((_, index) => index)
+        .filter((index) => !hiddenKeys.has(index)) ?? [],
+    [currentLayout, hiddenKeys],
   );
 
   // Every binding on the board, so the key-press behavior can be identified
@@ -1565,6 +1580,7 @@ export function KeymapPage() {
                       : []
                   }
                   highlightedKeys={inputStream.highlightedKeys}
+                  hiddenKeys={hiddenKeys}
                   ariaLabel={t("Keyboard layout for {{layer}}", {
                     layer:
                       currentLayer.name ||

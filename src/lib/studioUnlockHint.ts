@@ -1,33 +1,24 @@
 /**
  * How to unlock *this* keyboard.
  *
- * The unlock prompt used to say "press the studio unlock key combination on
- * your keyboard", which is true of every ZMK keyboard and useful for none:
- * the gesture is whatever the keymap author bound, and someone reading the
- * dialog is precisely the person who does not know what that is. Studio
- * locking was off on both of these keyboards until it had to be turned on for
- * Bluetooth to work at all, so most owners will meet this dialog for the first
- * time with no idea what it wants.
+ * The unlock prompt's generic line — "press the studio unlock key combination
+ * on your keyboard" — is true of every ZMK keyboard and useful for none: the
+ * gesture is whatever the keymap author bound, and someone reading the dialog
+ * is precisely the person who does not know what that is. So when the keyboard
+ * names itself over the Studio protocol and it is one this app knows, the
+ * dialog can simply say.
  *
- * The keyboard names itself over the Studio protocol, and this app only talks
- * to two keyboards, so it can simply say. The generic line stays as the
- * fallback for a keyboard whose name we do not recognise.
- *
- * These strings describe what the shipped keymaps bind, so they go stale if
- * the firmware moves the unlock gesture -- which is why the firmware keeps its
- * reason next to the binding, and why this file names the config that has to
- * match.
+ * Right now it never has to. Both keyboards ship with CONFIG_ZMK_STUDIO_LOCKING
+ * off and are configured over USB, so there is no lock to open and no unlock
+ * key in either keymap. The table is empty rather than deleted: the mechanism
+ * is fine, it is the instructions that stopped being true, and an instruction
+ * naming keys that no longer do anything is worse than the vague line it
+ * replaced. If a keyboard ever ships locked again, its entry goes here and
+ * the firmware's keymap keeps the matching comment next to the binding.
  */
 
 /** Keyed by `CONFIG_ZMK_KEYBOARD_NAME`, lower-cased. */
-const UNLOCK_HINTS: Record<string, string> = {
-  // config/clickboard_ergotrack.keymap -> drag_layer, position 13
-  ergotrack:
-    "Hold a left-click key and press the top-right key on the right half (Delete on the base layer).",
-  // config/goforty_max.keymap -> layer 1, first position
-  "goforty-max":
-    "Hold the layer 1 key and press the top-left key (the Bluetooth previous-profile key on the base layer).",
-};
+const UNLOCK_HINTS: Record<string, string> = {};
 
 /**
  * The instruction for this keyboard, or null when it is not one we know.
