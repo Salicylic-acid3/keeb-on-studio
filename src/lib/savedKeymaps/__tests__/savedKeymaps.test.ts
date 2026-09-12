@@ -194,6 +194,27 @@ describe("compatibility", () => {
     expect(isLoadable(result)).toBe(true);
   });
 
+  it("refuses the same keyboard with a different number of positions", () => {
+    // ErgoTrack went from 79 positions to 81 in firmware v0.7.4, the two new
+    // ones being a two-finger swipe in the row no switch sits under — so a
+    // keymap saved the day before does describe every key you can press, and
+    // loading it would in fact be harmless.
+    //
+    // It is refused anyway, and that is the decision rather than an oversight.
+    // Allowing it means deciding at load time that a count mismatch is fine
+    // because the extra positions *look* like gesture keys; a layout that ever
+    // gained a real key, or gained one anywhere but the end, would shift every
+    // position after it and land the old bindings on the wrong keys, silently.
+    // Layout changes belong to the pre-release period, so the refusal costs one
+    // conversion of the file and buys a rule with no judgement in it.
+    const result = compatibilityOf(saved, {
+      layoutName: "ClickBoard ErgoTrack",
+      keyCount: 81,
+    });
+    expect(result).toEqual({ kind: "key-count", savedFor: 79, connected: 81 });
+    expect(isLoadable(result)).toBe(false);
+  });
+
   it("refuses a record written by a newer app", () => {
     const result = compatibilityOf(
       { ...saved, schemaVersion: SAVED_KEYMAP_SCHEMA_VERSION + 1 },
