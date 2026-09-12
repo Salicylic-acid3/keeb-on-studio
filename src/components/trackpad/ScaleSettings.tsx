@@ -21,79 +21,20 @@
  * Nothing is drawn for a keyboard that does not publish these: older firmware,
  * or a build without CONFIG_INPUT_IQS9151_RUNTIME_SETTINGS.
  */
-import { useRef } from "react";
-import { RetainedInput } from "../macroCombo/RetainedInput";
-import { InfoTip } from "../InfoTip";
 import { useLanguage } from "../../hooks/useLanguage";
 import type { Setting } from "../../proto/cormoran/zmk/custom_settings/custom_settings";
 import type { TrackpadSettingsAccess } from "./TrackpadSettings";
+import { NumberRow } from "./NumberRow";
 import {
   CURSOR_GAIN_X_KEY,
   CURSOR_GAIN_Y_KEY,
   CURSOR_SMOOTHING_KEY,
   RESOLUTION_X_KEY,
   RESOLUTION_Y_KEY,
+  commitTrackpadNumber,
   readTrackpadNumber,
   type TrackpadNumber,
 } from "../../lib/trackpad/settings";
-
-function NumberRow({
-  label,
-  info,
-  field,
-  step = 10,
-  disabled,
-  onCommit,
-}: {
-  label: string;
-  info: string;
-  field: TrackpadNumber;
-  step?: number;
-  disabled?: boolean;
-  onCommit: (typed: string) => void;
-}) {
-  /*
-   * What is in the box right now, kept outside React state on purpose: the
-   * displayed value belongs to RetainedInput (which reconciles it against the
-   * device between edits), and this is only needed to know what to commit when
-   * the field is left.
-   */
-  const typed = useRef(String(field.value));
-
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <span className="flex min-w-0 items-center gap-1.5 text-sm text-[var(--color-text-secondary)]">
-        <span className="truncate">{label}</span>
-        <InfoTip text={info} />
-      </span>
-      <RetainedInput
-        type="number"
-        className="input-field w-24 text-sm"
-        value={String(field.value)}
-        min={field.min ?? undefined}
-        max={field.max ?? undefined}
-        step={step}
-        disabled={disabled}
-        aria-label={label}
-        onChange={(next) => {
-          typed.current = next;
-        }}
-        /*
-         * Committed on blur and on Enter rather than on every keystroke. Each
-         * commit is an I2C write to both halves; typing "2860" one digit at a
-         * time would push 2, 28, 286 and 2860 in turn, and the pad would lurch
-         * through three wrong scales on the way to the right one.
-         */
-        onBlur={() => onCommit(typed.current)}
-        onKeyDown={(event) => {
-          if (event.key === "Enter") {
-            event.currentTarget.blur();
-          }
-        }}
-      />
-    </div>
-  );
-}
 
 export function ScaleSettings({
   settings,
@@ -110,21 +51,8 @@ export function ScaleSettings({
   const gainY = readTrackpadNumber(rows, CURSOR_GAIN_Y_KEY);
   const smoothing = readTrackpadNumber(rows, CURSOR_SMOOTHING_KEY);
 
-  const commit = async (field: TrackpadNumber, draft: string) => {
-    const parsed = Number.parseInt(draft, 10);
-    if (!Number.isFinite(parsed) || parsed === field.value) return;
-
-    const min = field.min ?? 1;
-    const max = field.max ?? 4095;
-    const clamped = Math.min(max, Math.max(min, parsed));
-
-    await settings.writeSettingToMemory(
-      field.setting,
-      { int32Value: clamped },
-      { allSources: true },
-    );
-    await settings.saveSection(field.setting.customSubsystemIndex);
-  };
+  const commit = (field: TrackpadNumber, draft: string) =>
+    commitTrackpadNumber(settings, field, draft, { min: 1, max: 4095 });
 
   // The shared loading indicator lives in TrackpadSettings.
   if (!x && !y && !gainX && !gainY && !smoothing) return null;

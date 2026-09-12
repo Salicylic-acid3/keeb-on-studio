@@ -19,6 +19,7 @@
  * out instead of showing a switch that does nothing.
  */
 import type { Setting } from "../../proto/cormoran/zmk/custom_settings/custom_settings";
+import type { TrackpadSettingsAccess } from "../../components/trackpad/TrackpadSettings";
 
 /** Must match IQS9151_SETTINGS_SUBSYSTEM_ID in the driver. */
 export const TRACKPAD_SUBSYSTEM_ID = "keebon__trackpad";
@@ -62,6 +63,23 @@ export const CURSOR_GAIN_Y_KEY = "cursor_gain_y";
  * report fills the gaps from what the report before did not spend.
  */
 export const CURSOR_SMOOTHING_KEY = "cursor_smoothing";
+
+/**
+ * The sensor's own low-speed filter, one key per register.
+ *
+ * Everything above happens after the sensor has reported; this is what it does
+ * before. Below `bottom_speed` counts per report a position filter with weight
+ * `bottom_beta` holds the finger where it was, and below `stationary_threshold`
+ * the report is suppressed altogether — which is where "stops on each
+ * electrode, then jumps" on a coarse axis comes from. Exposed so that can be
+ * tuned without another flash.
+ */
+export const FILTER_BOTTOM_SPEED_KEY = "filter_bottom_speed";
+export const FILTER_TOP_SPEED_KEY = "filter_top_speed";
+export const FILTER_BOTTOM_BETA_KEY = "filter_bottom_beta";
+export const FILTER_STATIC_BETA_KEY = "filter_static_beta";
+export const STATIONARY_THRESHOLD_KEY = "stationary_threshold";
+export const JITTER_DELTA_KEY = "jitter_delta";
 
 export interface TrackpadNumber {
   setting: Setting;
@@ -122,4 +140,30 @@ export function readTrackpadToggle(
   if (typeof enabled !== "boolean") return null;
 
   return { setting, enabled };
+}
+
+/**
+ * Parse what was typed into a number box, clamp it to the firmware's range and
+ * write it to every side. A blank or unchanged box writes nothing: there is
+ * nothing to say.
+ */
+export async function commitTrackpadNumber(
+  settings: TrackpadSettingsAccess,
+  field: TrackpadNumber,
+  draft: string,
+  fallbackRange: { min: number; max: number },
+) {
+  const parsed = Number.parseInt(draft, 10);
+  if (!Number.isFinite(parsed) || parsed === field.value) return;
+
+  const min = field.min ?? fallbackRange.min;
+  const max = field.max ?? fallbackRange.max;
+  const clamped = Math.min(max, Math.max(min, parsed));
+
+  await settings.writeSettingToMemory(
+    field.setting,
+    { int32Value: clamped },
+    { allSources: true },
+  );
+  await settings.saveSection(field.setting.customSubsystemIndex);
 }

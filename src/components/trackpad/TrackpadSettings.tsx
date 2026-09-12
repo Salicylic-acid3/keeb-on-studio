@@ -21,6 +21,7 @@ import { useMemo } from "react";
 import { useLanguage } from "../../hooks/useLanguage";
 import { useCustomSettings } from "../../hooks/useCustomSettings";
 import { TRACKPAD_SUBSYSTEM_ID } from "../../lib/trackpad/settings";
+import { FilterSettings } from "./FilterSettings";
 import { PinchSettings } from "./PinchSettings";
 import { ScaleSettings } from "./ScaleSettings";
 
@@ -63,6 +64,7 @@ export function TrackpadSettings() {
   return (
     <>
       <ScaleSettings settings={settings} rows={rows} />
+      <FilterSettings settings={settings} rows={rows} />
       <PinchSettings settings={settings} rows={rows} />
     </>
   );

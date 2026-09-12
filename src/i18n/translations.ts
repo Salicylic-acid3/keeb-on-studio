@@ -49,6 +49,27 @@ const ja: Record<string, string> = {
   "The sensor's Y axis, which the listener swaps onto the screen's horizontal. Set it in proportion to the pad's short side.":
     "センサのY軸で、listener が画面の左右に入れ替えています。パッドの短辺の比に合わせてください。",
   "Pointer speed, per axis": "ポインタの速さ(軸ごと)",
+  "Sensor filter (advanced)": "センサ側フィルタ(詳細)",
+  "What the sensor does before it reports anything. If one axis stops and jumps while the other glides, the fix is here, not in smoothing: a report the sensor suppressed cannot be smoothed. Change one value at a time and try a slow drag after each.":
+    "センサが報告する前に行っている処理です。片方の軸だけ止まっては跳ぶのに、もう片方は滑らかという場合、直すのはここで、なめらかさではありません。センサが握りつぶした報告は後から均せないからです。一度に1つだけ変えて、そのたびにゆっくり動かして確かめてください。",
+  "Stationary threshold": "静止とみなす閾値",
+  "Movement per report below this is treated as a finger holding still and not reported at all. The first thing to lower when slow movement on one axis comes out as stops and jumps; 0 reports everything.":
+    "1回の報告あたりの動きがこれ未満だと「指は止まっている」とみなして報告しません。片方の軸のゆっくりした動きが止まっては跳ぶ形になるときに、まず下げる値です。0 ですべて報告します。",
+  "Jitter filter delta": "ジッタ除去の幅",
+  "Movement smaller than this is treated as noise. Lower it to let small movements through; raise it if the pointer wanders while the finger holds still.":
+    "これより小さい動きはノイズとして扱います。小さい動きを通したいなら下げ、指を止めているのにポインタがふらつくなら上げます。",
+  "Filter bottom speed": "フィルタ下限速度",
+  "Below this speed the position filter is at its strongest. Lowering it lets slow movement through with less filtering.":
+    "この速度未満では位置フィルタが最も強く効きます。下げると、ゆっくりした動きにかかるフィルタが弱まります。",
+  "Filter top speed": "フィルタ上限速度",
+  "Above this speed the position filter is off. Between the two speeds it fades from the bottom strength to none.":
+    "この速度を超えると位置フィルタは効きません。2つの速度の間では、下限の強さからゼロへ徐々に弱まります。",
+  "Filter strength at low speed": "低速時のフィルタ強度",
+  "How hard the position filter holds the finger where it was when moving slowly. Try both directions: less means smaller, more frequent steps; more means the finger is held longer and then released in a bigger step.":
+    "ゆっくり動かしたとき、位置フィルタがどれだけ指を元の位置に留めるか。両方向を試してください。弱めると小さい段差が頻繁に、強めると長く留めてから大きく跳びます。",
+  "Filter strength when still": "静止時のフィルタ強度",
+  "The filter applied to a finger the sensor has decided is holding still. Lower it if the pointer lags behind when a stationary finger starts to move again.":
+    "センサが「止まっている」と判断した指にかけるフィルタ。止めていた指を動かし始めたときにポインタが遅れてついてくるなら下げます。",
   "Smoothing ({{n}} reports)": "なめらかさ ({{n}}回に分散)",
   "Spreads each movement across this many reports instead of emitting it at once. 1 is off. Needed once an axis is amplified: the pad reports whole counts, so a slow drag arrives as 1, 0, 1, 0, and multiplying that leaves the gaps in place and makes the steps bigger. Draining a fraction per report fills the gaps. Costs exactly this many reports of lag and no more.":
     "動きを一度に出さず、この回数に分けて出します。1 で無効。軸を拡大したときに必要になります: パッドは整数カウントでしか報告しないので、ゆっくり動かすと 1, 0, 1, 0 と来ます。これに倍率を掛けても**隙間は隙間のままで、段差だけが大きく**なります。少しずつ出せば、前回の余りで隙間が埋まります。代償はこの回数ぶんの遅延だけです。",
@@ -1679,6 +1700,27 @@ const zh: Record<string, string> = {
   "The sensor's Y axis, which the listener swaps onto the screen's horizontal. Set it in proportion to the pad's short side.":
     "传感器的Y轴，listener 将其换到屏幕的左右方向。按触控板短边的比例设置。",
   "Pointer speed, per axis": "指针速度（按轴）",
+  "Sensor filter (advanced)": "传感器侧滤波（高级）",
+  "What the sensor does before it reports anything. If one axis stops and jumps while the other glides, the fix is here, not in smoothing: a report the sensor suppressed cannot be smoothed. Change one value at a time and try a slow drag after each.":
+    "传感器在上报之前所做的处理。如果一个轴走走停停、另一个轴却很顺滑，要改的是这里而不是平滑：被传感器压掉的上报无法事后补平。每次只改一个值，改完后慢慢拖动试一试。",
+  "Stationary threshold": "静止判定阈值",
+  "Movement per report below this is treated as a finger holding still and not reported at all. The first thing to lower when slow movement on one axis comes out as stops and jumps; 0 reports everything.":
+    "每次上报的移动量低于此值时，视为手指静止而完全不上报。当某一轴的慢速移动表现为走走停停时，首先应调低它；0 表示全部上报。",
+  "Jitter filter delta": "抖动滤波幅度",
+  "Movement smaller than this is treated as noise. Lower it to let small movements through; raise it if the pointer wanders while the finger holds still.":
+    "小于此值的移动被当作噪声。想让小动作通过就调低；手指不动而指针漂移就调高。",
+  "Filter bottom speed": "滤波下限速度",
+  "Below this speed the position filter is at its strongest. Lowering it lets slow movement through with less filtering.":
+    "低于此速度时位置滤波最强。调低它可让慢速移动受到更少的滤波。",
+  "Filter top speed": "滤波上限速度",
+  "Above this speed the position filter is off. Between the two speeds it fades from the bottom strength to none.":
+    "高于此速度时位置滤波关闭。在两个速度之间，滤波强度从下限逐渐减弱到零。",
+  "Filter strength at low speed": "低速时滤波强度",
+  "How hard the position filter holds the finger where it was when moving slowly. Try both directions: less means smaller, more frequent steps; more means the finger is held longer and then released in a bigger step.":
+    "慢速移动时位置滤波把手指按在原位的力度。两个方向都试一下：调低则步进更小更频繁，调高则按得更久然后一次跳得更远。",
+  "Filter strength when still": "静止时滤波强度",
+  "The filter applied to a finger the sensor has decided is holding still. Lower it if the pointer lags behind when a stationary finger starts to move again.":
+    "对被传感器判定为静止的手指所施加的滤波。如果静止的手指重新移动时指针跟不上，就调低它。",
   "Smoothing ({{n}} reports)": "平滑（分散到 {{n}} 次）",
   "Spreads each movement across this many reports instead of emitting it at once. 1 is off. Needed once an axis is amplified: the pad reports whole counts, so a slow drag arrives as 1, 0, 1, 0, and multiplying that leaves the gaps in place and makes the steps bigger. Draining a fraction per report fills the gaps. Costs exactly this many reports of lag and no more.":
     "把每次移动分散到这么多次上报中，而不是一次性输出。1 为关闭。轴被放大后就需要它：触控板只以整数计数上报，慢慢拖动时会得到 1, 0, 1, 0，乘以倍率后**空隙仍是空隙，只是步进变大**。每次只放出一部分，就能用上一次的余额填满空隙。代价只有这么多次上报的延迟。",
