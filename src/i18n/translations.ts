@@ -49,6 +49,9 @@ const ja: Record<string, string> = {
   "The sensor's Y axis, which the listener swaps onto the screen's horizontal. Set it in proportion to the pad's short side.":
     "センサのY軸で、listener が画面の左右に入れ替えています。パッドの短辺の比に合わせてください。",
   "Pointer speed, per axis": "ポインタの速さ(軸ごと)",
+  "Smoothing ({{n}} reports)": "なめらかさ ({{n}}回に分散)",
+  "Spreads each movement across this many reports instead of emitting it at once. 1 is off. Needed once an axis is amplified: the pad reports whole counts, so a slow drag arrives as 1, 0, 1, 0, and multiplying that leaves the gaps in place and makes the steps bigger. Draining a fraction per report fills the gaps. Costs exactly this many reports of lag and no more.":
+    "動きを一度に出さず、この回数に分けて出します。1 で無効。軸を拡大したときに必要になります: パッドは整数カウントでしか報告しないので、ゆっくり動かすと 1, 0, 1, 0 と来ます。これに倍率を掛けても**隙間は隙間のままで、段差だけが大きく**なります。少しずつ出せば、前回の余りで隙間が埋まります。代償はこの回数ぶんの遅延だけです。",
   "In tenths: 10 leaves an axis alone, 16 makes it 1.6x. This is the pointer, not the gesture detection — the pad scale above does not change cursor speed on this sensor. Raise one and lower the other to shift the balance without changing the overall speed.":
     "1/10単位。10 が等倍、16 で 1.6倍。こちらは**ポインタの速さ**で、ジェスチャーの判定ではありません。このセンサでは上のスケールを変えてもカーソル速度は変わりません。片方を上げてもう片方を下げれば、全体の速さを変えずに釣り合いだけを変えられます。",
   "Up and down (×{{factor}})": "上下 (×{{factor}})",
@@ -1676,6 +1679,9 @@ const zh: Record<string, string> = {
   "The sensor's Y axis, which the listener swaps onto the screen's horizontal. Set it in proportion to the pad's short side.":
     "传感器的Y轴，listener 将其换到屏幕的左右方向。按触控板短边的比例设置。",
   "Pointer speed, per axis": "指针速度（按轴）",
+  "Smoothing ({{n}} reports)": "平滑（分散到 {{n}} 次）",
+  "Spreads each movement across this many reports instead of emitting it at once. 1 is off. Needed once an axis is amplified: the pad reports whole counts, so a slow drag arrives as 1, 0, 1, 0, and multiplying that leaves the gaps in place and makes the steps bigger. Draining a fraction per report fills the gaps. Costs exactly this many reports of lag and no more.":
+    "把每次移动分散到这么多次上报中，而不是一次性输出。1 为关闭。轴被放大后就需要它：触控板只以整数计数上报，慢慢拖动时会得到 1, 0, 1, 0，乘以倍率后**空隙仍是空隙，只是步进变大**。每次只放出一部分，就能用上一次的余额填满空隙。代价只有这么多次上报的延迟。",
   "In tenths: 10 leaves an axis alone, 16 makes it 1.6x. This is the pointer, not the gesture detection — the pad scale above does not change cursor speed on this sensor. Raise one and lower the other to shift the balance without changing the overall speed.":
     "以十分之一为单位：10 为原倍，16 为 1.6 倍。这是**指针速度**，不是手势判定；在这颗传感器上，修改上面的尺度并不会改变光标速度。调高一轴、调低另一轴，可以在不改变整体速度的前提下调整平衡。",
   "Up and down (×{{factor}})": "上下（×{{factor}}）",

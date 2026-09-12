@@ -30,6 +30,7 @@ import type { TrackpadSettingsAccess } from "./TrackpadSettings";
 import {
   CURSOR_GAIN_X_KEY,
   CURSOR_GAIN_Y_KEY,
+  CURSOR_SMOOTHING_KEY,
   RESOLUTION_X_KEY,
   RESOLUTION_Y_KEY,
   readTrackpadNumber,
@@ -107,6 +108,7 @@ export function ScaleSettings({
   const y = readTrackpadNumber(rows, RESOLUTION_Y_KEY);
   const gainX = readTrackpadNumber(rows, CURSOR_GAIN_X_KEY);
   const gainY = readTrackpadNumber(rows, CURSOR_GAIN_Y_KEY);
+  const smoothing = readTrackpadNumber(rows, CURSOR_SMOOTHING_KEY);
 
   const commit = async (field: TrackpadNumber, draft: string) => {
     const parsed = Number.parseInt(draft, 10);
@@ -125,7 +127,7 @@ export function ScaleSettings({
   };
 
   // The shared loading indicator lives in TrackpadSettings.
-  if (!x && !y && !gainX && !gainY) return null;
+  if (!x && !y && !gainX && !gainY && !smoothing) return null;
 
   // The ratio is the number that actually matters, so it is shown rather than
   // left to be worked out from the two fields.
@@ -175,7 +177,7 @@ export function ScaleSettings({
         </p>
       )}
 
-      {(gainX || gainY) && (
+      {(gainX || gainY || smoothing) && (
         <>
           <div className="border-t border-[var(--color-border)] pt-3">
             <h4 className="text-sm font-medium text-[var(--color-text)]">
@@ -215,6 +217,19 @@ export function ScaleSettings({
               step={1}
               disabled={settings.isLoading}
               onCommit={(typed) => void commit(gainY, typed)}
+            />
+          )}
+
+          {smoothing && (
+            <NumberRow
+              label={t("Smoothing ({{n}} reports)", { n: smoothing.value })}
+              info={t(
+                "Spreads each movement across this many reports instead of emitting it at once. 1 is off. Needed once an axis is amplified: the pad reports whole counts, so a slow drag arrives as 1, 0, 1, 0, and multiplying that leaves the gaps in place and makes the steps bigger. Draining a fraction per report fills the gaps. Costs exactly this many reports of lag and no more.",
+              )}
+              field={smoothing}
+              step={1}
+              disabled={settings.isLoading}
+              onCommit={(typed) => void commit(smoothing, typed)}
             />
           )}
         </>

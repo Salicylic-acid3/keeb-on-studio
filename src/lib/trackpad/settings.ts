@@ -53,6 +53,16 @@ export const RESOLUTION_Y_KEY = "resolution_y";
 export const CURSOR_GAIN_X_KEY = "cursor_gain_x";
 export const CURSOR_GAIN_Y_KEY = "cursor_gain_y";
 
+/**
+ * Reports to spread each movement across; 1 emits it immediately.
+ *
+ * The companion to the gains rather than a separate idea: the pad reports whole
+ * counts, so slowly it reports 1, 0, 1, 0, and a gain much above 1 turns that
+ * into visible steps with the gaps still in them. Draining a fraction per
+ * report fills the gaps from what the report before did not spend.
+ */
+export const CURSOR_SMOOTHING_KEY = "cursor_smoothing";
+
 export interface TrackpadNumber {
   setting: Setting;
   value: number;
