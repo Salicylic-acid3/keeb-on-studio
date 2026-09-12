@@ -18,6 +18,8 @@ import {
   type LogRecord,
 } from "../proto/cormoran/devtool/devtool";
 import { useDevtool } from "../hooks/useDevtool";
+import { useDevtoolStackUsage } from "../hooks/useDevtoolStackUsage";
+import { DevtoolStackUsageSection } from "./troubleshooting/DevtoolStackUsageSection";
 
 interface DevtoolWindowProps {
   onClose: () => void;
@@ -82,6 +84,17 @@ const FILTER_DEBOUNCE_MS = 200;
 
 export function DevtoolWindow({ onClose }: DevtoolWindowProps) {
   const { ready, call, subsystemIndex, zmkApp } = useDevtool();
+  /*
+   * Stack usage, here as well as on the Troubleshooting tab.
+   *
+   * That tab is not always reachable: on this keyboard it lists the battery
+   * settings on connect, which is a relayed request, which is the thing under
+   * investigation -- opening it resets the board before the numbers render.
+   * This window opens from any tab, including the ones that stay up, so the
+   * high water marks can be watched right through whatever kills it. Turn
+   * polling on and the last table drawn is the last one the board reported.
+   */
+  const stackUsage = useDevtoolStackUsage();
 
   // --- Drag / resize state ---
   const [pos, setPos] = useState(() => ({
@@ -470,6 +483,13 @@ export function DevtoolWindow({ onClose }: DevtoolWindowProps) {
             </span>
           )}
         </div>
+
+        {/* Per-thread stack high water marks */}
+        {stackUsage.isAvailable && (
+          <div className="flex-shrink-0 max-h-[40%] overflow-y-auto">
+            <DevtoolStackUsageSection stackUsage={stackUsage} />
+          </div>
+        )}
 
         {/* Log toolbar: level filter + text filter (debounced) + export + clear */}
         <div className="flex items-center gap-1.5 flex-shrink-0">
