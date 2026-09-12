@@ -41,6 +41,18 @@ export const PINCH_INVERT_KEY = "pinch_invert";
 export const RESOLUTION_X_KEY = "resolution_x";
 export const RESOLUTION_Y_KEY = "resolution_y";
 
+/**
+ * How far the pointer travels per count the pad reports, per axis, in tenths.
+ *
+ * Not the same thing as the resolutions above, and on this sensor not even
+ * related: the resolutions set the range of the absolute finger coordinates the
+ * firmware compares when deciding which axis a gesture is on, and have no
+ * effect at all on the relative movement the cursor is built from. Pointer
+ * speed is this pair.
+ */
+export const CURSOR_GAIN_X_KEY = "cursor_gain_x";
+export const CURSOR_GAIN_Y_KEY = "cursor_gain_y";
+
 export interface TrackpadNumber {
   setting: Setting;
   value: number;

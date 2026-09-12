@@ -42,6 +42,21 @@ const ja: Record<string, string> = {
   "Pinch, two fingers on one pad": "片手2本指ピンチ",
   "One-pad pinch": "片手ピンチ",
   "Pad scale": "パッドのスケール",
+  "Counts spread across each side of the pad, which is what the firmware compares when it decides which axis a gesture is on. Only the ratio matters: it should match the ratio of the pad's sides, or scrolls, swipes and pinches all lean toward one of them. This does not change pointer speed — that is below.":
+    "パッドの各辺に割り当てるカウント数で、ファームが「このジェスチャーはどちらの軸か」を決めるときに比べる値。意味があるのは比だけで、パッドの辺の比に合わせます。ずれているとスクロール・スワイプ・ピンチがすべて片方へ傑きます。**カーソルの速さはここでは変わりません** — それは下です。",
+  "The sensor's X axis, which the listener swaps onto the screen's vertical. Set it in proportion to the pad's long side.":
+    "センサのX軸で、listener が画面の上下に入れ替えています。パッドの長辺の比に合わせてください。",
+  "The sensor's Y axis, which the listener swaps onto the screen's horizontal. Set it in proportion to the pad's short side.":
+    "センサのY軸で、listener が画面の左右に入れ替えています。パッドの短辺の比に合わせてください。",
+  "Pointer speed, per axis": "ポインタの速さ(軸ごと)",
+  "In tenths: 10 leaves an axis alone, 16 makes it 1.6x. This is the pointer, not the gesture detection — the pad scale above does not change cursor speed on this sensor. Raise one and lower the other to shift the balance without changing the overall speed.":
+    "1/10単位。10 が等倍、16 で 1.6倍。こちらは**ポインタの速さ**で、ジェスチャーの判定ではありません。このセンサでは上のスケールを変えてもカーソル速度は変わりません。片方を上げてもう片方を下げれば、全体の速さを変えずに釣り合いだけを変えられます。",
+  "Up and down (×{{factor}})": "上下 (×{{factor}})",
+  "The long side of the pad. It usually wants more than the ratio of the sides suggests, because you cannot sweep the full length in one stroke the way you can across — so matching millimetres still feels reluctant.":
+    "パッドの長辺。辺の比から計算する値より少し強めがちょうどいいことが多いです。横と違って**縦は一息で端まで撫でられない**ので、mmで揃えてもまだ重く感じます。",
+  "Left and right (×{{factor}})": "左右 (×{{factor}})",
+  "The short side of the pad. Lower this instead of raising the other axis if the pointer is already fast enough overall.":
+    "パッドの短辺。全体の速さがもう十分なら、もう片方を上げる代わりにこちらを下げてください。",
   "Counts spread across each side of the pad. Only the ratio matters: it has to match the ratio of the pad's sides. Set it wrong and the pointer drags in one direction while scrolls, swipes and pinches all lean the other way.":
     "パッドの各辺に割り当てるカウント数。意味があるのは比だけで、パッドの辺の比に合わせます。ここがずれていると、片方の向きだけポインタが重くなり、スクロール・スワイプ・ピンチの判定もすべて反対側へ傑きます。",
   "Along the pad (screen vertical)": "パッドの縦方向(画面の上下)",
@@ -1654,6 +1669,21 @@ const zh: Record<string, string> = {
   "Pinch, two fingers on one pad": "单手双指捏合",
   "One-pad pinch": "单手捏合",
   "Pad scale": "触控板尺度",
+  "Counts spread across each side of the pad, which is what the firmware compares when it decides which axis a gesture is on. Only the ratio matters: it should match the ratio of the pad's sides, or scrolls, swipes and pinches all lean toward one of them. This does not change pointer speed — that is below.":
+    "分配给触控板每一边的计数，固件在判断手势属于哪个轴时比较的就是它。只有比值有意义，应与触控板两边的比值一致，否则滚动、滑动和捏合都会向其中一个倾斜。**这里不改变指针速度** — 那在下面。",
+  "The sensor's X axis, which the listener swaps onto the screen's vertical. Set it in proportion to the pad's long side.":
+    "传感器的X轴，listener 将其换到屏幕的上下方向。按触控板长边的比例设置。",
+  "The sensor's Y axis, which the listener swaps onto the screen's horizontal. Set it in proportion to the pad's short side.":
+    "传感器的Y轴，listener 将其换到屏幕的左右方向。按触控板短边的比例设置。",
+  "Pointer speed, per axis": "指针速度（按轴）",
+  "In tenths: 10 leaves an axis alone, 16 makes it 1.6x. This is the pointer, not the gesture detection — the pad scale above does not change cursor speed on this sensor. Raise one and lower the other to shift the balance without changing the overall speed.":
+    "以十分之一为单位：10 为原倍，16 为 1.6 倍。这是**指针速度**，不是手势判定；在这颗传感器上，修改上面的尺度并不会改变光标速度。调高一轴、调低另一轴，可以在不改变整体速度的前提下调整平衡。",
+  "Up and down (×{{factor}})": "上下（×{{factor}}）",
+  "The long side of the pad. It usually wants more than the ratio of the sides suggests, because you cannot sweep the full length in one stroke the way you can across — so matching millimetres still feels reluctant.":
+    "触控板的长边。通常需要比边长比例算出的值再大一些，因为**纵向无法像横向那样一次划到头**，即使毫米对齐仍然显得费力。",
+  "Left and right (×{{factor}})": "左右（×{{factor}}）",
+  "The short side of the pad. Lower this instead of raising the other axis if the pointer is already fast enough overall.":
+    "触控板的短边。如果整体速度已经够快，就调低这一轴，而不是调高另一轴。",
   "Counts spread across each side of the pad. Only the ratio matters: it has to match the ratio of the pad's sides. Set it wrong and the pointer drags in one direction while scrolls, swipes and pinches all lean the other way.":
     "分配给触控板每一边的计数。只有比值有意义，它必须与触控板两边的比值一致。设错了就会出现指针在一个方向上发洩，而滚动、滑动和捏合的判定全部向反方向倾斜。",
   "Along the pad (screen vertical)": "触控板纵向（屏幕上下）",

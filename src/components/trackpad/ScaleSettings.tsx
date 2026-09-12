@@ -28,6 +28,8 @@ import { useLanguage } from "../../hooks/useLanguage";
 import type { Setting } from "../../proto/cormoran/zmk/custom_settings/custom_settings";
 import type { TrackpadSettingsAccess } from "./TrackpadSettings";
 import {
+  CURSOR_GAIN_X_KEY,
+  CURSOR_GAIN_Y_KEY,
   RESOLUTION_X_KEY,
   RESOLUTION_Y_KEY,
   readTrackpadNumber,
@@ -38,12 +40,14 @@ function NumberRow({
   label,
   info,
   field,
+  step = 10,
   disabled,
   onCommit,
 }: {
   label: string;
   info: string;
   field: TrackpadNumber;
+  step?: number;
   disabled?: boolean;
   onCommit: (typed: string) => void;
 }) {
@@ -67,7 +71,7 @@ function NumberRow({
         value={String(field.value)}
         min={field.min ?? undefined}
         max={field.max ?? undefined}
-        step={10}
+        step={step}
         disabled={disabled}
         aria-label={label}
         onChange={(next) => {
@@ -101,6 +105,8 @@ export function ScaleSettings({
 
   const x = readTrackpadNumber(rows, RESOLUTION_X_KEY);
   const y = readTrackpadNumber(rows, RESOLUTION_Y_KEY);
+  const gainX = readTrackpadNumber(rows, CURSOR_GAIN_X_KEY);
+  const gainY = readTrackpadNumber(rows, CURSOR_GAIN_Y_KEY);
 
   const commit = async (field: TrackpadNumber, draft: string) => {
     const parsed = Number.parseInt(draft, 10);
@@ -119,7 +125,7 @@ export function ScaleSettings({
   };
 
   // The shared loading indicator lives in TrackpadSettings.
-  if (!x && !y) return null;
+  if (!x && !y && !gainX && !gainY) return null;
 
   // The ratio is the number that actually matters, so it is shown rather than
   // left to be worked out from the two fields.
@@ -133,7 +139,7 @@ export function ScaleSettings({
 
       <p className="text-xs text-[var(--color-text-muted)]">
         {t(
-          "Counts spread across each side of the pad. Only the ratio matters: it has to match the ratio of the pad's sides. Set it wrong and the pointer drags in one direction while scrolls, swipes and pinches all lean the other way.",
+          "Counts spread across each side of the pad, which is what the firmware compares when it decides which axis a gesture is on. Only the ratio matters: it should match the ratio of the pad's sides, or scrolls, swipes and pinches all lean toward one of them. This does not change pointer speed — that is below.",
         )}
       </p>
 
@@ -141,7 +147,7 @@ export function ScaleSettings({
         <NumberRow
           label={t("Along the pad (screen vertical)")}
           info={t(
-            "The sensor's X axis, which the listener swaps onto the screen's vertical. Raise it to make upward and downward movement travel further for the same finger distance.",
+            "The sensor's X axis, which the listener swaps onto the screen's vertical. Set it in proportion to the pad's long side.",
           )}
           field={x}
           disabled={settings.isLoading}
@@ -153,7 +159,7 @@ export function ScaleSettings({
         <NumberRow
           label={t("Across the pad (screen horizontal)")}
           info={t(
-            "The sensor's Y axis, which the listener swaps onto the screen's horizontal. Lower it to slow sideways movement instead of speeding the other axis up, which keeps the overall pointer speed where you had it.",
+            "The sensor's Y axis, which the listener swaps onto the screen's horizontal. Set it in proportion to the pad's short side.",
           )}
           field={y}
           disabled={settings.isLoading}
@@ -167,6 +173,51 @@ export function ScaleSettings({
             ratio: ratio.toFixed(2),
           })}
         </p>
+      )}
+
+      {(gainX || gainY) && (
+        <>
+          <div className="border-t border-[var(--color-border)] pt-3">
+            <h4 className="text-sm font-medium text-[var(--color-text)]">
+              {t("Pointer speed, per axis")}
+            </h4>
+            <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+              {t(
+                "In tenths: 10 leaves an axis alone, 16 makes it 1.6x. This is the pointer, not the gesture detection — the pad scale above does not change cursor speed on this sensor. Raise one and lower the other to shift the balance without changing the overall speed.",
+              )}
+            </p>
+          </div>
+
+          {gainX && (
+            <NumberRow
+              label={t("Up and down (×{{factor}})", {
+                factor: (gainX.value / 10).toFixed(1),
+              })}
+              info={t(
+                "The long side of the pad. It usually wants more than the ratio of the sides suggests, because you cannot sweep the full length in one stroke the way you can across — so matching millimetres still feels reluctant.",
+              )}
+              field={gainX}
+              step={1}
+              disabled={settings.isLoading}
+              onCommit={(typed) => void commit(gainX, typed)}
+            />
+          )}
+
+          {gainY && (
+            <NumberRow
+              label={t("Left and right (×{{factor}})", {
+                factor: (gainY.value / 10).toFixed(1),
+              })}
+              info={t(
+                "The short side of the pad. Lower this instead of raising the other axis if the pointer is already fast enough overall.",
+              )}
+              field={gainY}
+              step={1}
+              disabled={settings.isLoading}
+              onCommit={(typed) => void commit(gainY, typed)}
+            />
+          )}
+        </>
       )}
     </div>
   );
