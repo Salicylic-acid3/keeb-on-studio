@@ -136,7 +136,12 @@ export function PinchSettings() {
             "Spreading the fingers zooms out instead of in. Which way round is right is the host's convention rather than anything about the pad, so there is no setting that is correct on every machine.",
           )}
           checked={invert.enabled}
-          disabled={settings.isLoading || (pinch != null && !pinch.enabled)}
+          // Settable while the pinch itself is off. Greying it out was meant to
+          // say "this does nothing right now", but it also means you cannot set
+          // the direction before turning the gesture on — so you turn it on,
+          // find it backwards, and go back for a second switch. The setting is
+          // stored either way; let it be chosen either way.
+          disabled={settings.isLoading}
           onCheckedChange={(checked) => void setToggle(invert, checked)}
         />
       )}
