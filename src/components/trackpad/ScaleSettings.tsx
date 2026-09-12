@@ -21,16 +21,15 @@
  * Nothing is drawn for a keyboard that does not publish these: older firmware,
  * or a build without CONFIG_INPUT_IQS9151_RUNTIME_SETTINGS.
  */
-import { IconLoader2 } from "@tabler/icons-react";
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import { RetainedInput } from "../macroCombo/RetainedInput";
 import { InfoTip } from "../InfoTip";
 import { useLanguage } from "../../hooks/useLanguage";
-import { useCustomSettings } from "../../hooks/useCustomSettings";
+import type { Setting } from "../../proto/cormoran/zmk/custom_settings/custom_settings";
+import type { TrackpadSettingsAccess } from "./TrackpadSettings";
 import {
   RESOLUTION_X_KEY,
   RESOLUTION_Y_KEY,
-  TRACKPAD_SUBSYSTEM_ID,
   readTrackpadNumber,
   type TrackpadNumber,
 } from "../../lib/trackpad/settings";
@@ -91,16 +90,15 @@ function NumberRow({
   );
 }
 
-export function ScaleSettings() {
+export function ScaleSettings({
+  settings,
+  rows,
+}: {
+  settings: TrackpadSettingsAccess;
+  rows: readonly Setting[];
+}) {
   const { t } = useLanguage();
-  const settings = useCustomSettings({
-    subsystemIdentifier: TRACKPAD_SUBSYSTEM_ID,
-  });
 
-  const rows = useMemo(
-    () => settings.sections.flatMap((section) => section.settings),
-    [settings.sections],
-  );
   const x = readTrackpadNumber(rows, RESOLUTION_X_KEY);
   const y = readTrackpadNumber(rows, RESOLUTION_Y_KEY);
 
@@ -120,14 +118,8 @@ export function ScaleSettings() {
     await settings.saveSection(field.setting.customSubsystemIndex);
   };
 
-  if (!x && !y) {
-    return settings.isLoading ? (
-      <div className="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
-        <IconLoader2 size={14} className="animate-spin" />
-        {t("Loading...")}
-      </div>
-    ) : null;
-  }
+  // The shared loading indicator lives in TrackpadSettings.
+  if (!x && !y) return null;
 
   // The ratio is the number that actually matters, so it is shown rather than
   // left to be worked out from the two fields.

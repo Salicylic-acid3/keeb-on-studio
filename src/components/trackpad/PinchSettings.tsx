@@ -22,15 +22,13 @@
  * rather than a keyboard configured two ways.
  */
 import * as Switch from "@radix-ui/react-switch";
-import { IconLoader2 } from "@tabler/icons-react";
-import { useMemo } from "react";
 import { InfoTip } from "../InfoTip";
 import { useLanguage } from "../../hooks/useLanguage";
-import { useCustomSettings } from "../../hooks/useCustomSettings";
+import type { Setting } from "../../proto/cormoran/zmk/custom_settings/custom_settings";
+import type { TrackpadSettingsAccess } from "./TrackpadSettings";
 import {
   ONE_HAND_PINCH_KEY,
   PINCH_INVERT_KEY,
-  TRACKPAD_SUBSYSTEM_ID,
   readTrackpadToggle,
 } from "../../lib/trackpad/settings";
 
@@ -66,18 +64,17 @@ function ToggleRow({
   );
 }
 
-export function PinchSettings() {
+export function PinchSettings({
+  settings,
+  rows,
+}: {
+  settings: TrackpadSettingsAccess;
+  rows: readonly Setting[];
+}) {
   const { t } = useLanguage();
-  const settings = useCustomSettings({
-    subsystemIdentifier: TRACKPAD_SUBSYSTEM_ID,
-  });
 
   // Every split side reports its own copy; they are meant to agree, so the
   // first one is as good as any to read through.
-  const rows = useMemo(
-    () => settings.sections.flatMap((section) => section.settings),
-    [settings.sections],
-  );
   const pinch = readTrackpadToggle(rows, ONE_HAND_PINCH_KEY);
   const invert = readTrackpadToggle(rows, PINCH_INVERT_KEY);
 
@@ -100,16 +97,9 @@ export function PinchSettings() {
     await settings.saveSection(toggle.setting.customSubsystemIndex);
   };
 
-  if (!pinch && !invert) {
-    // Either still loading, or a keyboard that does not have these. Neither is
-    // worth a message: the section simply is not there.
-    return settings.isLoading ? (
-      <div className="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
-        <IconLoader2 size={14} className="animate-spin" />
-        {t("Loading...")}
-      </div>
-    ) : null;
-  }
+  // Nothing to draw for a keyboard that does not have these. The shared
+  // loading indicator lives in TrackpadSettings.
+  if (!pinch && !invert) return null;
 
   return (
     <div className="glass-card space-y-3 p-4">
