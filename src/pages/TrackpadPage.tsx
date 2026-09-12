@@ -29,6 +29,7 @@ import { KeyboardLayoutContext } from "../contexts/KeyboardLayoutContext";
 import { KeycodeSelector } from "../components/KeycodeSelector";
 import { GestureSection } from "../components/trackpad/GestureSection";
 import { PinchSettings } from "../components/trackpad/PinchSettings";
+import { ScaleSettings } from "../components/trackpad/ScaleSettings";
 import { trackpadGesturesFor } from "../lib/trackpad/gestures";
 
 interface LayerInfo {
@@ -1348,6 +1349,7 @@ export function TrackpadPage() {
             {/* Above the gesture bindings, because it decides whether one of
                 them happens at all. Draws nothing on firmware that does not
                 publish the settings. */}
+            <ScaleSettings />
             <PinchSettings />
             <GestureSection
               gestures={gestures}

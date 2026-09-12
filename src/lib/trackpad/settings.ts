@@ -29,6 +29,50 @@ export const ONE_HAND_PINCH_KEY = "one_hand_pinch";
 /** That pinch turns the wheel the other way. */
 export const PINCH_INVERT_KEY = "pinch_invert";
 
+/**
+ * Counts the sensor spreads across each axis of the pad.
+ *
+ * The pair only makes sense as a ratio, and the ratio has to match the ratio of
+ * the pad's two sides. Mismatched, it does not present as "the resolution is
+ * wrong" — it presents as the pointer being reluctant in one direction, and as
+ * scrolls, swipes and pinches all leaning the other way, because every axis
+ * decision in the firmware compares counts rather than millimetres.
+ */
+export const RESOLUTION_X_KEY = "resolution_x";
+export const RESOLUTION_Y_KEY = "resolution_y";
+
+export interface TrackpadNumber {
+  setting: Setting;
+  value: number;
+  min: number | null;
+  max: number | null;
+}
+
+/** The named integer setting with its range, or null if this keyboard has none. */
+export function readTrackpadNumber(
+  settings: readonly Setting[],
+  key: string,
+): TrackpadNumber | null {
+  const setting = settings.find((candidate) => candidate.key === key);
+  if (!setting) return null;
+
+  const scalar = setting.value?.arrayValue?.value ?? setting.value;
+  const value = scalar?.int32Value;
+  if (typeof value !== "number") return null;
+
+  // The firmware publishes the legal span as a constraint; honouring it here
+  // keeps the input from offering values the keyboard will refuse.
+  const range = setting.meta?.constraints?.find(
+    (c) => c.range !== undefined,
+  )?.range;
+  return {
+    setting,
+    value,
+    min: range?.min?.int32Value ?? null,
+    max: range?.max?.int32Value ?? null,
+  };
+}
+
 export interface TrackpadToggle {
   /** The copy to write through. Writes go to every side regardless. */
   setting: Setting;

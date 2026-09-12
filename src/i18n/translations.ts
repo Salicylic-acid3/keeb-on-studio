@@ -41,6 +41,17 @@ const ja: Record<string, string> = {
     "どのスワイプがどれかを確かめるには、キーマップタブでキー入力表示をオンにしてパッドでスワイプしてください。対応する行が光ります。",
   "Pinch, two fingers on one pad": "片手2本指ピンチ",
   "One-pad pinch": "片手ピンチ",
+  "Pad scale": "パッドのスケール",
+  "Counts spread across each side of the pad. Only the ratio matters: it has to match the ratio of the pad's sides. Set it wrong and the pointer drags in one direction while scrolls, swipes and pinches all lean the other way.":
+    "パッドの各辺に割り当てるカウント数。意味があるのは比だけで、パッドの辺の比に合わせます。ここがずれていると、片方の向きだけポインタが重くなり、スクロール・スワイプ・ピンチの判定もすべて反対側へ傑きます。",
+  "Along the pad (screen vertical)": "パッドの縦方向(画面の上下)",
+  "The sensor's X axis, which the listener swaps onto the screen's vertical. Raise it to make upward and downward movement travel further for the same finger distance.":
+    "センサのX軸で、listener が画面の上下に入れ替えています。大きくすると、同じ指の移動量で上下にもっと進むようになります。",
+  "Across the pad (screen horizontal)": "パッドの横方向(画面の左右)",
+  "The sensor's Y axis, which the listener swaps onto the screen's horizontal. Lower it to slow sideways movement instead of speeding the other axis up, which keeps the overall pointer speed where you had it.":
+    "センサのY軸で、listener が画面の左右に入れ替えています。もう一方を上げる代わりにここを下げると、全体のカーソル速度を変えずに釣り合いを取れます。",
+  "Ratio {{ratio}} — aim for the ratio of the pad's own sides":
+    "比 {{ratio}} — パッドの辺の比に合わせる",
   "Pinch with two fingers on one pad": "片手2本指でピンチする",
   "Two fingers closing or spreading on a single pad zooms. On a small pad this is easy to confuse with a two-finger scroll, and the two-handed zoom \u2014 one finger on each pad \u2014 does the same job without the ambiguity. Off by default for that reason.":
     "片方のパッドの上で2本指を開閉するとズームします。小さいパッドでは2本指スクロールと紛らわしく、両手ズーム(左右のパッドに1本ずつ)なら同じことが曖昧さなしにできます。そのため既定はオフです。",
@@ -1642,6 +1653,17 @@ const zh: Record<string, string> = {
     "要弄清哪一个滑动对应哪一行，请在键位映射标签页打开实时按键显示，然后在触控板上滑动：触发的行会亮起。",
   "Pinch, two fingers on one pad": "单手双指捏合",
   "One-pad pinch": "单手捏合",
+  "Pad scale": "触控板尺度",
+  "Counts spread across each side of the pad. Only the ratio matters: it has to match the ratio of the pad's sides. Set it wrong and the pointer drags in one direction while scrolls, swipes and pinches all lean the other way.":
+    "分配给触控板每一边的计数。只有比值有意义，它必须与触控板两边的比值一致。设错了就会出现指针在一个方向上发洩，而滚动、滑动和捏合的判定全部向反方向倾斜。",
+  "Along the pad (screen vertical)": "触控板纵向（屏幕上下）",
+  "The sensor's X axis, which the listener swaps onto the screen's vertical. Raise it to make upward and downward movement travel further for the same finger distance.":
+    "传感器的X轴，listener 将其换到屏幕的上下方向。调大后，同样的手指移动距离在上下方向会走得更远。",
+  "Across the pad (screen horizontal)": "触控板横向（屏幕左右）",
+  "The sensor's Y axis, which the listener swaps onto the screen's horizontal. Lower it to slow sideways movement instead of speeding the other axis up, which keeps the overall pointer speed where you had it.":
+    "传感器的Y轴，listener 将其换到屏幕的左右方向。与其调高另一轴，不如调低这里，这样可以在不改变整体指针速度的前提下取得平衡。",
+  "Ratio {{ratio}} — aim for the ratio of the pad's own sides":
+    "比值 {{ratio}} — 向触控板两边的比值靠齐",
   "Pinch with two fingers on one pad": "在单侧触控板上双指捏合",
   "Two fingers closing or spreading on a single pad zooms. On a small pad this is easy to confuse with a two-finger scroll, and the two-handed zoom \u2014 one finger on each pad \u2014 does the same job without the ambiguity. Off by default for that reason.":
     "在一侧触控板上开合双指进行缩放。在小尺寸触控板上这与双指滚动很难区分，而双手缩放（左右各一根手指）可以毫不含糊地完成同样的操作，因此默认关闭。",
