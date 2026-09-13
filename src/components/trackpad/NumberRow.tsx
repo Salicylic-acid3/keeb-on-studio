@@ -10,7 +10,11 @@
 import { useRef } from "react";
 import { RetainedInput } from "../macroCombo/RetainedInput";
 import { InfoTip } from "../InfoTip";
-import type { TrackpadNumber } from "../../lib/trackpad/settings";
+import { useLanguage } from "../../hooks/useLanguage";
+import {
+  sidesDisagree,
+  type TrackpadNumber,
+} from "../../lib/trackpad/settings";
 
 export function NumberRow({
   label,
@@ -29,8 +33,17 @@ export function NumberRow({
   disabled?: boolean;
   onCommit: (typed: string) => void;
 }) {
+  const { t } = useLanguage();
   const decimals = scale > 1 ? Math.ceil(Math.log10(scale)) : 0;
   const shown = (stored: number) => (stored / scale).toFixed(decimals);
+  /*
+   * The box shows the central's copy. When the other half holds something
+   * else — a write that reached one side and not the other — the box alone
+   * would hide it, and a keyboard configured two ways is exactly the fault
+   * these rows exist to prevent. Say so, and let a commit of any value (the
+   * shown one included) write both back into agreement.
+   */
+  const disagree = sidesDisagree(field);
   /*
    * What is in the box right now, kept outside React state on purpose: the
    * displayed value belongs to RetainedInput (which reconciles it against the
@@ -41,9 +54,21 @@ export function NumberRow({
 
   return (
     <div className="flex items-center justify-between gap-3">
-      <span className="flex min-w-0 items-center gap-1.5 text-sm text-[var(--color-text-secondary)]">
-        <span className="truncate">{label}</span>
-        <InfoTip text={info} />
+      <span className="flex min-w-0 flex-col">
+        <span className="flex min-w-0 items-center gap-1.5 text-sm text-[var(--color-text-secondary)]">
+          <span className="truncate">{label}</span>
+          <InfoTip text={info} />
+        </span>
+        {disagree && (
+          <span className="text-xs text-[var(--color-warning)]">
+            {t(
+              "The halves differ: {{values}}. Press Enter in the box to write both.",
+              {
+                values: field.copies.map(shown).join(" / "),
+              },
+            )}
+          </span>
+        )}
       </span>
       <RetainedInput
         type="number"

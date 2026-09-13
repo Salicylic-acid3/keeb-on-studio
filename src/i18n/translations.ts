@@ -118,9 +118,20 @@ const ja: Record<string, string> = {
   "Left and right ({{n}} counts)": "横 ({{n}}カウント)",
   "Across the pad's short side. Three fingers side by side already fill most of it, so there is little room to travel before one runs off; this is why it is lower than the other.":
     "パッドの短辺方向。3本指を並べるとほぼ埋まるので、外れる前に動かせる距離が短い。縦より低いのはそのためです。",
-  "Report at most every {{n}} ms": "送信間隔 ({{n}}ms ごと)",
-  "For the half whose pointer crosses the Bluetooth link between the halves. The sensor reports 200 times a second and each report is two notifications, more than the link carries; the rest queue, and a queue is lag — on the pointer, and on that half's key presses, which wait behind it. Movement between reports is added up, so nothing is lost. 15 matches the link; 0 reports every frame, which is right for the half plugged into the computer. Both halves take the same value here, so it is set in the firmware per half and this is for trying.":
-    "ポインタが左右間の Bluetooth リンクを渡る側のための設定。センサは毎秒 200 回報告し、1 回が 2 通知なのでリンクの容量を超え、余りが待ち行列になります。待ち行列 = 遅延で、その側のキー入力も後ろに並んで遅れます。送信の間の移動量は足し合わせるので失われません。15 がリンクの周期に合い、0 は毎フレーム送信(PC に直接つながる側はこちら)。ここでは左右に同じ値が書かれるので、本来は半身ごとにファームで決める値です。試すための欄。",
+  "Report at most every {{n}} ms — plugged-in half":
+    "送信間隔 ({{n}}ms ごと) — PC につながる側",
+  "Report at most every {{n}} ms — wireless half":
+    "送信間隔 ({{n}}ms ごと) — 無線側",
+  "Report at most every {{n}} ms — wireless half {{i}}":
+    "送信間隔 ({{n}}ms ごと) — 無線側 {{i}}",
+  "This half is on the computer's cable, so there is no link to pace: 0 reports every sensor frame, 200 a second, and anything above it only makes the pointer coarser and later. This box changes this half only.":
+    "この側は PC にケーブルでつながっていて、詰まるリンクがありません。0 で毎フレーム(毎秒 200 回)送り、それより大きくしてもポインタが粗く・遅くなるだけです。この欄はこの側だけを変えます。",
+  "This half's pointer crosses the Bluetooth link between the halves. The sensor reports 200 times a second and each report is two notifications, more than the link carries; the rest queue, and a queue is lag — on the pointer, and on this half's key presses, which wait behind it. Movement between reports is added up, so nothing is lost. 8 matches the link's 7.5 ms cadence; lower is finer but risks the queue, higher is coarser. This box changes this half only.":
+    "この側のポインタは左右間の Bluetooth リンクを渡ります。センサは毎秒 200 回報告し、1 回が 2 通知なのでリンクの容量を超え、余りが待ち行列になります。待ち行列 = 遅延で、この側のキー入力も後ろに並んで遅れます。送信の間の移動量は足し合わせるので失われません。8 がリンクの周期 7.5ms に合います。小さいほど細かいが詰まりやすく、大きいほど粗い。この欄はこの側だけを変えます。",
+  "The halves differ: {{values}}. Press Enter in the box to write both.":
+    "左右で値が違います: {{values}}。欄で Enter を押すと両方に書き直します。",
+  "The halves differ. Flip the switch to write both.":
+    "左右で値が違います。スイッチを切り替えると両方に書き直します。",
   "Spreading the fingers zooms out instead of in — for the two-finger pinch on one pad and the one-finger-each-hand pinch across both alike. Which way round is right is the host's convention rather than anything about the pad, so there is no setting that is correct on every machine.":
     "指を開いたときに拡大ではなく縮小します。片手 2 本指のピンチにも、両手 1 本ずつのピンチにも同じように効きます。どちらが正しいかはパッドではなくホスト側の流儀で決まるので、どの環境でも正解という設定はありません。",
   "Two-finger swipe, horizontal A": "2本指スワイプ・横 A",
@@ -1795,9 +1806,20 @@ const zh: Record<string, string> = {
   "Left and right ({{n}} counts)": "左右（{{n}} 计数）",
   "Across the pad's short side. Three fingers side by side already fill most of it, so there is little room to travel before one runs off; this is why it is lower than the other.":
     "沿触控板短边。三指并排几乎占满，没多少余地就会有一指滑出，所以比另一项低。",
-  "Report at most every {{n}} ms": "上报间隔（每 {{n}} ms）",
-  "For the half whose pointer crosses the Bluetooth link between the halves. The sensor reports 200 times a second and each report is two notifications, more than the link carries; the rest queue, and a queue is lag — on the pointer, and on that half's key presses, which wait behind it. Movement between reports is added up, so nothing is lost. 15 matches the link; 0 reports every frame, which is right for the half plugged into the computer. Both halves take the same value here, so it is set in the firmware per half and this is for trying.":
-    "用于指针要经过两半之间蓝牙链路的那一半。传感器每秒上报 200 次，每次两条通知，超过链路承载，其余排队；排队就是延迟——指针延迟，该半边的按键也排在后面延迟。上报之间的移动会累加，不会丢失。15 与链路节奏匹配；0 为每帧上报，适合直接连电脑的那一半。此处两半写入相同值，所以本应按半边在固件中设定，这里仅供试验。",
+  "Report at most every {{n}} ms — plugged-in half":
+    "上报间隔（每 {{n}} ms）— 连接电脑的一半",
+  "Report at most every {{n}} ms — wireless half":
+    "上报间隔（每 {{n}} ms）— 无线的一半",
+  "Report at most every {{n}} ms — wireless half {{i}}":
+    "上报间隔（每 {{n}} ms）— 无线的一半 {{i}}",
+  "This half is on the computer's cable, so there is no link to pace: 0 reports every sensor frame, 200 a second, and anything above it only makes the pointer coarser and later. This box changes this half only.":
+    "这一半通过线缆连接电脑，没有需要节流的链路：0 为每个传感器帧上报（每秒 200 次），再大只会让指针更粗、更迟。此框只更改这一半。",
+  "This half's pointer crosses the Bluetooth link between the halves. The sensor reports 200 times a second and each report is two notifications, more than the link carries; the rest queue, and a queue is lag — on the pointer, and on this half's key presses, which wait behind it. Movement between reports is added up, so nothing is lost. 8 matches the link's 7.5 ms cadence; lower is finer but risks the queue, higher is coarser. This box changes this half only.":
+    "这一半的指针要经过两半之间的蓝牙链路。传感器每秒上报 200 次，每次两条通知，超过链路承载，其余排队；排队就是延迟——指针延迟，这一半的按键也排在后面延迟。上报之间的移动会累加，不会丢失。8 与链路 7.5 ms 的节奏匹配；更小更细但容易排队，更大更粗。此框只更改这一半。",
+  "The halves differ: {{values}}. Press Enter in the box to write both.":
+    "两半的值不同：{{values}}。在框中按 Enter 可同时写入两半。",
+  "The halves differ. Flip the switch to write both.":
+    "两半的值不同。拨动开关可同时写入两半。",
   "Spreading the fingers zooms out instead of in — for the two-finger pinch on one pad and the one-finger-each-hand pinch across both alike. Which way round is right is the host's convention rather than anything about the pad, so there is no setting that is correct on every machine.":
     "张开手指时缩小而不是放大——单手双指捏合和双手各一指的捏合都同样适用。哪个方向正确取决于主机的惯例而非触控板本身，因此没有在所有设备上都正确的设置。",
   "Two-finger swipe, horizontal A": "双指滑动 · 横向 A",

@@ -34,6 +34,7 @@ import {
   commitTrackpadNumber,
   readTrackpadNumber,
   readTrackpadToggle,
+  sidesDisagree,
 } from "../../lib/trackpad/settings";
 
 export function PinchSettings({
@@ -88,6 +89,7 @@ export function PinchSettings({
             "Two fingers closing or spreading on a single pad zooms. On a small pad this is easy to confuse with a two-finger scroll, and the two-handed zoom — one finger on each pad — does the same job without the ambiguity. Off by default for that reason.",
           )}
           checked={pinch.enabled}
+          disagree={sidesDisagree(pinch)}
           disabled={settings.isLoading}
           onCheckedChange={(checked) => void setToggle(pinch, checked)}
         />
@@ -100,6 +102,7 @@ export function PinchSettings({
             "Spreading the fingers zooms out instead of in — for the two-finger pinch on one pad and the one-finger-each-hand pinch across both alike. Which way round is right is the host's convention rather than anything about the pad, so there is no setting that is correct on every machine.",
           )}
           checked={invert.enabled}
+          disagree={sidesDisagree(invert)}
           // Settable while the pinch itself is off. Greying it out was meant to
           // say "this does nothing right now", but it also means you cannot set
           // the direction before turning the gesture on — so you turn it on,

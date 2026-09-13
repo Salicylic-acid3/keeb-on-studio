@@ -116,7 +116,10 @@ export const RIPPLE_AUTO_KEY = "ripple_auto";
  * a second are twice that in notifications, which the link cannot carry, and
  * what it cannot carry it queues — lag on the pointer and, since key presses
  * wait in the same queue, late keystrokes. Movement is added up between
- * reports, so nothing is lost; 15 matches the link's cadence.
+ * reports, so nothing is lost; 8 matches the link's 7.5 ms connection
+ * interval. The half plugged into the computer has no such link and wants 0:
+ * the one trackpad setting the two sides should NOT share, so it is read and
+ * written per side.
  */
 export const CURSOR_REPORT_INTERVAL_KEY = "cursor_report_interval_ms";
 
@@ -146,18 +149,22 @@ export interface TrackpadNumber {
   value: number;
   min: number | null;
   max: number | null;
+  /**
+   * What every split side holds for this key, in source order — the central
+   * first. The sides are meant to agree, and usually do, but a write that
+   * reached one half and not the other leaves them apart with nothing on
+   * screen to say so: the row shows the first copy. A row whose copies differ
+   * says so beside the box, and the next commit writes both.
+   */
+  copies: number[];
 }
 
-/** The named integer setting with its range, or null if this keyboard has none. */
-export function readTrackpadNumber(
-  settings: readonly Setting[],
-  key: string,
-): TrackpadNumber | null {
-  const setting = settings.find((candidate) => candidate.key === key);
-  if (!setting) return null;
+function scalarOf(setting: Setting) {
+  return setting.value?.arrayValue?.value ?? setting.value;
+}
 
-  const scalar = setting.value?.arrayValue?.value ?? setting.value;
-  const value = scalar?.int32Value;
+function numberFrom(setting: Setting): TrackpadNumber | null {
+  const value = scalarOf(setting)?.int32Value;
   if (typeof value !== "number") return null;
 
   // The firmware publishes the legal span as a constraint; honouring it here
@@ -170,13 +177,51 @@ export function readTrackpadNumber(
     value,
     min: range?.min?.int32Value ?? null,
     max: range?.max?.int32Value ?? null,
+    copies: [value],
   };
+}
+
+/** The named integer setting with its range, or null if this keyboard has none. */
+export function readTrackpadNumber(
+  settings: readonly Setting[],
+  key: string,
+): TrackpadNumber | null {
+  const sides = readTrackpadNumberPerSide(settings, key);
+  if (sides.length === 0) return null;
+  return { ...sides[0], copies: sides.map((side) => side.value) };
+}
+
+/**
+ * The named integer setting once per split side, central first.
+ *
+ * For the few settings that are legitimately different on the two halves —
+ * the report interval paces a Bluetooth link that only one half's pointer
+ * crosses — each side gets its own box, and each box writes only its side.
+ */
+export function readTrackpadNumberPerSide(
+  settings: readonly Setting[],
+  key: string,
+): TrackpadNumber[] {
+  return settings
+    .filter((candidate) => candidate.key === key)
+    .sort((a, b) => a.source - b.source)
+    .map(numberFrom)
+    .filter((field): field is TrackpadNumber => field !== null);
+}
+
+/** True when the split sides hold different values for this field. */
+export function sidesDisagree(field: {
+  copies: readonly (number | boolean)[];
+}): boolean {
+  return new Set(field.copies).size > 1;
 }
 
 export interface TrackpadToggle {
   /** The copy to write through. Writes go to every side regardless. */
   setting: Setting;
   enabled: boolean;
+  /** Every side's copy, central first; see TrackpadNumber.copies. */
+  copies: boolean[];
 }
 
 /**
@@ -190,26 +235,37 @@ export function readTrackpadToggle(
   settings: readonly Setting[],
   key: string,
 ): TrackpadToggle | null {
-  const setting = settings.find((candidate) => candidate.key === key);
-  if (!setting) return null;
-
   // Same unwrapping the generic settings pane does: an array element carries
   // its scalar one level down, a plain setting is the scalar.
-  const scalar = setting.value?.arrayValue?.value ?? setting.value;
-  const enabled = scalar?.boolValue;
-  if (typeof enabled !== "boolean") return null;
+  const sides = settings
+    .filter((candidate) => candidate.key === key)
+    .sort((a, b) => a.source - b.source)
+    .map((setting) => ({ setting, enabled: scalarOf(setting)?.boolValue }))
+    .filter(
+      (side): side is { setting: Setting; enabled: boolean } =>
+        typeof side.enabled === "boolean",
+    );
+  if (sides.length === 0) return null;
 
-  return { setting, enabled };
+  return {
+    setting: sides[0].setting,
+    enabled: sides[0].enabled,
+    copies: sides.map((side) => side.enabled),
+  };
 }
 
 /**
  * Parse what was typed into a number box, clamp it to the firmware's range and
  * write it to every side. A blank or unchanged box writes nothing: there is
- * nothing to say.
+ * nothing to say — unless the sides disagree, in which case an unchanged box
+ * is still worth writing, because that is what brings them back together.
  *
  * `scale` is how many stored units one typed unit is: a setting the firmware
  * keeps in tenths but the box shows in whole counts passes 10, and "77.5"
  * becomes 775. The range is in stored units either way.
+ *
+ * `everySide` false writes only the side this copy came from — for the
+ * per-side rows, where the two halves are meant to differ.
  */
 export async function commitTrackpadNumber(
   settings: TrackpadSettingsAccess,
@@ -217,11 +273,12 @@ export async function commitTrackpadNumber(
   draft: string,
   fallbackRange: { min: number; max: number },
   scale = 1,
+  everySide = true,
 ) {
   const typed = Number.parseFloat(draft);
   if (!Number.isFinite(typed)) return;
   const parsed = Math.round(typed * scale);
-  if (parsed === field.value) return;
+  if (parsed === field.value && !(everySide && sidesDisagree(field))) return;
 
   const min = field.min ?? fallbackRange.min;
   const max = field.max ?? fallbackRange.max;
@@ -230,7 +287,7 @@ export async function commitTrackpadNumber(
   await settings.writeSettingToMemory(
     field.setting,
     { int32Value: clamped },
-    { allSources: true },
+    { allSources: everySide },
   );
   await settings.saveSection(field.setting.customSubsystemIndex);
 }

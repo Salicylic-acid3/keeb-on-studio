@@ -40,7 +40,9 @@ import {
   RIPPLE_PERIOD_Y_KEY,
   commitTrackpadNumber,
   readTrackpadNumber,
+  readTrackpadNumberPerSide,
   readTrackpadToggle,
+  sidesDisagree,
   type TrackpadNumber,
 } from "../../lib/trackpad/settings";
 
@@ -62,7 +64,12 @@ export function ScaleSettings({
   const rippleX = readTrackpadNumber(rows, RIPPLE_PERIOD_X_KEY);
   const rippleY = readTrackpadNumber(rows, RIPPLE_PERIOD_Y_KEY);
   const rippleAuto = readTrackpadToggle(rows, RIPPLE_AUTO_KEY);
-  const reportInterval = readTrackpadNumber(rows, CURSOR_REPORT_INTERVAL_KEY);
+  // One box per half: the interval paces a Bluetooth link that only the
+  // peripheral's pointer crosses, so the halves are meant to differ here.
+  const reportIntervals = readTrackpadNumberPerSide(
+    rows,
+    CURSOR_REPORT_INTERVAL_KEY,
+  );
 
   const commit = (field: TrackpadNumber, draft: string) =>
     commitTrackpadNumber(settings, field, draft, { min: 1, max: 4095 });
@@ -96,7 +103,7 @@ export function ScaleSettings({
     !distance &&
     !rippleX &&
     !rippleY &&
-    !reportInterval
+    reportIntervals.length === 0
   )
     return null;
 
@@ -154,7 +161,7 @@ export function ScaleSettings({
         distance ||
         rippleX ||
         rippleY ||
-        reportInterval) && (
+        reportIntervals.length > 0) && (
         <>
           <div className="border-t border-[var(--color-border)] pt-3">
             <h4 className="text-sm font-medium text-[var(--color-text)]">
@@ -210,25 +217,47 @@ export function ScaleSettings({
             />
           )}
 
-          {reportInterval && (
+          {reportIntervals.map((field, index) => (
             <NumberRow
-              label={t("Report at most every {{n}} ms", {
-                n: reportInterval.value,
-              })}
-              info={t(
-                "For the half whose pointer crosses the Bluetooth link between the halves. The sensor reports 200 times a second and each report is two notifications, more than the link carries; the rest queue, and a queue is lag — on the pointer, and on that half's key presses, which wait behind it. Movement between reports is added up, so nothing is lost. 15 matches the link; 0 reports every frame, which is right for the half plugged into the computer. Both halves take the same value here, so it is set in the firmware per half and this is for trying.",
-              )}
-              field={reportInterval}
+              key={field.setting.source}
+              label={
+                index === 0
+                  ? t("Report at most every {{n}} ms — plugged-in half", {
+                      n: field.value,
+                    })
+                  : reportIntervals.length > 2
+                    ? t("Report at most every {{n}} ms — wireless half {{i}}", {
+                        n: field.value,
+                        i: index,
+                      })
+                    : t("Report at most every {{n}} ms — wireless half", {
+                        n: field.value,
+                      })
+              }
+              info={
+                index === 0
+                  ? t(
+                      "This half is on the computer's cable, so there is no link to pace: 0 reports every sensor frame, 200 a second, and anything above it only makes the pointer coarser and later. This box changes this half only.",
+                    )
+                  : t(
+                      "This half's pointer crosses the Bluetooth link between the halves. The sensor reports 200 times a second and each report is two notifications, more than the link carries; the rest queue, and a queue is lag — on the pointer, and on this half's key presses, which wait behind it. Movement between reports is added up, so nothing is lost. 8 matches the link's 7.5 ms cadence; lower is finer but risks the queue, higher is coarser. This box changes this half only.",
+                    )
+              }
+              field={field}
               step={1}
               disabled={settings.isLoading}
               onCommit={(typed) =>
-                void commitTrackpadNumber(settings, reportInterval, typed, {
-                  min: 0,
-                  max: 100,
-                })
+                void commitTrackpadNumber(
+                  settings,
+                  field,
+                  typed,
+                  { min: 0, max: 100 },
+                  1,
+                  false,
+                )
               }
             />
-          )}
+          ))}
 
           {rippleAuto && (
             <ToggleRow
@@ -237,6 +266,7 @@ export function ScaleSettings({
                 "The keyboard tries a bank of periods and adopts the one whose wave comes out largest — every pad has its own value, to a tenth, and a pad may have no wave at all. Until something is found nothing is corrected, because a correction at the wrong period is a wave of its own; found values are remembered across power cycles and searched again if the pad scale changes. Takes ten or twenty seconds of ordinary strokes on each pad. While this is on, the periods below are ignored. Turn it off to use them by hand.",
               )}
               checked={rippleAuto.enabled}
+              disagree={sidesDisagree(rippleAuto)}
               disabled={settings.isLoading}
               onCheckedChange={(checked) => void setAuto(checked)}
             />

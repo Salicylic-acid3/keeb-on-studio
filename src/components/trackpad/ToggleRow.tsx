@@ -6,25 +6,37 @@
  */
 import * as Switch from "@radix-ui/react-switch";
 import { InfoTip } from "../InfoTip";
+import { useLanguage } from "../../hooks/useLanguage";
 
 export function ToggleRow({
   label,
   info,
   checked,
+  disagree = false,
   disabled,
   onCheckedChange,
 }: {
   label: string;
   info: string;
   checked: boolean;
+  /** The two halves hold different values; flipping the switch writes both. */
+  disagree?: boolean;
   disabled?: boolean;
   onCheckedChange: (checked: boolean) => void;
 }) {
+  const { t } = useLanguage();
   return (
     <div className="flex items-center justify-between gap-3">
-      <span className="flex min-w-0 items-center gap-1.5 text-sm text-[var(--color-text-secondary)]">
-        <span className="truncate">{label}</span>
-        <InfoTip text={info} />
+      <span className="flex min-w-0 flex-col">
+        <span className="flex min-w-0 items-center gap-1.5 text-sm text-[var(--color-text-secondary)]">
+          <span className="truncate">{label}</span>
+          <InfoTip text={info} />
+        </span>
+        {disagree && (
+          <span className="text-xs text-[var(--color-warning)]">
+            {t("The halves differ. Flip the switch to write both.")}
+          </span>
+        )}
       </span>
       <Switch.Root
         checked={checked}
