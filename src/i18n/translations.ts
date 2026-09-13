@@ -80,6 +80,12 @@ const ja: Record<string, string> = {
   "The same correction for the short axis. Leave it at 0 unless the waveform tool finds a period there too; on this pad it does not.":
     "短辺側の同じ補正。速度波形ツールでこちらにも周期が出ない限り 0 のままで。このパッドでは出ません。",
   "Find the ripple period by itself": "リップルの周期を自動で探す",
+  "Found so far: ": "見つかった周期: ",
+  "plugged-in half": "PC につながる側",
+  "wireless half": "無線側",
+  "wireless half {{i}}": "無線側 {{i}}",
+  "still looking": "探索中",
+  "{{half}}: up/down {{x}}, left/right {{y}}": "{{half}}: 縦 {{x}}、横 {{y}}",
   "The keyboard tries a bank of periods and adopts the one whose wave comes out largest — every pad has its own value, to a tenth, and a pad may have no wave at all. Until something is found nothing is corrected, because a correction at the wrong period is a wave of its own; found values are remembered across power cycles and searched again if the pad scale changes. Takes ten or twenty seconds of ordinary strokes on each pad. While this is on, the periods below are ignored. Turn it off to use them by hand.":
     "キーボードが多数の周期候補を試し、波が最も大きく出た周期を採用します。周期はパッドごとに 0.1 単位で違い、波のないパッドもあります。見つかるまでは何も補正しません(違う周期での補正は、それ自体が波になるため)。見つけた値は電源を切っても覚えていて、パッドのスケールを変えると探し直します。各パッドで普通に 10〜20 秒なぞれば決まります。オンの間、下の周期は使われません。手で決めたいときはオフに。",
   "Ripple smoothing ({{n}} counts)": "リップル除去 ({{n}}カウント)",
@@ -1768,6 +1774,13 @@ const zh: Record<string, string> = {
   "The same correction for the short axis. Leave it at 0 unless the waveform tool finds a period there too; on this pad it does not.":
     "短边的同一校正。除非速度波形工具在该轴也测到周期，否则保持 0；这块触控板上没有。",
   "Find the ripple period by itself": "自动查找波纹周期",
+  "Found so far: ": "已找到的周期：",
+  "plugged-in half": "连接电脑的一半",
+  "wireless half": "无线的一半",
+  "wireless half {{i}}": "无线的一半 {{i}}",
+  "still looking": "仍在查找",
+  "{{half}}: up/down {{x}}, left/right {{y}}":
+    "{{half}}：上下 {{x}}，左右 {{y}}",
   "The keyboard tries a bank of periods and adopts the one whose wave comes out largest — every pad has its own value, to a tenth, and a pad may have no wave at all. Until something is found nothing is corrected, because a correction at the wrong period is a wave of its own; found values are remembered across power cycles and searched again if the pad scale changes. Takes ten or twenty seconds of ordinary strokes on each pad. While this is on, the periods below are ignored. Turn it off to use them by hand.":
     "键盘会尝试一组候选周期，并采用波形最大的那个——每块触控板的周期都不同（精确到 0.1），有的触控板根本没有波。找到之前不做任何校正（在错误周期上的校正本身就是一道波）；找到的值断电后也会记住，触控板比例改变时会重新查找。在每块触控板上正常划动十到二十秒即可确定。开启期间下方的周期不被使用；要手动设定请关闭。",
   "Ripple smoothing ({{n}} counts)": "波纹平滑（{{n}} 计数）",

@@ -35,6 +35,8 @@ import {
   RESOLUTION_X_KEY,
   RESOLUTION_Y_KEY,
   RIPPLE_AUTO_KEY,
+  RIPPLE_FOUND_X_KEY,
+  RIPPLE_FOUND_Y_KEY,
   RIPPLE_PERIOD_SCALE,
   RIPPLE_PERIOD_X_KEY,
   RIPPLE_PERIOD_Y_KEY,
@@ -64,6 +66,9 @@ export function ScaleSettings({
   const rippleX = readTrackpadNumber(rows, RIPPLE_PERIOD_X_KEY);
   const rippleY = readTrackpadNumber(rows, RIPPLE_PERIOD_Y_KEY);
   const rippleAuto = readTrackpadToggle(rows, RIPPLE_AUTO_KEY);
+  // Per half, because each half searches its own pad and the answers differ.
+  const foundX = readTrackpadNumberPerSide(rows, RIPPLE_FOUND_X_KEY);
+  const foundY = readTrackpadNumberPerSide(rows, RIPPLE_FOUND_Y_KEY);
   // One box per half: the interval paces a Bluetooth link that only the
   // peripheral's pointer crosses, so the halves are meant to differ here.
   const reportIntervals = readTrackpadNumberPerSide(
@@ -270,6 +275,36 @@ export function ScaleSettings({
               disabled={settings.isLoading}
               onCheckedChange={(checked) => void setAuto(checked)}
             />
+          )}
+
+          {rippleAuto?.enabled && foundX.length > 0 && (
+            <p className="text-xs text-[var(--color-text-muted)]">
+              {t("Found so far: ")}
+              {foundX.map((side, index) => {
+                const y = foundY.find(
+                  (candidate) =>
+                    candidate.setting.source === side.setting.source,
+                );
+                const half =
+                  index === 0
+                    ? t("plugged-in half")
+                    : foundX.length > 2
+                      ? t("wireless half {{i}}", { i: index })
+                      : t("wireless half");
+                const axis = (field: TrackpadNumber | undefined) =>
+                  field && field.value > 0 ? period(field) : t("still looking");
+                return (
+                  <span key={side.setting.source}>
+                    {index > 0 && " · "}
+                    {t("{{half}}: up/down {{x}}, left/right {{y}}", {
+                      half,
+                      x: axis(side),
+                      y: axis(y),
+                    })}
+                  </span>
+                );
+              })}
+            </p>
           )}
 
           {rippleX && (

@@ -110,6 +110,16 @@ export const RIPPLE_PERIOD_SCALE = 10;
 export const RIPPLE_AUTO_KEY = "ripple_auto";
 
 /**
+ * What the search found per axis, in tenths of a count; 0 is nothing yet.
+ *
+ * Written by the keyboard, for reading: without a debug build this is the one
+ * way to tell whether a pad has locked on to its wave or is still looking,
+ * and each half answers for its own pad. Shown as text, never as a box.
+ */
+export const RIPPLE_FOUND_X_KEY = "ripple_found_x_x10";
+export const RIPPLE_FOUND_Y_KEY = "ripple_found_y_x10";
+
+/**
  * Report pointer movement at most this often, in ms; 0 is every frame.
  *
  * For a split half whose pointer crosses a BLE link: the sensor's 200 frames
