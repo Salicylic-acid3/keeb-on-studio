@@ -79,17 +79,24 @@ export const CURSOR_SMOOTHING_KEY = "cursor_smoothing";
 export const CURSOR_DISTANCE_SMOOTHING_KEY = "cursor_distance_smoothing";
 
 /**
- * Period of the sensor's positional ripple per axis, in counts; 0 is off.
+ * Period of the sensor's positional ripple per axis, in tenths of a count; 0
+ * is off.
  *
  * The lag-free alternative to the distance window above. The reported position
  * carries a wave fixed to where the finger is over the electrodes, half an
  * electrode pitch long; given its period the firmware learns the wave's shape
- * from the first stroke and divides it out of every report. resolution / (2 ×
- * electrodes) on that axis — 76 on the ErgoTrack's long axis. A few percent off
- * halves the effect, so it is a knob rather than a constant.
+ * from the first stroke and divides it out of every report. Geometry puts the
+ * period at resolution / (2 × electrodes) — 76.0 on the ErgoTrack's long axis —
+ * but the equaliser needs it to within a percent: a few percent off halves the
+ * effect, which is why the unit is tenths (770 is 77.0) and why it is a knob to
+ * scan rather than a constant. The earlier whole-count keys were retired rather
+ * than reinterpreted, so a stored 76 could not silently become 7.6.
  */
-export const RIPPLE_PERIOD_X_KEY = "ripple_period_x";
-export const RIPPLE_PERIOD_Y_KEY = "ripple_period_y";
+export const RIPPLE_PERIOD_X_KEY = "ripple_period_x_x10";
+export const RIPPLE_PERIOD_Y_KEY = "ripple_period_y_x10";
+
+/** Tenths on the wire, whole counts with one decimal in the box. */
+export const RIPPLE_PERIOD_SCALE = 10;
 
 /**
  * The sensor's own low-speed filter, one key per register.
@@ -173,15 +180,22 @@ export function readTrackpadToggle(
  * Parse what was typed into a number box, clamp it to the firmware's range and
  * write it to every side. A blank or unchanged box writes nothing: there is
  * nothing to say.
+ *
+ * `scale` is how many stored units one typed unit is: a setting the firmware
+ * keeps in tenths but the box shows in whole counts passes 10, and "77.5"
+ * becomes 775. The range is in stored units either way.
  */
 export async function commitTrackpadNumber(
   settings: TrackpadSettingsAccess,
   field: TrackpadNumber,
   draft: string,
   fallbackRange: { min: number; max: number },
+  scale = 1,
 ) {
-  const parsed = Number.parseInt(draft, 10);
-  if (!Number.isFinite(parsed) || parsed === field.value) return;
+  const typed = Number.parseFloat(draft);
+  if (!Number.isFinite(typed)) return;
+  const parsed = Math.round(typed * scale);
+  if (parsed === field.value) return;
 
   const min = field.min ?? fallbackRange.min;
   const max = field.max ?? fallbackRange.max;

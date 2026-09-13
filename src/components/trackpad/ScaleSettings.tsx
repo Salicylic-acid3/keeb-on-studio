@@ -32,6 +32,7 @@ import {
   CURSOR_SMOOTHING_KEY,
   RESOLUTION_X_KEY,
   RESOLUTION_Y_KEY,
+  RIPPLE_PERIOD_SCALE,
   RIPPLE_PERIOD_X_KEY,
   RIPPLE_PERIOD_Y_KEY,
   commitTrackpadNumber,
@@ -59,6 +60,16 @@ export function ScaleSettings({
 
   const commit = (field: TrackpadNumber, draft: string) =>
     commitTrackpadNumber(settings, field, draft, { min: 1, max: 4095 });
+  const commitPeriod = (field: TrackpadNumber, draft: string) =>
+    commitTrackpadNumber(
+      settings,
+      field,
+      draft,
+      { min: 0, max: 1600 },
+      RIPPLE_PERIOD_SCALE,
+    );
+  const period = (field: TrackpadNumber) =>
+    (field.value / RIPPLE_PERIOD_SCALE).toFixed(1);
 
   // The shared loading indicator lives in TrackpadSettings.
   if (
@@ -180,30 +191,32 @@ export function ScaleSettings({
           {rippleX && (
             <NumberRow
               label={t("Ripple correction, up and down ({{n}} counts)", {
-                n: rippleX.value,
+                n: period(rippleX),
               })}
               info={t(
-                "Divides the sensor's positional wave out of every report with no lag — the keyboard learns the wave's shape by itself from the first stroke and keeps it. Enter the wave's period in sensor counts: resolution ÷ (2 × electrodes along this axis), 76 here (1974 ÷ 26). Measure it with the counting tool; a few percent off halves the effect, so nudge by one and feel. 0 turns it off.",
+                "Divides the sensor's positional wave out of every report with no lag — the keyboard learns the wave's shape by itself from the first stroke and keeps it. Enter the wave's period in sensor counts, to a tenth. Geometry says resolution ÷ (2 × electrodes along this axis), 76.0 here (1974 ÷ 26), but the equaliser needs it to within a percent — being off by one count leaves a third of the wave, and by four undoes it — so scan: with the waveform tool open, try 76.0 to 78.0 in steps of 0.5, keep the value with the smallest ripple amplitude, then narrow the step to 0.2. 0 turns it off.",
               )}
               field={rippleX}
-              step={1}
+              step={0.5}
+              scale={RIPPLE_PERIOD_SCALE}
               disabled={settings.isLoading}
-              onCommit={(typed) => void commit(rippleX, typed)}
+              onCommit={(typed) => void commitPeriod(rippleX, typed)}
             />
           )}
 
           {rippleY && (
             <NumberRow
               label={t("Ripple correction, left and right ({{n}} counts)", {
-                n: rippleY.value,
+                n: period(rippleY),
               })}
               info={t(
-                "The same correction for the short axis. Leave it at 0 unless the counting tool finds a period there too; on this pad it does not.",
+                "The same correction for the short axis. Leave it at 0 unless the waveform tool finds a period there too; on this pad it does not.",
               )}
               field={rippleY}
-              step={1}
+              step={0.5}
+              scale={RIPPLE_PERIOD_SCALE}
               disabled={settings.isLoading}
-              onCommit={(typed) => void commit(rippleY, typed)}
+              onCommit={(typed) => void commitPeriod(rippleY, typed)}
             />
           )}
 

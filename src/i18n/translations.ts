@@ -73,12 +73,12 @@ const ja: Record<string, string> = {
   "Smoothing ({{n}} reports)": "なめらかさ ({{n}}回に分散)",
   "Ripple correction, up and down ({{n}} counts)":
     "リップル補正 縦 (周期 {{n}}カウント)",
-  "Divides the sensor's positional wave out of every report with no lag — the keyboard learns the wave's shape by itself from the first stroke and keeps it. Enter the wave's period in sensor counts: resolution ÷ (2 × electrodes along this axis), 76 here (1974 ÷ 26). Measure it with the counting tool; a few percent off halves the effect, so nudge by one and feel. 0 turns it off.":
-    "センサの位置の波を、遅延なしで毎レポートから割り出して消します。波の形はキーボード自身が最初のストロークで学習し、覚えておきます。入れるのは波の周期(センサのカウント): 解像度 ÷ (2 × その軸の電極本数)、ここでは 76(1974 ÷ 26)。計測ツールで測ってから、1刻みで動かして手で確かめてください。数%ずれると効きが半減します。0 で無効。",
+  "Divides the sensor's positional wave out of every report with no lag — the keyboard learns the wave's shape by itself from the first stroke and keeps it. Enter the wave's period in sensor counts, to a tenth. Geometry says resolution ÷ (2 × electrodes along this axis), 76.0 here (1974 ÷ 26), but the equaliser needs it to within a percent — being off by one count leaves a third of the wave, and by four undoes it — so scan: with the waveform tool open, try 76.0 to 78.0 in steps of 0.5, keep the value with the smallest ripple amplitude, then narrow the step to 0.2. 0 turns it off.":
+    "センサの位置の波を、遅延なしで毎レポートから割り出して消します。波の形はキーボード自身が最初のストロークで学習し、覚えておきます。入れるのは波の周期(センサのカウント、0.1刻み)。幾何学的には 解像度 ÷ (2 × その軸の電極本数) = ここでは 76.0(1974 ÷ 26)ですが、補正は周期を1%以内で必要とします。1カウントずれると波の1/3が残り、4カウントずれると効かなくなります。なので走査してください: 速度波形ツールを開いたまま 76.0〜78.0 を 0.5 刻みで試し、リップル振幅が最小の値を採用、次に 0.2 刻みで詰めます。0 で無効。",
   "Ripple correction, left and right ({{n}} counts)":
     "リップル補正 横 (周期 {{n}}カウント)",
-  "The same correction for the short axis. Leave it at 0 unless the counting tool finds a period there too; on this pad it does not.":
-    "短辺側の同じ補正。計測ツールでこちらにも周期が出ない限り 0 のままで。このパッドでは出ません。",
+  "The same correction for the short axis. Leave it at 0 unless the waveform tool finds a period there too; on this pad it does not.":
+    "短辺側の同じ補正。速度波形ツールでこちらにも周期が出ない限り 0 のままで。このパッドでは出ません。",
   "Ripple smoothing ({{n}} counts)": "リップル除去 ({{n}}カウント)",
   "The fallback to the ripple correction above, for when the period cannot be pinned down: averages the pointer over this many counts of finger travel instead, which cancels the wave but costs half the window in lag. 0 is off. For a fault the report smoothing cannot reach: the sensor's reported position is a gentle wave against the true one, and on the long axis it repeats every couple of millimetres and swings the speed more than two to one. Being fixed in distance, it is crossed faster when you move faster, so a report-counted smoother slides off it. Set it to about one ripple period — near 45 for a 2 mm ripple at ~23 counts/mm; measure the period with the counting tool first. The lag is half the window, paid in following distance rather than time.":
     "上のリップル補正の代替(周期が決めきれないとき用)。ポインタを「レポート数」ではなく「指の移動距離(カウント)」ぶんで均して波を消しますが、窓の半分の遅延が出ます。0で無効。上のなめらかさでは届かない別の不具合用です: センサが報告する位置は、実際の指の位置に対して緩やかな波を打っていて、長辺では数mmごとに繰り返し、速度を2倍以上に振ります。この波は距離で固定されているので、速く動かせば速く横切るだけ — だからレポート数で数える平滑はすり抜けてしまう。1周期ぶんに合わせてください: ~23カウント/mm で 2mm の波なら 45 前後。まず計測ツールで周期を測ること。遅延は窓の半分で、時間ではなく「追従距離」で払います(速く動かすほど時間は短い)。",
@@ -1735,12 +1735,12 @@ const zh: Record<string, string> = {
   "Smoothing ({{n}} reports)": "平滑（分散到 {{n}} 次）",
   "Ripple correction, up and down ({{n}} counts)":
     "波纹校正 上下（周期 {{n}} 计数）",
-  "Divides the sensor's positional wave out of every report with no lag — the keyboard learns the wave's shape by itself from the first stroke and keeps it. Enter the wave's period in sensor counts: resolution ÷ (2 × electrodes along this axis), 76 here (1974 ÷ 26). Measure it with the counting tool; a few percent off halves the effect, so nudge by one and feel. 0 turns it off.":
-    "无延迟地把传感器位置的波从每次上报中除去——键盘会在第一次划动时自行学习波形并记住。输入波的周期（传感器计数）：分辨率 ÷（2 × 该轴电极数），这里为 76（1974 ÷ 26）。先用计数工具测量，再以 1 为步进凭手感微调；偏差几个百分点效果就减半。0 为关闭。",
+  "Divides the sensor's positional wave out of every report with no lag — the keyboard learns the wave's shape by itself from the first stroke and keeps it. Enter the wave's period in sensor counts, to a tenth. Geometry says resolution ÷ (2 × electrodes along this axis), 76.0 here (1974 ÷ 26), but the equaliser needs it to within a percent — being off by one count leaves a third of the wave, and by four undoes it — so scan: with the waveform tool open, try 76.0 to 78.0 in steps of 0.5, keep the value with the smallest ripple amplitude, then narrow the step to 0.2. 0 turns it off.":
+    "无延迟地把传感器位置的波从每次上报中除去——键盘会在第一次划动时自行学习波形并记住。输入波的周期（传感器计数，精确到 0.1）。按几何计算为 分辨率 ÷（2 × 该轴电极数），这里为 76.0（1974 ÷ 26），但校正需要周期精确到 1% 以内——偏差 1 个计数会留下三分之一的波，偏差 4 个则完全失效——所以请扫描：打开速度波形工具，以 0.5 为步进尝试 76.0 到 78.0，保留波纹幅度最小的值，再以 0.2 为步进细调。0 为关闭。",
   "Ripple correction, left and right ({{n}} counts)":
     "波纹校正 左右（周期 {{n}} 计数）",
-  "The same correction for the short axis. Leave it at 0 unless the counting tool finds a period there too; on this pad it does not.":
-    "短边的同一校正。除非计数工具在该轴也测到周期，否则保持 0；这块触控板上没有。",
+  "The same correction for the short axis. Leave it at 0 unless the waveform tool finds a period there too; on this pad it does not.":
+    "短边的同一校正。除非速度波形工具在该轴也测到周期，否则保持 0；这块触控板上没有。",
   "Ripple smoothing ({{n}} counts)": "波纹平滑（{{n}} 计数）",
   "The fallback to the ripple correction above, for when the period cannot be pinned down: averages the pointer over this many counts of finger travel instead, which cancels the wave but costs half the window in lag. 0 is off. For a fault the report smoothing cannot reach: the sensor's reported position is a gentle wave against the true one, and on the long axis it repeats every couple of millimetres and swings the speed more than two to one. Being fixed in distance, it is crossed faster when you move faster, so a report-counted smoother slides off it. Set it to about one ripple period — near 45 for a 2 mm ripple at ~23 counts/mm; measure the period with the counting tool first. The lag is half the window, paid in following distance rather than time.":
     "上方波纹校正的备用方案（周期无法确定时使用）：改为按“手指移动距离（计数）”而不是上报次数来平均指针，能消除波纹但会带来半个窗口的延迟；0 为关闭。用于上面的平滑无法触及的另一种缺陷：传感器上报的位置相对真实位置是一条缓和的波，在长轴上每隔几毫米重复一次，把速度摆动到两倍以上。由于这条波固定在距离上，移动越快只是越快地穿过它，所以按上报次数计的平滑会从它上面滑过。设为约一个波纹周期——在 ~23 计数/毫米下 2 毫米波纹约为 45；请先用计数工具测量周期。延迟是窗口的一半，以跟随距离而非时间支付（移动越快，时间越短）。",

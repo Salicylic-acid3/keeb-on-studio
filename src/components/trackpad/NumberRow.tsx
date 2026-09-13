@@ -2,7 +2,10 @@
  * One integer trackpad setting as a labelled number box.
  *
  * Shared by the scale and filter sections; the only thing they differ in is
- * which keys they read.
+ * which keys they read. A setting the firmware stores scaled (tenths of a
+ * count, say) passes `scale`, and the box shows and takes the human unit —
+ * the value, range and step are all divided by it on the way in; the caller
+ * multiplies back on commit.
  */
 import { useRef } from "react";
 import { RetainedInput } from "../macroCombo/RetainedInput";
@@ -14,6 +17,7 @@ export function NumberRow({
   info,
   field,
   step = 10,
+  scale = 1,
   disabled,
   onCommit,
 }: {
@@ -21,16 +25,19 @@ export function NumberRow({
   info: string;
   field: TrackpadNumber;
   step?: number;
+  scale?: number;
   disabled?: boolean;
   onCommit: (typed: string) => void;
 }) {
+  const decimals = scale > 1 ? Math.ceil(Math.log10(scale)) : 0;
+  const shown = (stored: number) => (stored / scale).toFixed(decimals);
   /*
    * What is in the box right now, kept outside React state on purpose: the
    * displayed value belongs to RetainedInput (which reconciles it against the
    * device between edits), and this is only needed to know what to commit when
    * the field is left.
    */
-  const typed = useRef(String(field.value));
+  const typed = useRef(shown(field.value));
 
   return (
     <div className="flex items-center justify-between gap-3">
@@ -41,9 +48,9 @@ export function NumberRow({
       <RetainedInput
         type="number"
         className="input-field w-24 text-sm"
-        value={String(field.value)}
-        min={field.min ?? undefined}
-        max={field.max ?? undefined}
+        value={shown(field.value)}
+        min={field.min === null ? undefined : field.min / scale}
+        max={field.max === null ? undefined : field.max / scale}
         step={step}
         disabled={disabled}
         aria-label={label}
