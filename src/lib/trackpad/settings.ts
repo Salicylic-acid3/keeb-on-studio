@@ -65,6 +65,20 @@ export const CURSOR_GAIN_Y_KEY = "cursor_gain_y";
 export const CURSOR_SMOOTHING_KEY = "cursor_smoothing";
 
 /**
+ * Counts of finger travel to average the pointer over; 0 is off.
+ *
+ * A window measured in distance rather than reports, and for a different fault
+ * than the smoothing above. The sensor's reported position, plotted against
+ * where the finger truly is, is a gentle wave, and on the coarse long axis it
+ * repeats every couple of millimetres and swings the reported speed better than
+ * two to one. Because the wave is fixed in distance, a smoother counted in
+ * reports slides off it — its right length changes with speed — while one
+ * counted in distance sits on it at every speed. Set it near one ripple period
+ * in the sensor's own counts (about 23 to the millimetre here).
+ */
+export const CURSOR_DISTANCE_SMOOTHING_KEY = "cursor_distance_smoothing";
+
+/**
  * The sensor's own low-speed filter, one key per register.
  *
  * Everything above happens after the sensor has reported; this is what it does

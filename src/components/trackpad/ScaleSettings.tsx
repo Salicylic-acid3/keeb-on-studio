@@ -26,6 +26,7 @@ import type { Setting } from "../../proto/cormoran/zmk/custom_settings/custom_se
 import type { TrackpadSettingsAccess } from "./TrackpadSettings";
 import { NumberRow } from "./NumberRow";
 import {
+  CURSOR_DISTANCE_SMOOTHING_KEY,
   CURSOR_GAIN_X_KEY,
   CURSOR_GAIN_Y_KEY,
   CURSOR_SMOOTHING_KEY,
@@ -50,12 +51,13 @@ export function ScaleSettings({
   const gainX = readTrackpadNumber(rows, CURSOR_GAIN_X_KEY);
   const gainY = readTrackpadNumber(rows, CURSOR_GAIN_Y_KEY);
   const smoothing = readTrackpadNumber(rows, CURSOR_SMOOTHING_KEY);
+  const distance = readTrackpadNumber(rows, CURSOR_DISTANCE_SMOOTHING_KEY);
 
   const commit = (field: TrackpadNumber, draft: string) =>
     commitTrackpadNumber(settings, field, draft, { min: 1, max: 4095 });
 
   // The shared loading indicator lives in TrackpadSettings.
-  if (!x && !y && !gainX && !gainY && !smoothing) return null;
+  if (!x && !y && !gainX && !gainY && !smoothing && !distance) return null;
 
   // The ratio is the number that actually matters, so it is shown rather than
   // left to be worked out from the two fields.
@@ -105,7 +107,7 @@ export function ScaleSettings({
         </p>
       )}
 
-      {(gainX || gainY || smoothing) && (
+      {(gainX || gainY || smoothing || distance) && (
         <>
           <div className="border-t border-[var(--color-border)] pt-3">
             <h4 className="text-sm font-medium text-[var(--color-text)]">
@@ -158,6 +160,21 @@ export function ScaleSettings({
               step={1}
               disabled={settings.isLoading}
               onCommit={(typed) => void commit(smoothing, typed)}
+            />
+          )}
+
+          {distance && (
+            <NumberRow
+              label={t("Ripple smoothing ({{n}} counts)", {
+                n: distance.value,
+              })}
+              info={t(
+                "Averages the pointer over this many counts of finger travel, not reports; 0 is off. For a fault the smoothing above cannot reach: the sensor's reported position is a gentle wave against the true one, and on the long axis it repeats every couple of millimetres and swings the speed more than two to one. Being fixed in distance, it is crossed faster when you move faster, so a report-counted smoother slides off it. Set it to about one ripple period — near 45 for a 2 mm ripple at ~23 counts/mm; measure the period with the counting tool first. The lag is half the window, paid in following distance rather than time.",
+              )}
+              field={distance}
+              step={1}
+              disabled={settings.isLoading}
+              onCommit={(typed) => void commit(distance, typed)}
             />
           )}
         </>
