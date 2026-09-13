@@ -32,6 +32,8 @@ import {
   CURSOR_SMOOTHING_KEY,
   RESOLUTION_X_KEY,
   RESOLUTION_Y_KEY,
+  RIPPLE_PERIOD_X_KEY,
+  RIPPLE_PERIOD_Y_KEY,
   commitTrackpadNumber,
   readTrackpadNumber,
   type TrackpadNumber,
@@ -52,12 +54,24 @@ export function ScaleSettings({
   const gainY = readTrackpadNumber(rows, CURSOR_GAIN_Y_KEY);
   const smoothing = readTrackpadNumber(rows, CURSOR_SMOOTHING_KEY);
   const distance = readTrackpadNumber(rows, CURSOR_DISTANCE_SMOOTHING_KEY);
+  const rippleX = readTrackpadNumber(rows, RIPPLE_PERIOD_X_KEY);
+  const rippleY = readTrackpadNumber(rows, RIPPLE_PERIOD_Y_KEY);
 
   const commit = (field: TrackpadNumber, draft: string) =>
     commitTrackpadNumber(settings, field, draft, { min: 1, max: 4095 });
 
   // The shared loading indicator lives in TrackpadSettings.
-  if (!x && !y && !gainX && !gainY && !smoothing && !distance) return null;
+  if (
+    !x &&
+    !y &&
+    !gainX &&
+    !gainY &&
+    !smoothing &&
+    !distance &&
+    !rippleX &&
+    !rippleY
+  )
+    return null;
 
   // The ratio is the number that actually matters, so it is shown rather than
   // left to be worked out from the two fields.
@@ -107,7 +121,7 @@ export function ScaleSettings({
         </p>
       )}
 
-      {(gainX || gainY || smoothing || distance) && (
+      {(gainX || gainY || smoothing || distance || rippleX || rippleY) && (
         <>
           <div className="border-t border-[var(--color-border)] pt-3">
             <h4 className="text-sm font-medium text-[var(--color-text)]">
@@ -163,13 +177,43 @@ export function ScaleSettings({
             />
           )}
 
+          {rippleX && (
+            <NumberRow
+              label={t("Ripple correction, up and down ({{n}} counts)", {
+                n: rippleX.value,
+              })}
+              info={t(
+                "Divides the sensor's positional wave out of every report with no lag — the keyboard learns the wave's shape by itself from the first stroke and keeps it. Enter the wave's period in sensor counts: resolution ÷ (2 × electrodes along this axis), 76 here (1974 ÷ 26). Measure it with the counting tool; a few percent off halves the effect, so nudge by one and feel. 0 turns it off.",
+              )}
+              field={rippleX}
+              step={1}
+              disabled={settings.isLoading}
+              onCommit={(typed) => void commit(rippleX, typed)}
+            />
+          )}
+
+          {rippleY && (
+            <NumberRow
+              label={t("Ripple correction, left and right ({{n}} counts)", {
+                n: rippleY.value,
+              })}
+              info={t(
+                "The same correction for the short axis. Leave it at 0 unless the counting tool finds a period there too; on this pad it does not.",
+              )}
+              field={rippleY}
+              step={1}
+              disabled={settings.isLoading}
+              onCommit={(typed) => void commit(rippleY, typed)}
+            />
+          )}
+
           {distance && (
             <NumberRow
               label={t("Ripple smoothing ({{n}} counts)", {
                 n: distance.value,
               })}
               info={t(
-                "Averages the pointer over this many counts of finger travel, not reports; 0 is off. For a fault the smoothing above cannot reach: the sensor's reported position is a gentle wave against the true one, and on the long axis it repeats every couple of millimetres and swings the speed more than two to one. Being fixed in distance, it is crossed faster when you move faster, so a report-counted smoother slides off it. Set it to about one ripple period — near 45 for a 2 mm ripple at ~23 counts/mm; measure the period with the counting tool first. The lag is half the window, paid in following distance rather than time.",
+                "The fallback to the ripple correction above, for when the period cannot be pinned down: averages the pointer over this many counts of finger travel instead, which cancels the wave but costs half the window in lag. 0 is off. For a fault the report smoothing cannot reach: the sensor's reported position is a gentle wave against the true one, and on the long axis it repeats every couple of millimetres and swings the speed more than two to one. Being fixed in distance, it is crossed faster when you move faster, so a report-counted smoother slides off it. Set it to about one ripple period — near 45 for a 2 mm ripple at ~23 counts/mm; measure the period with the counting tool first. The lag is half the window, paid in following distance rather than time.",
               )}
               field={distance}
               step={1}

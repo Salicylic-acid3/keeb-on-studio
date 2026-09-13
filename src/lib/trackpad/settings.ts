@@ -79,6 +79,19 @@ export const CURSOR_SMOOTHING_KEY = "cursor_smoothing";
 export const CURSOR_DISTANCE_SMOOTHING_KEY = "cursor_distance_smoothing";
 
 /**
+ * Period of the sensor's positional ripple per axis, in counts; 0 is off.
+ *
+ * The lag-free alternative to the distance window above. The reported position
+ * carries a wave fixed to where the finger is over the electrodes, half an
+ * electrode pitch long; given its period the firmware learns the wave's shape
+ * from the first stroke and divides it out of every report. resolution / (2 ×
+ * electrodes) on that axis — 76 on the ErgoTrack's long axis. A few percent off
+ * halves the effect, so it is a knob rather than a constant.
+ */
+export const RIPPLE_PERIOD_X_KEY = "ripple_period_x";
+export const RIPPLE_PERIOD_Y_KEY = "ripple_period_y";
+
+/**
  * The sensor's own low-speed filter, one key per register.
  *
  * Everything above happens after the sensor has reported; this is what it does
