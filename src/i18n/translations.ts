@@ -109,8 +109,20 @@ const ja: Record<string, string> = {
   "Two fingers closing or spreading on a single pad zooms. On a small pad this is easy to confuse with a two-finger scroll, and the two-handed zoom \u2014 one finger on each pad \u2014 does the same job without the ambiguity. Off by default for that reason.":
     "片方のパッドの上で2本指を開閉するとズームします。小さいパッドでは2本指スクロールと紛らわしく、両手ズーム(左右のパッドに1本ずつ)なら同じことが曖昧さなしにできます。そのため既定はオフです。",
   "Reverse the pinch direction": "ピンチの向きを逆にする",
-  "Spreading the fingers zooms out instead of in. Which way round is right is the host's convention rather than anything about the pad, so there is no setting that is correct on every machine.":
-    "指を開いたときに拡大ではなく縮小します。どちらが正しいかはパッドではなくホスト側の流儀で決まるので、どの環境でも正解という設定はありません。",
+  "Three-finger swipe": "3本指スワイプ",
+  "How far three fingers travel before it is a swipe, in sensor counts (about 23 to the millimetre). Lower if swipes are missed, raise if they fire while you meant to hold.":
+    "3本指がどれだけ動いたらスワイプとみなすか(センサのカウント、約23で1mm)。反応しないなら下げ、押さえているつもりで発火するなら上げます。",
+  "Up and down ({{n}} counts)": "縦 ({{n}}カウント)",
+  "Along the pad's long side, which has room to spare: three fingers can travel a good way before one leaves the sensor.":
+    "パッドの長辺方向。余裕があるので、3本指がセンサから外れる前にかなり動かせます。",
+  "Left and right ({{n}} counts)": "横 ({{n}}カウント)",
+  "Across the pad's short side. Three fingers side by side already fill most of it, so there is little room to travel before one runs off; this is why it is lower than the other.":
+    "パッドの短辺方向。3本指を並べるとほぼ埋まるので、外れる前に動かせる距離が短い。縦より低いのはそのためです。",
+  "Report at most every {{n}} ms": "送信間隔 ({{n}}ms ごと)",
+  "For the half whose pointer crosses the Bluetooth link between the halves. The sensor reports 200 times a second and each report is two notifications, more than the link carries; the rest queue, and a queue is lag — on the pointer, and on that half's key presses, which wait behind it. Movement between reports is added up, so nothing is lost. 15 matches the link; 0 reports every frame, which is right for the half plugged into the computer. Both halves take the same value here, so it is set in the firmware per half and this is for trying.":
+    "ポインタが左右間の Bluetooth リンクを渡る側のための設定。センサは毎秒 200 回報告し、1 回が 2 通知なのでリンクの容量を超え、余りが待ち行列になります。待ち行列 = 遅延で、その側のキー入力も後ろに並んで遅れます。送信の間の移動量は足し合わせるので失われません。15 がリンクの周期に合い、0 は毎フレーム送信(PC に直接つながる側はこちら)。ここでは左右に同じ値が書かれるので、本来は半身ごとにファームで決める値です。試すための欄。",
+  "Spreading the fingers zooms out instead of in — for the two-finger pinch on one pad and the one-finger-each-hand pinch across both alike. Which way round is right is the host's convention rather than anything about the pad, so there is no setting that is correct on every machine.":
+    "指を開いたときに拡大ではなく縮小します。片手 2 本指のピンチにも、両手 1 本ずつのピンチにも同じように効きます。どちらが正しいかはパッドではなくホスト側の流儀で決まるので、どの環境でも正解という設定はありません。",
   "Two-finger swipe, horizontal A": "2本指スワイプ・横 A",
   "Tapped once when the swipe is recognised. Browser back and forward are the usual pair. Enabling this costs two-finger horizontal scroll \u2014 a sideways movement cannot both scroll at once and be held back long enough to be recognised as a swipe.":
     "スワイプが認識された時点で1回だけ押されます。ブラウザの戻る/進むを割り当てるのが定番です。これを有効にすると2本指の横スクロールは使えなくなります。横向きの動きを、すぐスクロールに回しつつジェスチャーとして見届けることは両立しないためです。",
@@ -1774,8 +1786,20 @@ const zh: Record<string, string> = {
   "Two fingers closing or spreading on a single pad zooms. On a small pad this is easy to confuse with a two-finger scroll, and the two-handed zoom \u2014 one finger on each pad \u2014 does the same job without the ambiguity. Off by default for that reason.":
     "在一侧触控板上开合双指进行缩放。在小尺寸触控板上这与双指滚动很难区分，而双手缩放（左右各一根手指）可以毫不含糊地完成同样的操作，因此默认关闭。",
   "Reverse the pinch direction": "反转捏合方向",
-  "Spreading the fingers zooms out instead of in. Which way round is right is the host's convention rather than anything about the pad, so there is no setting that is correct on every machine.":
-    "张开手指时缩小而不是放大。哪个方向正确取决于主机的惯例而非触控板本身，因此没有在所有设备上都正确的设置。",
+  "Three-finger swipe": "三指滑动",
+  "How far three fingers travel before it is a swipe, in sensor counts (about 23 to the millimetre). Lower if swipes are missed, raise if they fire while you meant to hold.":
+    "三指移动多远才算滑动（传感器计数，约 23 为 1 毫米）。滑动被漏掉就调低，想按住却触发了就调高。",
+  "Up and down ({{n}} counts)": "上下（{{n}} 计数）",
+  "Along the pad's long side, which has room to spare: three fingers can travel a good way before one leaves the sensor.":
+    "沿触控板长边，余量充足：三指可以移动很远才会有一指离开传感器。",
+  "Left and right ({{n}} counts)": "左右（{{n}} 计数）",
+  "Across the pad's short side. Three fingers side by side already fill most of it, so there is little room to travel before one runs off; this is why it is lower than the other.":
+    "沿触控板短边。三指并排几乎占满，没多少余地就会有一指滑出，所以比另一项低。",
+  "Report at most every {{n}} ms": "上报间隔（每 {{n}} ms）",
+  "For the half whose pointer crosses the Bluetooth link between the halves. The sensor reports 200 times a second and each report is two notifications, more than the link carries; the rest queue, and a queue is lag — on the pointer, and on that half's key presses, which wait behind it. Movement between reports is added up, so nothing is lost. 15 matches the link; 0 reports every frame, which is right for the half plugged into the computer. Both halves take the same value here, so it is set in the firmware per half and this is for trying.":
+    "用于指针要经过两半之间蓝牙链路的那一半。传感器每秒上报 200 次，每次两条通知，超过链路承载，其余排队；排队就是延迟——指针延迟，该半边的按键也排在后面延迟。上报之间的移动会累加，不会丢失。15 与链路节奏匹配；0 为每帧上报，适合直接连电脑的那一半。此处两半写入相同值，所以本应按半边在固件中设定，这里仅供试验。",
+  "Spreading the fingers zooms out instead of in — for the two-finger pinch on one pad and the one-finger-each-hand pinch across both alike. Which way round is right is the host's convention rather than anything about the pad, so there is no setting that is correct on every machine.":
+    "张开手指时缩小而不是放大——单手双指捏合和双手各一指的捏合都同样适用。哪个方向正确取决于主机的惯例而非触控板本身，因此没有在所有设备上都正确的设置。",
   "Two-finger swipe, horizontal A": "双指滑动 · 横向 A",
   "Tapped once when the swipe is recognised. Browser back and forward are the usual pair. Enabling this costs two-finger horizontal scroll \u2014 a sideways movement cannot both scroll at once and be held back long enough to be recognised as a swipe.":
     "在识别到滑动时点击一次。通常配成浏览器的后退/前进。启用后将无法使用双指横向滚动：横向移动无法既立刻开始滚动、又等到足以被识别为手势。",

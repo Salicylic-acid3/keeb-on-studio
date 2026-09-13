@@ -110,6 +110,21 @@ export const RIPPLE_PERIOD_SCALE = 10;
 export const RIPPLE_AUTO_KEY = "ripple_auto";
 
 /**
+ * Report pointer movement at most this often, in ms; 0 is every frame.
+ *
+ * For a split half whose pointer crosses a BLE link: the sensor's 200 frames
+ * a second are twice that in notifications, which the link cannot carry, and
+ * what it cannot carry it queues — lag on the pointer and, since key presses
+ * wait in the same queue, late keystrokes. Movement is added up between
+ * reports, so nothing is lost; 15 matches the link's cadence.
+ */
+export const CURSOR_REPORT_INTERVAL_KEY = "cursor_report_interval_ms";
+
+/** Three-finger swipe thresholds per sensor axis, in counts. */
+export const SWIPE3_THRESHOLD_X_KEY = "swipe3_threshold_x";
+export const SWIPE3_THRESHOLD_Y_KEY = "swipe3_threshold_y";
+
+/**
  * The sensor's own low-speed filter, one key per register.
  *
  * Everything above happens after the sensor has reported; this is what it does

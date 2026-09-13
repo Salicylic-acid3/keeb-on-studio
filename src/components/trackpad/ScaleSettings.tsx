@@ -28,6 +28,7 @@ import { NumberRow } from "./NumberRow";
 import { ToggleRow } from "./ToggleRow";
 import {
   CURSOR_DISTANCE_SMOOTHING_KEY,
+  CURSOR_REPORT_INTERVAL_KEY,
   CURSOR_GAIN_X_KEY,
   CURSOR_GAIN_Y_KEY,
   CURSOR_SMOOTHING_KEY,
@@ -61,6 +62,7 @@ export function ScaleSettings({
   const rippleX = readTrackpadNumber(rows, RIPPLE_PERIOD_X_KEY);
   const rippleY = readTrackpadNumber(rows, RIPPLE_PERIOD_Y_KEY);
   const rippleAuto = readTrackpadToggle(rows, RIPPLE_AUTO_KEY);
+  const reportInterval = readTrackpadNumber(rows, CURSOR_REPORT_INTERVAL_KEY);
 
   const commit = (field: TrackpadNumber, draft: string) =>
     commitTrackpadNumber(settings, field, draft, { min: 1, max: 4095 });
@@ -93,7 +95,8 @@ export function ScaleSettings({
     !smoothing &&
     !distance &&
     !rippleX &&
-    !rippleY
+    !rippleY &&
+    !reportInterval
   )
     return null;
 
@@ -145,7 +148,13 @@ export function ScaleSettings({
         </p>
       )}
 
-      {(gainX || gainY || smoothing || distance || rippleX || rippleY) && (
+      {(gainX ||
+        gainY ||
+        smoothing ||
+        distance ||
+        rippleX ||
+        rippleY ||
+        reportInterval) && (
         <>
           <div className="border-t border-[var(--color-border)] pt-3">
             <h4 className="text-sm font-medium text-[var(--color-text)]">
@@ -198,6 +207,26 @@ export function ScaleSettings({
               step={1}
               disabled={settings.isLoading}
               onCommit={(typed) => void commit(smoothing, typed)}
+            />
+          )}
+
+          {reportInterval && (
+            <NumberRow
+              label={t("Report at most every {{n}} ms", {
+                n: reportInterval.value,
+              })}
+              info={t(
+                "For the half whose pointer crosses the Bluetooth link between the halves. The sensor reports 200 times a second and each report is two notifications, more than the link carries; the rest queue, and a queue is lag — on the pointer, and on that half's key presses, which wait behind it. Movement between reports is added up, so nothing is lost. 15 matches the link; 0 reports every frame, which is right for the half plugged into the computer. Both halves take the same value here, so it is set in the firmware per half and this is for trying.",
+              )}
+              field={reportInterval}
+              step={1}
+              disabled={settings.isLoading}
+              onCommit={(typed) =>
+                void commitTrackpadNumber(settings, reportInterval, typed, {
+                  min: 0,
+                  max: 100,
+                })
+              }
             />
           )}
 

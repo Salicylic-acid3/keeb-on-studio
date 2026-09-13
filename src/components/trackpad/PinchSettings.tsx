@@ -25,9 +25,14 @@ import { ToggleRow } from "./ToggleRow";
 import { useLanguage } from "../../hooks/useLanguage";
 import type { Setting } from "../../proto/cormoran/zmk/custom_settings/custom_settings";
 import type { TrackpadSettingsAccess } from "./TrackpadSettings";
+import { NumberRow } from "./NumberRow";
 import {
   ONE_HAND_PINCH_KEY,
   PINCH_INVERT_KEY,
+  SWIPE3_THRESHOLD_X_KEY,
+  SWIPE3_THRESHOLD_Y_KEY,
+  commitTrackpadNumber,
+  readTrackpadNumber,
   readTrackpadToggle,
 } from "../../lib/trackpad/settings";
 
@@ -44,6 +49,8 @@ export function PinchSettings({
   // first one is as good as any to read through.
   const pinch = readTrackpadToggle(rows, ONE_HAND_PINCH_KEY);
   const invert = readTrackpadToggle(rows, PINCH_INVERT_KEY);
+  const swipeX = readTrackpadNumber(rows, SWIPE3_THRESHOLD_X_KEY);
+  const swipeY = readTrackpadNumber(rows, SWIPE3_THRESHOLD_Y_KEY);
 
   /*
    * Written and then saved, rather than left as an unsaved change with a Save
@@ -66,7 +73,7 @@ export function PinchSettings({
 
   // Nothing to draw for a keyboard that does not have these. The shared
   // loading indicator lives in TrackpadSettings.
-  if (!pinch && !invert) return null;
+  if (!pinch && !invert && !swipeX && !swipeY) return null;
 
   return (
     <div className="glass-card space-y-3 p-4">
@@ -90,7 +97,7 @@ export function PinchSettings({
         <ToggleRow
           label={t("Reverse the pinch direction")}
           info={t(
-            "Spreading the fingers zooms out instead of in. Which way round is right is the host's convention rather than anything about the pad, so there is no setting that is correct on every machine.",
+            "Spreading the fingers zooms out instead of in — for the two-finger pinch on one pad and the one-finger-each-hand pinch across both alike. Which way round is right is the host's convention rather than anything about the pad, so there is no setting that is correct on every machine.",
           )}
           checked={invert.enabled}
           // Settable while the pinch itself is off. Greying it out was meant to
@@ -100,6 +107,55 @@ export function PinchSettings({
           // stored either way; let it be chosen either way.
           disabled={settings.isLoading}
           onCheckedChange={(checked) => void setToggle(invert, checked)}
+        />
+      )}
+
+      {(swipeX || swipeY) && (
+        <div className="border-t border-[var(--color-border)] pt-3">
+          <h4 className="text-sm font-medium text-[var(--color-text)]">
+            {t("Three-finger swipe")}
+          </h4>
+          <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+            {t(
+              "How far three fingers travel before it is a swipe, in sensor counts (about 23 to the millimetre). Lower if swipes are missed, raise if they fire while you meant to hold.",
+            )}
+          </p>
+        </div>
+      )}
+
+      {swipeX && (
+        <NumberRow
+          label={t("Up and down ({{n}} counts)", { n: swipeX.value })}
+          info={t(
+            "Along the pad's long side, which has room to spare: three fingers can travel a good way before one leaves the sensor.",
+          )}
+          field={swipeX}
+          step={10}
+          disabled={settings.isLoading}
+          onCommit={(typed) =>
+            void commitTrackpadNumber(settings, swipeX, typed, {
+              min: 1,
+              max: 1000,
+            })
+          }
+        />
+      )}
+
+      {swipeY && (
+        <NumberRow
+          label={t("Left and right ({{n}} counts)", { n: swipeY.value })}
+          info={t(
+            "Across the pad's short side. Three fingers side by side already fill most of it, so there is little room to travel before one runs off; this is why it is lower than the other.",
+          )}
+          field={swipeY}
+          step={10}
+          disabled={settings.isLoading}
+          onCommit={(typed) =>
+            void commitTrackpadNumber(settings, swipeY, typed, {
+              min: 1,
+              max: 1000,
+            })
+          }
         />
       )}
     </div>
