@@ -205,7 +205,7 @@ export function ScaleSettings({
             <ToggleRow
               label={t("Find the ripple period by itself")}
               info={t(
-                "The keyboard tries a bank of periods alongside the correction and adopts the one whose wave comes out largest — every pad has its own value, to a tenth, and this saves scanning for it. Takes ten or twenty seconds of ordinary strokes on each pad, is remembered across power cycles, and starts over if the pad scale changes. The periods below are then only the starting point; an axis with no wave never locks and keeps its value. Turn it off to hold the values below exactly.",
+                "The keyboard tries a bank of periods and adopts the one whose wave comes out largest — every pad has its own value, to a tenth, and a pad may have no wave at all. Until something is found nothing is corrected, because a correction at the wrong period is a wave of its own; found values are remembered across power cycles and searched again if the pad scale changes. Takes ten or twenty seconds of ordinary strokes on each pad. While this is on, the periods below are ignored. Turn it off to use them by hand.",
               )}
               checked={rippleAuto.enabled}
               disabled={settings.isLoading}
@@ -219,7 +219,7 @@ export function ScaleSettings({
                 n: period(rippleX),
               })}
               info={t(
-                "Divides the sensor's positional wave out of every report with no lag — the keyboard learns the wave's shape by itself from the first stroke and keeps it. The wave's period in sensor counts, to a tenth. Geometry says resolution ÷ (2 × electrodes along this axis), 76.0 here (1974 ÷ 26), but the equaliser needs it to within a percent — one count off leaves a third of the wave — and the two pads measured so far wanted 75.5 and something else, so leave the search above on and this is only where it starts. Set by hand only with the search off: scan half a count at a time with the waveform tool open. 0 turns it off.",
+                "Divides the sensor's positional wave out of every report with no lag — the keyboard learns the wave's shape by itself from the first stroke and keeps it. The wave's period in sensor counts, to a tenth, used only while the search above is off. Geometry says resolution ÷ (2 × electrodes along this axis), 76.0 here (1974 ÷ 26), but the equaliser needs it to within a percent — one count off leaves a third of the wave — and of the two pads measured so far one wanted 75.5 and the other had no wave at all. If no convincing wave is learned at this period, nothing is corrected. Set by hand only with the search off: scan half a count at a time with the waveform tool open. 0 turns it off.",
               )}
               field={rippleX}
               step={0.5}
