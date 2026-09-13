@@ -99,6 +99,17 @@ export const RIPPLE_PERIOD_Y_KEY = "ripple_period_y_x10";
 export const RIPPLE_PERIOD_SCALE = 10;
 
 /**
+ * Let the keyboard find the periods itself.
+ *
+ * The first two pads measured wanted different values, and the search — a
+ * bank of candidate periods learning alongside the equaliser, the one whose
+ * wave grows largest winning — takes ten or twenty seconds of ordinary use
+ * and is remembered across power cycles. With this on, the periods above are
+ * only where it starts; an axis with no wave never locks and keeps its value.
+ */
+export const RIPPLE_AUTO_KEY = "ripple_auto";
+
+/**
  * The sensor's own low-speed filter, one key per register.
  *
  * Everything above happens after the sensor has reported; this is what it does

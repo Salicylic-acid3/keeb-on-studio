@@ -35,3 +35,6 @@ original_img
 # token used by `wrangler dev`; the deployed one is a Worker secret.
 .wrangler
 .dev.vars
+
+# patches handed over from the Claude session, applied with git am
+_claude_patches/

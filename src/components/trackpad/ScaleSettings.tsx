@@ -25,6 +25,7 @@ import { useLanguage } from "../../hooks/useLanguage";
 import type { Setting } from "../../proto/cormoran/zmk/custom_settings/custom_settings";
 import type { TrackpadSettingsAccess } from "./TrackpadSettings";
 import { NumberRow } from "./NumberRow";
+import { ToggleRow } from "./ToggleRow";
 import {
   CURSOR_DISTANCE_SMOOTHING_KEY,
   CURSOR_GAIN_X_KEY,
@@ -32,11 +33,13 @@ import {
   CURSOR_SMOOTHING_KEY,
   RESOLUTION_X_KEY,
   RESOLUTION_Y_KEY,
+  RIPPLE_AUTO_KEY,
   RIPPLE_PERIOD_SCALE,
   RIPPLE_PERIOD_X_KEY,
   RIPPLE_PERIOD_Y_KEY,
   commitTrackpadNumber,
   readTrackpadNumber,
+  readTrackpadToggle,
   type TrackpadNumber,
 } from "../../lib/trackpad/settings";
 
@@ -57,6 +60,7 @@ export function ScaleSettings({
   const distance = readTrackpadNumber(rows, CURSOR_DISTANCE_SMOOTHING_KEY);
   const rippleX = readTrackpadNumber(rows, RIPPLE_PERIOD_X_KEY);
   const rippleY = readTrackpadNumber(rows, RIPPLE_PERIOD_Y_KEY);
+  const rippleAuto = readTrackpadToggle(rows, RIPPLE_AUTO_KEY);
 
   const commit = (field: TrackpadNumber, draft: string) =>
     commitTrackpadNumber(settings, field, draft, { min: 1, max: 4095 });
@@ -70,6 +74,15 @@ export function ScaleSettings({
     );
   const period = (field: TrackpadNumber) =>
     (field.value / RIPPLE_PERIOD_SCALE).toFixed(1);
+  const setAuto = async (checked: boolean) => {
+    if (!rippleAuto) return;
+    await settings.writeSettingToMemory(
+      rippleAuto.setting,
+      { boolValue: checked },
+      { allSources: true },
+    );
+    await settings.saveSection(rippleAuto.setting.customSubsystemIndex);
+  };
 
   // The shared loading indicator lives in TrackpadSettings.
   if (
@@ -188,13 +201,25 @@ export function ScaleSettings({
             />
           )}
 
+          {rippleAuto && (
+            <ToggleRow
+              label={t("Find the ripple period by itself")}
+              info={t(
+                "The keyboard tries a bank of periods alongside the correction and adopts the one whose wave comes out largest — every pad has its own value, to a tenth, and this saves scanning for it. Takes ten or twenty seconds of ordinary strokes on each pad, is remembered across power cycles, and starts over if the pad scale changes. The periods below are then only the starting point; an axis with no wave never locks and keeps its value. Turn it off to hold the values below exactly.",
+              )}
+              checked={rippleAuto.enabled}
+              disabled={settings.isLoading}
+              onCheckedChange={(checked) => void setAuto(checked)}
+            />
+          )}
+
           {rippleX && (
             <NumberRow
               label={t("Ripple correction, up and down ({{n}} counts)", {
                 n: period(rippleX),
               })}
               info={t(
-                "Divides the sensor's positional wave out of every report with no lag — the keyboard learns the wave's shape by itself from the first stroke and keeps it. Enter the wave's period in sensor counts, to a tenth. Geometry says resolution ÷ (2 × electrodes along this axis), 76.0 here (1974 ÷ 26), but the equaliser needs it to within a percent — being off by one count leaves a third of the wave, and by four undoes it — so scan: with the waveform tool open, try 76.0 to 78.0 in steps of 0.5, keep the value with the smallest ripple amplitude, then narrow the step to 0.2. 0 turns it off.",
+                "Divides the sensor's positional wave out of every report with no lag — the keyboard learns the wave's shape by itself from the first stroke and keeps it. The wave's period in sensor counts, to a tenth. Geometry says resolution ÷ (2 × electrodes along this axis), 76.0 here (1974 ÷ 26), but the equaliser needs it to within a percent — one count off leaves a third of the wave — and the two pads measured so far wanted 75.5 and something else, so leave the search above on and this is only where it starts. Set by hand only with the search off: scan half a count at a time with the waveform tool open. 0 turns it off.",
               )}
               field={rippleX}
               step={0.5}
