@@ -79,6 +79,10 @@ const ja: Record<string, string> = {
     "リップル補正 横 (周期 {{n}}カウント)",
   "The same correction for the short axis. Leave it at 0 unless the waveform tool finds a period there too; on this pad it does not.":
     "短辺側の同じ補正。速度波形ツールでこちらにも周期が出ない限り 0 のままで。このパッドでは出ません。",
+  "Correct the ripple with a map of the pad":
+    "パッドの地図でリップルを補正する",
+  "The pointer slows and hurries in a pattern fixed to the pad — the sensor's reported position is a gentle wave against the true one, repeating every half electrode. With this on, the keyboard learns a table of 256 positions along each axis, each holding how much faster or slower the pad reports there than on average, and divides it out of every report. No period to find: a few full-length strokes along each axis teach it, it is kept across power cycles, and it starts over if the pad scale changes. Turn it off to use the period-based correction below instead.":
+    "ポインタがパッド上の決まった場所で遅くなったり速くなったりします。センサが報告する位置が本当の位置に対してゆるやかな波を描いていて、電極半分ごとに繰り返すためです。オンにすると、キーボードが各軸 256 か所の表を学習し(その場所で平均よりどれだけ速く/遅く報告されるか)、毎回の報告からそれを割り戻します。周期を探す必要はなく、軸に沿った端から端までのストロークを数回で覚えます。電源を切っても保持され、パッドのスケールを変えるとやり直しになります。オフにすると下の周期方式の補正を使います。",
   "Find the ripple period by itself": "リップルの周期を自動で探す",
   "Found so far: ": "見つかった周期: ",
   "plugged-in half": "PC につながる側",
@@ -1773,6 +1777,9 @@ const zh: Record<string, string> = {
     "波纹校正 左右（周期 {{n}} 计数）",
   "The same correction for the short axis. Leave it at 0 unless the waveform tool finds a period there too; on this pad it does not.":
     "短边的同一校正。除非速度波形工具在该轴也测到周期，否则保持 0；这块触控板上没有。",
+  "Correct the ripple with a map of the pad": "用触控板地图校正波纹",
+  "The pointer slows and hurries in a pattern fixed to the pad — the sensor's reported position is a gentle wave against the true one, repeating every half electrode. With this on, the keyboard learns a table of 256 positions along each axis, each holding how much faster or slower the pad reports there than on average, and divides it out of every report. No period to find: a few full-length strokes along each axis teach it, it is kept across power cycles, and it starts over if the pad scale changes. Turn it off to use the period-based correction below instead.":
+    "指针会在触控板上固定的位置变慢或变快：传感器报告的位置相对真实位置呈一条平缓的波，每半个电极重复一次。开启后，键盘为每个轴学习一张 256 个位置的表（该处的报告比平均快或慢多少），并从每次报告中除去它。无需查找周期：沿轴做几次从头到尾的划动即可学会，断电后保留，更改触控板比例后重新学习。关闭则使用下方基于周期的校正。",
   "Find the ripple period by itself": "自动查找波纹周期",
   "Found so far: ": "已找到的周期：",
   "plugged-in half": "连接电脑的一半",

@@ -37,6 +37,7 @@ import {
   RIPPLE_AUTO_KEY,
   RIPPLE_FOUND_X_KEY,
   RIPPLE_FOUND_Y_KEY,
+  RIPPLE_MAP_KEY,
   RIPPLE_PERIOD_SCALE,
   RIPPLE_PERIOD_X_KEY,
   RIPPLE_PERIOD_Y_KEY,
@@ -66,6 +67,10 @@ export function ScaleSettings({
   const rippleX = readTrackpadNumber(rows, RIPPLE_PERIOD_X_KEY);
   const rippleY = readTrackpadNumber(rows, RIPPLE_PERIOD_Y_KEY);
   const rippleAuto = readTrackpadToggle(rows, RIPPLE_AUTO_KEY);
+  const rippleMap = readTrackpadToggle(rows, RIPPLE_MAP_KEY);
+  // With the map on, the period machinery below is idle; showing its knobs
+  // would invite turning them for nothing.
+  const periodRows = !rippleMap?.enabled;
   // Per half, because each half searches its own pad and the answers differ.
   const foundX = readTrackpadNumberPerSide(rows, RIPPLE_FOUND_X_KEY);
   const foundY = readTrackpadNumberPerSide(rows, RIPPLE_FOUND_Y_KEY);
@@ -88,15 +93,19 @@ export function ScaleSettings({
     );
   const period = (field: TrackpadNumber) =>
     (field.value / RIPPLE_PERIOD_SCALE).toFixed(1);
-  const setAuto = async (checked: boolean) => {
-    if (!rippleAuto) return;
+  const setToggle = async (
+    toggle: NonNullable<typeof rippleAuto>,
+    checked: boolean,
+  ) => {
     await settings.writeSettingToMemory(
-      rippleAuto.setting,
+      toggle.setting,
       { boolValue: checked },
       { allSources: true },
     );
-    await settings.saveSection(rippleAuto.setting.customSubsystemIndex);
+    await settings.saveSection(toggle.setting.customSubsystemIndex);
   };
+  const setAuto = (checked: boolean) =>
+    rippleAuto ? setToggle(rippleAuto, checked) : Promise.resolve();
 
   // The shared loading indicator lives in TrackpadSettings.
   if (
@@ -264,7 +273,20 @@ export function ScaleSettings({
             />
           ))}
 
-          {rippleAuto && (
+          {rippleMap && (
+            <ToggleRow
+              label={t("Correct the ripple with a map of the pad")}
+              info={t(
+                "The pointer slows and hurries in a pattern fixed to the pad — the sensor's reported position is a gentle wave against the true one, repeating every half electrode. With this on, the keyboard learns a table of 256 positions along each axis, each holding how much faster or slower the pad reports there than on average, and divides it out of every report. No period to find: a few full-length strokes along each axis teach it, it is kept across power cycles, and it starts over if the pad scale changes. Turn it off to use the period-based correction below instead.",
+              )}
+              checked={rippleMap.enabled}
+              disagree={sidesDisagree(rippleMap)}
+              disabled={settings.isLoading}
+              onCheckedChange={(checked) => void setToggle(rippleMap, checked)}
+            />
+          )}
+
+          {periodRows && rippleAuto && (
             <ToggleRow
               label={t("Find the ripple period by itself")}
               info={t(
@@ -277,7 +299,7 @@ export function ScaleSettings({
             />
           )}
 
-          {rippleAuto?.enabled && foundX.length > 0 && (
+          {periodRows && rippleAuto?.enabled && foundX.length > 0 && (
             <p className="text-xs text-[var(--color-text-muted)]">
               {t("Found so far: ")}
               {foundX.map((side, index) => {
@@ -307,7 +329,7 @@ export function ScaleSettings({
             </p>
           )}
 
-          {rippleX && (
+          {periodRows && rippleX && (
             <NumberRow
               label={t("Ripple correction, up and down ({{n}} counts)", {
                 n: period(rippleX),
@@ -323,7 +345,7 @@ export function ScaleSettings({
             />
           )}
 
-          {rippleY && (
+          {periodRows && rippleY && (
             <NumberRow
               label={t("Ripple correction, left and right ({{n}} counts)", {
                 n: period(rippleY),

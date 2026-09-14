@@ -110,6 +110,17 @@ export const RIPPLE_PERIOD_SCALE = 10;
 export const RIPPLE_AUTO_KEY = "ripple_auto";
 
 /**
+ * Correct the ripple with a map learned over the pad's positions instead.
+ *
+ * No period and no search: 256 bins across each axis, each learning how the
+ * movement reported there compares with the local average, whatever shape
+ * the nonlinearity has. A few full-length strokes teach it; kept across
+ * power cycles, forgotten when the pad scale changes. While this is on the
+ * period rows and the search are idle, so the app hides them.
+ */
+export const RIPPLE_MAP_KEY = "ripple_map";
+
+/**
  * What the search found per axis, in tenths of a count; 0 is nothing yet.
  *
  * Written by the keyboard, for reading: without a debug build this is the one
