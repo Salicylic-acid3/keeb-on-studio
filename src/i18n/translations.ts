@@ -81,6 +81,9 @@ const ja: Record<string, string> = {
     "短辺側の同じ補正。速度波形ツールでこちらにも周期が出ない限り 0 のままで。このパッドでは出ません。",
   "Correct the ripple with a map of the pad":
     "パッドの地図でリップルを補正する",
+  "Show advanced settings": "高度な設定を表示",
+  "Pointer speed per axis, smoothing, the report interval, the touch threshold, the ripple map switch, and the pinch and three-finger swipe settings. Tuning rather than daily use; once the pad feels right there is little reason to open it.":
+    "軸ごとのポインタの速さ、なめらかさ、送信間隔、タッチの感度、リップル補正のスイッチ、片手ピンチと3本指スワイプの設定。日常的に触るものではなく調整用で、いちど感触が決まれば開く理由はほとんどありません。",
   "Touch threshold ({{n}})": "タッチの感度(しきい値 {{n}})",
   "How much a finger has to change an electrode's reading to count as touching it. Lower is more sensitive: a lighter touch registers, and more of the electrodes around the finger take part in the position, which makes movement smoother — until a resting palm or a hovering finger registers too. Higher is the reverse, and past a point the position steps from electrode to electrode. The sensor's own default is 44; 26 was smooth on this pad. Try steps of 4.":
     "指が電極の読みをどれだけ変えたら「触れている」とみなすか。低いほど敏感: 軽いタッチが拾われ、指の周囲の電極も位置計算に加わって動きが滑らかになる — 下げすぎると置いた手のひらや浮いた指まで拾う。高いほどその逆で、上げすぎると位置が電極ごとに段を踏む。センサの既定は 44、このパッドでは 26 が滑らかだった。4 刻みで試すとよい。",
@@ -1790,6 +1793,9 @@ const zh: Record<string, string> = {
   "The same correction for the short axis. Leave it at 0 unless the waveform tool finds a period there too; on this pad it does not.":
     "短边的同一校正。除非速度波形工具在该轴也测到周期，否则保持 0；这块触控板上没有。",
   "Correct the ripple with a map of the pad": "用触控板地图校正波纹",
+  "Show advanced settings": "显示高级设置",
+  "Pointer speed per axis, smoothing, the report interval, the touch threshold, the ripple map switch, and the pinch and three-finger swipe settings. Tuning rather than daily use; once the pad feels right there is little reason to open it.":
+    "各轴指针速度、平滑、发送间隔、触摸灵敏度、波纹校正开关，以及单手捏合与三指滑动的设置。属于调校项而非日常使用；手感确定后几乎无需再打开。",
   "Touch threshold ({{n}})": "触摸灵敏度（阈值 {{n}}）",
   "How much a finger has to change an electrode's reading to count as touching it. Lower is more sensitive: a lighter touch registers, and more of the electrodes around the finger take part in the position, which makes movement smoother — until a resting palm or a hovering finger registers too. Higher is the reverse, and past a point the position steps from electrode to electrode. The sensor's own default is 44; 26 was smooth on this pad. Try steps of 4.":
     "手指需要使电极读数变化多少才算触摸。越低越灵敏：更轻的触摸也会被识别，手指周围更多电极参与定位，移动更平滑——过低时搁置的手掌或悬空的手指也会被识别。越高则相反，过高时位置会在电极之间跳格。传感器默认 44；此触摸板 26 时很平滑。建议以 4 为步长尝试。",

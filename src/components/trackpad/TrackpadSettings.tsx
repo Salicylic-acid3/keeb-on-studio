@@ -17,12 +17,28 @@
  * settled here; halving it is right either way.
  */
 import { IconLoader2 } from "@tabler/icons-react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLanguage } from "../../hooks/useLanguage";
 import { useCustomSettings } from "../../hooks/useCustomSettings";
 import { TRACKPAD_SUBSYSTEM_ID } from "../../lib/trackpad/settings";
 import { PinchSettings } from "./PinchSettings";
 import { ScaleSettings } from "./ScaleSettings";
+import { ToggleRow } from "./ToggleRow";
+
+/**
+ * The two cards below are tuning, not daily use: once the pad feels right
+ * they are opened rarely, and a page of numbers invites fiddling. They sit
+ * behind one switch, remembered in this browser.
+ */
+const ADVANCED_STORAGE_KEY = "trackpadAdvancedSettings";
+
+function readAdvanced(): boolean {
+  try {
+    return localStorage.getItem(ADVANCED_STORAGE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
 
 /**
  * The part of the settings hook the two sections use.
@@ -40,6 +56,14 @@ export function TrackpadSettings() {
   const settings = useCustomSettings({
     subsystemIdentifier: TRACKPAD_SUBSYSTEM_ID,
   });
+  const [advanced, setAdvanced] = useState<boolean>(readAdvanced);
+  useEffect(() => {
+    try {
+      localStorage.setItem(ADVANCED_STORAGE_KEY, advanced ? "1" : "0");
+    } catch {
+      // A browser that refuses storage just forgets the switch on reload.
+    }
+  }, [advanced]);
 
   // Each split side reports its own copy of every setting; they are meant to
   // agree, so the sections read whichever arrives first for a given key.
@@ -62,8 +86,22 @@ export function TrackpadSettings() {
 
   return (
     <>
-      <ScaleSettings settings={settings} rows={rows} />
-      <PinchSettings settings={settings} rows={rows} />
+      <div className="glass-card p-4">
+        <ToggleRow
+          label={t("Show advanced settings")}
+          info={t(
+            "Pointer speed per axis, smoothing, the report interval, the touch threshold, the ripple map switch, and the pinch and three-finger swipe settings. Tuning rather than daily use; once the pad feels right there is little reason to open it.",
+          )}
+          checked={advanced}
+          onCheckedChange={setAdvanced}
+        />
+      </div>
+      {advanced && (
+        <>
+          <ScaleSettings settings={settings} rows={rows} />
+          <PinchSettings settings={settings} rows={rows} />
+        </>
+      )}
     </>
   );
 }
