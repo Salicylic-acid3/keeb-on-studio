@@ -25,6 +25,9 @@ import {
   CURSOR_GAIN_Y_KEY,
   CURSOR_SMOOTHING_KEY,
   RIPPLE_MAP_KEY,
+  TOUCH_CLEAR_THRESHOLD_KEY,
+  TOUCH_SET_THRESHOLD_KEY,
+  TOUCH_THRESHOLD_HYSTERESIS,
   commitTrackpadNumber,
   readTrackpadNumber,
   readTrackpadNumberPerSide,
@@ -46,6 +49,8 @@ export function ScaleSettings({
   const gainY = readTrackpadNumber(rows, CURSOR_GAIN_Y_KEY);
   const smoothing = readTrackpadNumber(rows, CURSOR_SMOOTHING_KEY);
   const rippleMap = readTrackpadToggle(rows, RIPPLE_MAP_KEY);
+  const touchSet = readTrackpadNumber(rows, TOUCH_SET_THRESHOLD_KEY);
+  const touchClear = readTrackpadNumber(rows, TOUCH_CLEAR_THRESHOLD_KEY);
   // One box per half: the interval paces a Bluetooth link that only the
   // peripheral's pointer crosses, so the halves are meant to differ here.
   const reportIntervals = readTrackpadNumberPerSide(
@@ -55,6 +60,27 @@ export function ScaleSettings({
 
   const commit = (field: TrackpadNumber, draft: string) =>
     commitTrackpadNumber(settings, field, draft, { min: 1, max: 4095 });
+  // One box, two registers: the clear threshold follows the set one a fixed
+  // step below, so the hysteresis between them never has to be thought about.
+  const commitTouch = async (draft: string) => {
+    if (!touchSet || !touchClear) return;
+    const typed = Number.parseInt(draft, 10);
+    if (!Number.isFinite(typed)) return;
+    const set = Math.min(255, Math.max(TOUCH_THRESHOLD_HYSTERESIS + 1, typed));
+    const clear = set - TOUCH_THRESHOLD_HYSTERESIS;
+    if (set === touchSet.value && clear === touchClear.value) return;
+    await settings.writeSettingToMemory(
+      touchSet.setting,
+      { int32Value: set },
+      { allSources: true },
+    );
+    await settings.writeSettingToMemory(
+      touchClear.setting,
+      { int32Value: clear },
+      { allSources: true },
+    );
+    await settings.saveSection(touchSet.setting.customSubsystemIndex);
+  };
   const setToggle = async (
     toggle: NonNullable<typeof rippleMap>,
     checked: boolean,
@@ -166,6 +192,19 @@ export function ScaleSettings({
           }
         />
       ))}
+
+      {touchSet && touchClear && (
+        <NumberRow
+          label={t("Touch threshold ({{n}})", { n: touchSet.value })}
+          info={t(
+            "How much a finger has to change an electrode's reading to count as touching it. Lower is more sensitive: a lighter touch registers, and more of the electrodes around the finger take part in the position, which makes movement smoother — until a resting palm or a hovering finger registers too. Higher is the reverse, and past a point the position steps from electrode to electrode. The sensor's own default is 44; 26 was smooth on this pad. Try steps of 4.",
+          )}
+          field={touchSet}
+          step={1}
+          disabled={settings.isLoading}
+          onCommit={(typed) => void commitTouch(typed)}
+        />
+      )}
 
       {rippleMap && (
         <ToggleRow

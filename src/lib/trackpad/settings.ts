@@ -147,6 +147,16 @@ export const RIPPLE_FOUND_Y_KEY = "ripple_found_y_x10";
  * written per side.
  */
 export const CURSOR_REPORT_INTERVAL_KEY = "cursor_report_interval_ms";
+/**
+ * Touch set / clear threshold multipliers, 1..255. The pad's sensitivity, and
+ * with it how many electrodes the reported position is the centroid of. The
+ * app shows one box and keeps the clear threshold a fixed step below the set
+ * one, which is the hysteresis that stops a channel flickering at the edge of
+ * the finger.
+ */
+export const TOUCH_SET_THRESHOLD_KEY = "touch_set_threshold";
+export const TOUCH_CLEAR_THRESHOLD_KEY = "touch_clear_threshold";
+export const TOUCH_THRESHOLD_HYSTERESIS = 6;
 
 /** Three-finger swipe thresholds per sensor axis, in counts. */
 export const SWIPE3_THRESHOLD_X_KEY = "swipe3_threshold_x";
