@@ -25,6 +25,7 @@ import {
   CURSOR_GAIN_Y_KEY,
   CURSOR_SMOOTHING_KEY,
   RIPPLE_MAP_KEY,
+  TAP_DEAD_ZONE_KEY,
   TOUCH_CLEAR_THRESHOLD_KEY,
   TOUCH_SET_THRESHOLD_KEY,
   TOUCH_THRESHOLD_HYSTERESIS,
@@ -49,6 +50,7 @@ export function ScaleSettings({
   const gainY = readTrackpadNumber(rows, CURSOR_GAIN_Y_KEY);
   const smoothing = readTrackpadNumber(rows, CURSOR_SMOOTHING_KEY);
   const rippleMap = readTrackpadToggle(rows, RIPPLE_MAP_KEY);
+  const tapDeadZone = readTrackpadNumber(rows, TAP_DEAD_ZONE_KEY);
   const touchSet = readTrackpadNumber(rows, TOUCH_SET_THRESHOLD_KEY);
   const touchClear = readTrackpadNumber(rows, TOUCH_CLEAR_THRESHOLD_KEY);
   // One box per half: the interval paces a Bluetooth link that only the
@@ -192,6 +194,24 @@ export function ScaleSettings({
           }
         />
       ))}
+
+      {tapDeadZone && (
+        <NumberRow
+          label={t("Tap dead zone ({{n}} counts)", { n: tapDeadZone.value })}
+          info={t(
+            "A fingertip flattens as it lands, and the position the sensor reports slides toward the finger's base — so a tap meant as a click nudges the pointer. Movement is withheld while the finger stays within this many counts of where it landed (about 23 counts to a millimetre) during the first 150 ms. A stroke leaves the zone at once and loses only its first fraction of a millimetre. Raise it if taps still move the pointer; 0 turns it off.",
+          )}
+          field={tapDeadZone}
+          step={2}
+          disabled={settings.isLoading}
+          onCommit={(typed) =>
+            void commitTrackpadNumber(settings, tapDeadZone, typed, {
+              min: 0,
+              max: 200,
+            })
+          }
+        />
+      )}
 
       {touchSet && touchClear && (
         <NumberRow
