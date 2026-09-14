@@ -1345,10 +1345,6 @@ export function TrackpadPage() {
             gestures.ts for why that has to be checked rather than assumed. */}
         {gestures.length > 0 && (
           <div className="mt-8 space-y-6 border-t border-[var(--color-border)] pt-6">
-            {/* Above the gesture bindings, because it decides whether one of
-                them happens at all. Draws nothing on firmware that does not
-                publish the settings. */}
-            <TrackpadSettings />
             <GestureSection
               gestures={gestures}
               layers={keymap.keymap?.layers ?? []}
@@ -1359,6 +1355,10 @@ export function TrackpadPage() {
               onEdit={handleEditGesture}
               disabled={keymap.isLoading}
             />
+            {/* Below the gesture bindings: what a gesture does is the daily
+                question, how the pad feels is tuning, opened rarely. Draws
+                nothing on firmware that does not publish the settings. */}
+            <TrackpadSettings />
           </div>
         )}
       </div>
