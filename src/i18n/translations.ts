@@ -83,6 +83,11 @@ const ja: Record<string, string> = {
     "パッドの地図でリップルを補正する",
   "The pointer slows and hurries in a pattern fixed to the pad — the sensor's reported position is a gentle wave against the true one, repeating every half electrode. With this on, the keyboard learns a table of 256 positions along each axis, each holding how much faster or slower the pad reports there than on average, and divides it out of every report. No period to find: a few full-length strokes along each axis teach it, it is kept across power cycles, and it starts over if the pad scale changes. Turn it off to use the period-based correction below instead.":
     "ポインタがパッド上の決まった場所で遅くなったり速くなったりします。センサが報告する位置が本当の位置に対してゆるやかな波を描いていて、電極半分ごとに繰り返すためです。オンにすると、キーボードが各軸 256 か所の表を学習し(その場所で平均よりどれだけ速く/遅く報告されるか)、毎回の報告からそれを割り戻します。周期を探す必要はなく、軸に沿った端から端までのストロークを数回で覚えます。電源を切っても保持され、パッドのスケールを変えるとやり直しになります。オフにすると下の周期方式の補正を使います。",
+  "Map learned: ": "地図の学習: ",
+  "{{half}}: up/down {{x}}/256, left/right {{y}}/256":
+    "{{half}}: 縦 {{x}}/256、横 {{y}}/256",
+  "Full-length strokes along each axis fill it in; it corrects where it has learned and passes the rest through. Around 200 of 256 is a covered axis — the edges are rarely reached.":
+    "各軸に沿った端から端までのストロークで埋まります。学習した場所だけ補正し、残りは素通し。256 中 200 前後で軸は埋まったと見てよい(端はめったに届かない)。",
   "Find the ripple period by itself": "リップルの周期を自動で探す",
   "Found so far: ": "見つかった周期: ",
   "plugged-in half": "PC につながる側",
@@ -1780,6 +1785,11 @@ const zh: Record<string, string> = {
   "Correct the ripple with a map of the pad": "用触控板地图校正波纹",
   "The pointer slows and hurries in a pattern fixed to the pad — the sensor's reported position is a gentle wave against the true one, repeating every half electrode. With this on, the keyboard learns a table of 256 positions along each axis, each holding how much faster or slower the pad reports there than on average, and divides it out of every report. No period to find: a few full-length strokes along each axis teach it, it is kept across power cycles, and it starts over if the pad scale changes. Turn it off to use the period-based correction below instead.":
     "指针会在触控板上固定的位置变慢或变快：传感器报告的位置相对真实位置呈一条平缓的波，每半个电极重复一次。开启后，键盘为每个轴学习一张 256 个位置的表（该处的报告比平均快或慢多少），并从每次报告中除去它。无需查找周期：沿轴做几次从头到尾的划动即可学会，断电后保留，更改触控板比例后重新学习。关闭则使用下方基于周期的校正。",
+  "Map learned: ": "地图学习进度：",
+  "{{half}}: up/down {{x}}/256, left/right {{y}}/256":
+    "{{half}}：上下 {{x}}/256，左右 {{y}}/256",
+  "Full-length strokes along each axis fill it in; it corrects where it has learned and passes the rest through. Around 200 of 256 is a covered axis — the edges are rarely reached.":
+    "沿每个轴做从头到尾的划动即可填满；只在已学习的位置校正，其余原样通过。256 中约 200 即可视为该轴已覆盖（边缘很少触及）。",
   "Find the ripple period by itself": "自动查找波纹周期",
   "Found so far: ": "已找到的周期：",
   "plugged-in half": "连接电脑的一半",

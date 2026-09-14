@@ -120,6 +120,10 @@ export const RIPPLE_AUTO_KEY = "ripple_auto";
  */
 export const RIPPLE_MAP_KEY = "ripple_map";
 
+/** How many of the map's 256 bins per axis can correct, per half. Read-only. */
+export const RIPPLE_MAP_LEARNED_X_KEY = "ripple_map_learned_x";
+export const RIPPLE_MAP_LEARNED_Y_KEY = "ripple_map_learned_y";
+
 /**
  * What the search found per axis, in tenths of a count; 0 is nothing yet.
  *

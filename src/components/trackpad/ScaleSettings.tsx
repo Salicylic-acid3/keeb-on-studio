@@ -38,6 +38,8 @@ import {
   RIPPLE_FOUND_X_KEY,
   RIPPLE_FOUND_Y_KEY,
   RIPPLE_MAP_KEY,
+  RIPPLE_MAP_LEARNED_X_KEY,
+  RIPPLE_MAP_LEARNED_Y_KEY,
   RIPPLE_PERIOD_SCALE,
   RIPPLE_PERIOD_X_KEY,
   RIPPLE_PERIOD_Y_KEY,
@@ -68,6 +70,8 @@ export function ScaleSettings({
   const rippleY = readTrackpadNumber(rows, RIPPLE_PERIOD_Y_KEY);
   const rippleAuto = readTrackpadToggle(rows, RIPPLE_AUTO_KEY);
   const rippleMap = readTrackpadToggle(rows, RIPPLE_MAP_KEY);
+  const learnedX = readTrackpadNumberPerSide(rows, RIPPLE_MAP_LEARNED_X_KEY);
+  const learnedY = readTrackpadNumberPerSide(rows, RIPPLE_MAP_LEARNED_Y_KEY);
   // With the map on, the period machinery below is idle; showing its knobs
   // would invite turning them for nothing.
   const periodRows = !rippleMap?.enabled;
@@ -284,6 +288,38 @@ export function ScaleSettings({
               disabled={settings.isLoading}
               onCheckedChange={(checked) => void setToggle(rippleMap, checked)}
             />
+          )}
+
+          {rippleMap?.enabled && learnedX.length > 0 && (
+            <p className="text-xs text-[var(--color-text-muted)]">
+              {t("Map learned: ")}
+              {learnedX.map((side, index) => {
+                const y = learnedY.find(
+                  (candidate) =>
+                    candidate.setting.source === side.setting.source,
+                );
+                const half =
+                  index === 0
+                    ? t("plugged-in half")
+                    : learnedX.length > 2
+                      ? t("wireless half {{i}}", { i: index })
+                      : t("wireless half");
+                return (
+                  <span key={side.setting.source}>
+                    {index > 0 && " · "}
+                    {t("{{half}}: up/down {{x}}/256, left/right {{y}}/256", {
+                      half,
+                      x: side.value,
+                      y: y?.value ?? 0,
+                    })}
+                  </span>
+                );
+              })}
+              <br />
+              {t(
+                "Full-length strokes along each axis fill it in; it corrects where it has learned and passes the rest through. Around 200 of 256 is a covered axis — the edges are rarely reached.",
+              )}
+            </p>
           )}
 
           {periodRows && rippleAuto && (
