@@ -83,6 +83,8 @@ const ja: Record<string, string> = {
     "パッドの地図でリップルを補正する",
   "The pointer slows and hurries in a pattern fixed to the pad — the sensor's reported position is a gentle wave against the true one, repeating every half electrode. With this on, the keyboard learns a table of 256 positions along each axis, each holding how much faster or slower the pad reports there than on average, and divides it out of every report. No period to find: a few full-length strokes along each axis teach it, it is kept across power cycles, and it starts over if the pad scale changes. Turn it off to use the period-based correction below instead.":
     "ポインタがパッド上の決まった場所で遅くなったり速くなったりします。センサが報告する位置が本当の位置に対してゆるやかな波を描いていて、電極半分ごとに繰り返すためです。オンにすると、キーボードが各軸 256 か所の表を学習し(その場所で平均よりどれだけ速く/遅く報告されるか)、毎回の報告からそれを割り戻します。周期を探す必要はなく、軸に沿った端から端までのストロークを数回で覚えます。電源を切っても保持され、パッドのスケールを変えるとやり直しになります。オフにすると下の周期方式の補正を使います。",
+  "The pointer can slow and hurry in a pattern fixed to the pad — the sensor's reported position is a gentle wave against the true one. With this on, the keyboard learns a table of positions along each axis from ordinary strokes and divides the wave out of every report. Leave it on; turn it off only to compare.":
+    "ポインタがパッド上の決まった場所で遅くなったり速くなったりすることがあります(センサの報告位置が本当の位置に対してゆるやかな波を描く)。オンにすると、ふだんのストロークから各軸の位置ごとの表を学習し、その波を毎回の報告から割り出します。オンのままで構いません。比較のときだけオフに。",
   "Map learned: ": "地図の学習: ",
   "{{half}}: up/down {{x}}/256, left/right {{y}}/256":
     "{{half}}: 縦 {{x}}/256、横 {{y}}/256",
@@ -104,6 +106,8 @@ const ja: Record<string, string> = {
     "動きを一度に出さず、この回数に分けて出します。1 で無効。軸を拡大したときに必要になります: パッドは整数カウントでしか報告しないので、ゆっくり動かすと 1, 0, 1, 0 と来ます。これに倍率を掛けても**隙間は隙間のままで、段差だけが大きく**なります。少しずつ出せば、前回の余りで隙間が埋まります。代償はこの回数ぶんの遅延だけです。",
   "In tenths: 10 leaves an axis alone, 16 makes it 1.6x. This is the pointer, not the gesture detection — the pad scale above does not change cursor speed on this sensor. Raise one and lower the other to shift the balance without changing the overall speed.":
     "1/10単位。10 が等倍、16 で 1.6倍。こちらは**ポインタの速さ**で、ジェスチャーの判定ではありません。このセンサでは上のスケールを変えてもカーソル速度は変わりません。片方を上げてもう片方を下げれば、全体の速さを変えずに釣り合いだけを変えられます。",
+  "In tenths: 10 leaves an axis alone, 16 makes it 1.6x. Raise one and lower the other to shift the balance without changing the overall speed.":
+    "1/10単位。10 が等倍、16 で 1.6倍。片方を上げてもう片方を下げると、全体の速さを変えずに縦横のバランスだけ動かせます。",
   "Up and down (×{{factor}})": "上下 (×{{factor}})",
   "The long side of the pad. It usually wants more than the ratio of the sides suggests, because you cannot sweep the full length in one stroke the way you can across — so matching millimetres still feels reluctant.":
     "パッドの長辺。辺の比から計算する値より少し強めがちょうどいいことが多いです。横と違って**縦は一息で端まで撫でられない**ので、mmで揃えてもまだ重く感じます。",
@@ -1785,6 +1789,8 @@ const zh: Record<string, string> = {
   "Correct the ripple with a map of the pad": "用触控板地图校正波纹",
   "The pointer slows and hurries in a pattern fixed to the pad — the sensor's reported position is a gentle wave against the true one, repeating every half electrode. With this on, the keyboard learns a table of 256 positions along each axis, each holding how much faster or slower the pad reports there than on average, and divides it out of every report. No period to find: a few full-length strokes along each axis teach it, it is kept across power cycles, and it starts over if the pad scale changes. Turn it off to use the period-based correction below instead.":
     "指针会在触控板上固定的位置变慢或变快：传感器报告的位置相对真实位置呈一条平缓的波，每半个电极重复一次。开启后，键盘为每个轴学习一张 256 个位置的表（该处的报告比平均快或慢多少），并从每次报告中除去它。无需查找周期：沿轴做几次从头到尾的划动即可学会，断电后保留，更改触控板比例后重新学习。关闭则使用下方基于周期的校正。",
+  "The pointer can slow and hurry in a pattern fixed to the pad — the sensor's reported position is a gentle wave against the true one. With this on, the keyboard learns a table of positions along each axis from ordinary strokes and divides the wave out of every report. Leave it on; turn it off only to compare.":
+    "指针可能会在触摸板上固定的位置忽慢忽快（传感器报告的位置相对真实位置呈缓和的波形）。开启后，键盘从日常滑动中学习每轴按位置的表，并从每次报告中除去该波形。保持开启即可；只在需要对比时关闭。",
   "Map learned: ": "地图学习进度：",
   "{{half}}: up/down {{x}}/256, left/right {{y}}/256":
     "{{half}}：上下 {{x}}/256，左右 {{y}}/256",
@@ -1807,6 +1813,8 @@ const zh: Record<string, string> = {
     "把每次移动分散到这么多次上报中，而不是一次性输出。1 为关闭。轴被放大后就需要它：触控板只以整数计数上报，慢慢拖动时会得到 1, 0, 1, 0，乘以倍率后**空隙仍是空隙，只是步进变大**。每次只放出一部分，就能用上一次的余额填满空隙。代价只有这么多次上报的延迟。",
   "In tenths: 10 leaves an axis alone, 16 makes it 1.6x. This is the pointer, not the gesture detection — the pad scale above does not change cursor speed on this sensor. Raise one and lower the other to shift the balance without changing the overall speed.":
     "以十分之一为单位：10 为原倍，16 为 1.6 倍。这是**指针速度**，不是手势判定；在这颗传感器上，修改上面的尺度并不会改变光标速度。调高一轴、调低另一轴，可以在不改变整体速度的前提下调整平衡。",
+  "In tenths: 10 leaves an axis alone, 16 makes it 1.6x. Raise one and lower the other to shift the balance without changing the overall speed.":
+    "以十分之一为单位：10 为原倍，16 为 1.6 倍。调高一轴、调低另一轴，可在不改变整体速度的情况下只调整纵横平衡。",
   "Up and down (×{{factor}})": "上下（×{{factor}}）",
   "The long side of the pad. It usually wants more than the ratio of the sides suggests, because you cannot sweep the full length in one stroke the way you can across — so matching millimetres still feels reluctant.":
     "触控板的长边。通常需要比边长比例算出的值再大一些，因为**纵向无法像横向那样一次划到头**，即使毫米对齐仍然显得费力。",
