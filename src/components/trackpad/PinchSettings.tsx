@@ -27,6 +27,7 @@ import type { Setting } from "../../proto/cormoran/zmk/custom_settings/custom_se
 import type { TrackpadSettingsAccess } from "./TrackpadSettings";
 import { NumberRow } from "./NumberRow";
 import {
+  FINGER_SPLIT_KEY,
   ONE_HAND_PINCH_KEY,
   PINCH_INVERT_KEY,
   SWIPE3_THRESHOLD_X_KEY,
@@ -52,6 +53,7 @@ export function PinchSettings({
   const invert = readTrackpadToggle(rows, PINCH_INVERT_KEY);
   const swipeX = readTrackpadNumber(rows, SWIPE3_THRESHOLD_X_KEY);
   const swipeY = readTrackpadNumber(rows, SWIPE3_THRESHOLD_Y_KEY);
+  const fingerSplit = readTrackpadNumber(rows, FINGER_SPLIT_KEY);
 
   /*
    * Written and then saved, rather than left as an unsaved change with a Save
@@ -74,7 +76,7 @@ export function PinchSettings({
 
   // Nothing to draw for a keyboard that does not have these. The shared
   // loading indicator lives in TrackpadSettings.
-  if (!pinch && !invert && !swipeX && !swipeY) return null;
+  if (!pinch && !invert && !swipeX && !swipeY && !fingerSplit) return null;
 
   return (
     <div className="glass-card space-y-3 p-4">
@@ -157,6 +159,26 @@ export function PinchSettings({
             void commitTrackpadNumber(settings, swipeY, typed, {
               min: 1,
               max: 1000,
+            })
+          }
+        />
+      )}
+
+      {fingerSplit && (
+        <NumberRow
+          label={t("Telling two fingers apart ({{n}})", {
+            n: fingerSplit.value,
+          })}
+          info={t(
+            "Two fingers close together raise one touched area with a dip between them, and this sets how deep the dip must be before the sensor reports two fingers rather than one. Two fingers that stay one are a two-finger scroll that never starts. The sensor's default is 3; try one step at a time in each direction and keep whichever lets a close pair scroll. 0 never splits.",
+          )}
+          field={fingerSplit}
+          step={1}
+          disabled={settings.isLoading}
+          onCommit={(typed) =>
+            void commitTrackpadNumber(settings, fingerSplit, typed, {
+              min: 0,
+              max: 255,
             })
           }
         />

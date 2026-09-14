@@ -85,6 +85,9 @@ const ja: Record<string, string> = {
   "Pointer speed per axis, smoothing, the report interval, the touch threshold, the ripple map switch, and the pinch and three-finger swipe settings. Tuning rather than daily use; once the pad feels right there is little reason to open it.":
     "軸ごとのポインタの速さ、なめらかさ、送信間隔、タッチの感度、リップル補正のスイッチ、片手ピンチと3本指スワイプの設定。日常的に触るものではなく調整用で、いちど感触が決まれば開く理由はほとんどありません。",
   "Touch threshold ({{n}})": "タッチの感度(しきい値 {{n}})",
+  "Telling two fingers apart ({{n}})": "2本の指の見分け({{n}})",
+  "Two fingers close together raise one touched area with a dip between them, and this sets how deep the dip must be before the sensor reports two fingers rather than one. Two fingers that stay one are a two-finger scroll that never starts. The sensor's default is 3; try one step at a time in each direction and keep whichever lets a close pair scroll. 0 never splits.":
+    "近づけた2本の指は、間にくぼみのある1つの接触面としてセンサに見えます。これは、そのくぼみがどれだけ深ければ「2本」と報告するかの設定です。2本のまま1本と判定されると、2本指スクロールは始まりません。センサの既定は 3。1 ずつ上下に動かして、指を近づけてもスクロールできる値を残してください。0 は分けない。",
   "Tap dead zone ({{n}} counts)": "タップの遊び({{n}} カウント)",
   "A fingertip flattens as it lands, and the position the sensor reports slides toward the finger's base — so a tap meant as a click nudges the pointer. Movement is withheld while the finger stays within this many counts of where it landed (about 23 counts to a millimetre) during the first 150 ms. A stroke leaves the zone at once and loses only its first fraction of a millimetre. Raise it if taps still move the pointer; 0 turns it off.":
     "指は着地しながらつぶれるので、センサが報告する位置は指の付け根側へずれます — そのためクリックのつもりのタップでポインタが動いてしまう。着地から 150ms のあいだ、着地点からこのカウント以内(約 23 カウントで 1mm)にいる間は動きを出しません。ストロークはすぐこの範囲を出るので、最初のわずかな距離を失うだけ。タップでまだ動くなら上げる。0 で無効。",
@@ -1800,6 +1803,9 @@ const zh: Record<string, string> = {
   "Pointer speed per axis, smoothing, the report interval, the touch threshold, the ripple map switch, and the pinch and three-finger swipe settings. Tuning rather than daily use; once the pad feels right there is little reason to open it.":
     "各轴指针速度、平滑、发送间隔、触摸灵敏度、波纹校正开关，以及单手捏合与三指滑动的设置。属于调校项而非日常使用；手感确定后几乎无需再打开。",
   "Touch threshold ({{n}})": "触摸灵敏度（阈值 {{n}}）",
+  "Telling two fingers apart ({{n}})": "区分两根手指（{{n}}）",
+  "Two fingers close together raise one touched area with a dip between them, and this sets how deep the dip must be before the sensor reports two fingers rather than one. Two fingers that stay one are a two-finger scroll that never starts. The sensor's default is 3; try one step at a time in each direction and keep whichever lets a close pair scroll. 0 never splits.":
+    "靠得很近的两根手指在传感器看来是中间有凹陷的一块接触区，此项决定凹陷要多深才报告为两指。两指一直被当作一指，则双指滚动永远不会开始。传感器默认为 3；每次调一格，向两个方向都试，保留能让并拢的两指滚动的值。0 为从不拆分。",
   "Tap dead zone ({{n}} counts)": "点按死区（{{n}} 计数）",
   "A fingertip flattens as it lands, and the position the sensor reports slides toward the finger's base — so a tap meant as a click nudges the pointer. Movement is withheld while the finger stays within this many counts of where it landed (about 23 counts to a millimetre) during the first 150 ms. A stroke leaves the zone at once and loses only its first fraction of a millimetre. Raise it if taps still move the pointer; 0 turns it off.":
     "指尖落下时会压扁，传感器报告的位置会向指根方向滑动——于是本想点击的点按却挪动了指针。落下后的 150ms 内，手指仍在落点这么多计数（约 23 计数为 1mm）之内时不输出移动。滑动会立刻离开该范围，只损失最初不到一毫米。点按仍会移动指针就调高；0 为关闭。",

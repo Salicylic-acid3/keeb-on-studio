@@ -163,6 +163,8 @@ export const TOUCH_THRESHOLD_HYSTERESIS = 6;
 /** Three-finger swipe thresholds per sensor axis, in counts. */
 export const SWIPE3_THRESHOLD_X_KEY = "swipe3_threshold_x";
 export const SWIPE3_THRESHOLD_Y_KEY = "swipe3_threshold_y";
+/** How readily two fingers close together are told apart (0..255; 0 never). */
+export const FINGER_SPLIT_KEY = "finger_split_factor";
 
 /**
  * The sensor's own low-speed filter, one key per register.
