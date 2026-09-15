@@ -634,6 +634,9 @@ const ja: Record<string, string> = {
   "Loading profiles...": "プロファイルを読み込み中...",
   "Device name": "デバイス名",
   "Save name": "名前を保存",
+  "Gesture assignments are part of the keymap. They take effect once the keymap is saved.":
+    "ジェスチャーの割り当てはキーマップの一部です。キーマップを保存すると反映されます。",
+  "Save keymap": "キーマップを保存",
   "Cancel editing": "編集をキャンセル",
   "Edit name": "名前を編集",
   "Profile {{index}}": "プロファイル {{index}}",
@@ -2324,6 +2327,9 @@ const zh: Record<string, string> = {
   "Loading profiles...": "正在加载配置文件...",
   "Device name": "设备名称",
   "Save name": "保存名称",
+  "Gesture assignments are part of the keymap. They take effect once the keymap is saved.":
+    "手势分配属于键位图。保存键位图后才会生效。",
+  "Save keymap": "保存键位图",
   "Cancel editing": "取消编辑",
   "Edit name": "编辑名称",
   "Profile {{index}}": "配置文件 {{index}}",

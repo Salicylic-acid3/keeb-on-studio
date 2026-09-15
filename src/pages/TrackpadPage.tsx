@@ -4,6 +4,7 @@ import {
   IconChevronLeft,
   IconChevronRight,
   IconCpu,
+  IconDeviceFloppy,
   IconLoader2,
   IconPointer,
   IconRefresh,
@@ -227,6 +228,15 @@ export function TrackpadPage() {
   // when this tab opens; the fast-keymap subsystem makes that cheap, and the
   // alternative is a cross-tab cache with its own staleness to get wrong.
   const keymap = useKeymap();
+  const [isSavingKeymap, setIsSavingKeymap] = useState(false);
+  const handleSaveKeymap = useCallback(async () => {
+    setIsSavingKeymap(true);
+    try {
+      await keymap.saveChanges();
+    } finally {
+      setIsSavingKeymap(false);
+    }
+  }, [keymap]);
   const inputStream = useInputStream();
   const keyboardLayoutContext = useContext(KeyboardLayoutContext);
   const { runWithUnlock } = useStudioUnlock();
@@ -1355,6 +1365,31 @@ export function TrackpadPage() {
               onEdit={handleEditGesture}
               disabled={keymap.isLoading}
             />
+            {/* A gesture binding is a keymap edit: it is staged on the keyboard
+                like any key edit and takes effect only once the keymap is
+                saved. Say so here, with the same save the keymap tab has, so
+                nobody edits a gesture and wonders why nothing changed. */}
+            {keymap.hasUnsavedChanges && (
+              <div className="glass-card flex flex-wrap items-center justify-between gap-3 p-4">
+                <span className="text-sm text-[var(--color-text-secondary)]">
+                  {t(
+                    "Gesture assignments are part of the keymap. They take effect once the keymap is saved.",
+                  )}
+                </span>
+                <button
+                  className="btn-electric text-sm flex items-center gap-1.5"
+                  onClick={() => void handleSaveKeymap()}
+                  disabled={isSavingKeymap || keymap.isLoading}
+                >
+                  {isSavingKeymap ? (
+                    <IconLoader2 size={16} className="animate-spin" />
+                  ) : (
+                    <IconDeviceFloppy size={16} />
+                  )}
+                  {t("Save keymap")}
+                </button>
+              </div>
+            )}
             {/* Below the gesture bindings: what a gesture does is the daily
                 question, how the pad feels is tuning, opened rarely. Draws
                 nothing on firmware that does not publish the settings. */}
