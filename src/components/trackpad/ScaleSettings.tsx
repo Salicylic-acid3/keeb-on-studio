@@ -106,7 +106,7 @@ export function ScaleSettings({
       </h3>
       <p className="text-xs text-[var(--color-text-muted)]">
         {t(
-          "In tenths: 10 leaves an axis alone, 16 makes it 1.6x. Raise one and lower the other to shift the balance without changing the overall speed.",
+          "In tenths: 10 leaves the axis as it is, 16 makes it 1.6×. Raise one and lower the other to change the up/down vs left/right balance without changing the overall speed.",
         )}
       </p>
 
@@ -116,7 +116,7 @@ export function ScaleSettings({
             factor: (gainX.value / 10).toFixed(1),
           })}
           info={t(
-            "The long side of the pad. It usually wants more than the ratio of the sides suggests, because you cannot sweep the full length in one stroke the way you can across — so matching millimetres still feels reluctant.",
+            "The long side of the pad. It usually wants a somewhat higher number than the short side.",
           )}
           field={gainX}
           step={1}
@@ -131,7 +131,7 @@ export function ScaleSettings({
             factor: (gainY.value / 10).toFixed(1),
           })}
           info={t(
-            "The short side of the pad. Lower this instead of raising the other axis if the pointer is already fast enough overall.",
+            "The short side of the pad. If the pointer is already fast enough overall, lower this rather than raising the other.",
           )}
           field={gainY}
           step={1}
@@ -144,7 +144,7 @@ export function ScaleSettings({
         <NumberRow
           label={t("Smoothing ({{n}} reports)", { n: smoothing.value })}
           info={t(
-            "Spreads each movement across this many reports instead of emitting it at once. 1 is off. Needed once an axis is amplified: the pad reports whole counts, so a slow drag arrives as 1, 0, 1, 0, and multiplying that leaves the gaps in place and makes the steps bigger. Draining a fraction per report fills the gaps. Costs exactly this many reports of lag and no more.",
+            "Smooths slow, careful movement by spreading each move over this many reports. The cost is lag: the pointer trails your finger by about this many reports. 1 is off; 2 is a good balance; 5 and above feel clearly laggy.",
           )}
           field={smoothing}
           step={1}
@@ -158,9 +158,12 @@ export function ScaleSettings({
           key={field.setting.source}
           label={
             index === 0
-              ? t("Report at most every {{n}} ms — plugged-in half", {
-                  n: field.value,
-                })
+              ? t(
+                  "Report at most every {{n}} ms — half connected to the computer",
+                  {
+                    n: field.value,
+                  },
+                )
               : reportIntervals.length > 2
                 ? t("Report at most every {{n}} ms — wireless half {{i}}", {
                     n: field.value,
@@ -173,10 +176,10 @@ export function ScaleSettings({
           info={
             index === 0
               ? t(
-                  "This half is on the computer's cable, so there is no link to pace: 0 reports every sensor frame, 200 a second, and anything above it only makes the pointer coarser and later. This box changes this half only.",
+                  "How often this half sends pointer movement to the computer. 0 sends every sensor frame (200 a second). Over USB leave it at 0. Over Bluetooth some computers cannot take 200 a second, and the pointer falls further behind the longer you keep moving — Windows did this, and 6 fixed it; a Mac was fine at 0. Movement between reports is added up, so nothing is lost; higher only makes the pointer coarser. This box changes this half only.",
                 )
               : t(
-                  "This half's pointer crosses the Bluetooth link between the halves. The sensor reports 200 times a second and each report is two notifications, more than the link carries; the rest queue, and a queue is lag — on the pointer, and on this half's key presses, which wait behind it. Movement between reports is added up, so nothing is lost. 8 matches the link's 7.5 ms cadence; lower is finer but risks the queue, higher is coarser. This box changes this half only.",
+                  "This half's movement goes to the other half over Bluetooth before it reaches the computer. That link carries fewer reports than the sensor makes, so sending every frame makes the pointer — and this half's keys — lag. 8 matches the link between the halves; lower is finer but risks lag, higher is coarser. Movement between reports is added up, so nothing is lost. This box changes this half only.",
                 )
           }
           field={field}
@@ -199,7 +202,7 @@ export function ScaleSettings({
         <NumberRow
           label={t("Tap dead zone ({{n}} counts)", { n: tapDeadZone.value })}
           info={t(
-            "A fingertip flattens as it lands, and the position the sensor reports slides toward the finger's base — so a tap meant as a click nudges the pointer. Movement is withheld while the finger stays within this many counts of where it landed (about 23 counts to a millimetre) during the first 150 ms. A stroke leaves the zone at once and loses only its first fraction of a millimetre. Raise it if taps still move the pointer; 0 turns it off.",
+            "Stops a tap from nudging the pointer. For a moment after the finger lands, movement within this distance of the landing point is ignored (about 23 counts to a millimetre). Raise it if taps still move the pointer. 20 is the default; 0 turns it off.",
           )}
           field={tapDeadZone}
           step={2}
@@ -217,7 +220,7 @@ export function ScaleSettings({
         <NumberRow
           label={t("Touch threshold ({{n}})", { n: touchSet.value })}
           info={t(
-            "How much a finger has to change an electrode's reading to count as touching it. Lower is more sensitive: a lighter touch registers, and more of the electrodes around the finger take part in the position, which makes movement smoother — until a resting palm or a hovering finger registers too. Higher is the reverse, and past a point the position steps from electrode to electrode. The sensor's own default is 44; 26 was smooth on this pad. Try steps of 4.",
+            "How light a touch counts. Lower is more sensitive and movement gets smoother, but too low and a resting palm or a hovering finger registers too. Higher is less sensitive, and too high makes the pointer move in steps. 34 is the starting point here; try steps of 4.",
           )}
           field={touchSet}
           step={1}
@@ -230,7 +233,7 @@ export function ScaleSettings({
         <ToggleRow
           label={t("Correct the ripple with a map of the pad")}
           info={t(
-            "The pointer can slow and hurry in a pattern fixed to the pad — the sensor's reported position is a gentle wave against the true one. With this on, the keyboard learns a table of positions along each axis from ordinary strokes and divides the wave out of every report. Leave it on; turn it off only to compare.",
+            "Evens out a pattern where the pointer slows and hurries at fixed spots on the pad. Leave it on; turn it off only to compare.",
           )}
           checked={rippleMap.enabled}
           disagree={sidesDisagree(rippleMap)}

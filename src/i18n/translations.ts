@@ -82,21 +82,21 @@ const ja: Record<string, string> = {
   "Correct the ripple with a map of the pad":
     "パッドの地図でリップルを補正する",
   "Show advanced settings": "高度な設定を表示",
-  "Pointer speed per axis, smoothing, the report interval, the touch threshold, the ripple map switch, and the pinch and three-finger swipe settings. Tuning rather than daily use; once the pad feels right there is little reason to open it.":
-    "軸ごとのポインタの速さ、なめらかさ、送信間隔、タッチの感度、リップル補正のスイッチ、片手ピンチと3本指スワイプの設定。日常的に触るものではなく調整用で、いちど感触が決まれば開く理由はほとんどありません。",
+  "Pointer speed per axis, smoothing, the report interval, touch sensitivity, the ripple map switch, and the pinch and three-finger swipe settings. For tuning; once the pad feels right there is little reason to open it.":
+    "軸ごとのポインタ速度、なめらかさ、送信間隔、タッチの感度、リップル補正のスイッチ、ピンチと 3 本指スワイプの設定。調整用で、しっくりきたら開く必要はほぼありません。",
   "Touch threshold ({{n}})": "タッチの感度(しきい値 {{n}})",
   "Telling two fingers apart ({{n}})": "2本の指の見分け({{n}})",
-  "Two fingers close together raise one touched area with a dip between them, and this sets how deep the dip must be before the sensor reports two fingers rather than one. Two fingers that stay one are a two-finger scroll that never starts. The sensor's default is 3; try one step at a time in each direction and keep whichever lets a close pair scroll. 0 never splits.":
-    "近づけた2本の指は、間にくぼみのある1つの接触面としてセンサに見えます。これは、そのくぼみがどれだけ深ければ「2本」と報告するかの設定です。2本のまま1本と判定されると、2本指スクロールは始まりません。センサの既定は 3。1 ずつ上下に動かして、指を近づけてもスクロールできる値を残してください。0 は分けない。",
+  "How readily two fingers close together count as two. If a two-finger scroll does not start when the fingers are close, try one step at a time in either direction and keep whichever works. 3 is the default; 0 never counts them as two.":
+    "近づけた 2 本の指を 2 本として認識しやすくするか。指を近づけたときに 2 本指スクロールが始まらないなら、1 ずつどちらかへ動かして、効いた方を残してください。既定は 3、0 だと 2 本と見なしません。",
   "Tap dead zone ({{n}} counts)": "タップの遊び({{n}} カウント)",
-  "A fingertip flattens as it lands, and the position the sensor reports slides toward the finger's base — so a tap meant as a click nudges the pointer. Movement is withheld while the finger stays within this many counts of where it landed (about 23 counts to a millimetre) during the first 150 ms. A stroke leaves the zone at once and loses only its first fraction of a millimetre. Raise it if taps still move the pointer; 0 turns it off.":
-    "指は着地しながらつぶれるので、センサが報告する位置は指の付け根側へずれます — そのためクリックのつもりのタップでポインタが動いてしまう。着地から 150ms のあいだ、着地点からこのカウント以内(約 23 カウントで 1mm)にいる間は動きを出しません。ストロークはすぐこの範囲を出るので、最初のわずかな距離を失うだけ。タップでまだ動くなら上げる。0 で無効。",
-  "How much a finger has to change an electrode's reading to count as touching it. Lower is more sensitive: a lighter touch registers, and more of the electrodes around the finger take part in the position, which makes movement smoother — until a resting palm or a hovering finger registers too. Higher is the reverse, and past a point the position steps from electrode to electrode. The sensor's own default is 44; 26 was smooth on this pad. Try steps of 4.":
-    "指が電極の読みをどれだけ変えたら「触れている」とみなすか。低いほど敏感: 軽いタッチが拾われ、指の周囲の電極も位置計算に加わって動きが滑らかになる — 下げすぎると置いた手のひらや浮いた指まで拾う。高いほどその逆で、上げすぎると位置が電極ごとに段を踏む。センサの既定は 44、このパッドでは 26 が滑らかだった。4 刻みで試すとよい。",
+  "Stops a tap from nudging the pointer. For a moment after the finger lands, movement within this distance of the landing point is ignored (about 23 counts to a millimetre). Raise it if taps still move the pointer. 20 is the default; 0 turns it off.":
+    "タップしたときにポインタがずれるのを防ぎます。指が着いた直後の一瞬だけ、着いた点からこの距離以内の動きを無視します(1mm がおよそ 23)。タップでまだずれるなら上げてください。既定は 20、0 で無効。",
+  "How light a touch counts. Lower is more sensitive and movement gets smoother, but too low and a resting palm or a hovering finger registers too. Higher is less sensitive, and too high makes the pointer move in steps. 34 is the starting point here; try steps of 4.":
+    "どれくらい軽いタッチまで拾うか。低いほど敏感で動きも滑らかになりますが、下げすぎると置いた手のひらや浮いた指まで拾います。高いほど鈍くなり、上げすぎると動きが段を踏みます。ここでの起点は 34。4 刻みで試してください。",
   "The pointer slows and hurries in a pattern fixed to the pad — the sensor's reported position is a gentle wave against the true one, repeating every half electrode. With this on, the keyboard learns a table of 256 positions along each axis, each holding how much faster or slower the pad reports there than on average, and divides it out of every report. No period to find: a few full-length strokes along each axis teach it, it is kept across power cycles, and it starts over if the pad scale changes. Turn it off to use the period-based correction below instead.":
     "ポインタがパッド上の決まった場所で遅くなったり速くなったりします。センサが報告する位置が本当の位置に対してゆるやかな波を描いていて、電極半分ごとに繰り返すためです。オンにすると、キーボードが各軸 256 か所の表を学習し(その場所で平均よりどれだけ速く/遅く報告されるか)、毎回の報告からそれを割り戻します。周期を探す必要はなく、軸に沿った端から端までのストロークを数回で覚えます。電源を切っても保持され、パッドのスケールを変えるとやり直しになります。オフにすると下の周期方式の補正を使います。",
-  "The pointer can slow and hurry in a pattern fixed to the pad — the sensor's reported position is a gentle wave against the true one. With this on, the keyboard learns a table of positions along each axis from ordinary strokes and divides the wave out of every report. Leave it on; turn it off only to compare.":
-    "ポインタがパッド上の決まった場所で遅くなったり速くなったりすることがあります(センサの報告位置が本当の位置に対してゆるやかな波を描く)。オンにすると、ふだんのストロークから各軸の位置ごとの表を学習し、その波を毎回の報告から割り出します。オンのままで構いません。比較のときだけオフに。",
+  "Evens out a pattern where the pointer slows and hurries at fixed spots on the pad. Leave it on; turn it off only to compare.":
+    "パッド上の決まった場所でポインタが遅くなったり速くなったりする波を均します。オンのままで。比べるときだけオフに。",
   "Map learned: ": "地図の学習: ",
   "{{half}}: up/down {{x}}/256, left/right {{y}}/256":
     "{{half}}: 縦 {{x}}/256、横 {{y}}/256",
@@ -114,18 +114,18 @@ const ja: Record<string, string> = {
   "Ripple smoothing ({{n}} counts)": "リップル除去 ({{n}}カウント)",
   "The fallback to the ripple correction above, for when the period cannot be pinned down: averages the pointer over this many counts of finger travel instead, which cancels the wave but costs half the window in lag. 0 is off. For a fault the report smoothing cannot reach: the sensor's reported position is a gentle wave against the true one, and on the long axis it repeats every couple of millimetres and swings the speed more than two to one. Being fixed in distance, it is crossed faster when you move faster, so a report-counted smoother slides off it. Set it to about one ripple period — near 45 for a 2 mm ripple at ~23 counts/mm; measure the period with the counting tool first. The lag is half the window, paid in following distance rather than time.":
     "上のリップル補正の代替(周期が決めきれないとき用)。ポインタを「レポート数」ではなく「指の移動距離(カウント)」ぶんで均して波を消しますが、窓の半分の遅延が出ます。0で無効。上のなめらかさでは届かない別の不具合用です: センサが報告する位置は、実際の指の位置に対して緩やかな波を打っていて、長辺では数mmごとに繰り返し、速度を2倍以上に振ります。この波は距離で固定されているので、速く動かせば速く横切るだけ — だからレポート数で数える平滑はすり抜けてしまう。1周期ぶんに合わせてください: ~23カウント/mm で 2mm の波なら 45 前後。まず計測ツールで周期を測ること。遅延は窓の半分で、時間ではなく「追従距離」で払います(速く動かすほど時間は短い)。",
-  "Spreads each movement across this many reports instead of emitting it at once. 1 is off. Needed once an axis is amplified: the pad reports whole counts, so a slow drag arrives as 1, 0, 1, 0, and multiplying that leaves the gaps in place and makes the steps bigger. Draining a fraction per report fills the gaps. Costs exactly this many reports of lag and no more.":
-    "動きを一度に出さず、この回数に分けて出します。1 で無効。軸を拡大したときに必要になります: パッドは整数カウントでしか報告しないので、ゆっくり動かすと 1, 0, 1, 0 と来ます。これに倍率を掛けても**隙間は隙間のままで、段差だけが大きく**なります。少しずつ出せば、前回の余りで隙間が埋まります。代償はこの回数ぶんの遅延だけです。",
+  "Smooths slow, careful movement by spreading each move over this many reports. The cost is lag: the pointer trails your finger by about this many reports. 1 is off; 2 is a good balance; 5 and above feel clearly laggy.":
+    "ゆっくり丁寧に動かしたときのカクつきを、動きをこの回数に分けて出すことで均します。代わりに、指に対してこの回数ぶんポインタが遅れます。1 で無効。2 くらいが目安で、5 以上は遅れがはっきり分かります。",
   "In tenths: 10 leaves an axis alone, 16 makes it 1.6x. This is the pointer, not the gesture detection — the pad scale above does not change cursor speed on this sensor. Raise one and lower the other to shift the balance without changing the overall speed.":
     "1/10単位。10 が等倍、16 で 1.6倍。こちらは**ポインタの速さ**で、ジェスチャーの判定ではありません。このセンサでは上のスケールを変えてもカーソル速度は変わりません。片方を上げてもう片方を下げれば、全体の速さを変えずに釣り合いだけを変えられます。",
-  "In tenths: 10 leaves an axis alone, 16 makes it 1.6x. Raise one and lower the other to shift the balance without changing the overall speed.":
-    "1/10単位。10 が等倍、16 で 1.6倍。片方を上げてもう片方を下げると、全体の速さを変えずに縦横のバランスだけ動かせます。",
+  "In tenths: 10 leaves the axis as it is, 16 makes it 1.6×. Raise one and lower the other to change the up/down vs left/right balance without changing the overall speed.":
+    "10 でそのまま、16 で 1.6 倍。片方を上げてもう片方を下げると、全体の速さを変えずに縦と横のバランスだけ変えられます。",
   "Up and down (×{{factor}})": "上下 (×{{factor}})",
-  "The long side of the pad. It usually wants more than the ratio of the sides suggests, because you cannot sweep the full length in one stroke the way you can across — so matching millimetres still feels reluctant.":
-    "パッドの長辺。辺の比から計算する値より少し強めがちょうどいいことが多いです。横と違って**縦は一息で端まで撫でられない**ので、mmで揃えてもまだ重く感じます。",
+  "The long side of the pad. It usually wants a somewhat higher number than the short side.":
+    "パッドの長辺方向。短辺より少し大きめの値にすると釣り合いやすいです。",
   "Left and right (×{{factor}})": "左右 (×{{factor}})",
-  "The short side of the pad. Lower this instead of raising the other axis if the pointer is already fast enough overall.":
-    "パッドの短辺。全体の速さがもう十分なら、もう片方を上げる代わりにこちらを下げてください。",
+  "The short side of the pad. If the pointer is already fast enough overall, lower this rather than raising the other.":
+    "パッドの短辺方向。全体がもう十分速いなら、縦を上げるよりこちらを下げてください。",
   "Counts spread across each side of the pad. Only the ratio matters: it has to match the ratio of the pad's sides. Set it wrong and the pointer drags in one direction while scrolls, swipes and pinches all lean the other way.":
     "パッドの各辺に割り当てるカウント数。意味があるのは比だけで、パッドの辺の比に合わせます。ここがずれていると、片方の向きだけポインタが重くなり、スクロール・スワイプ・ピンチの判定もすべて反対側へ傑きます。",
   "Along the pad (screen vertical)": "パッドの縦方向(画面の上下)",
@@ -137,34 +137,34 @@ const ja: Record<string, string> = {
   "Ratio {{ratio}} — aim for the ratio of the pad's own sides":
     "比 {{ratio}} — パッドの辺の比に合わせる",
   "Pinch with two fingers on one pad": "片手2本指でピンチする",
-  "Two fingers closing or spreading on a single pad zooms. On a small pad this is easy to confuse with a two-finger scroll, and the two-handed zoom \u2014 one finger on each pad \u2014 does the same job without the ambiguity. Off by default for that reason.":
-    "片方のパッドの上で2本指を開閉するとズームします。小さいパッドでは2本指スクロールと紛らわしく、両手ズーム(左右のパッドに1本ずつ)なら同じことが曖昧さなしにできます。そのため既定はオフです。",
+  "Two fingers closing or spreading on one pad zooms. On a small pad this is easy to confuse with two-finger scrolling, and zooming with one finger on each pad does the same job without the confusion — so this is off by default.":
+    "片方のパッドで 2 本の指を開く・閉じるとズームします。小さいパッドでは 2 本指スクロールと混同しやすく、左右のパッドに 1 本ずつ置くズームなら混同なく同じことができるので、既定ではオフです。",
   "Reverse the pinch direction": "ピンチの向きを逆にする",
   "Three-finger swipe": "3本指スワイプ",
   "How far three fingers travel before it is a swipe, in sensor counts (about 23 to the millimetre). Lower if swipes are missed, raise if they fire while you meant to hold.":
     "3本指がどれだけ動いたらスワイプとみなすか(センサのカウント、約23で1mm)。反応しないなら下げ、押さえているつもりで発火するなら上げます。",
   "Up and down ({{n}} counts)": "縦 ({{n}}カウント)",
-  "Along the pad's long side, which has room to spare: three fingers can travel a good way before one leaves the sensor.":
-    "パッドの長辺方向。余裕があるので、3本指がセンサから外れる前にかなり動かせます。",
+  "Along the long side of the pad, where three fingers have room to travel.":
+    "パッドの長辺方向。3 本指でも動かせる余裕があります。",
   "Left and right ({{n}} counts)": "横 ({{n}}カウント)",
-  "Across the pad's short side. Three fingers side by side already fill most of it, so there is little room to travel before one runs off; this is why it is lower than the other.":
-    "パッドの短辺方向。3本指を並べるとほぼ埋まるので、外れる前に動かせる距離が短い。縦より低いのはそのためです。",
-  "Report at most every {{n}} ms — plugged-in half":
+  "Across the short side of the pad. Three fingers fill most of it, so this is set lower than the other.":
+    "パッドの短辺方向。3 本指でほぼ埋まるので、縦より低めにしてあります。",
+  "Report at most every {{n}} ms — half connected to the computer":
     "送信間隔 ({{n}}ms ごと) — PC につながる側",
   "Report at most every {{n}} ms — wireless half":
     "送信間隔 ({{n}}ms ごと) — 無線側",
   "Report at most every {{n}} ms — wireless half {{i}}":
     "送信間隔 ({{n}}ms ごと) — 無線側 {{i}}",
-  "This half is on the computer's cable, so there is no link to pace: 0 reports every sensor frame, 200 a second, and anything above it only makes the pointer coarser and later. This box changes this half only.":
-    "この側は PC にケーブルでつながっていて、詰まるリンクがありません。0 で毎フレーム(毎秒 200 回)送り、それより大きくしてもポインタが粗く・遅くなるだけです。この欄はこの側だけを変えます。",
-  "This half's pointer crosses the Bluetooth link between the halves. The sensor reports 200 times a second and each report is two notifications, more than the link carries; the rest queue, and a queue is lag — on the pointer, and on this half's key presses, which wait behind it. Movement between reports is added up, so nothing is lost. 8 matches the link's 7.5 ms cadence; lower is finer but risks the queue, higher is coarser. This box changes this half only.":
-    "この側のポインタは左右間の Bluetooth リンクを渡ります。センサは毎秒 200 回報告し、1 回が 2 通知なのでリンクの容量を超え、余りが待ち行列になります。待ち行列 = 遅延で、この側のキー入力も後ろに並んで遅れます。送信の間の移動量は足し合わせるので失われません。8 がリンクの周期 7.5ms に合います。小さいほど細かいが詰まりやすく、大きいほど粗い。この欄はこの側だけを変えます。",
+  "How often this half sends pointer movement to the computer. 0 sends every sensor frame (200 a second). Over USB leave it at 0. Over Bluetooth some computers cannot take 200 a second, and the pointer falls further behind the longer you keep moving — Windows did this, and 6 fixed it; a Mac was fine at 0. Movement between reports is added up, so nothing is lost; higher only makes the pointer coarser. This box changes this half only.":
+    "この側がパソコンへポインタの動きを送る間隔。0 でセンサの毎フレーム(1 秒に 200 回)送ります。USB 接続なら 0 のままで。Bluetooth 接続では、パソコンによっては 200 回/秒を受け切れず、動かし続けるほどポインタが遅れていきます — Windows でこれが起き、6 にすると直りました。Mac は 0 で問題ありません。送る間の動きは足し合わせるので失われません。大きくするほど動きが粗くなります。この欄はこの側だけに効きます。",
+  "This half's movement goes to the other half over Bluetooth before it reaches the computer. That link carries fewer reports than the sensor makes, so sending every frame makes the pointer — and this half's keys — lag. 8 matches the link between the halves; lower is finer but risks lag, higher is coarser. Movement between reports is added up, so nothing is lost. This box changes this half only.":
+    "この側の動きは、もう片方へ Bluetooth で渡してからパソコンへ届きます。左右間の通信はセンサが作る回数ほどは運べないので、毎フレーム送るとポインタもこの側のキーも遅れます。8 が左右間の通信と釣り合う値です。小さいほど細かくなりますが遅れやすく、大きいほど粗くなります。送る間の動きは足し合わせるので失われません。この欄はこの側だけに効きます。",
   "The halves differ: {{values}}. Press Enter in the box to write both.":
     "左右で値が違います: {{values}}。欄で Enter を押すと両方に書き直します。",
   "The halves differ. Flip the switch to write both.":
     "左右で値が違います。スイッチを切り替えると両方に書き直します。",
-  "Spreading the fingers zooms out instead of in — for the two-finger pinch on one pad and the one-finger-each-hand pinch across both alike. Which way round is right is the host's convention rather than anything about the pad, so there is no setting that is correct on every machine.":
-    "指を開いたときに拡大ではなく縮小します。片手 2 本指のピンチにも、両手 1 本ずつのピンチにも同じように効きます。どちらが正しいかはパッドではなくホスト側の流儀で決まるので、どの環境でも正解という設定はありません。",
+  "Reverses the zoom direction, for both the one-pad pinch and the one-finger-on-each-pad zoom. Which way is right depends on the computer.":
+    "ズームの向きを反転します。片手ピンチと、左右に 1 本ずつのズームの両方に効きます。どちらが正しいかはパソコン側の流儀しだいです。",
   "Two-finger swipe, horizontal A": "2本指スワイプ・横 A",
   "Tapped once when the swipe is recognised. Browser back and forward are the usual pair. Enabling this costs two-finger horizontal scroll \u2014 a sideways movement cannot both scroll at once and be held back long enough to be recognised as a swipe.":
     "スワイプが認識された時点で1回だけ押されます。ブラウザの戻る/進むを割り当てるのが定番です。これを有効にすると2本指の横スクロールは使えなくなります。横向きの動きを、すぐスクロールに回しつつジェスチャーとして見届けることは両立しないためです。",
@@ -1800,21 +1800,21 @@ const zh: Record<string, string> = {
     "短边的同一校正。除非速度波形工具在该轴也测到周期，否则保持 0；这块触控板上没有。",
   "Correct the ripple with a map of the pad": "用触控板地图校正波纹",
   "Show advanced settings": "显示高级设置",
-  "Pointer speed per axis, smoothing, the report interval, the touch threshold, the ripple map switch, and the pinch and three-finger swipe settings. Tuning rather than daily use; once the pad feels right there is little reason to open it.":
-    "各轴指针速度、平滑、发送间隔、触摸灵敏度、波纹校正开关，以及单手捏合与三指滑动的设置。属于调校项而非日常使用；手感确定后几乎无需再打开。",
+  "Pointer speed per axis, smoothing, the report interval, touch sensitivity, the ripple map switch, and the pinch and three-finger swipe settings. For tuning; once the pad feels right there is little reason to open it.":
+    "每个轴的指针速度、平滑、上报间隔、触摸灵敏度、波纹校正开关，以及捏合和三指滑动设置。用于调校；触控板手感合适后基本不需要再打开。",
   "Touch threshold ({{n}})": "触摸灵敏度（阈值 {{n}}）",
   "Telling two fingers apart ({{n}})": "区分两根手指（{{n}}）",
-  "Two fingers close together raise one touched area with a dip between them, and this sets how deep the dip must be before the sensor reports two fingers rather than one. Two fingers that stay one are a two-finger scroll that never starts. The sensor's default is 3; try one step at a time in each direction and keep whichever lets a close pair scroll. 0 never splits.":
-    "靠得很近的两根手指在传感器看来是中间有凹陷的一块接触区，此项决定凹陷要多深才报告为两指。两指一直被当作一指，则双指滚动永远不会开始。传感器默认为 3；每次调一格，向两个方向都试，保留能让并拢的两指滚动的值。0 为从不拆分。",
+  "How readily two fingers close together count as two. If a two-finger scroll does not start when the fingers are close, try one step at a time in either direction and keep whichever works. 3 is the default; 0 never counts them as two.":
+    "两指靠得很近时多容易被认成两指。两指靠近时两指滚动不启动，就每次调一格试试，留下有效的那个。默认 3，0 时不会认成两指。",
   "Tap dead zone ({{n}} counts)": "点按死区（{{n}} 计数）",
-  "A fingertip flattens as it lands, and the position the sensor reports slides toward the finger's base — so a tap meant as a click nudges the pointer. Movement is withheld while the finger stays within this many counts of where it landed (about 23 counts to a millimetre) during the first 150 ms. A stroke leaves the zone at once and loses only its first fraction of a millimetre. Raise it if taps still move the pointer; 0 turns it off.":
-    "指尖落下时会压扁，传感器报告的位置会向指根方向滑动——于是本想点击的点按却挪动了指针。落下后的 150ms 内，手指仍在落点这么多计数（约 23 计数为 1mm）之内时不输出移动。滑动会立刻离开该范围，只损失最初不到一毫米。点按仍会移动指针就调高；0 为关闭。",
-  "How much a finger has to change an electrode's reading to count as touching it. Lower is more sensitive: a lighter touch registers, and more of the electrodes around the finger take part in the position, which makes movement smoother — until a resting palm or a hovering finger registers too. Higher is the reverse, and past a point the position steps from electrode to electrode. The sensor's own default is 44; 26 was smooth on this pad. Try steps of 4.":
-    "手指需要使电极读数变化多少才算触摸。越低越灵敏：更轻的触摸也会被识别，手指周围更多电极参与定位，移动更平滑——过低时搁置的手掌或悬空的手指也会被识别。越高则相反，过高时位置会在电极之间跳格。传感器默认 44；此触摸板 26 时很平滑。建议以 4 为步长尝试。",
+  "Stops a tap from nudging the pointer. For a moment after the finger lands, movement within this distance of the landing point is ignored (about 23 counts to a millimetre). Raise it if taps still move the pointer. 20 is the default; 0 turns it off.":
+    "防止轻点时指针被推动。手指落下后的一瞬间，忽略落点附近这个距离内的移动（1 毫米约 23）。轻点仍会移动指针就调高。默认 20，0 为关闭。",
+  "How light a touch counts. Lower is more sensitive and movement gets smoother, but too low and a resting palm or a hovering finger registers too. Higher is less sensitive, and too high makes the pointer move in steps. 34 is the starting point here; try steps of 4.":
+    "多轻的触碰算触碰。越低越灵敏、移动也越平滑，但太低会把搁着的手掌或悬空的手指也算进去。越高越迟钝，太高指针会一格一格地动。这里的起点是 34，按 4 为步长尝试。",
   "The pointer slows and hurries in a pattern fixed to the pad — the sensor's reported position is a gentle wave against the true one, repeating every half electrode. With this on, the keyboard learns a table of 256 positions along each axis, each holding how much faster or slower the pad reports there than on average, and divides it out of every report. No period to find: a few full-length strokes along each axis teach it, it is kept across power cycles, and it starts over if the pad scale changes. Turn it off to use the period-based correction below instead.":
     "指针会在触控板上固定的位置变慢或变快：传感器报告的位置相对真实位置呈一条平缓的波，每半个电极重复一次。开启后，键盘为每个轴学习一张 256 个位置的表（该处的报告比平均快或慢多少），并从每次报告中除去它。无需查找周期：沿轴做几次从头到尾的划动即可学会，断电后保留，更改触控板比例后重新学习。关闭则使用下方基于周期的校正。",
-  "The pointer can slow and hurry in a pattern fixed to the pad — the sensor's reported position is a gentle wave against the true one. With this on, the keyboard learns a table of positions along each axis from ordinary strokes and divides the wave out of every report. Leave it on; turn it off only to compare.":
-    "指针可能会在触摸板上固定的位置忽慢忽快（传感器报告的位置相对真实位置呈缓和的波形）。开启后，键盘从日常滑动中学习每轴按位置的表，并从每次报告中除去该波形。保持开启即可；只在需要对比时关闭。",
+  "Evens out a pattern where the pointer slows and hurries at fixed spots on the pad. Leave it on; turn it off only to compare.":
+    "抹平指针在触控板固定位置忽慢忽快的波动。保持开启；只在对比时关闭。",
   "Map learned: ": "地图学习进度：",
   "{{half}}: up/down {{x}}/256, left/right {{y}}/256":
     "{{half}}：上下 {{x}}/256，左右 {{y}}/256",
@@ -1833,18 +1833,18 @@ const zh: Record<string, string> = {
   "Ripple smoothing ({{n}} counts)": "波纹平滑（{{n}} 计数）",
   "The fallback to the ripple correction above, for when the period cannot be pinned down: averages the pointer over this many counts of finger travel instead, which cancels the wave but costs half the window in lag. 0 is off. For a fault the report smoothing cannot reach: the sensor's reported position is a gentle wave against the true one, and on the long axis it repeats every couple of millimetres and swings the speed more than two to one. Being fixed in distance, it is crossed faster when you move faster, so a report-counted smoother slides off it. Set it to about one ripple period — near 45 for a 2 mm ripple at ~23 counts/mm; measure the period with the counting tool first. The lag is half the window, paid in following distance rather than time.":
     "上方波纹校正的备用方案（周期无法确定时使用）：改为按“手指移动距离（计数）”而不是上报次数来平均指针，能消除波纹但会带来半个窗口的延迟；0 为关闭。用于上面的平滑无法触及的另一种缺陷：传感器上报的位置相对真实位置是一条缓和的波，在长轴上每隔几毫米重复一次，把速度摆动到两倍以上。由于这条波固定在距离上，移动越快只是越快地穿过它，所以按上报次数计的平滑会从它上面滑过。设为约一个波纹周期——在 ~23 计数/毫米下 2 毫米波纹约为 45；请先用计数工具测量周期。延迟是窗口的一半，以跟随距离而非时间支付（移动越快，时间越短）。",
-  "Spreads each movement across this many reports instead of emitting it at once. 1 is off. Needed once an axis is amplified: the pad reports whole counts, so a slow drag arrives as 1, 0, 1, 0, and multiplying that leaves the gaps in place and makes the steps bigger. Draining a fraction per report fills the gaps. Costs exactly this many reports of lag and no more.":
-    "把每次移动分散到这么多次上报中，而不是一次性输出。1 为关闭。轴被放大后就需要它：触控板只以整数计数上报，慢慢拖动时会得到 1, 0, 1, 0，乘以倍率后**空隙仍是空隙，只是步进变大**。每次只放出一部分，就能用上一次的余额填满空隙。代价只有这么多次上报的延迟。",
+  "Smooths slow, careful movement by spreading each move over this many reports. The cost is lag: the pointer trails your finger by about this many reports. 1 is off; 2 is a good balance; 5 and above feel clearly laggy.":
+    "把每次移动分摊到这么多次上报，让慢速移动更平滑。代价是延迟：指针会落后手指大约这么多次上报。1 为关闭；2 比较均衡；5 以上会明显感到延迟。",
   "In tenths: 10 leaves an axis alone, 16 makes it 1.6x. This is the pointer, not the gesture detection — the pad scale above does not change cursor speed on this sensor. Raise one and lower the other to shift the balance without changing the overall speed.":
     "以十分之一为单位：10 为原倍，16 为 1.6 倍。这是**指针速度**，不是手势判定；在这颗传感器上，修改上面的尺度并不会改变光标速度。调高一轴、调低另一轴，可以在不改变整体速度的前提下调整平衡。",
-  "In tenths: 10 leaves an axis alone, 16 makes it 1.6x. Raise one and lower the other to shift the balance without changing the overall speed.":
-    "以十分之一为单位：10 为原倍，16 为 1.6 倍。调高一轴、调低另一轴，可在不改变整体速度的情况下只调整纵横平衡。",
+  "In tenths: 10 leaves the axis as it is, 16 makes it 1.6×. Raise one and lower the other to change the up/down vs left/right balance without changing the overall speed.":
+    "10 为原样，16 为 1.6 倍。一个调高、另一个调低，可以只改变纵横比例而不改变整体速度。",
   "Up and down (×{{factor}})": "上下（×{{factor}}）",
-  "The long side of the pad. It usually wants more than the ratio of the sides suggests, because you cannot sweep the full length in one stroke the way you can across — so matching millimetres still feels reluctant.":
-    "触控板的长边。通常需要比边长比例算出的值再大一些，因为**纵向无法像横向那样一次划到头**，即使毫米对齐仍然显得费力。",
+  "The long side of the pad. It usually wants a somewhat higher number than the short side.":
+    "触控板的长边方向。通常比短边略高一些更均衡。",
   "Left and right (×{{factor}})": "左右（×{{factor}}）",
-  "The short side of the pad. Lower this instead of raising the other axis if the pointer is already fast enough overall.":
-    "触控板的短边。如果整体速度已经够快，就调低这一轴，而不是调高另一轴。",
+  "The short side of the pad. If the pointer is already fast enough overall, lower this rather than raising the other.":
+    "触控板的短边方向。如果整体已经够快，就降低这一项而不是提高另一项。",
   "Counts spread across each side of the pad. Only the ratio matters: it has to match the ratio of the pad's sides. Set it wrong and the pointer drags in one direction while scrolls, swipes and pinches all lean the other way.":
     "分配给触控板每一边的计数。只有比值有意义，它必须与触控板两边的比值一致。设错了就会出现指针在一个方向上发洩，而滚动、滑动和捏合的判定全部向反方向倾斜。",
   "Along the pad (screen vertical)": "触控板纵向（屏幕上下）",
@@ -1856,34 +1856,34 @@ const zh: Record<string, string> = {
   "Ratio {{ratio}} — aim for the ratio of the pad's own sides":
     "比值 {{ratio}} — 向触控板两边的比值靠齐",
   "Pinch with two fingers on one pad": "在单侧触控板上双指捏合",
-  "Two fingers closing or spreading on a single pad zooms. On a small pad this is easy to confuse with a two-finger scroll, and the two-handed zoom \u2014 one finger on each pad \u2014 does the same job without the ambiguity. Off by default for that reason.":
-    "在一侧触控板上开合双指进行缩放。在小尺寸触控板上这与双指滚动很难区分，而双手缩放（左右各一根手指）可以毫不含糊地完成同样的操作，因此默认关闭。",
+  "Two fingers closing or spreading on one pad zooms. On a small pad this is easy to confuse with two-finger scrolling, and zooming with one finger on each pad does the same job without the confusion — so this is off by default.":
+    "在一块触控板上两指开合即可缩放。小触控板上容易和两指滚动混淆，而两块板各放一指的缩放没有这个问题，所以默认关闭。",
   "Reverse the pinch direction": "反转捏合方向",
   "Three-finger swipe": "三指滑动",
   "How far three fingers travel before it is a swipe, in sensor counts (about 23 to the millimetre). Lower if swipes are missed, raise if they fire while you meant to hold.":
     "三指移动多远才算滑动（传感器计数，约 23 为 1 毫米）。滑动被漏掉就调低，想按住却触发了就调高。",
   "Up and down ({{n}} counts)": "上下（{{n}} 计数）",
-  "Along the pad's long side, which has room to spare: three fingers can travel a good way before one leaves the sensor.":
-    "沿触控板长边，余量充足：三指可以移动很远才会有一指离开传感器。",
+  "Along the long side of the pad, where three fingers have room to travel.":
+    "沿触控板长边，三指有足够的移动空间。",
   "Left and right ({{n}} counts)": "左右（{{n}} 计数）",
-  "Across the pad's short side. Three fingers side by side already fill most of it, so there is little room to travel before one runs off; this is why it is lower than the other.":
-    "沿触控板短边。三指并排几乎占满，没多少余地就会有一指滑出，所以比另一项低。",
-  "Report at most every {{n}} ms — plugged-in half":
+  "Across the short side of the pad. Three fingers fill most of it, so this is set lower than the other.":
+    "沿触控板短边。三指几乎占满，所以比另一项设得低。",
+  "Report at most every {{n}} ms — half connected to the computer":
     "上报间隔（每 {{n}} ms）— 连接电脑的一半",
   "Report at most every {{n}} ms — wireless half":
     "上报间隔（每 {{n}} ms）— 无线的一半",
   "Report at most every {{n}} ms — wireless half {{i}}":
     "上报间隔（每 {{n}} ms）— 无线的一半 {{i}}",
-  "This half is on the computer's cable, so there is no link to pace: 0 reports every sensor frame, 200 a second, and anything above it only makes the pointer coarser and later. This box changes this half only.":
-    "这一半通过线缆连接电脑，没有需要节流的链路：0 为每个传感器帧上报（每秒 200 次），再大只会让指针更粗、更迟。此框只更改这一半。",
-  "This half's pointer crosses the Bluetooth link between the halves. The sensor reports 200 times a second and each report is two notifications, more than the link carries; the rest queue, and a queue is lag — on the pointer, and on this half's key presses, which wait behind it. Movement between reports is added up, so nothing is lost. 8 matches the link's 7.5 ms cadence; lower is finer but risks the queue, higher is coarser. This box changes this half only.":
-    "这一半的指针要经过两半之间的蓝牙链路。传感器每秒上报 200 次，每次两条通知，超过链路承载，其余排队；排队就是延迟——指针延迟，这一半的按键也排在后面延迟。上报之间的移动会累加，不会丢失。8 与链路 7.5 ms 的节奏匹配；更小更细但容易排队，更大更粗。此框只更改这一半。",
+  "How often this half sends pointer movement to the computer. 0 sends every sensor frame (200 a second). Over USB leave it at 0. Over Bluetooth some computers cannot take 200 a second, and the pointer falls further behind the longer you keep moving — Windows did this, and 6 fixed it; a Mac was fine at 0. Movement between reports is added up, so nothing is lost; higher only makes the pointer coarser. This box changes this half only.":
+    "这一半向电脑发送指针移动的间隔。0 为每帧都发（每秒 200 次）。USB 连接时保持 0。蓝牙连接时，有些电脑接收不了每秒 200 次，移动得越久指针越落后 — Windows 会这样，设为 6 即可解决；Mac 在 0 时没有问题。上报之间的移动会累加，不会丢失；越大指针越粗糙。此项只影响这一半。",
+  "This half's movement goes to the other half over Bluetooth before it reaches the computer. That link carries fewer reports than the sensor makes, so sending every frame makes the pointer — and this half's keys — lag. 8 matches the link between the halves; lower is finer but risks lag, higher is coarser. Movement between reports is added up, so nothing is lost. This box changes this half only.":
+    "这一半的移动先通过蓝牙传给另一半，再到电脑。两半之间的链路运不了传感器那么多次上报，每帧都发会让指针和这一半的按键都延迟。8 与两半之间的链路相匹配；更小更细但容易延迟，更大更粗糙。上报之间的移动会累加，不会丢失。此项只影响这一半。",
   "The halves differ: {{values}}. Press Enter in the box to write both.":
     "两半的值不同：{{values}}。在框中按 Enter 可同时写入两半。",
   "The halves differ. Flip the switch to write both.":
     "两半的值不同。拨动开关可同时写入两半。",
-  "Spreading the fingers zooms out instead of in — for the two-finger pinch on one pad and the one-finger-each-hand pinch across both alike. Which way round is right is the host's convention rather than anything about the pad, so there is no setting that is correct on every machine.":
-    "张开手指时缩小而不是放大——单手双指捏合和双手各一指的捏合都同样适用。哪个方向正确取决于主机的惯例而非触控板本身，因此没有在所有设备上都正确的设置。",
+  "Reverses the zoom direction, for both the one-pad pinch and the one-finger-on-each-pad zoom. Which way is right depends on the computer.":
+    "反转缩放方向，对单板捏合和两板各一指的缩放都生效。哪个方向对取决于电脑。",
   "Two-finger swipe, horizontal A": "双指滑动 · 横向 A",
   "Tapped once when the swipe is recognised. Browser back and forward are the usual pair. Enabling this costs two-finger horizontal scroll \u2014 a sideways movement cannot both scroll at once and be held back long enough to be recognised as a swipe.":
     "在识别到滑动时点击一次。通常配成浏览器的后退/前进。启用后将无法使用双指横向滚动：横向移动无法既立刻开始滚动、又等到足以被识别为手势。",

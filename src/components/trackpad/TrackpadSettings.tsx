@@ -90,7 +90,7 @@ export function TrackpadSettings() {
         <ToggleRow
           label={t("Show advanced settings")}
           info={t(
-            "Pointer speed per axis, smoothing, the report interval, the touch threshold, the ripple map switch, and the pinch and three-finger swipe settings. Tuning rather than daily use; once the pad feels right there is little reason to open it.",
+            "Pointer speed per axis, smoothing, the report interval, touch sensitivity, the ripple map switch, and the pinch and three-finger swipe settings. For tuning; once the pad feels right there is little reason to open it.",
           )}
           checked={advanced}
           onCheckedChange={setAdvanced}

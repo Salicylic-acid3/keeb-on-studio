@@ -88,7 +88,7 @@ export function PinchSettings({
         <ToggleRow
           label={t("Pinch with two fingers on one pad")}
           info={t(
-            "Two fingers closing or spreading on a single pad zooms. On a small pad this is easy to confuse with a two-finger scroll, and the two-handed zoom — one finger on each pad — does the same job without the ambiguity. Off by default for that reason.",
+            "Two fingers closing or spreading on one pad zooms. On a small pad this is easy to confuse with two-finger scrolling, and zooming with one finger on each pad does the same job without the confusion — so this is off by default.",
           )}
           checked={pinch.enabled}
           disagree={sidesDisagree(pinch)}
@@ -101,7 +101,7 @@ export function PinchSettings({
         <ToggleRow
           label={t("Reverse the pinch direction")}
           info={t(
-            "Spreading the fingers zooms out instead of in — for the two-finger pinch on one pad and the one-finger-each-hand pinch across both alike. Which way round is right is the host's convention rather than anything about the pad, so there is no setting that is correct on every machine.",
+            "Reverses the zoom direction, for both the one-pad pinch and the one-finger-on-each-pad zoom. Which way is right depends on the computer.",
           )}
           checked={invert.enabled}
           disagree={sidesDisagree(invert)}
@@ -132,7 +132,7 @@ export function PinchSettings({
         <NumberRow
           label={t("Up and down ({{n}} counts)", { n: swipeX.value })}
           info={t(
-            "Along the pad's long side, which has room to spare: three fingers can travel a good way before one leaves the sensor.",
+            "Along the long side of the pad, where three fingers have room to travel.",
           )}
           field={swipeX}
           step={10}
@@ -150,7 +150,7 @@ export function PinchSettings({
         <NumberRow
           label={t("Left and right ({{n}} counts)", { n: swipeY.value })}
           info={t(
-            "Across the pad's short side. Three fingers side by side already fill most of it, so there is little room to travel before one runs off; this is why it is lower than the other.",
+            "Across the short side of the pad. Three fingers fill most of it, so this is set lower than the other.",
           )}
           field={swipeY}
           step={10}
@@ -170,7 +170,7 @@ export function PinchSettings({
             n: fingerSplit.value,
           })}
           info={t(
-            "Two fingers close together raise one touched area with a dip between them, and this sets how deep the dip must be before the sensor reports two fingers rather than one. Two fingers that stay one are a two-finger scroll that never starts. The sensor's default is 3; try one step at a time in each direction and keep whichever lets a close pair scroll. 0 never splits.",
+            "How readily two fingers close together count as two. If a two-finger scroll does not start when the fingers are close, try one step at a time in either direction and keep whichever works. 3 is the default; 0 never counts them as two.",
           )}
           field={fingerSplit}
           step={1}
