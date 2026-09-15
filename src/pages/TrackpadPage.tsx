@@ -1393,7 +1393,7 @@ export function TrackpadPage() {
             {/* Below the gesture bindings: what a gesture does is the daily
                 question, how the pad feels is tuning, opened rarely. Draws
                 nothing on firmware that does not publish the settings. */}
-            <TrackpadSettings />
+            <TrackpadSettings layers={keymap.keymap?.layers ?? []} />
           </div>
         )}
       </div>

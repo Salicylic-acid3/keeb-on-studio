@@ -21,6 +21,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useLanguage } from "../../hooks/useLanguage";
 import { useCustomSettings } from "../../hooks/useCustomSettings";
 import { TRACKPAD_SUBSYSTEM_ID } from "../../lib/trackpad/settings";
+import type { Layer } from "../../hooks/useKeymap";
 import { PinchSettings } from "./PinchSettings";
 import { ScaleSettings } from "./ScaleSettings";
 import { ToggleRow } from "./ToggleRow";
@@ -51,7 +52,7 @@ export type TrackpadSettingsAccess = Pick<
   "isLoading" | "writeSettingToMemory" | "saveSection"
 >;
 
-export function TrackpadSettings() {
+export function TrackpadSettings({ layers = [] }: { layers?: Layer[] }) {
   const { t } = useLanguage();
   const settings = useCustomSettings({
     subsystemIdentifier: TRACKPAD_SUBSYSTEM_ID,
@@ -99,7 +100,7 @@ export function TrackpadSettings() {
       {advanced && (
         <>
           <ScaleSettings settings={settings} rows={rows} />
-          <PinchSettings settings={settings} rows={rows} />
+          <PinchSettings settings={settings} rows={rows} layers={layers} />
         </>
       )}
     </>

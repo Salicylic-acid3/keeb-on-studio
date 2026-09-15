@@ -23,11 +23,13 @@
  */
 import { ToggleRow } from "./ToggleRow";
 import { useLanguage } from "../../hooks/useLanguage";
+import type { Layer } from "../../hooks/useKeymap";
 import type { Setting } from "../../proto/cormoran/zmk/custom_settings/custom_settings";
 import type { TrackpadSettingsAccess } from "./TrackpadSettings";
 import { NumberRow } from "./NumberRow";
 import {
   FINGER_SPLIT_KEY,
+  SWIPE2_LAYERS_KEY,
   ONE_HAND_PINCH_KEY,
   PINCH_INVERT_KEY,
   SWIPE3_THRESHOLD_X_KEY,
@@ -41,9 +43,12 @@ import {
 export function PinchSettings({
   settings,
   rows,
+  layers = [],
 }: {
   settings: TrackpadSettingsAccess;
   rows: readonly Setting[];
+  /** The keymap's layers, for the per-layer horizontal swipe switches. */
+  layers?: Layer[];
 }) {
   const { t } = useLanguage();
 
@@ -54,6 +59,7 @@ export function PinchSettings({
   const swipeX = readTrackpadNumber(rows, SWIPE3_THRESHOLD_X_KEY);
   const swipeY = readTrackpadNumber(rows, SWIPE3_THRESHOLD_Y_KEY);
   const fingerSplit = readTrackpadNumber(rows, FINGER_SPLIT_KEY);
+  const swipe2Layers = readTrackpadNumber(rows, SWIPE2_LAYERS_KEY);
 
   /*
    * Written and then saved, rather than left as an unsaved change with a Save
@@ -74,9 +80,30 @@ export function PinchSettings({
     await settings.saveSection(toggle.setting.customSubsystemIndex);
   };
 
+  /*
+   * One bit per layer id; -1 is every layer. Written to both halves like the
+   * switches above, though only the half with the keymap can act on it: the
+   * other half does not know which layer is active and always swipes.
+   */
+  const swipe2Mask = swipe2Layers?.value ?? -1;
+  const swipe2On = (layerId: number) => (swipe2Mask & (1 << layerId)) !== 0;
+  const setSwipe2 = async (layerId: number, checked: boolean) => {
+    if (!swipe2Layers) return;
+    const next = checked
+      ? swipe2Mask | (1 << layerId)
+      : swipe2Mask & ~(1 << layerId);
+    await settings.writeSettingToMemory(
+      swipe2Layers.setting,
+      { int32Value: next | 0 },
+      { allSources: true },
+    );
+    await settings.saveSection(swipe2Layers.setting.customSubsystemIndex);
+  };
+
   // Nothing to draw for a keyboard that does not have these. The shared
   // loading indicator lives in TrackpadSettings.
-  if (!pinch && !invert && !swipeX && !swipeY && !fingerSplit) return null;
+  if (!pinch && !invert && !swipeX && !swipeY && !fingerSplit && !swipe2Layers)
+    return null;
 
   return (
     <div className="glass-card space-y-3 p-4">
@@ -113,6 +140,36 @@ export function PinchSettings({
           disabled={settings.isLoading}
           onCheckedChange={(checked) => void setToggle(invert, checked)}
         />
+      )}
+
+      {swipe2Layers && layers.length > 0 && (
+        <div className="border-t border-[var(--color-border)] pt-3 space-y-3">
+          <div>
+            <h4 className="text-sm font-medium text-[var(--color-text)]">
+              {t("Two-finger horizontal swipe")}
+            </h4>
+            <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+              {t(
+                "On a layer with the switch on, moving two fingers sideways is a swipe (bound as a key on the trackpad tab). With it off, the same movement scrolls sideways instead. Only the half connected to the computer follows the layer; the other half always swipes.",
+              )}
+            </p>
+          </div>
+          {layers.map((layer, index) => (
+            <ToggleRow
+              key={layer.id}
+              label={t("Swipe on {{layer}}", {
+                layer: layer.name || t("Layer {{id}}", { id: index }),
+              })}
+              info={t(
+                "Off: two fingers moving sideways scroll horizontally on this layer.",
+              )}
+              checked={swipe2On(layer.id)}
+              disagree={sidesDisagree(swipe2Layers)}
+              disabled={settings.isLoading}
+              onCheckedChange={(checked) => void setSwipe2(layer.id, checked)}
+            />
+          ))}
+        </div>
       )}
 
       {(swipeX || swipeY) && (

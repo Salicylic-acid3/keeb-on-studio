@@ -144,6 +144,12 @@ const ja: Record<string, string> = {
     "片方のパッドで 2 本の指を開く・閉じるとズームします。小さいパッドでは 2 本指スクロールと混同しやすく、左右のパッドに 1 本ずつ置くズームなら混同なく同じことができるので、既定ではオフです。",
   "Reverse the pinch direction": "ピンチの向きを逆にする",
   "Three-finger swipe": "3本指スワイプ",
+  "Two-finger horizontal swipe": "2本指の横スワイプ",
+  "On a layer with the switch on, moving two fingers sideways is a swipe (bound as a key on the trackpad tab). With it off, the same movement scrolls sideways instead. Only the half connected to the computer follows the layer; the other half always swipes.":
+    "スイッチがオンのレイヤーでは、2 本の指を横に動かすとスワイプになります(割り当てはトラックパッドタブのジェスチャー)。オフのレイヤーでは同じ動きが横スクロールになります。レイヤーに従うのは PC につながる側だけで、もう片方は常にスワイプです。",
+  "Swipe on {{layer}}": "{{layer}} で横スワイプ",
+  "Off: two fingers moving sideways scroll horizontally on this layer.":
+    "オフにすると、このレイヤーでは 2 本指の横の動きが横スクロールになります。",
   "How far three fingers travel before it is a swipe, in sensor counts (about 23 to the millimetre). Lower if swipes are missed, raise if they fire while you meant to hold.":
     "3本指がどれだけ動いたらスワイプとみなすか(センサのカウント、約23で1mm)。反応しないなら下げ、押さえているつもりで発火するなら上げます。",
   "Up and down ({{n}} counts)": "縦 ({{n}}カウント)",
@@ -1869,6 +1875,12 @@ const zh: Record<string, string> = {
     "在一块触控板上两指开合即可缩放。小触控板上容易和两指滚动混淆，而两块板各放一指的缩放没有这个问题，所以默认关闭。",
   "Reverse the pinch direction": "反转捏合方向",
   "Three-finger swipe": "三指滑动",
+  "Two-finger horizontal swipe": "两指横向滑动",
+  "On a layer with the switch on, moving two fingers sideways is a swipe (bound as a key on the trackpad tab). With it off, the same movement scrolls sideways instead. Only the half connected to the computer follows the layer; the other half always swipes.":
+    "开关打开的层上，两指横向移动是滑动手势（在触控板标签页里绑定按键）。关闭时同样的动作变成横向滚动。只有连接电脑的一半会跟随层；另一半始终是滑动。",
+  "Swipe on {{layer}}": "{{layer}} 上横向滑动",
+  "Off: two fingers moving sideways scroll horizontally on this layer.":
+    "关闭后，此层上两指横向移动会横向滚动。",
   "How far three fingers travel before it is a swipe, in sensor counts (about 23 to the millimetre). Lower if swipes are missed, raise if they fire while you meant to hold.":
     "三指移动多远才算滑动（传感器计数，约 23 为 1 毫米）。滑动被漏掉就调低，想按住却触发了就调高。",
   "Up and down ({{n}} counts)": "上下（{{n}} 计数）",

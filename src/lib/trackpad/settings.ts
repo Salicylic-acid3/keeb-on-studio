@@ -66,6 +66,7 @@ export const CURSOR_SMOOTHING_KEY = "cursor_smoothing";
 /** Pointer movement withheld after a finger lands, in counts; 0 is off. */
 export const TAP_DEAD_ZONE_KEY = "tap_dead_zone";
 export const LIFT_GUARD_KEY = "lift_guard";
+export const SWIPE2_LAYERS_KEY = "swipe2_layers";
 
 /**
  * Counts of finger travel to average the pointer over; 0 is off.
