@@ -89,6 +89,9 @@ const ja: Record<string, string> = {
   "How readily two fingers close together count as two. If a two-finger scroll does not start when the fingers are close, try one step at a time in either direction and keep whichever works. 3 is the default; 0 never counts them as two.":
     "近づけた 2 本の指を 2 本として認識しやすくするか。指を近づけたときに 2 本指スクロールが始まらないなら、1 ずつどちらかへ動かして、効いた方を残してください。既定は 3、0 だと 2 本と見なしません。",
   "Tap dead zone ({{n}} counts)": "タップの遊び({{n}} カウント)",
+  "Lift guard ({{n}} frames)": "離すときのずれ止め({{n}} フレーム)",
+  "Stops the pointer from jumping as the finger leaves the pad, which makes clicks on small targets miss. After the finger has paused, the first few frames of movement are held back and thrown away if the finger lifts right after them; a real stroke goes through unchanged after that. 2 is the default (about 10 ms of the start of a stroke after a pause). Raise it if the pointer still jumps on lift; 0 turns it off.":
+    "指を離すときにポインタが跳ねて、小さなボタンのクリックが外れるのを防ぎます。指が止まったあとの最初の数フレームの動きを保留し、その直後に指が離れたら捨てます。そのまま動かし続ければ普通に出ます。既定は 2(止まったあとの動き出しが約 10ms 遅れるだけ)。離すときにまだ跳ねるなら上げてください。0 で無効。",
   "Stops a tap from nudging the pointer. For a moment after the finger lands, movement within this distance of the landing point is ignored (about 23 counts to a millimetre). Raise it if taps still move the pointer. 20 is the default; 0 turns it off.":
     "タップしたときにポインタがずれるのを防ぎます。指が着いた直後の一瞬だけ、着いた点からこの距離以内の動きを無視します(1mm がおよそ 23)。タップでまだずれるなら上げてください。既定は 20、0 で無効。",
   "How light a touch counts. Lower is more sensitive and movement gets smoother, but too low and a resting palm or a hovering finger registers too. Higher is less sensitive, and too high makes the pointer move in steps. 34 is the starting point here; try steps of 4.":
@@ -1807,6 +1810,9 @@ const zh: Record<string, string> = {
   "How readily two fingers close together count as two. If a two-finger scroll does not start when the fingers are close, try one step at a time in either direction and keep whichever works. 3 is the default; 0 never counts them as two.":
     "两指靠得很近时多容易被认成两指。两指靠近时两指滚动不启动，就每次调一格试试，留下有效的那个。默认 3，0 时不会认成两指。",
   "Tap dead zone ({{n}} counts)": "点按死区（{{n}} 计数）",
+  "Lift guard ({{n}} frames)": "抬起防跳（{{n}} 帧）",
+  "Stops the pointer from jumping as the finger leaves the pad, which makes clicks on small targets miss. After the finger has paused, the first few frames of movement are held back and thrown away if the finger lifts right after them; a real stroke goes through unchanged after that. 2 is the default (about 10 ms of the start of a stroke after a pause). Raise it if the pointer still jumps on lift; 0 turns it off.":
+    "防止手指离开触控板时指针跳动、点不中小目标。手指停顿后的最初几帧移动会先被保留，若紧接着抬起就丢弃；继续移动则照常输出。默认 2（停顿后的起步约延迟 10 ms）。抬起时仍跳动就调高；0 为关闭。",
   "Stops a tap from nudging the pointer. For a moment after the finger lands, movement within this distance of the landing point is ignored (about 23 counts to a millimetre). Raise it if taps still move the pointer. 20 is the default; 0 turns it off.":
     "防止轻点时指针被推动。手指落下后的一瞬间，忽略落点附近这个距离内的移动（1 毫米约 23）。轻点仍会移动指针就调高。默认 20，0 为关闭。",
   "How light a touch counts. Lower is more sensitive and movement gets smoother, but too low and a resting palm or a hovering finger registers too. Higher is less sensitive, and too high makes the pointer move in steps. 34 is the starting point here; try steps of 4.":

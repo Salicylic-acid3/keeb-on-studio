@@ -26,6 +26,7 @@ import {
   CURSOR_SMOOTHING_KEY,
   RIPPLE_MAP_KEY,
   TAP_DEAD_ZONE_KEY,
+  LIFT_GUARD_KEY,
   TOUCH_CLEAR_THRESHOLD_KEY,
   TOUCH_SET_THRESHOLD_KEY,
   TOUCH_THRESHOLD_HYSTERESIS,
@@ -51,6 +52,7 @@ export function ScaleSettings({
   const smoothing = readTrackpadNumber(rows, CURSOR_SMOOTHING_KEY);
   const rippleMap = readTrackpadToggle(rows, RIPPLE_MAP_KEY);
   const tapDeadZone = readTrackpadNumber(rows, TAP_DEAD_ZONE_KEY);
+  const liftGuard = readTrackpadNumber(rows, LIFT_GUARD_KEY);
   const touchSet = readTrackpadNumber(rows, TOUCH_SET_THRESHOLD_KEY);
   const touchClear = readTrackpadNumber(rows, TOUCH_CLEAR_THRESHOLD_KEY);
   // One box per half: the interval paces a Bluetooth link that only the
@@ -211,6 +213,24 @@ export function ScaleSettings({
             void commitTrackpadNumber(settings, tapDeadZone, typed, {
               min: 0,
               max: 200,
+            })
+          }
+        />
+      )}
+
+      {liftGuard && (
+        <NumberRow
+          label={t("Lift guard ({{n}} frames)", { n: liftGuard.value })}
+          info={t(
+            "Stops the pointer from jumping as the finger leaves the pad, which makes clicks on small targets miss. After the finger has paused, the first few frames of movement are held back and thrown away if the finger lifts right after them; a real stroke goes through unchanged after that. 2 is the default (about 10 ms of the start of a stroke after a pause). Raise it if the pointer still jumps on lift; 0 turns it off.",
+          )}
+          field={liftGuard}
+          step={1}
+          disabled={settings.isLoading}
+          onCommit={(typed) =>
+            void commitTrackpadNumber(settings, liftGuard, typed, {
+              min: 0,
+              max: 8,
             })
           }
         />
