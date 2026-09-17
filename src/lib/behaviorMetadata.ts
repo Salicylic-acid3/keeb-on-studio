@@ -13,7 +13,7 @@ import {
   getKeycodeByCode,
   getHidUsageCode,
   getHidUsagePage,
-  HID_USAGE_PAGE_CONSUMER,
+  HID_USAGE_PAGE_KEYBOARD,
   extractModifierFlags,
   MODIFIER_FLAGS,
   MOUSE_KEYCODES,
@@ -87,14 +87,23 @@ function formatKeycode(
   const modifiers = extractModifierFlags(hidUsage);
   const hidUsageWithoutModifiers = dropModifierFlags(hidUsage);
   const page = getHidUsagePage(hidUsage);
-  const code =
-    page === 0 ? hidUsageWithoutModifiers : getHidUsageCode(hidUsage);
 
-  // Try keyboard page first
+  // The keycode table stores keyboard-page keys by their bare id (Left Alt is
+  // 0xE2) and every other page by the full page-packed usage (consumer Mute is
+  // 0xC00E2). Looking a consumer key up by its bare low byte would collide with
+  // the keyboard key of the same number -- Mute (0xE2) landing on LAlt -- so
+  // only keyboard-page (or already-bare, page 0) usages are looked up by the
+  // low byte; the rest keep their page.
+  const isKeyboardCode = page === HID_USAGE_PAGE_KEYBOARD || page === 0;
+  const code = isKeyboardCode
+    ? getHidUsageCode(hidUsage)
+    : hidUsageWithoutModifiers;
+
   let keycode = getKeycodeByCode(code);
 
-  // Try consumer page if not found
-  if (!keycode && (page === HID_USAGE_PAGE_CONSUMER || page === 0)) {
+  // Fallback: a bare value that matched no keyboard key might be a full
+  // consumer usage that happens to have no page bits set.
+  if (!keycode && page === 0) {
     keycode = getKeycodeByCode(hidUsageWithoutModifiers);
   }
 
