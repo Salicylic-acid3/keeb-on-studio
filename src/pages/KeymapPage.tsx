@@ -193,6 +193,20 @@ export function KeymapPage() {
     myPostIds(),
   );
   const [galleryBusyId, setGalleryBusyId] = useState<string | null>(null);
+  // Only the posts made for the keyboard on screen. The gallery is one list
+  // for every board, so on a GoFortyMax the ErgoTrack keymaps would otherwise
+  // sit in it, none of them openable here. Matched by physical layout the way
+  // saved keymaps are (name and key count), which also makes this the demo's
+  // rule: its two layouts are two keyboards and the picker decides which one
+  // is "connected".
+  const galleryPostsForThisKeyboard = useMemo(() => {
+    if (!currentLayout) return gallery.posts;
+    return gallery.posts.filter(
+      (post) =>
+        post.layout === currentLayout.name &&
+        post.keys === currentLayout.keys.length,
+    );
+  }, [gallery.posts, currentLayout]);
 
   // Layers for the selector
   const layersForSelector = useMemo(() => {
@@ -1922,7 +1936,8 @@ export function KeymapPage() {
       <GalleryDialog
         open={galleryOpen}
         onOpenChange={setGalleryOpen}
-        posts={gallery.posts}
+        posts={galleryPostsForThisKeyboard}
+        keyboardName={currentLayout?.name ?? null}
         isLoading={gallery.isLoading}
         isLoadingMore={gallery.isLoadingMore}
         hasMore={gallery.hasMore}

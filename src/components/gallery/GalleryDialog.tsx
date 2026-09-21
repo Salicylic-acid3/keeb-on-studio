@@ -28,7 +28,10 @@ import {
 export interface GalleryDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Posts for the keyboard on screen; the caller has already filtered. */
   posts: GalleryCard[];
+  /** The keyboard the list is limited to, for the empty message. */
+  keyboardName: string | null;
   isLoading: boolean;
   isLoadingMore: boolean;
   hasMore: boolean;
@@ -47,6 +50,7 @@ export function GalleryDialog({
   open,
   onOpenChange,
   posts,
+  keyboardName,
   isLoading,
   isLoadingMore,
   hasMore,
@@ -86,9 +90,14 @@ export function GalleryDialog({
             </Dialog.Close>
           </div>
           <Dialog.Description className="text-xs text-[var(--color-text-muted)] mb-4">
-            {t(
-              "Keymaps other people published. Opening one adds it to your keymaps — nothing is written to your keyboard.",
-            )}
+            {keyboardName
+              ? t(
+                  "Keymaps other people published for {{keyboard}}. Opening one adds it to your keymaps — nothing is written to your keyboard.",
+                  { keyboard: keyboardName },
+                )
+              : t(
+                  "Keymaps other people published. Opening one adds it to your keymaps — nothing is written to your keyboard.",
+                )}
           </Dialog.Description>
 
           {error && (
@@ -104,7 +113,11 @@ export function GalleryDialog({
               </p>
             ) : posts.length === 0 ? (
               <p className="py-8 text-center text-sm text-[var(--color-text-muted)]">
-                {t("Nothing has been published yet.")}
+                {keyboardName
+                  ? t("Nothing has been published for {{keyboard}} yet.", {
+                      keyboard: keyboardName,
+                    })
+                  : t("Nothing has been published yet.")}
               </p>
             ) : (
               <ul className="space-y-2">

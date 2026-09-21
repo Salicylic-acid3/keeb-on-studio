@@ -247,6 +247,10 @@ const ja: Record<string, string> = {
   'Published "{{name}}" to the gallery.':
     "「{{name}}」をギャラリーに公開しました。",
   "Nothing has been published yet.": "まだ何も公開されていません。",
+  "Nothing has been published for {{keyboard}} yet.":
+    "{{keyboard}} 向けのキーマップはまだ公開されていません。",
+  "Keymaps other people published for {{keyboard}}. Opening one adds it to your keymaps — nothing is written to your keyboard.":
+    "{{keyboard}} 向けに他の人が公開したキーマップです。開くと自分のキーマップに追加されるだけで、キーボードには何も書き込まれません。",
   "Load more": "もっと読む",
   Add: "追加",
   "{{count}} layers": "{{count}}レイヤー",
@@ -1972,6 +1976,10 @@ const zh: Record<string, string> = {
   "Publish {{name}} to the gallery": "将“{{name}}”发布到图库",
   'Published "{{name}}" to the gallery.': "已将“{{name}}”发布到图库。",
   "Nothing has been published yet.": "目前还没有任何发布。",
+  "Nothing has been published for {{keyboard}} yet.":
+    "目前还没有为 {{keyboard}} 发布的键位图。",
+  "Keymaps other people published for {{keyboard}}. Opening one adds it to your keymaps — nothing is written to your keyboard.":
+    "其他人为 {{keyboard}} 发布的键位图。打开后只会添加到你的键位图中，不会写入键盘。",
   "Load more": "加载更多",
   Add: "添加",
   "{{count}} layers": "{{count}} 层",
