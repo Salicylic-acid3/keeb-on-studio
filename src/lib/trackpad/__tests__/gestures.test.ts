@@ -12,19 +12,17 @@ describe("finding a keyboard's trackpad gestures", () => {
     // loses a key, this test fails here rather than in someone's keymap.
     const gestures = trackpadGesturesFor(ERGOTRACK.name, ERGOTRACK.keys.length);
     expect(gestures.map((g) => g.position)).toEqual([
-      72, 73, 74, 75, 76, 77, 79, 80,
+      78, 72, 73, 74, 75, 76, 77, 79, 80,
     ]);
   });
 
-  it("offers no row for the position nothing presses", () => {
-    // 78 is bound to &none — a two-handed trigger that was tried and dropped.
-    // A row for it would invite binding a key that is never pressed. It stays
-    // hidden on the keymap board rather than reappearing here.
-    const positions = trackpadGesturesFor(
-      ERGOTRACK.name,
-      ERGOTRACK.keys.length,
-    ).map((g) => g.position);
-    expect(positions).not.toContain(78);
+  it("lists the touch-hold position first, as a held key", () => {
+    // 78 used to be the spare nothing pressed. The firmware now presses it
+    // while a finger is on either pad (BTN_8 routed as a held-code), so it is
+    // a real gesture, and the one most likely to be set per layer -- hence
+    // first. Still hidden on the keymap board with the rest.
+    const gestures = trackpadGesturesFor(ERGOTRACK.name, ERGOTRACK.keys.length);
+    expect(gestures[0]).toMatchObject({ position: 78, held: true });
     expect(
       pseudoKeyPositionsFor(ERGOTRACK.name, ERGOTRACK.keys.length).has(78),
     ).toBe(true);
@@ -56,7 +54,7 @@ describe("finding a keyboard's trackpad gestures", () => {
 
   it("matches the layout name whatever its case and spacing", () => {
     // The name comes off the wire from the firmware's display-name.
-    expect(trackpadGesturesFor("  clickboard ergotrack  ", 81)).toHaveLength(8);
+    expect(trackpadGesturesFor("  clickboard ergotrack  ", 81)).toHaveLength(9);
   });
 
   it("lists no position twice", () => {

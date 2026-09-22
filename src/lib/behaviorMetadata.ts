@@ -310,6 +310,47 @@ const BEHAVIOR_METADATA_BASE: BehaviorMetadata[] = [
     description: "Modifier on hold, key on tap",
     param1Description: "Select a keycode, usually modifier",
   },
+  {
+    // zmk-driver-iqs9151's zmk,behavior-press-both: a keycode and a mouse
+    // button held together, for the trackpad's "held while a finger is on a
+    // pad" position. Either parameter can be 0 to hold only the other.
+    category: "mouse",
+    displayNameVariants: [
+      "Key + Mouse Button",
+      "press_both",
+      "tp_hold",
+      "press both",
+    ],
+    shortCode: "Hold",
+    param1Type: "keycode",
+    param2Type: "mouse_keycode",
+    getDisplayText: (binding, context) => {
+      const key =
+        binding.param1 !== 0
+          ? formatKeycode(binding.param1, context.keyboardLayout)
+          : null;
+      const mouseKey = MOUSE_KEYCODES.find((mk) => mk.value === binding.param2);
+      const button =
+        binding.param2 !== 0
+          ? (context.shortFormat ? mouseKey?.shortLabel : mouseKey?.label) ||
+            `MB ${binding.param2}`
+          : null;
+      const parts = [key, button].filter((part): part is string => !!part);
+      return parts.length > 0 ? parts.join(" + ") : "Hold (nothing)";
+    },
+    formatParam: (param1, param2, paramNumber, context) => {
+      if (paramNumber === 1) {
+        return param1 === 0
+          ? "None"
+          : formatKeycode(param1, context.keyboardLayout);
+      }
+      const mouseKey = MOUSE_KEYCODES.find((mk) => mk.value === param2);
+      return param2 === 0 ? "None" : mouseKey?.label || param2.toString();
+    },
+    description: "Hold a key and a mouse button together",
+    param1Description: "Key or modifier to hold (0 for none)",
+    param2Description: "Mouse button to hold (0 for none)",
+  },
   // Leyer tap is defined above in Layer Behaviors
   // Mod morph does not have pre-defined behavior
 

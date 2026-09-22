@@ -77,16 +77,22 @@ const GESTURE_SETS: Record<string, GestureSet> = {
   // boards/shields/clickboard_ergotrack/clickboard_ergotrack_right.overlay:
   //   trackpad_gestures -> &tp_to_pos 72..76 (BTN_7, BTN_3..BTN_6)
   //                        &tp_to_pos 79, 80 (BTN_SIDE, BTN_EXTRA)
+  //                        &tp_to_pos 78 (BTN_8, the touch state, as a
+  //                                       held-code: pressed while a finger
+  //                                       is on either pad)
   //   dual_pad          -> &tp_to_pos 77
-  //
-  // 78 is the one position not listed: it is bound to &none — a two-handed
-  // trigger that was tried and dropped — and an editable row for a key nothing
-  // presses is just a trap. It stays hidden on the board with the rest.
   "clickboard ergotrack": {
     keyCount: 81,
     // 72..80: the gestures below, plus 78. All hidden on the keymap board.
     pseudoKeysFrom: 72,
     gestures: [
+      {
+        position: 78,
+        label: "Held while a finger is on a pad",
+        detail:
+          'Pressed when a finger touches either pad and released when the last finger leaves. For a modifier or mouse button that should accompany pointer movement on this layer — Shift + middle button to pan, for example, with the "Key + Mouse Button" behavior.',
+        held: true,
+      },
       {
         position: 72,
         label: "Pinch, two fingers on one pad",

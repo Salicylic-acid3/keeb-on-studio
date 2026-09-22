@@ -40,6 +40,9 @@ const ja: Record<string, string> = {
   "To find out which swipe is which, turn on the live key view in the Keymap tab and swipe on a pad: the row it triggers lights up.":
     "どのスワイプがどれかを確かめるには、キーマップタブでキー入力表示をオンにしてパッドでスワイプしてください。対応する行が光ります。",
   "Pinch, two fingers on one pad": "片手2本指ピンチ",
+  "Held while a finger is on a pad": "指が乗っている間ホールド",
+  'Pressed when a finger touches either pad and released when the last finger leaves. For a modifier or mouse button that should accompany pointer movement on this layer — Shift + middle button to pan, for example, with the "Key + Mouse Button" behavior.':
+    "どちらかのパッドに指が触れたときに押され、最後の指が離れたときに放されます。このレイヤーでポインタ移動に修飾キーやマウスボタンを添えたいときに。例えばパン操作の Shift＋中ボタンは「Key + Mouse Button」で置けます。",
   "One-pad pinch": "片手ピンチ",
   "Pad scale": "パッドのスケール",
   "Counts spread across each side of the pad, which is what the firmware compares when it decides which axis a gesture is on. Only the ratio matters: it should match the ratio of the pad's sides, or scrolls, swipes and pinches all lean toward one of them. This does not change pointer speed — that is below.":
@@ -1775,6 +1778,9 @@ const zh: Record<string, string> = {
   "To find out which swipe is which, turn on the live key view in the Keymap tab and swipe on a pad: the row it triggers lights up.":
     "要弄清哪一个滑动对应哪一行，请在键位映射标签页打开实时按键显示，然后在触控板上滑动：触发的行会亮起。",
   "Pinch, two fingers on one pad": "单手双指捏合",
+  "Held while a finger is on a pad": "手指在触控板上时按住",
+  'Pressed when a finger touches either pad and released when the last finger leaves. For a modifier or mouse button that should accompany pointer movement on this layer — Shift + middle button to pan, for example, with the "Key + Mouse Button" behavior.':
+    "手指触碰任一触控板时按下，最后一根手指离开时松开。用于在此层移动指针时同时按住修饰键或鼠标按钮，例如用「Key + Mouse Button」设置 Shift＋中键来平移。",
   "One-pad pinch": "单手捏合",
   "Pad scale": "触控板尺度",
   "Counts spread across each side of the pad, which is what the firmware compares when it decides which axis a gesture is on. Only the ratio matters: it should match the ratio of the pad's sides, or scrolls, swipes and pinches all lean toward one of them. This does not change pointer speed — that is below.":
