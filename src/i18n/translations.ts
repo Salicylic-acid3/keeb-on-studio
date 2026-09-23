@@ -41,6 +41,10 @@ const ja: Record<string, string> = {
     "どのスワイプがどれかを確かめるには、キーマップタブでキー入力表示をオンにしてパッドでスワイプしてください。対応する行が光ります。",
   "Pinch, two fingers on one pad": "片手2本指ピンチ",
   "Held while a finger is on a pad": "指が乗っている間ホールド",
+  "A development-build item. Normal firmware leaves it out, so nothing shown here is expected.":
+    "開発用ビルド向けの項目です。通常のファームウェアには入っていないので、ここに何も出ないのが正常です。",
+  "To look at how much stack each thread has left — when changing stack sizes or adding work to a thread — flash the devtool build, which has {{module}} with {{kconfig}} enabled.":
+    "スレッドごとのスタックの余裕を調べたいとき（スタックサイズを変える、スレッドの仕事を増やすなど）は、{{module}} の {{kconfig}} を有効にした devtool ビルドを焼いてください。",
   "Scrolls sideways — swipe is off on this layer":
     "横スクロール（このレイヤーではスワイプ無効）",
   "Key + Mouse Button": "キー＋マウスボタン",
@@ -1782,6 +1786,10 @@ const zh: Record<string, string> = {
     "要弄清哪一个滑动对应哪一行，请在键位映射标签页打开实时按键显示，然后在触控板上滑动：触发的行会亮起。",
   "Pinch, two fingers on one pad": "单手双指捏合",
   "Held while a finger is on a pad": "手指在触控板上时按住",
+  "A development-build item. Normal firmware leaves it out, so nothing shown here is expected.":
+    "这是开发版固件的项目。正常固件不包含它，因此这里没有内容是正常的。",
+  "To look at how much stack each thread has left — when changing stack sizes or adding work to a thread — flash the devtool build, which has {{module}} with {{kconfig}} enabled.":
+    "如需查看各线程剩余的栈空间（例如调整栈大小或给线程增加工作时），请刷写启用了 {{module}} 的 {{kconfig}} 的 devtool 版固件。",
   "Scrolls sideways — swipe is off on this layer": "横向滚动（此层未启用滑动）",
   "Key + Mouse Button": "按键＋鼠标按钮",
   'Pressed when a finger touches either pad and released when the last finger leaves. For a modifier or mouse button that should accompany pointer movement on this layer — Shift + middle button to pan, for example, with the "Key + Mouse Button" behavior.':

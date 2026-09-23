@@ -6,16 +6,10 @@ import {
   formatUsagePercent,
 } from "../../hooks/useDevtoolStackUsage";
 import { useLanguage } from "../../hooks/useLanguage";
-import {
-  NotAvailableNotice,
-  SectionCard,
-  SectionError,
-  SectionSummaryBadge,
-} from "./SectionCard";
+import { SectionCard, SectionError, SectionSummaryBadge } from "./SectionCard";
 import { LoadingIndicator } from "../LoadingIndicator";
 
 const MODULE_NAME = "zmk-module-devtool";
-const MODULE_URL = "https://github.com/cormoran/zmk-module-devtool";
 const KCONFIG_NAME = "CONFIG_ZMK_DEVTOOL_STACK_USAGE";
 
 const POLL_INTERVAL_OPTIONS = [
@@ -137,7 +131,23 @@ export function DevtoolStackUsageSection({
       }
     >
       {!isAvailable ? (
-        <NotAvailableNotice module={MODULE_NAME} moduleUrl={MODULE_URL} />
+        /* Not the shared "make sure your firmware has the module" warning:
+           the other sections are in every normal build and their absence is
+           a problem, while this one is deliberately left out of normal
+           firmware. Its absence is the expected state and reads as such. */
+        <div className="p-4 rounded-lg bg-[var(--color-border)]/50 border border-[var(--color-border)]">
+          <p className="text-sm text-[var(--color-text-secondary)]">
+            {t(
+              "A development-build item. Normal firmware leaves it out, so nothing shown here is expected.",
+            )}
+          </p>
+          <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+            {t(
+              "To look at how much stack each thread has left — when changing stack sizes or adding work to a thread — flash the devtool build, which has {{module}} with {{kconfig}} enabled.",
+              { module: MODULE_NAME, kconfig: KCONFIG_NAME },
+            )}
+          </p>
+        </div>
       ) : (
         <>
           {/* Polling controls */}
