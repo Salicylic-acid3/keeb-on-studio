@@ -20,7 +20,11 @@ import { IconLoader2 } from "@tabler/icons-react";
 import { useEffect, useMemo, useState } from "react";
 import { useLanguage } from "../../hooks/useLanguage";
 import { useCustomSettings } from "../../hooks/useCustomSettings";
-import { TRACKPAD_SUBSYSTEM_ID } from "../../lib/trackpad/settings";
+import {
+  SWIPE2_LAYERS_KEY,
+  TRACKPAD_SUBSYSTEM_ID,
+  readTrackpadNumber,
+} from "../../lib/trackpad/settings";
 import type { Layer } from "../../hooks/useKeymap";
 import { PinchSettings } from "./PinchSettings";
 import { ScaleSettings } from "./ScaleSettings";
@@ -52,7 +56,19 @@ export type TrackpadSettingsAccess = Pick<
   "isLoading" | "writeSettingToMemory" | "saveSection"
 >;
 
-export function TrackpadSettings({ layers = [] }: { layers?: Layer[] }) {
+export function TrackpadSettings({
+  layers = [],
+  onSwipe2Mask,
+}: {
+  layers?: Layer[];
+  /**
+   * The two-finger-swipe layer mask as the keyboard reports it (one bit per
+   * layer id, -1 for every layer), or null when the keyboard has no such
+   * setting. The gesture editor above uses it to grey out the swipe rows on
+   * layers where the swipe is off.
+   */
+  onSwipe2Mask?: (mask: number | null) => void;
+}) {
   const { t } = useLanguage();
   const settings = useCustomSettings({
     subsystemIdentifier: TRACKPAD_SUBSYSTEM_ID,
@@ -72,6 +88,11 @@ export function TrackpadSettings({ layers = [] }: { layers?: Layer[] }) {
     () => settings.sections.flatMap((section) => section.settings),
     [settings.sections],
   );
+
+  const swipe2Mask = readTrackpadNumber(rows, SWIPE2_LAYERS_KEY)?.value ?? null;
+  useEffect(() => {
+    onSwipe2Mask?.(swipe2Mask);
+  }, [swipe2Mask, onSwipe2Mask]);
 
   if (rows.length === 0) {
     // Either still arriving, or a keyboard without these settings — older

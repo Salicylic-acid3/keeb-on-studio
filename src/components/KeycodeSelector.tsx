@@ -81,6 +81,8 @@ function getParamTypeLabel(
         return "Macro";
       case "mouse_keycode":
         return t("Mouse Button");
+      case "key_and_mouse":
+        return t("Key + Mouse Button");
       case "mouse_movement":
       case "mouse_scroll":
         return t("Pointer movement");
@@ -223,6 +225,11 @@ function hasParam(
     paramNumber === 1 ? overrideMeta?.param1Type : overrideMeta?.param2Type;
   if (overrideType) {
     return true;
+  }
+  // The combined editor on param1 sets param2 itself; no second tab, even
+  // though the firmware describes a second parameter.
+  if (paramNumber === 2 && overrideMeta?.param1Type === "key_and_mouse") {
+    return false;
   }
   // Fallback to checking if there are any value descriptions for the parameter
   const descriptions =
@@ -494,6 +501,20 @@ export function KeycodeSelector({
                 value={value}
                 onChange={(e) => onChange(Number(e.target.value))}
                 className="w-full px-3 py-2 rounded-lg bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] focus:outline-none focus:border-[var(--color-electric)]/50"
+              />
+            );
+
+          case "key_and_mouse":
+            return (
+              <KeycodeValueSelector
+                value={param1}
+                onChange={(next) => setParam1(next)}
+                showModifiers={true}
+                keyboardLayout={keyboardLayout}
+                mouseButton={{
+                  value: param2,
+                  onChange: (next) => setParam2(next),
+                }}
               />
             );
 

@@ -49,6 +49,12 @@ export interface TrackpadGesture {
    * cannot.
    */
   held: boolean;
+  /**
+   * True for the two-finger horizontal swipe, which has a per-layer switch
+   * of its own (the trackpad tab's "Swipe on <layer>"): where it is off the
+   * movement scrolls instead, and the binding here is never pressed.
+   */
+  swipe2?: boolean;
 }
 
 interface GestureSet {
@@ -137,12 +143,14 @@ const GESTURE_SETS: Record<string, GestureSet> = {
         detail:
           "Tapped once when the swipe is recognised. Browser back and forward are the usual pair. Enabling this costs two-finger horizontal scroll — a sideways movement cannot both scroll at once and be held back long enough to be recognised as a swipe.",
         held: false,
+        swipe2: true,
       },
       {
         position: 80,
         label: "Two-finger swipe, horizontal B",
         detail: "The other direction of the same gesture.",
         held: false,
+        swipe2: true,
       },
     ],
   },

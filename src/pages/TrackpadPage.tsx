@@ -248,6 +248,9 @@ export function TrackpadPage() {
     [activeLayout],
   );
 
+  // Reported by the settings section below; read by the gesture rows above.
+  const [swipe2Mask, setSwipe2Mask] = useState<number | null>(null);
+
   /** Which gesture binding the dialog is open on, or null. */
   const [editing, setEditing] = useState<{
     layerId: number;
@@ -1364,6 +1367,7 @@ export function TrackpadPage() {
               keyboardLayout={keyboardLayoutContext.layout}
               onEdit={handleEditGesture}
               disabled={keymap.isLoading}
+              swipe2Mask={swipe2Mask}
             />
             {/* A gesture binding is a keymap edit: it is staged on the keyboard
                 like any key edit and takes effect only once the keymap is
@@ -1393,7 +1397,10 @@ export function TrackpadPage() {
             {/* Below the gesture bindings: what a gesture does is the daily
                 question, how the pad feels is tuning, opened rarely. Draws
                 nothing on firmware that does not publish the settings. */}
-            <TrackpadSettings layers={keymap.keymap?.layers ?? []} />
+            <TrackpadSettings
+              layers={keymap.keymap?.layers ?? []}
+              onSwipe2Mask={setSwipe2Mask}
+            />
           </div>
         )}
       </div>

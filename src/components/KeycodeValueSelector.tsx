@@ -19,6 +19,7 @@ import {
   HID_USAGE_PAGE_KEYBOARD,
   createHidUsage,
   MODIFIER_FLAGS,
+  MOUSE_KEYCODES,
   NO_PARAM_VALUE,
   extractModifierFlags,
   extractBaseKeycode,
@@ -52,11 +53,47 @@ const KEYCODE_CATEGORY_ORDER: KeycodeCategory[] = [
   "miscellaneous",
 ];
 
+/**
+ * A mouse button chosen alongside the key, for a behavior that holds both
+ * (the trackpad's Key + Mouse Button). When given, the buttons get a row of
+ * their own under the modifiers, and turn up in the search results too, so
+ * "middle" finds Middle Click the same way "shift" finds Left Shift. Picking
+ * one changes the button and leaves the key alone; 0 is "no button".
+ */
+export interface MouseButtonChoice {
+  value: number;
+  onChange: (value: number) => void;
+}
+
 interface KeycodeValueSelectorProps {
   value: number;
   onChange: (value: number, shouldNotClose?: boolean) => void;
   showModifiers?: boolean;
   keyboardLayout?: KeyboardLayoutType;
+  mouseButton?: MouseButtonChoice;
+}
+
+const MOUSE_SEARCH_WORDS = [
+  "mouse",
+  "click",
+  "button",
+  "マウス",
+  "クリック",
+  "鼠标",
+  "点击",
+];
+
+function mouseButtonsMatching(
+  query: string,
+): (typeof MOUSE_KEYCODES)[number][] {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+  return MOUSE_KEYCODES.filter(
+    (mk) =>
+      mk.label.toLowerCase().includes(q) ||
+      mk.shortLabel.toLowerCase().includes(q) ||
+      MOUSE_SEARCH_WORDS.some((word) => word.startsWith(q) || q.includes(word)),
+  );
 }
 
 export function KeycodeValueSelector({
@@ -64,6 +101,7 @@ export function KeycodeValueSelector({
   onChange,
   keyboardLayout,
   showModifiers = true,
+  mouseButton,
 }: KeycodeValueSelectorProps) {
   const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
@@ -189,6 +227,45 @@ export function KeycodeValueSelector({
         </div>
       )}
 
+      {/* Mouse button, for a behavior that holds one with the key */}
+      {mouseButton && (
+        <div className="mb-3">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs text-[var(--color-text-muted)]">
+              {t("Mouse Button")}:
+            </span>
+            {mouseButton.value !== 0 && (
+              <button
+                className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text)] flex items-center gap-1"
+                onClick={() => mouseButton.onChange(0)}
+              >
+                <IconX size={12} />
+                {t("Clear")}
+              </button>
+            )}
+          </div>
+          <div className="flex gap-1 overflow-x-auto">
+            {MOUSE_KEYCODES.map((mk) => (
+              <button
+                key={mk.value}
+                className={`px-2 py-1 rounded text-xs transition-colors ${
+                  mouseButton.value === mk.value
+                    ? "bg-[var(--color-cyber)]/20 text-[var(--color-cyber)] border border-[var(--color-cyber)]"
+                    : "bg-[var(--color-bg)] text-[var(--color-text-muted)] border border-[var(--color-border)] hover:border-[var(--color-cyber)]/50"
+                }`}
+                onClick={() =>
+                  mouseButton.onChange(
+                    mouseButton.value === mk.value ? 0 : mk.value,
+                  )
+                }
+              >
+                {mk.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Search + view mode toggle */}
       <div className="mb-3 flex items-center gap-2">
         <div className="relative flex-1">
@@ -289,6 +366,26 @@ export function KeycodeValueSelector({
                 searchQuery.trim() ? "grid-cols-4" : "grid-cols-2 "
               }`}
             >
+              {mouseButton &&
+                mouseButtonsMatching(searchQuery).map((mk) => (
+                  <button
+                    key={`mouse-${mk.value}`}
+                    className={`p-1.5 rounded border text-center transition-colors ${
+                      mouseButton.value === mk.value
+                        ? "bg-[var(--color-cyber)]/20 border-[var(--color-cyber)]"
+                        : "bg-[var(--color-bg)] border-[var(--color-border)] hover:border-[var(--color-cyber)]/50"
+                    }`}
+                    onClick={() => mouseButton.onChange(mk.value)}
+                    title={t("Mouse Button")}
+                  >
+                    <span className="block text-xs font-medium text-[var(--color-text)]">
+                      {mk.label}
+                    </span>
+                    <span className="block text-[10px] text-[var(--color-text-muted)] truncate">
+                      {t("Mouse Button")}
+                    </span>
+                  </button>
+                ))}
               {filteredKeycodes.map((keycode) => {
                 const isSelected =
                   extractBaseKeycode(value) === keycode.code ||
@@ -319,11 +416,13 @@ export function KeycodeValueSelector({
                 );
               })}
             </div>
-            {filteredKeycodes.length === 0 && (
-              <div className="text-center py-4 text-xs text-[var(--color-text-muted)]">
-                {t("No keycodes found")}
-              </div>
-            )}
+            {filteredKeycodes.length === 0 &&
+              (!mouseButton ||
+                mouseButtonsMatching(searchQuery).length === 0) && (
+                <div className="text-center py-4 text-xs text-[var(--color-text-muted)]">
+                  {t("No keycodes found")}
+                </div>
+              )}
           </div>
         </div>
       )}

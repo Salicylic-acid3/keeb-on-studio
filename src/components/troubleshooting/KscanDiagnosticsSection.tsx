@@ -21,6 +21,7 @@ import {
   SectionSummaryBadge,
 } from "./SectionCard";
 import { KscanKeyboardView } from "./KscanKeyboardView";
+import { pseudoKeyPositionsFor } from "../../lib/trackpad/gestures";
 
 const MODULE_NAME = "cormoran/zmk-feature-kscan-diagnostics";
 const MODULE_URL = "https://github.com/cormoran/zmk-feature-kscan-diagnostics";
@@ -52,7 +53,7 @@ export function KscanDiagnosticsSection({
     isAvailable,
     info,
     devices,
-    stats,
+    stats: rawStats,
     isLoading,
     error,
     refresh,
@@ -70,6 +71,35 @@ export function KscanDiagnosticsSection({
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [hasRequestedTopology, setHasRequestedTopology] = useState(false);
   const officialLayouts = useOfficialLayouts();
+
+  // The layout the firmware reports for the stats, resolved early because the
+  // gesture filter below needs it before the preview does.
+  const statsLayout = useMemo(() => {
+    if (!officialLayouts.physicalLayouts) return null;
+    const selectedIndex = topology?.selectedLayout ?? 0;
+    return (
+      officialLayouts.physicalLayouts.layouts[selectedIndex] ??
+      officialLayouts.physicalLayouts.layouts[
+        officialLayouts.physicalLayouts.activeLayoutIndex
+      ] ??
+      officialLayouts.physicalLayouts.layouts[0] ??
+      null
+    );
+  }, [officialLayouts.physicalLayouts, topology?.selectedLayout]);
+
+  // The trackpad gestures are pressed as key positions, and the firmware
+  // counts them with the rest: a pinch held while a report is fetched is a
+  // "press without release", and a swipe recognised twice in quick succession
+  // is a "re-press within 10 ms". Neither is a switch, so neither is chatter.
+  // They are left out of every count here, and off the board below.
+  const pseudoKeys = useMemo(
+    () => pseudoKeyPositionsFor(statsLayout?.name, statsLayout?.keys.length),
+    [statsLayout],
+  );
+  const stats = useMemo(
+    () => rawStats.filter((s) => !pseudoKeys.has(s.position)),
+    [rawStats, pseudoKeys],
+  );
 
   const suspectKeys = findSuspectKeys(stats);
   const untestedKeys = stats.filter((s) => s.presses === 0 && s.releases === 0);
@@ -104,18 +134,7 @@ export function KscanDiagnosticsSection({
     return buildWiringMap(topology, activeLayout);
   }, [topology, activeLayout]);
 
-  const physicalLayout = useMemo(() => {
-    if (!officialLayouts.physicalLayouts) return null;
-    const selectedIndex = topology?.selectedLayout ?? 0;
-    return (
-      officialLayouts.physicalLayouts.layouts[selectedIndex] ??
-      officialLayouts.physicalLayouts.layouts[
-        officialLayouts.physicalLayouts.activeLayoutIndex
-      ] ??
-      officialLayouts.physicalLayouts.layouts[0] ??
-      null
-    );
-  }, [officialLayouts.physicalLayouts, topology?.selectedLayout]);
+  const physicalLayout = statsLayout;
 
   const statsByPosition = useMemo(() => {
     const map = new Map<number, (typeof stats)[number]>();
@@ -202,6 +221,7 @@ export function KscanDiagnosticsSection({
                 layout={physicalLayout}
                 wiring={wiring}
                 statsByPosition={statsByPosition}
+                hiddenPositions={pseudoKeys}
               />
             </div>
           )}

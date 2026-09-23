@@ -86,12 +86,15 @@ export interface KscanKeyboardViewProps {
   layout: PhysicalLayout;
   wiring: Map<number, KeyWiringInfo>;
   statsByPosition: Map<number, PositionStats>;
+  /** Positions with no switch under them (trackpad gestures): not drawn. */
+  hiddenPositions?: ReadonlySet<number>;
 }
 
 export function KscanKeyboardView({
   layout,
   wiring,
   statsByPosition,
+  hiddenPositions,
 }: KscanKeyboardViewProps) {
   const { t } = useLanguage();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -108,21 +111,27 @@ export function KscanKeyboardView({
     if (layout.keys.length === 0) {
       return { width: 200, height: 160, offsetX: 10, offsetY: 10 };
     }
-    layout.keys.flatMap(rotatedCorners).forEach((point) => {
-      const x = (point.x / 100) * BASE_UNIT_SIZE;
-      const y = (point.y / 100) * BASE_UNIT_SIZE;
-      minX = Math.min(minX, x);
-      minY = Math.min(minY, y);
-      maxX = Math.max(maxX, x);
-      maxY = Math.max(maxY, y);
-    });
+    layout.keys
+      .filter((_, position) => !hiddenPositions?.has(position))
+      .flatMap(rotatedCorners)
+      .forEach((point) => {
+        const x = (point.x / 100) * BASE_UNIT_SIZE;
+        const y = (point.y / 100) * BASE_UNIT_SIZE;
+        minX = Math.min(minX, x);
+        minY = Math.min(minY, y);
+        maxX = Math.max(maxX, x);
+        maxY = Math.max(maxY, y);
+      });
+    if (!Number.isFinite(minX)) {
+      return { width: 200, height: 160, offsetX: 10, offsetY: 10 };
+    }
     return {
       width: maxX - minX + 20,
       height: maxY - minY + 20,
       offsetX: -minX + 10,
       offsetY: -minY + 10,
     };
-  }, [layout.keys]);
+  }, [layout.keys, hiddenPositions]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -234,21 +243,23 @@ export function KscanKeyboardView({
               height: Math.ceil(rawBounds.height * scale),
             }}
           >
-            {layout.keys.map((key, position) => (
-              <KeyboardKey
-                key={position}
-                position={position}
-                attrs={key}
-                scale={scale}
-                offsetX={rawBounds.offsetX}
-                offsetY={rawBounds.offsetY}
-                wiring={wiring.get(position) ?? null}
-                stats={statsByPosition.get(position) ?? null}
-                marker={computeMarker(statsByPosition.get(position))}
-                highlightColor={keyHighlightColor(position)}
-                onHover={setHoveredKey}
-              />
-            ))}
+            {layout.keys.map((key, position) =>
+              hiddenPositions?.has(position) ? null : (
+                <KeyboardKey
+                  key={position}
+                  position={position}
+                  attrs={key}
+                  scale={scale}
+                  offsetX={rawBounds.offsetX}
+                  offsetY={rawBounds.offsetY}
+                  wiring={wiring.get(position) ?? null}
+                  stats={statsByPosition.get(position) ?? null}
+                  marker={computeMarker(statsByPosition.get(position))}
+                  highlightColor={keyHighlightColor(position)}
+                  onHover={setHoveredKey}
+                />
+              ),
+            )}
           </div>
 
           {/* Column pin buttons — bottom, horizontal row. */}

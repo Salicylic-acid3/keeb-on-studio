@@ -37,6 +37,13 @@ export interface GestureSectionProps {
   /** Open the keycode dialog for this layer and position. */
   onEdit: (layerId: number, position: number) => void;
   disabled?: boolean;
+  /**
+   * Layers where the two-finger horizontal swipe is on: one bit per layer
+   * id, -1 for all. null when the keyboard has no such switch. On a layer
+   * whose bit is clear, the swipe rows cannot be edited: the movement
+   * scrolls there and the binding would never be pressed.
+   */
+  swipe2Mask?: number | null;
 }
 
 export function GestureSection({
@@ -48,6 +55,7 @@ export function GestureSection({
   keyboardLayout,
   onEdit,
   disabled = false,
+  swipe2Mask = null,
 }: GestureSectionProps) {
   const { t } = useLanguage();
   const [layerIndex, setLayerIndex] = useState(0);
@@ -122,12 +130,17 @@ export function GestureSection({
             ? (behaviors.get(binding.behaviorId) ?? null)
             : null;
           const active = highlightedKeys.has(gesture.position);
+          const swipeOff =
+            gesture.swipe2 === true &&
+            swipe2Mask !== null &&
+            swipe2Mask !== -1 &&
+            (swipe2Mask & (1 << layer.id)) === 0;
 
           return (
             <button
               key={gesture.position}
               onClick={() => onEdit(layer.id, gesture.position)}
-              disabled={disabled}
+              disabled={disabled || swipeOff}
               className={`w-full text-left p-3 rounded-lg border transition-colors disabled:opacity-40 ${
                 active
                   ? "bg-[var(--color-neon)]/15 border-[var(--color-neon)]"
@@ -144,15 +157,23 @@ export function GestureSection({
                   </p>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className="text-sm text-[var(--color-electric)] truncate max-w-[180px]">
-                    {formatBehaviorBinding(binding, behavior, {
-                      keyboardLayout,
-                    })}
-                  </span>
-                  <IconPencil
-                    size={14}
-                    className="text-[var(--color-text-muted)]"
-                  />
+                  {swipeOff ? (
+                    <span className="text-sm text-[var(--color-text-muted)] truncate max-w-[220px]">
+                      {t("Scrolls sideways — swipe is off on this layer")}
+                    </span>
+                  ) : (
+                    <>
+                      <span className="text-sm text-[var(--color-electric)] truncate max-w-[180px]">
+                        {formatBehaviorBinding(binding, behavior, {
+                          keyboardLayout,
+                        })}
+                      </span>
+                      <IconPencil
+                        size={14}
+                        className="text-[var(--color-text-muted)]"
+                      />
+                    </>
+                  )}
                 </div>
               </div>
             </button>

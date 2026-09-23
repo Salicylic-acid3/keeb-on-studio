@@ -51,6 +51,7 @@ export type ParamType =
   | "bt_command" // BT command (0=CLR, 1=NXT, etc)
   | "out_command" // Output command (0=TOG, 1=USB, 2=BLE)
   | "mouse_keycode" // Mouse keycode (LCK, RCLK, ...)
+  | "key_and_mouse" // A keycode in param1 and a mouse keycode in param2, picked together
   | "mouse_movement" // Mouse movement (X/Y deltas)
   | "mouse_scroll"; // Mouse scroll (vertical/horizontal)
 
@@ -322,8 +323,10 @@ const BEHAVIOR_METADATA_BASE: BehaviorMetadata[] = [
       "press both",
     ],
     shortCode: "Hold",
-    param1Type: "keycode",
-    param2Type: "mouse_keycode",
+    // One editor for both: the key picker with a mouse-button row, so the
+    // pair is chosen in one place. param2 is written by that editor and has
+    // no tab of its own (see hasParam in KeycodeSelector).
+    param1Type: "key_and_mouse",
     getDisplayText: (binding, context) => {
       const key =
         binding.param1 !== 0
@@ -339,16 +342,20 @@ const BEHAVIOR_METADATA_BASE: BehaviorMetadata[] = [
       return parts.length > 0 ? parts.join(" + ") : "Hold (nothing)";
     },
     formatParam: (param1, param2, paramNumber, context) => {
-      if (paramNumber === 1) {
-        return param1 === 0
-          ? "None"
-          : formatKeycode(param1, context.keyboardLayout);
-      }
       const mouseKey = MOUSE_KEYCODES.find((mk) => mk.value === param2);
-      return param2 === 0 ? "None" : mouseKey?.label || param2.toString();
+      const button = param2 === 0 ? null : mouseKey?.label || param2.toString();
+      if (paramNumber === 1) {
+        // The one tab shows the pair.
+        const key =
+          param1 === 0 ? null : formatKeycode(param1, context.keyboardLayout);
+        const parts = [key, button].filter((part): part is string => !!part);
+        return parts.length > 0 ? parts.join(" + ") : "None";
+      }
+      return button ?? "None";
     },
     description: "Hold a key and a mouse button together",
-    param1Description: "Key or modifier to hold (0 for none)",
+    param1Description:
+      "The key (with modifiers) and the mouse button to hold together while a finger is on the pad. Either can be left empty.",
     param2Description: "Mouse button to hold (0 for none)",
   },
   // Leyer tap is defined above in Layer Behaviors
