@@ -316,8 +316,11 @@ export function SettingsPage() {
 
   const write = useCallback(
     async (value: { idleMs: number; sleepMs: number }) => {
-      await setActivitySettings(value.idleMs, value.sleepMs);
+      const accepted = await setActivitySettings(value.idleMs, value.sleepMs);
       setPending(null);
+      // A refused value is reported through the hook's error; the dropdown
+      // falls back to what the keyboard actually holds.
+      if (!accepted) return;
       setShowSaved(true);
       if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
       savedTimerRef.current = setTimeout(() => setShowSaved(false), 2000);

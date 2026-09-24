@@ -33,7 +33,8 @@ export interface UseSettingsReturn {
   isLoading: boolean;
   error: string | null;
   loadAllSettings: () => Promise<void>;
-  setActivitySettings: (idleMs: number, sleepMs: number) => Promise<void>;
+  /** Resolves true when the keyboard accepted the values. */
+  setActivitySettings: (idleMs: number, sleepMs: number) => Promise<boolean>;
   resetToDefaults: () => Promise<void>;
 }
 
@@ -138,7 +139,7 @@ export function useSettings(): UseSettingsReturn {
     async (idleMs: number, sleepMs: number) => {
       if (!ready) {
         setError("Not connected to device or subsystem not found");
-        return;
+        return false;
       }
 
       setIsLoading(true);
@@ -163,6 +164,15 @@ export function useSettings(): UseSettingsReturn {
           } else if (resp.setActivitySettings?.success) {
             // Successfully set, reload settings
             await loadAllSettings();
+            return true;
+          } else {
+            // The firmware answers success=false when it cannot take a value.
+            // In practice that is the sleep timeout on a build without
+            // CONFIG_ZMK_SLEEP: the keyboard never sleeps, whatever is set,
+            // and saying "Saved" here hid exactly that for weeks.
+            setError(
+              "The keyboard refused the value. A sleep timeout needs firmware built with CONFIG_ZMK_SLEEP; without it the keyboard never enters deep sleep.",
+            );
           }
         }
       } catch (err) {
@@ -173,6 +183,7 @@ export function useSettings(): UseSettingsReturn {
       } finally {
         setIsLoading(false);
       }
+      return false;
     },
     [ready, call, loadAllSettings],
   );

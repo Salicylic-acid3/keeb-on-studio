@@ -41,6 +41,8 @@ const ja: Record<string, string> = {
     "どのスワイプがどれかを確かめるには、キーマップタブでキー入力表示をオンにしてパッドでスワイプしてください。対応する行が光ります。",
   "Pinch, two fingers on one pad": "片手2本指ピンチ",
   "Held while a finger is on a pad": "指が乗っている間ホールド",
+  "The keyboard refused the value. A sleep timeout needs firmware built with CONFIG_ZMK_SLEEP; without it the keyboard never enters deep sleep.":
+    "キーボードがこの値を受け付けませんでした。スリープタイムアウトは CONFIG_ZMK_SLEEP を有効にしたファームウェアが必要で、無いとキーボードはディープスリープに入りません。",
   "A development-build item. Normal firmware leaves it out, so nothing shown here is expected.":
     "開発用ビルド向けの項目です。通常のファームウェアには入っていないので、ここに何も出ないのが正常です。",
   "To look at how much stack each thread has left — when changing stack sizes or adding work to a thread — flash the devtool build, which has {{module}} with {{kconfig}} enabled.":
@@ -1786,6 +1788,8 @@ const zh: Record<string, string> = {
     "要弄清哪一个滑动对应哪一行，请在键位映射标签页打开实时按键显示，然后在触控板上滑动：触发的行会亮起。",
   "Pinch, two fingers on one pad": "单手双指捏合",
   "Held while a finger is on a pad": "手指在触控板上时按住",
+  "The keyboard refused the value. A sleep timeout needs firmware built with CONFIG_ZMK_SLEEP; without it the keyboard never enters deep sleep.":
+    "键盘拒绝了该值。睡眠超时需要启用 CONFIG_ZMK_SLEEP 的固件；否则键盘永远不会进入深度睡眠。",
   "A development-build item. Normal firmware leaves it out, so nothing shown here is expected.":
     "这是开发版固件的项目。正常固件不包含它，因此这里没有内容是正常的。",
   "To look at how much stack each thread has left — when changing stack sizes or adding work to a thread — flash the devtool build, which has {{module}} with {{kconfig}} enabled.":
