@@ -18,8 +18,7 @@
  */
 import { IconBolt } from "@tabler/icons-react";
 import { useLanguage } from "../../hooks/useLanguage";
-
-const DISCORD_URL = "https://discord.gg/y5CNqgEsNg";
+import { DISCORD_URL } from "../../lib/guideLinks";
 
 export function ChatterGuidance() {
   const { t } = useLanguage();

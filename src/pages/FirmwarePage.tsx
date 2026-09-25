@@ -5,6 +5,7 @@ import {
 } from "@tabler/icons-react";
 
 import { useLanguage } from "../hooks/useLanguage";
+import { FlashInstructions } from "../components/FlashInstructions";
 import {
   FIRMWARE_BOARDS,
   firmwareDownloadUrl,
@@ -120,29 +121,7 @@ export function FirmwarePage() {
           <h2 className="mb-4 text-sm font-medium text-[var(--color-text-secondary)]">
             {t("How to flash")}
           </h2>
-          <ol className="list-outside list-decimal space-y-2 pl-5 text-sm text-[var(--color-text-muted)]">
-            <li>{t("Download the .uf2 file for your keyboard below.")}</li>
-            <li>
-              {t(
-                "Connect the keyboard over USB and double-tap its reset switch. It restarts into the bootloader and appears as a USB drive.",
-              )}
-            </li>
-            <li>
-              {t(
-                "Copy the .uf2 file onto that drive. The keyboard writes it and restarts on its own, and the drive disappears — that is normal, not an error.",
-              )}
-            </li>
-            <li>
-              {t(
-                "On a split keyboard, repeat for the other half: each half runs its own firmware.",
-              )}
-            </li>
-          </ol>
-          <p className="mt-4 text-xs text-[var(--color-text-muted)]">
-            {t(
-              "If Bluetooth misbehaves after an update, unpair the keyboard on the host and pair it again.",
-            )}
-          </p>
+          <FlashInstructions />
         </div>
 
         <div className="space-y-6">

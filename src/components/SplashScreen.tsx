@@ -14,6 +14,7 @@ import { useLanguage } from "../hooks/useLanguage";
 import { getCurrentVersion } from "../i18n/releaseNotes";
 import { KikkoField } from "./brand/KikkoField";
 import { NorenRule } from "./brand/NorenRule";
+import { SplashGuide } from "./SplashGuide";
 
 interface SplashScreenProps {
   onConnect: (method: ConnectionMethod) => void;
@@ -169,191 +170,198 @@ export function SplashScreen({
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[var(--color-bg)]"
+      className="fixed inset-0 z-50 overflow-y-auto bg-[var(--color-bg)]"
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5, ease: "easeInOut" }}
     >
-      <KikkoField />
-      <div className="absolute right-6 top-6 z-20">
+      {/* The lattice is fixed so it stays under the guide as the page scrolls. */}
+      <div className="pointer-events-none fixed inset-0">
+        <KikkoField />
+      </div>
+      <div className="fixed right-6 top-6 z-20">
         <LanguageToggle />
       </div>
+      <div className="relative flex min-h-full flex-col items-center px-6 pb-8 pt-16">
+        {/* The card is the shop entrance: noren across the top, mark below. */}
+        <motion.div
+          className="relative z-10 w-[520px] max-w-[calc(100vw-3rem)] overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[0_18px_50px_-22px_rgba(28,35,51,0.28)] dark:shadow-[0_18px_50px_-20px_rgba(0,0,0,0.6)]"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
+          <NorenRule />
+          <div className="flex flex-col items-center gap-7 px-14 pb-11 pt-11">
+            <img
+              src="/favicon.svg"
+              alt=""
+              aria-hidden="true"
+              className="h-[104px] w-[104px]"
+            />
+            <div className="text-center">
+              <h1 className="text-[33px] font-light text-[var(--color-text)]">
+                <span className="font-medium text-[var(--color-brand)]">
+                  Keeb-On!
+                </span>{" "}
+                Studio
+              </h1>
+              <p className="mt-2 text-[11px] uppercase tracking-[0.32em] text-[var(--color-text-muted)]">
+                Salicylic_acid3 Keyboards
+              </p>
+            </div>
 
-      {/* The card is the shop entrance: noren across the top, mark below. */}
-      <motion.div
-        className="relative z-10 w-[520px] max-w-[calc(100vw-3rem)] overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[0_18px_50px_-22px_rgba(28,35,51,0.28)] dark:shadow-[0_18px_50px_-20px_rgba(0,0,0,0.6)]"
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <NorenRule />
-        <div className="flex flex-col items-center gap-7 px-14 pb-11 pt-11">
-          <img
-            src="/favicon.svg"
-            alt=""
-            aria-hidden="true"
-            className="h-[104px] w-[104px]"
-          />
-          <div className="text-center">
-            <h1 className="text-[33px] font-light text-[var(--color-text)]">
-              <span className="font-medium text-[var(--color-brand)]">
-                Keeb-On!
-              </span>{" "}
-              Studio
-            </h1>
-            <p className="mt-2 text-[11px] uppercase tracking-[0.32em] text-[var(--color-text-muted)]">
-              Salicylic_acid3 Keyboards
-            </p>
-          </div>
-
-          <div className="flex flex-col items-center gap-4">
-            <p className="text-[11px] uppercase tracking-[0.28em] text-[var(--color-text-muted)]">
-              {t("Connect")}
-            </p>
-            <div className="flex gap-[22px]">
-              <ConnectButton
-                accent="--color-electric"
-                icon={<IconPlugConnected size={30} strokeWidth={1.6} />}
-                label={t("Connect via USB")}
-                title={t("Connect via USB")}
-                onClick={() => handleConnectClick("serial")}
-                disabled={isConnecting}
-              />
-              {/* Bluetooth is not offered — see connectionMethods.ts. Left as
-                  a condition rather than deleted so the path can come back in
-                  one line if the firmware ever makes it worth having. */}
-              {BLE_CONNECTION_ENABLED && (
+            <div className="flex flex-col items-center gap-4">
+              <p className="text-[11px] uppercase tracking-[0.28em] text-[var(--color-text-muted)]">
+                {t("Connect")}
+              </p>
+              <div className="flex gap-[22px]">
                 <ConnectButton
-                  accent="--color-neon"
-                  icon={<IconAccessPoint size={30} strokeWidth={1.6} />}
-                  label={t("Connect via Bluetooth")}
-                  title={t("Connect via Bluetooth")}
-                  onClick={() => handleConnectClick("ble")}
+                  accent="--color-electric"
+                  icon={<IconPlugConnected size={30} strokeWidth={1.6} />}
+                  label={t("Connect via USB")}
+                  title={t("Connect via USB")}
+                  onClick={() => handleConnectClick("serial")}
                   disabled={isConnecting}
                 />
-              )}
-              <ConnectButton
-                accent="--color-cyber"
-                icon={<IconDeviceDesktop size={30} strokeWidth={1.6} />}
-                label={t("Try Demo Mode")}
-                title={t("Try Demo Mode (no device required)")}
-                onClick={() => handleConnectClick("demo")}
-                disabled={isConnecting}
-              />
+                {/* Bluetooth is not offered — see connectionMethods.ts. Left as
+                  a condition rather than deleted so the path can come back in
+                  one line if the firmware ever makes it worth having. */}
+                {BLE_CONNECTION_ENABLED && (
+                  <ConnectButton
+                    accent="--color-neon"
+                    icon={<IconAccessPoint size={30} strokeWidth={1.6} />}
+                    label={t("Connect via Bluetooth")}
+                    title={t("Connect via Bluetooth")}
+                    onClick={() => handleConnectClick("ble")}
+                    disabled={isConnecting}
+                  />
+                )}
+                <ConnectButton
+                  accent="--color-cyber"
+                  icon={<IconDeviceDesktop size={30} strokeWidth={1.6} />}
+                  label={t("Try Demo Mode")}
+                  title={t("Try Demo Mode (no device required)")}
+                  onClick={() => handleConnectClick("demo")}
+                  disabled={isConnecting}
+                />
+              </div>
             </div>
           </div>
-        </div>
-      </motion.div>
-      {/* Loading indicator */}
-      {isConnecting && (
+        </motion.div>
+        {/* Loading indicator */}
+        {isConnecting && (
+          <motion.div
+            className="flex gap-1 mt-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <LoadingDots />
+          </motion.div>
+        )}
+
+        {/* Unsupported keyboard: not a failure, so explain and redirect. */}
+        {unsupportedDevice && (
+          <motion.div
+            className="mt-4 max-w-md px-4 py-3 rounded-lg bg-[var(--color-warning)]/10 border border-[var(--color-warning)]/40"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <p className="text-sm font-medium text-[var(--color-text)]">
+              {t("That is not a keyboard Keeb-On! Studio can configure.")}
+            </p>
+            <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+              {t(
+                "Keeb-On! Studio is specialized for the keyboards Salicylic_acid3 develops. For any other ZMK keyboard, please use the upstream DYA Studio.",
+              )}
+            </p>
+            <a
+              href="https://studio.dya.cormoran.works/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-block text-xs underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors"
+            >
+              studio.dya.cormoran.works
+            </a>
+          </motion.div>
+        )}
+
+        {/* Error message */}
+        {error && (
+          <motion.div
+            className="mt-4 px-4 py-2 rounded-lg bg-red-500/10 border border-red-500/30"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <p className="text-sm text-red-500">{error}</p>
+          </motion.div>
+        )}
+
+        {/* The guide: why remap, where the firmware is, what to read, where to report. */}
         <motion.div
-          className="flex gap-1 mt-4"
+          className="relative z-10 mt-8"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.25, ease: "easeOut" }}
+        >
+          <SplashGuide onShowAbout={onShowAbout} />
+        </motion.div>
+
+        {/* Credits */}
+        <motion.p
+          className="relative z-10 mt-10 text-center text-xs font-light tracking-wider text-[var(--color-text-muted)]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
         >
-          <LoadingDots />
-        </motion.div>
-      )}
-
-      {/* Unsupported keyboard: not a failure, so explain and redirect. */}
-      {unsupportedDevice && (
-        <motion.div
-          className="mt-4 max-w-md px-4 py-3 rounded-lg bg-[var(--color-warning)]/10 border border-[var(--color-warning)]/40"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <p className="text-sm font-medium text-[var(--color-text)]">
-            {t("That is not a keyboard Keeb-On! Studio can configure.")}
-          </p>
-          <p className="mt-1 text-xs text-[var(--color-text-muted)]">
-            {t(
-              "Keeb-On! Studio is specialized for the keyboards Salicylic_acid3 develops. For any other ZMK keyboard, please use the upstream DYA Studio.",
-            )}
-          </p>
+          {t("Keeb-On! Studio is maintained by")}
           <a
-            href="https://studio.dya.cormoran.works/"
+            href="https://x.com/Salicylic_acid3"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2 inline-block text-xs underline text-[var(--color-electric)] hover:text-[var(--color-neon)] transition-colors"
+            className="underline mx-1"
           >
-            studio.dya.cormoran.works
+            @Salicylic_acid3
           </a>
-        </motion.div>
-      )}
+          <br />
+          {t("Forked from DYA Studio by")}
+          <a
+            href="https://x.com/cormoran707"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline mx-1"
+          >
+            @cormoran707
+          </a>
+          <br />
+          {t("Special thanks to")}
+          <a
+            href="https://zmk.dev"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline mx-1"
+          >
+            {t("ZMK community")}
+          </a>
+          .
+        </motion.p>
 
-      {/* Error message */}
-      {error && (
+        {/* Release notes for the app itself */}
         <motion.div
-          className="mt-4 px-4 py-2 rounded-lg bg-red-500/10 border border-red-500/30"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
+          className="relative z-10 mt-3 flex items-center gap-4 text-xs font-light tracking-wider text-[var(--color-text-muted)]"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.7 }}
         >
-          <p className="text-sm text-red-500">{error}</p>
+          <button
+            onClick={onShowReleaseNotes}
+            className="hover:text-[var(--color-electric)] transition-colors underline"
+          >
+            {version
+              ? t("Release notes ({{version}})", { version })
+              : t("Release notes")}
+          </button>
         </motion.div>
-      )}
-
-      {/* Tagline */}
-      <motion.p
-        className="absolute bottom-12 text-xs font-light tracking-wider text-[var(--color-text-muted)]"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1 }}
-      >
-        {t("Keeb-On! Studio is maintained by")}
-        <a
-          href="https://x.com/Salicylic_acid3"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline mx-1"
-        >
-          @Salicylic_acid3
-        </a>
-        <br />
-        {t("Forked from DYA Studio by")}
-        <a
-          href="https://x.com/cormoran707"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline mx-1"
-        >
-          @cormoran707
-        </a>
-        <br />
-        {t("Special thanks to")}
-        <a
-          href="https://zmk.dev"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline mx-1"
-        >
-          {t("ZMK community")}
-        </a>
-        .
-      </motion.p>
-
-      {/* Standalone documentation links */}
-      <motion.div
-        className="absolute bottom-5 flex items-center gap-4 text-xs font-light tracking-wider text-[var(--color-text-muted)]"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.1 }}
-      >
-        <button
-          onClick={onShowAbout}
-          className="hover:text-[var(--color-electric)] transition-colors underline"
-        >
-          {t("About Keeb-On! Studio")}
-        </button>
-        <span aria-hidden="true">·</span>
-        <button
-          onClick={onShowReleaseNotes}
-          className="hover:text-[var(--color-electric)] transition-colors underline"
-        >
-          {version
-            ? t("Release notes ({{version}})", { version })
-            : t("Release notes")}
-        </button>
-      </motion.div>
+      </div>
 
       {/* Connection Notice Dialog */}
       <ConnectionNoticeDialog
