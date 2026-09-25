@@ -17,6 +17,8 @@ import { NorenRule } from "./brand/NorenRule";
 
 interface SplashScreenProps {
   onConnect: (method: ConnectionMethod) => void;
+  /** Open the Home tab's content without connecting. */
+  onShowAbout: () => void;
   isConnecting: boolean;
   error: string | null;
   /** Navigate to the standalone release notes page. */
@@ -117,6 +119,7 @@ function ConnectButton({
 
 export function SplashScreen({
   onConnect,
+  onShowAbout,
   isConnecting,
   error,
   onShowReleaseNotes,
@@ -335,6 +338,13 @@ export function SplashScreen({
         animate={{ opacity: 1 }}
         transition={{ delay: 1.1 }}
       >
+        <button
+          onClick={onShowAbout}
+          className="hover:text-[var(--color-electric)] transition-colors underline"
+        >
+          {t("About Keeb-On! Studio")}
+        </button>
+        <span aria-hidden="true">·</span>
         <button
           onClick={onShowReleaseNotes}
           className="hover:text-[var(--color-electric)] transition-colors underline"

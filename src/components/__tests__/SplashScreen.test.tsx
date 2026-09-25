@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { SplashScreen } from "../SplashScreen";
 
 describe("SplashScreen", () => {
@@ -42,5 +42,24 @@ describe("SplashScreen", () => {
     );
 
     expect(screen.getByText("Something went wrong")).toBeInTheDocument();
+  });
+
+  test("offers the Home tab's content without a keyboard", () => {
+    // Someone deciding whether to buy a keyboard, or sent here by a link,
+    // has nothing to connect. The About page is the Home tab (features,
+    // supported keyboards, Q&A) reachable from here.
+    const onShowAbout = jest.fn();
+
+    render(
+      <SplashScreen
+        onConnect={jest.fn()}
+        isConnecting={false}
+        error={null}
+        onShowAbout={onShowAbout}
+      />,
+    );
+
+    fireEvent.click(screen.getByText("About Keeb-On! Studio"));
+    expect(onShowAbout).toHaveBeenCalledTimes(1);
   });
 });

@@ -15,6 +15,7 @@ import {
 
 import { SplashScreen } from "./components/SplashScreen";
 import { ReleaseNotesPage, RELEASE_NOTES_PATH } from "./pages/ReleaseNotesPage";
+import { AboutPage, ABOUT_PATH } from "./pages/AboutPage";
 import { ReconnectingOverlay } from "./components/ReconnectingOverlay";
 import {
   DeviceConnectionProvider,
@@ -173,6 +174,7 @@ function AppContent() {
     window.dispatchEvent(new PopStateEvent("popstate"));
   }, []);
   const onReleaseNotes = pathname === RELEASE_NOTES_PATH;
+  const onAbout = pathname === ABOUT_PATH;
   const onOauthCallback = pathname === OAUTH_CALLBACK_PATH;
 
   useEffect(() => {
@@ -182,13 +184,14 @@ function AppContent() {
     // AbyssCallbackPage ever gets to read it.
     if (
       !onReleaseNotes &&
+      !onAbout &&
       !onOauthCallback &&
       urlTab !== activeTab &&
       window.location.pathname !== "/"
     ) {
       window.history.replaceState(null, "", "/");
     }
-  }, [urlTab, activeTab, onReleaseNotes, onOauthCallback]);
+  }, [urlTab, activeTab, onReleaseNotes, onAbout, onOauthCallback]);
 
   const setActiveTabWithTracking = useCallback(
     (tabId: string) => {
@@ -215,6 +218,10 @@ function AppContent() {
     return <ReleaseNotesPage onBack={() => navigatePath("/")} />;
   }
 
+  if (onAbout) {
+    return <AboutPage onBack={() => navigatePath("/")} />;
+  }
+
   return (
     <>
       <AnimatePresence>
@@ -236,6 +243,7 @@ function AppContent() {
                 isConnecting={connection.isLoading}
                 error={connection.error}
                 onShowReleaseNotes={() => navigatePath(RELEASE_NOTES_PATH)}
+                onShowAbout={() => navigatePath(ABOUT_PATH)}
                 unsupportedDevice={connection.unsupportedDevice}
               />
             </motion.div>
