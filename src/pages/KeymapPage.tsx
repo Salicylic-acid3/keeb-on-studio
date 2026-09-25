@@ -874,16 +874,33 @@ export function KeymapPage() {
     }
   }, [keymap, selectedLayerIndex, renameValue]);
 
+  // Follow the keyboard's layer while the live key view is on -- but only
+  // when the keyboard's layer actually changes. This used to re-run whenever
+  // the keymap object was replaced, which every binding edit does, so setting
+  // a key on any other layer snapped the editor back to the layer the
+  // keyboard was sitting on (the default one). The last layer followed is
+  // remembered, and forgotten when the stream is turned off so that turning
+  // it back on follows again.
+  const lastFollowedLayerRef = useRef<number | null>(null);
   useEffect(() => {
-    if (
-      inputStream.activeLayerIndex === null ||
-      !keymap.keymap?.layers[inputStream.activeLayerIndex]
-    ) {
+    if (!inputStream.isEnabled) {
+      lastFollowedLayerRef.current = null;
       return;
     }
-
-    setSelectedLayerIndex(inputStream.activeLayerIndex);
-  }, [inputStream.activeLayerIndex, keymap.keymap?.layers]);
+    const index = inputStream.activeLayerIndex;
+    if (index === null || index === lastFollowedLayerRef.current) {
+      return;
+    }
+    lastFollowedLayerRef.current = index;
+    if (!keymap.keymap?.layers[index]) {
+      return;
+    }
+    setSelectedLayerIndex(index);
+  }, [
+    inputStream.isEnabled,
+    inputStream.activeLayerIndex,
+    keymap.keymap?.layers,
+  ]);
 
   // Stream mode highlights (and beeps on) every key press, which only makes
   // sense while the Keymap tab is on screen. The page stays mounted when you
