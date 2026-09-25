@@ -27,7 +27,9 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     label: "How layers work",
     description:
       "What a layer is, why a small keyboard needs them, and how to hold and switch them.",
-    href: null,
+    // The existing article; the author plans to rewrite it, so swap the URL
+    // here when the new one is up.
+    href: "https://salicylic-acid3.hatenablog.com/entry/layer-introduction",
   },
 ];
 
