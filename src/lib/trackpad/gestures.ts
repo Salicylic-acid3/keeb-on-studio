@@ -96,7 +96,7 @@ const GESTURE_SETS: Record<string, GestureSet> = {
         position: 78,
         label: "Held while a finger is on a pad",
         detail:
-          'Pressed when a finger touches either pad and released when the last finger leaves. For a modifier or mouse button that should accompany pointer movement on this layer — Shift + middle button to pan, for example, with the "Key + Mouse Button" behavior.',
+          'Pressed when a finger touches either pad while this layer is on top, and released when the finger leaves or the layer does. Nothing is pressed while the default layer is on top. For a modifier or mouse button that should accompany pointer movement on this layer — Shift + middle button to pan, for example, with the "Key + Mouse Button" behavior.',
         held: true,
       },
       {

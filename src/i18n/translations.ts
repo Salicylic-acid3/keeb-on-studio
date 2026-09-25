@@ -50,8 +50,8 @@ const ja: Record<string, string> = {
   "Scrolls sideways — swipe is off on this layer":
     "横スクロール（このレイヤーではスワイプ無効）",
   "Key + Mouse Button": "キー＋マウスボタン",
-  'Pressed when a finger touches either pad and released when the last finger leaves. For a modifier or mouse button that should accompany pointer movement on this layer — Shift + middle button to pan, for example, with the "Key + Mouse Button" behavior.':
-    "どちらかのパッドに指が触れたときに押され、最後の指が離れたときに放されます。このレイヤーでポインタ移動に修飾キーやマウスボタンを添えたいときに。例えばパン操作の Shift＋中ボタンは「Key + Mouse Button」で置けます。",
+  'Pressed when a finger touches either pad while this layer is on top, and released when the finger leaves or the layer does. Nothing is pressed while the default layer is on top. For a modifier or mouse button that should accompany pointer movement on this layer — Shift + middle button to pan, for example, with the "Key + Mouse Button" behavior.':
+    "このレイヤーが最上位のときにパッドに指が触れると押され、指が離れるかレイヤーを抜けると放されます。デフォルトレイヤーが最上位の間は何も押しません。このレイヤーでポインタ移動に修飾キーやマウスボタンを添えたいときに。例えばパン操作の Shift＋中ボタンは「Key + Mouse Button」で置けます。",
   "One-pad pinch": "片手ピンチ",
   "Pad scale": "パッドのスケール",
   "Counts spread across each side of the pad, which is what the firmware compares when it decides which axis a gesture is on. Only the ratio matters: it should match the ratio of the pad's sides, or scrolls, swipes and pinches all lean toward one of them. This does not change pointer speed — that is below.":
@@ -1796,8 +1796,8 @@ const zh: Record<string, string> = {
     "如需查看各线程剩余的栈空间（例如调整栈大小或给线程增加工作时），请刷写启用了 {{module}} 的 {{kconfig}} 的 devtool 版固件。",
   "Scrolls sideways — swipe is off on this layer": "横向滚动（此层未启用滑动）",
   "Key + Mouse Button": "按键＋鼠标按钮",
-  'Pressed when a finger touches either pad and released when the last finger leaves. For a modifier or mouse button that should accompany pointer movement on this layer — Shift + middle button to pan, for example, with the "Key + Mouse Button" behavior.':
-    "手指触碰任一触控板时按下，最后一根手指离开时松开。用于在此层移动指针时同时按住修饰键或鼠标按钮，例如用「Key + Mouse Button」设置 Shift＋中键来平移。",
+  'Pressed when a finger touches either pad while this layer is on top, and released when the finger leaves or the layer does. Nothing is pressed while the default layer is on top. For a modifier or mouse button that should accompany pointer movement on this layer — Shift + middle button to pan, for example, with the "Key + Mouse Button" behavior.':
+    "当此层位于最上层时，手指触碰任一触控板即按下；手指离开或离开该层时松开。默认层位于最上层时不会按下任何内容。用于在此层移动指针时同时按住修饰键或鼠标按钮，例如用「Key + Mouse Button」设置 Shift＋中键来平移。",
   "One-pad pinch": "单手捏合",
   "Pad scale": "触控板尺度",
   "Counts spread across each side of the pad, which is what the firmware compares when it decides which axis a gesture is on. Only the ratio matters: it should match the ratio of the pad's sides, or scrolls, swipes and pinches all lean toward one of them. This does not change pointer speed — that is below.":
