@@ -3,36 +3,32 @@
  *
  * Two hexagons on their own told a newcomer nothing: not that a custom
  * keyboard is meant to be remapped, not where the firmware is, not where to
- * read up or where to say what is awkward. This puts those four things
- * right under the buttons, on the same page, so nobody has to connect a
- * keyboard -- or find a separate About page -- to learn what the app is for.
+ * read up or where to ask. This puts those things right under the buttons,
+ * on the same page, so nobody has to connect a keyboard -- or find a
+ * separate About page -- to learn what the app is for.
  *
- * Everything here is static or a plain link. The firmware links are GitHub's
- * "latest release" permalinks, so this needs no network call and cannot be
- * rate limited; the articles come from guideLinks.ts, where one that is
- * still being written has no URL yet and is shown as coming soon.
+ * The firmware is one click away rather than listed here: the list of
+ * keyboards will keep growing, and a row of download buttons per keyboard
+ * would crowd the front page. The articles come from guideLinks.ts, where
+ * one that is still being written has no URL yet and is shown as coming
+ * soon.
  */
 import {
   IconBook,
   IconBrandDiscord,
-  IconBrandX,
   IconDownload,
   IconExternalLink,
-  IconMessageReport,
+  IconMessages,
 } from "@tabler/icons-react";
 import type { ReactNode } from "react";
 import { useLanguage } from "../hooks/useLanguage";
-import {
-  FIRMWARE_BOARDS,
-  firmwareDownloadUrl,
-  firmwareReleasesUrl,
-} from "../lib/firmwareDownloads";
-import { GUIDE_ARTICLES, DISCORD_URL, X_URL } from "../lib/guideLinks";
-import { FlashInstructions } from "./FlashInstructions";
+import { GUIDE_ARTICLES, DISCORD_URL } from "../lib/guideLinks";
 
 interface SplashGuideProps {
   /** Open the supported-keyboards / Q&A page (the Home tab's content). */
   onShowAbout: () => void;
+  /** Open the firmware downloads page (the Firmware tab's content). */
+  onShowDownloads: () => void;
 }
 
 function Card({
@@ -58,23 +54,30 @@ function Card({
 const linkClass =
   "inline-flex items-center gap-1 text-[var(--color-electric)] underline transition-colors hover:text-[var(--color-neon)]";
 
-export function SplashGuide({ onShowAbout }: SplashGuideProps) {
+const buttonClass =
+  "inline-flex items-center gap-1.5 rounded-lg border border-[var(--color-electric)] bg-[var(--color-electric)]/10 px-3 py-1.5 text-xs font-medium text-[var(--color-electric)] transition-colors hover:bg-[var(--color-electric)]/20";
+
+export function SplashGuide({
+  onShowAbout,
+  onShowDownloads,
+}: SplashGuideProps) {
   const { t } = useLanguage();
 
   return (
     <div className="flex w-[640px] max-w-[calc(100vw-3rem)] flex-col gap-4">
-      {/* Why this app exists, in two sentences. */}
-      <p className="px-2 text-center text-sm leading-relaxed text-[var(--color-text-secondary)]">
-        {t(
-          "A custom keyboard is meant to be remapped. It ships with a default layout, but the point is to move the keys to where your own hands and work want them — and that is what Keeb-On! Studio is for: keymap, layers and trackpad, edited from the browser with nothing to install.",
-        )}
-        <br />
-        <span className="text-[var(--color-text-muted)]">
+      {/* What this app is for. */}
+      <div className="space-y-2 px-2 text-center text-sm leading-relaxed text-[var(--color-text-secondary)]">
+        <p>
           {t(
-            "Connect over USB above, or open the demo mode to look around without a keyboard.",
+            "A custom keyboard comes into its own once you change its keymap to fit what you actually use it for. Keeb-On! Studio was made to support that trial and error, so you can shape the keyboard to your own use.",
           )}
-        </span>
-      </p>
+        </p>
+        <p>
+          {t(
+            "Keeb-On! Studio is free to use and needs no installation. You can look at a supported keyboard in demo mode before buying it, build a keymap there, and apply it once the keyboard arrives.",
+          )}
+        </p>
+      </div>
 
       <Card icon={<IconBook size={18} />} title={t("Learn how to use it")}>
         <ul className="space-y-2">
@@ -117,84 +120,31 @@ export function SplashGuide({ onShowAbout }: SplashGuideProps) {
       </Card>
 
       <Card icon={<IconDownload size={18} />} title={t("Firmware")}>
-        <p className="text-xs text-[var(--color-text-muted)]">
+        <p className="text-sm text-[var(--color-text-secondary)]">
           {t(
-            "The latest firmware for each keyboard, straight from here. Each link always points at the newest release.",
+            "The latest firmware for every supported keyboard, with the steps for writing it, is on the downloads page.",
           )}
         </p>
-        <ul className="mt-3 space-y-3">
-          {FIRMWARE_BOARDS.map((board) => (
-            <li
-              key={board.repo}
-              className="flex flex-col gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)]/40 p-3 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div className="min-w-0">
-                <p className="text-sm text-[var(--color-text)]">{board.name}</p>
-                <a
-                  href={firmwareReleasesUrl(board.repo)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`${linkClass} text-xs`}
-                >
-                  {t("Release notes and older versions")}
-                  <IconExternalLink size={12} />
-                </a>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {board.files
-                  .filter((file) => !file.recovery)
-                  .map((file) => (
-                    <a
-                      key={file.asset}
-                      href={firmwareDownloadUrl(board.repo, file.asset)}
-                      title={`${file.asset}.uf2`}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--color-electric)] bg-[var(--color-electric)]/10 px-3 py-1.5 text-xs font-medium text-[var(--color-electric)] transition-colors hover:bg-[var(--color-electric)]/20"
-                    >
-                      <IconDownload size={14} />
-                      {t(file.label)}
-                    </a>
-                  ))}
-              </div>
-            </li>
-          ))}
-        </ul>
-        <details className="mt-3 text-sm">
-          <summary className="cursor-pointer text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text)]">
-            {t("How to flash")}
-          </summary>
-          <FlashInstructions className="mt-2" />
-        </details>
+        <button onClick={onShowDownloads} className={`${buttonClass} mt-3`}>
+          <IconDownload size={14} />
+          {t("Open the downloads page")}
+        </button>
       </Card>
 
       <Card
-        icon={<IconMessageReport size={18} />}
-        title={t("Tell us how it goes")}
+        icon={<IconMessages size={18} />}
+        title={t("Opinions and questions about using it go here")}
       >
-        <p className="text-sm text-[var(--color-text-secondary)]">
-          {t(
-            "Something awkward, something broken, something you wish it did — say so on Discord. That is what decides what the next version fixes.",
-          )}
-        </p>
-        <div className="mt-3 flex flex-wrap gap-2">
-          <a
-            href={DISCORD_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--color-cyber)] bg-[var(--color-cyber)]/10 px-3 py-1.5 text-xs font-medium text-[var(--color-cyber)] transition-colors hover:bg-[var(--color-cyber)]/20"
-          >
-            <IconBrandDiscord size={15} />
-            {t("Report it on Discord")}
-          </a>
-          <a
-            href={X_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-xs text-[var(--color-text-secondary)] transition-colors hover:border-[var(--color-text-muted)]"
-          >
-            <IconBrandX size={15} />
-            @Salicylic_acid3
-          </a>
-        </div>
+        <a
+          href={DISCORD_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--color-cyber)] bg-[var(--color-cyber)]/10 px-3 py-1.5 text-xs font-medium text-[var(--color-cyber)] transition-colors hover:bg-[var(--color-cyber)]/20"
+        >
+          <IconBrandDiscord size={15} />
+          {t("Discord")}
+          <IconExternalLink size={12} />
+        </a>
       </Card>
     </div>
   );

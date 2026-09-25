@@ -16,6 +16,7 @@ import {
 import { SplashScreen } from "./components/SplashScreen";
 import { ReleaseNotesPage, RELEASE_NOTES_PATH } from "./pages/ReleaseNotesPage";
 import { AboutPage, ABOUT_PATH } from "./pages/AboutPage";
+import { DownloadsPage, DOWNLOADS_PATH } from "./pages/DownloadsPage";
 import { ReconnectingOverlay } from "./components/ReconnectingOverlay";
 import {
   DeviceConnectionProvider,
@@ -175,6 +176,7 @@ function AppContent() {
   }, []);
   const onReleaseNotes = pathname === RELEASE_NOTES_PATH;
   const onAbout = pathname === ABOUT_PATH;
+  const onDownloads = pathname === DOWNLOADS_PATH;
   const onOauthCallback = pathname === OAUTH_CALLBACK_PATH;
 
   useEffect(() => {
@@ -185,13 +187,21 @@ function AppContent() {
     if (
       !onReleaseNotes &&
       !onAbout &&
+      !onDownloads &&
       !onOauthCallback &&
       urlTab !== activeTab &&
       window.location.pathname !== "/"
     ) {
       window.history.replaceState(null, "", "/");
     }
-  }, [urlTab, activeTab, onReleaseNotes, onAbout, onOauthCallback]);
+  }, [
+    urlTab,
+    activeTab,
+    onReleaseNotes,
+    onAbout,
+    onDownloads,
+    onOauthCallback,
+  ]);
 
   const setActiveTabWithTracking = useCallback(
     (tabId: string) => {
@@ -222,6 +232,10 @@ function AppContent() {
     return <AboutPage onBack={() => navigatePath("/")} />;
   }
 
+  if (onDownloads) {
+    return <DownloadsPage onBack={() => navigatePath("/")} />;
+  }
+
   return (
     <>
       <AnimatePresence>
@@ -244,6 +258,7 @@ function AppContent() {
                 error={connection.error}
                 onShowReleaseNotes={() => navigatePath(RELEASE_NOTES_PATH)}
                 onShowAbout={() => navigatePath(ABOUT_PATH)}
+                onShowDownloads={() => navigatePath(DOWNLOADS_PATH)}
                 unsupportedDevice={connection.unsupportedDevice}
               />
             </motion.div>

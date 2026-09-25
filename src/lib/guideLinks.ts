@@ -29,12 +29,6 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       "What a layer is, why a small keyboard needs them, and how to hold and switch them.",
     href: null,
   },
-  {
-    label: "自作キーボード温泉街の歩き方",
-    description: "The author's blog: build logs, keyboard notes, and guides.",
-    href: "https://salicylic-acid3.hatenablog.com/",
-  },
 ];
 
 export const DISCORD_URL = "https://discord.gg/y5CNqgEsNg";
-export const X_URL = "https://x.com/Salicylic_acid3";

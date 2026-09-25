@@ -9,10 +9,15 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
-  "A custom keyboard is meant to be remapped. It ships with a default layout, but the point is to move the keys to where your own hands and work want them — and that is what Keeb-On! Studio is for: keymap, layers and trackpad, edited from the browser with nothing to install.":
-    "自作キーボードは、自分の用途に合わせてキーを置き換えて使うものです。出荷時のキー配置はあくまで初期値で、自分の手と仕事に合う場所へキーを動かしてこそ本領を発揮します。Keeb-On! Studio はそのためのツールで、キーマップ・レイヤー・トラックパッドを、何もインストールせずブラウザから書き換えられます。",
-  "Connect over USB above, or open the demo mode to look around without a keyboard.":
-    "上の USB 接続から始めるか、キーボードが手元に無ければデモモードで画面だけ見て回れます。",
+  "A custom keyboard comes into its own once you change its keymap to fit what you actually use it for. Keeb-On! Studio was made to support that trial and error, so you can shape the keyboard to your own use.":
+    "自作キーボードは、自分の用途に合わせてキーマップを変更して自分の用途に合わせていくことで真価を発揮します。この Keeb-On! Studio はその試行錯誤を支援し、自分の用途に沿ったキーボードにカスタマイズできるようにしたいと思って作成しました。",
+  "Keeb-On! Studio is free to use and needs no installation. You can look at a supported keyboard in demo mode before buying it, build a keymap there, and apply it once the keyboard arrives.":
+    "この Keeb-On! Studio はインストール不要で無料で使用できます。対応キーボードを購入前でもデモモードで確認でき、キーマップを作成して購入後に適用することもできます。",
+  "The latest firmware for every supported keyboard, with the steps for writing it, is on the downloads page.":
+    "対応キーボードの最新ファームウェアと書き込み手順は、ダウンロードページにまとめています。",
+  "Open the downloads page": "ダウンロードページを開く",
+  "Opinions and questions about using it go here":
+    "使い方について意見や質問はこちら",
   "Learn how to use it": "使い方を知る",
   "How to use Keeb-On! Studio": "Keeb-On! Studio の使い方",
   "Connecting, editing the keymap, saving, and what each tab is for.":
@@ -20,17 +25,10 @@ const ja: Record<string, string> = {
   "How layers work": "レイヤーの解説",
   "What a layer is, why a small keyboard needs them, and how to hold and switch them.":
     "レイヤーとは何か、小さいキーボードになぜ必要か、押している間の切り替えと固定の使い分け。",
-  "The author's blog: build logs, keyboard notes, and guides.":
-    "作者のブログ。製作記、キーボードの解説、各種ガイド。",
   "Coming soon": "準備中",
   "Supported keyboards and Q&A": "対応キーボードと Q&A",
   "Which keyboards this app drives, what each tab does, and the questions people ask.":
     "このアプリが対応するキーボード、各タブでできること、よくある質問。",
-  "The latest firmware for each keyboard, straight from here. Each link always points at the newest release.":
-    "各キーボードの最新ファームウェアをここからダウンロードできます。リンクは常に最新リリースを指します。",
-  "Tell us how it goes": "使い勝手を教えてください",
-  "Something awkward, something broken, something you wish it did — say so on Discord. That is what decides what the next version fixes.":
-    "使いにくいところ、動かないところ、こうなってほしいところ。Discord で教えてください。次の版で何を直すかは、そこで決まります。",
   "Set keys one after another": "キーを続けて設定",
   "Setting: {{key}}": "設定中: {{key}}",
   "Pick a key on the board to start.": "盤面のキーを選ぶと始まります。",
@@ -1782,10 +1780,15 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
-  "A custom keyboard is meant to be remapped. It ships with a default layout, but the point is to move the keys to where your own hands and work want them — and that is what Keeb-On! Studio is for: keymap, layers and trackpad, edited from the browser with nothing to install.":
-    "自制键盘就是要按自己的用途重新映射按键。出厂布局只是初始值，把按键挪到适合自己双手和工作的位置，才是它的意义所在。Keeb-On! Studio 正是为此而生：键位图、层和触控板，都能在浏览器里直接修改，无需安装任何东西。",
-  "Connect over USB above, or open the demo mode to look around without a keyboard.":
-    "从上方的 USB 连接开始；手边没有键盘的话，也可以用演示模式先看看界面。",
+  "A custom keyboard comes into its own once you change its keymap to fit what you actually use it for. Keeb-On! Studio was made to support that trial and error, so you can shape the keyboard to your own use.":
+    "自制键盘只有按自己的用途修改键位图、不断调整之后，才能发挥真正的价值。Keeb-On! Studio 正是为了支持这种反复尝试而制作的，让你能把键盘定制成符合自己用途的样子。",
+  "Keeb-On! Studio is free to use and needs no installation. You can look at a supported keyboard in demo mode before buying it, build a keymap there, and apply it once the keyboard arrives.":
+    "Keeb-On! Studio 免费使用，无需安装。购买之前就可以在演示模式中查看支持的键盘，先做好键位图，收到键盘后再应用。",
+  "The latest firmware for every supported keyboard, with the steps for writing it, is on the downloads page.":
+    "所有支持的键盘的最新固件和刷写步骤，都汇总在下载页面。",
+  "Open the downloads page": "打开下载页面",
+  "Opinions and questions about using it go here":
+    "关于用法的意见和问题请到这里",
   "Learn how to use it": "了解用法",
   "How to use Keeb-On! Studio": "Keeb-On! Studio 使用方法",
   "Connecting, editing the keymap, saving, and what each tab is for.":
@@ -1793,17 +1796,10 @@ const zh: Record<string, string> = {
   "How layers work": "层的原理",
   "What a layer is, why a small keyboard needs them, and how to hold and switch them.":
     "层是什么、小键盘为什么需要它、按住切换与锁定切换的区别。",
-  "The author's blog: build logs, keyboard notes, and guides.":
-    "作者的博客：制作记录、键盘笔记和各类指南。",
   "Coming soon": "即将推出",
   "Supported keyboards and Q&A": "支持的键盘与问答",
   "Which keyboards this app drives, what each tab does, and the questions people ask.":
     "本应用支持哪些键盘、各标签页能做什么，以及常见问题。",
-  "The latest firmware for each keyboard, straight from here. Each link always points at the newest release.":
-    "在这里直接下载各款键盘的最新固件。链接始终指向最新版本。",
-  "Tell us how it goes": "告诉我们使用感受",
-  "Something awkward, something broken, something you wish it did — say so on Discord. That is what decides what the next version fixes.":
-    "不顺手的地方、坏掉的地方、希望它能做的事——请在 Discord 上告诉我们。下一版修什么，就由这些决定。",
   "Set keys one after another": "连续设置按键",
   "Setting: {{key}}": "正在设置：{{key}}",
   "Pick a key on the board to start.": "先在键盘图上选一个键。",

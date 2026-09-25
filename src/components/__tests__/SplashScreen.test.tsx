@@ -63,31 +63,32 @@ describe("SplashScreen", () => {
     expect(onShowAbout).toHaveBeenCalledTimes(1);
   });
 
-  test("puts firmware downloads and the Discord link under the buttons", () => {
-    // The guide is why the splash is more than two hexagons: the newest
-    // firmware for every keyboard and the place to report problems are
-    // reachable without connecting anything.
+  test("leads to the downloads page and to Discord from under the buttons", () => {
+    // The guide is why the splash is more than two hexagons. Firmware is one
+    // click away rather than listed here -- the list of keyboards will keep
+    // growing -- and the place to ask is a plain link.
+    const onShowDownloads = jest.fn();
+
     render(
-      <SplashScreen onConnect={jest.fn()} isConnecting={false} error={null} />,
+      <SplashScreen
+        onConnect={jest.fn()}
+        isConnecting={false}
+        error={null}
+        onShowDownloads={onShowDownloads}
+      />,
     );
 
-    const downloads = screen
-      .getAllByRole("link")
-      .filter((a) =>
-        a.getAttribute("href")?.includes("/releases/latest/download/"),
-      );
-    expect(downloads.length).toBeGreaterThanOrEqual(3);
+    // No .uf2 links on the front page itself.
     expect(
-      downloads.some((a) =>
-        a.getAttribute("href")?.endsWith("clickboard_ergotrack_right.uf2"),
-      ),
-    ).toBe(true);
-    // Recovery firmware is not offered here: it is not what a newcomer wants.
-    expect(
-      downloads.some((a) => a.getAttribute("href")?.includes("settings_reset")),
+      screen
+        .getAllByRole("link")
+        .some((a) => a.getAttribute("href")?.includes("/releases/")),
     ).toBe(false);
 
-    const discord = screen.getByRole("link", { name: /Report it on Discord/i });
+    fireEvent.click(screen.getByText("Open the downloads page"));
+    expect(onShowDownloads).toHaveBeenCalledTimes(1);
+
+    const discord = screen.getByRole("link", { name: /Discord/i });
     expect(discord).toHaveAttribute("href", expect.stringContaining("discord"));
   });
 });

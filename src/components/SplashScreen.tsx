@@ -20,6 +20,8 @@ interface SplashScreenProps {
   onConnect: (method: ConnectionMethod) => void;
   /** Open the Home tab's content without connecting. */
   onShowAbout: () => void;
+  /** Open the Firmware tab's content without connecting. */
+  onShowDownloads: () => void;
   isConnecting: boolean;
   error: string | null;
   /** Navigate to the standalone release notes page. */
@@ -121,6 +123,7 @@ function ConnectButton({
 export function SplashScreen({
   onConnect,
   onShowAbout,
+  onShowDownloads,
   isConnecting,
   error,
   onShowReleaseNotes,
@@ -303,7 +306,10 @@ export function SplashScreen({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.25, ease: "easeOut" }}
         >
-          <SplashGuide onShowAbout={onShowAbout} />
+          <SplashGuide
+            onShowAbout={onShowAbout}
+            onShowDownloads={onShowDownloads}
+          />
         </motion.div>
 
         {/* Credits */}
