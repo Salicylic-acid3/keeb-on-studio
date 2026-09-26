@@ -4,6 +4,15 @@
       "version": "upcoming",
       "date": null,
       "changes": {
+        "major": [],
+        "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.09.26.1",
+      "date": "2026-09-26",
+      "changes": {
         "major": [
           {
             "en": "Tap dance: a \"then hold\" action per tap count — tap for Escape, hold for Control, double-tap-and-hold for something else (firmware from zmk-feature-runtime-tap-dance with hold actions)",
