@@ -9,6 +9,8 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  'This keyboard has no "None" behavior to start a tap from.':
+    "このキーボードには、タップの初期値にする「None」ビヘイビアがありません。",
   "A custom keyboard comes into its own once you change its keymap to fit what you actually use it for. Keeb-On! Studio was made to support that trial and error, so you can shape the keyboard to your own use.":
     "自作キーボードは、自分の用途に合わせてキーマップを変更して自分の用途に合わせていくことで真価を発揮します。この Keeb-On! Studio はその試行錯誤を支援し、自分の用途に沿ったキーボードにカスタマイズできるようにしたいと思って作成しました。",
   "Keeb-On! Studio is free to use and needs no installation. You can look at a supported keyboard in demo mode before buying it, build a keymap there, and apply it once the keyboard arrives.":
@@ -1780,6 +1782,8 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
+  'This keyboard has no "None" behavior to start a tap from.':
+    "此键盘没有可用作新点击初始值的“None”行为。",
   "A custom keyboard comes into its own once you change its keymap to fit what you actually use it for. Keeb-On! Studio was made to support that trial and error, so you can shape the keyboard to your own use.":
     "自制键盘只有按自己的用途修改键位图、不断调整之后，才能发挥真正的价值。Keeb-On! Studio 正是为了支持这种反复尝试而制作的，让你能把键盘定制成符合自己用途的样子。",
   "Keeb-On! Studio is free to use and needs no installation. You can look at a supported keyboard in demo mode before buying it, build a keymap there, and apply it once the keyboard arrives.":

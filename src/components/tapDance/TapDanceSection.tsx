@@ -31,7 +31,10 @@ import {
   IconRefresh,
 } from "@tabler/icons-react";
 import { KeycodeSelector } from "../KeycodeSelector";
-import { formatBehaviorBinding } from "../../lib/behaviorMetadata";
+import {
+  formatBehaviorBinding,
+  getBehaviorMetadata,
+} from "../../lib/behaviorMetadata";
 import type { KeyboardLayoutType } from "../../lib/keyboardLayouts";
 import { useLanguage } from "../../hooks/useLanguage";
 import { useCustomSettings } from "../../hooks/useCustomSettings";
@@ -128,17 +131,37 @@ export function TapDanceSection({
     [settings],
   );
 
+  // The keyboard's &none behavior, which is what a new tap holds.
+  //
+  // A new tap starts out doing nothing rather than copying the previous one:
+  // an extra tap that silently repeats the last one would be worse than an
+  // obviously empty row. But "nothing" has to be a real behavior. The
+  // firmware validates every behavior value against its behavior table, and
+  // behavior id 0 is not in it -- so an all-zero placeholder is refused and
+  // the tap never appears, which is what "Add a tap" used to do.
+  const noneBehaviorId = useMemo(() => {
+    const variants = getBehaviorMetadata("none")?.displayNameVariants ?? [];
+    for (const behavior of behaviors.values()) {
+      if (variants.includes(behavior.displayName)) return behavior.id;
+    }
+    return null;
+  }, [behaviors]);
+
+  const isUnset = useCallback(
+    (binding: BehaviorBinding | null) =>
+      !binding || binding.behaviorId === noneBehaviorId,
+    [noneBehaviorId],
+  );
+
   const addTap = useCallback(
     (slot: TapDanceSlot) => {
-      // A new tap starts unbound rather than copying the previous one: an
-      // extra tap that silently repeats the last one would be worse than an
-      // obviously empty row.
+      if (noneBehaviorId === null) return;
       const empty: SettingScalarValue = {
-        behaviorValue: { behaviorId: 0, param1: 0, param2: 0 },
+        behaviorValue: { behaviorId: noneBehaviorId, param1: 0, param2: 0 },
       };
       void settings.pushBackArrayElement(slot.tapsRef, empty);
     },
-    [settings],
+    [settings, noneBehaviorId],
   );
 
   const removeTap = useCallback(
@@ -282,7 +305,7 @@ export function TapDanceSection({
                     <ul className="space-y-2 mb-3">
                       {slot.taps.map((tap, tapIndex) => {
                         const binding = bindingOf(tap);
-                        const name = tapLabel(binding);
+                        const name = isUnset(binding) ? "" : tapLabel(binding);
                         return (
                           <li
                             key={tap.value?.arrayValue?.index ?? tapIndex}
@@ -312,7 +335,15 @@ export function TapDanceSection({
                       onClick={() => addTap(slot)}
                       disabled={
                         disabled ||
+                        noneBehaviorId === null ||
                         (slot.maxTaps > 0 && slot.taps.length >= slot.maxTaps)
+                      }
+                      title={
+                        noneBehaviorId === null
+                          ? t(
+                              'This keyboard has no "None" behavior to start a tap from.',
+                            )
+                          : undefined
                       }
                     >
                       <IconPlus size={14} />
