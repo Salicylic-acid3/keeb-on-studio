@@ -511,9 +511,9 @@ export function KeycodeSelector({
             // param1); the labels are ours. Without the range -- firmware
             // from before the slot picker existed -- fall back to a number.
             const range = (
-              paramNumber === 1
-                ? selectedBehaviorInfo.param1Descriptions
-                : selectedBehaviorInfo.param2Descriptions
+              (paramNumber === 1
+                ? selectedBehaviorInfo?.param1Descriptions
+                : selectedBehaviorInfo?.param2Descriptions) ?? []
             ).find((desc) => desc.range !== undefined)?.range;
             if (!range) {
               return (

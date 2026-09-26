@@ -25,8 +25,10 @@ npm run release
 git push origin main --tags
 ```
 
-`npm run release` is `scripts/release.ts --commit`, then the build, then the
-deploy:
+`npm run release` type-checks first (`tsc -b`, the same check the build
+does), then runs `scripts/release.ts --commit`, then the build, then the
+deploy. The type-check comes first so a tree that will not build never gets
+a version tag:
 
 1. **Refuses** if the `upcoming` section is empty (nothing to say means the
    notes were not written — go write them), or if the working tree has

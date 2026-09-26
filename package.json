@@ -11,7 +11,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "preview": "vite preview",
-    "release": "node --experimental-strip-types scripts/release.ts --commit && npm run build && npx wrangler deploy --env release",
+    "release": "npm run generate && tsc -b && node --experimental-strip-types scripts/release.ts --commit && npm run build && npx wrangler deploy --env release",
     "generate": "buf generate",
     "test": "jest",
     "test:watch": "jest --watch",
