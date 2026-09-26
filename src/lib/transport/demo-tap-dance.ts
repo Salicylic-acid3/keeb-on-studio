@@ -35,10 +35,12 @@ const DEFAULT_TERM_MS = 200;
 
 const KEY_PRESS = 10;
 const CAPS_WORD = 8;
+const NONE = 7;
 
-/** Escape / Tab / Backspace, as this app encodes a &kp parameter. */
+/** Escape / Tab / Left Control, as this app encodes a &kp parameter. */
 const KC_ESC = 0x29;
 const KC_TAB = 0x2b;
+const KC_LCTRL = 0xe0;
 
 /**
  * What each slot starts holding. Slots absent from here start empty.
@@ -53,6 +55,20 @@ const INITIAL_TAPS: Record<number, { behaviorId: number; param1: number }[]> = {
   ],
   1: [{ behaviorId: KEY_PRESS, param1: KC_TAB }],
 };
+
+/**
+ * What each slot holds when the key stays down after N taps; parallel to
+ * INITIAL_TAPS. &none is "no hold action": the tap binding is held instead.
+ * Slot 0 shows the classic tap-Escape / hold-Control.
+ */
+const INITIAL_HOLDS: Record<number, { behaviorId: number; param1: number }[]> =
+  {
+    0: [
+      { behaviorId: KEY_PRESS, param1: KC_LCTRL },
+      { behaviorId: NONE, param1: 0 },
+    ],
+    1: [{ behaviorId: NONE, param1: 0 }],
+  };
 
 function scalarSetting(
   customSubsystemIndex: number,
@@ -94,37 +110,50 @@ export function createTapDanceSettings(
         range: { min: { int32Value: MAX_TAPS }, max: { int32Value: MAX_TAPS } },
       },
     ]),
+    // Present only on firmware with hold actions; the app reads its presence.
+    scalarSetting(customSubsystemIndex, "max_holds", { int32Value: MAX_TAPS }, [
+      {
+        range: { min: { int32Value: MAX_TAPS }, max: { int32Value: MAX_TAPS } },
+      },
+    ]),
   ];
 
-  for (let slot = 0; slot < SLOT_COUNT; slot++) {
-    const taps = INITIAL_TAPS[slot] ?? [];
-    taps.forEach((tap, index) => {
-      settings.push({
+  const arrayElements = (
+    slot: number,
+    part: "taps" | "holds",
+    items: { behaviorId: number; param1: number }[],
+  ) =>
+    items.map(
+      (item, index): Setting => ({
         customSubsystemIndex,
-        key: `tap_dance${slot}/taps`,
+        key: `tap_dance${slot}/${part}`,
         source: 0,
         hasUnsavedValue: false,
         meta: {
           confidentiality: 2,
           readPermission: 0,
           writePermission: 0,
-          constraints: [{ behaviorId: {} }],
+          constraints: [],
         },
         value: {
           arrayValue: {
             index,
-            size: taps.length,
+            size: items.length,
             value: {
               behaviorValue: {
-                behaviorId: tap.behaviorId,
-                param1: tap.param1,
+                behaviorId: item.behaviorId,
+                param1: item.param1,
                 param2: 0,
               },
             },
           },
         },
-      });
-    });
+      }),
+    );
+
+  for (let slot = 0; slot < SLOT_COUNT; slot++) {
+    settings.push(...arrayElements(slot, "taps", INITIAL_TAPS[slot] ?? []));
+    settings.push(...arrayElements(slot, "holds", INITIAL_HOLDS[slot] ?? []));
 
     settings.push(
       scalarSetting(

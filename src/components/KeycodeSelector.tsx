@@ -86,6 +86,8 @@ function getParamTypeLabel(
       case "mouse_movement":
       case "mouse_scroll":
         return t("Pointer movement");
+      case "tap_dance":
+        return t("Tap Dance");
     }
   }
   // From firmware metadata
@@ -503,6 +505,40 @@ export function KeycodeSelector({
                 className="w-full px-3 py-2 rounded-lg bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] focus:outline-none focus:border-[var(--color-electric)]/50"
               />
             );
+
+          case "tap_dance": {
+            // The firmware says how many slots there are (a range on
+            // param1); the labels are ours. Without the range -- firmware
+            // from before the slot picker existed -- fall back to a number.
+            const range = (
+              paramNumber === 1
+                ? selectedBehaviorInfo.param1Descriptions
+                : selectedBehaviorInfo.param2Descriptions
+            ).find((desc) => desc.range !== undefined)?.range;
+            if (!range) {
+              return (
+                <input
+                  type="number"
+                  min={0}
+                  value={value}
+                  onChange={(e) => onChange(Number(e.target.value))}
+                  className="w-full px-3 py-2 rounded-lg bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] focus:outline-none focus:border-[var(--color-electric)]/50"
+                />
+              );
+            }
+            const count = range.max - range.min + 1;
+            return (
+              <ButtonListSelector
+                options={Array.from({ length: count }, (_, i) => ({
+                  value: range.min + i,
+                  label: t("Tap dance {{index}}", { index: range.min + i }),
+                }))}
+                value={value}
+                onChange={onChange}
+                columns={Math.min(count, 4)}
+              />
+            );
+          }
 
           case "key_and_mouse":
             return (

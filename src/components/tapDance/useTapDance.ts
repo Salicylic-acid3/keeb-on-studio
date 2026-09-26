@@ -46,6 +46,7 @@ export function tapBinding(
 export function slotHasUnsavedValue(slot: TapDanceSlot): boolean {
   return (
     slot.taps.some((tap) => tap.hasUnsavedValue) ||
+    slot.holds.some((hold) => hold.hasUnsavedValue) ||
     Boolean(slot.term?.hasUnsavedValue)
   );
 }
@@ -73,6 +74,12 @@ export interface UseTapDanceReturn {
     slot: TapDanceSlot,
     tapIndex: number,
     binding: BehaviorBinding,
+  ) => Promise<void>;
+  /** What tap count `tapIndex + 1` does when the key stays held. */
+  setHold: (
+    slot: TapDanceSlot,
+    tapIndex: number,
+    binding: BehaviorBinding | null,
   ) => Promise<void>;
   addTap: (slot: TapDanceSlot) => Promise<void>;
   removeTap: (slot: TapDanceSlot) => Promise<void>;
@@ -139,6 +146,10 @@ export function useTapDance(
     [settings],
   );
 
+  // A tap and its hold action are one row: adding or removing a tap does
+  // the same to the holds array, so the two stay the same length and the
+  // firmware can index them together. Firmware without holds has no such
+  // array, and pushing to it would be refused, so it is left alone there.
   const addTap = useCallback(
     async (slot: TapDanceSlot) => {
       if (noneBehaviorId === null) return;
@@ -147,6 +158,9 @@ export function useTapDance(
       };
       setEditedSinceSave(true);
       await settings.pushBackArrayElement(slot.tapsRef, empty);
+      if (slot.holdsSupported && slot.holds.length <= slot.taps.length) {
+        await settings.pushBackArrayElement(slot.holdsRef, empty);
+      }
     },
     [settings, noneBehaviorId],
   );
@@ -155,8 +169,67 @@ export function useTapDance(
     async (slot: TapDanceSlot) => {
       setEditedSinceSave(true);
       await settings.popBackArrayElement(slot.tapsRef);
+      if (slot.holdsSupported && slot.holds.length >= slot.taps.length) {
+        await settings.popBackArrayElement(slot.holdsRef);
+      }
     },
     [settings],
+  );
+
+  const setHold = useCallback(
+    async (
+      slot: TapDanceSlot,
+      tapIndex: number,
+      binding: BehaviorBinding | null,
+    ) => {
+      // "No hold action" is spelled &none, which the firmware reads as
+      // absent and falls back to holding the tap binding.
+      const value = binding ?? {
+        behaviorId: noneBehaviorId ?? 0,
+        param1: 0,
+        param2: 0,
+      };
+      const write = (setting: Setting, index: number, size: number) =>
+        settings.writeSettingToMemory(setting, {
+          arrayValue: {
+            index,
+            size,
+            value: {
+              behaviorValue: {
+                behaviorId: value.behaviorId,
+                param1: value.param1,
+                param2: value.param2,
+              },
+            },
+          },
+        });
+      setEditedSinceSave(true);
+      const existing = slot.holds[tapIndex];
+      if (existing) {
+        await write(
+          existing,
+          existing.value?.arrayValue?.index ?? tapIndex,
+          slot.holds.length,
+        );
+        return;
+      }
+      // Holds shorter than taps (a slot filled before holds existed): grow
+      // the array up to this row, then the listing will carry the rest.
+      if (noneBehaviorId === null) return;
+      for (let i = slot.holds.length; i <= tapIndex; i++) {
+        await settings.pushBackArrayElement(slot.holdsRef, {
+          behaviorValue:
+            i === tapIndex
+              ? {
+                  behaviorId: value.behaviorId,
+                  param1: value.param1,
+                  param2: value.param2,
+                }
+              : { behaviorId: noneBehaviorId, param1: 0, param2: 0 },
+        });
+      }
+    },
+    [settings, noneBehaviorId],
   );
 
   const setTerm = useCallback(
@@ -199,6 +272,7 @@ export function useTapDance(
     isUnset,
     hasUnsavedChanges,
     setTap,
+    setHold,
     addTap,
     removeTap,
     setTerm,

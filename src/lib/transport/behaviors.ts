@@ -474,4 +474,24 @@ export const BEHAVIORS = [
       },
     ],
   },
+  {
+    // zmk-feature-runtime-tap-dance's &rtd, with the slot range the firmware
+    // publishes, so the demo keymap can put a tap dance on a key.
+    id: 46,
+    displayName: "Tap Dance",
+    metadata: [
+      {
+        param1: [
+          {
+            name: "Tap dance",
+            range: {
+              min: 0,
+              max: 3,
+            },
+          },
+        ],
+        param2: [],
+      },
+    ],
+  },
 ].sort((a, b) => a.id - b.id);

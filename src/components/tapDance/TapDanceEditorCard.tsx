@@ -9,6 +9,7 @@ import { IconMinus, IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
 import { KeycodeSelector } from "../KeycodeSelector";
 import { StatusDot } from "../EditStatusIndicator";
+import { InfoTip } from "../InfoTip";
 import { useLanguage } from "../../hooks/useLanguage";
 import { formatBehaviorBinding } from "../../lib/behaviorMetadata";
 import type { KeyboardLayoutType } from "../../lib/keyboardLayouts";
@@ -41,7 +42,11 @@ export function TapDanceEditorCard({
   disabled = false,
 }: TapDanceEditorCardProps) {
   const { t } = useLanguage();
-  const [editingTap, setEditingTap] = useState<number | null>(null);
+  // Which cell the picker is open for: a tap, or that tap's hold action.
+  const [editing, setEditing] = useState<{
+    tapIndex: number;
+    kind: "tap" | "hold";
+  } | null>(null);
 
   // The same label the keymap puts on a key. The behavior name alone is not
   // enough to tell taps apart: two &kp taps both read "Key Press", so a dance
@@ -111,37 +116,72 @@ export function TapDanceEditorCard({
           )}
         </p>
       ) : (
-        <ul className="space-y-2 mb-4">
-          {slot.taps.map((tap, tapIndex) => {
-            const binding = tapBinding(tap);
-            const name = tapLabel(binding);
-            return (
-              <li
-                key={tap.value?.arrayValue?.index ?? tapIndex}
-                className="flex items-center gap-3"
-              >
-                <span className="w-20 shrink-0 text-xs text-[var(--color-text-muted)]">
-                  {t("{{count}} taps", { count: tapIndex + 1 })}
-                </span>
-                <button
-                  className="flex-1 min-w-0 px-3 py-2 rounded-lg bg-[var(--color-bg)] border border-[var(--color-border)] hover:border-[var(--color-electric)]/50 text-left transition-colors disabled:opacity-40"
-                  disabled={disabled}
-                  onClick={() => setEditingTap(tapIndex)}
+        <div className="mb-4">
+          {slot.holdsSupported && (
+            <div className="flex items-center gap-3 mb-1 text-[11px] text-[var(--color-text-muted)]">
+              <span className="w-20 shrink-0" />
+              <span className="flex-1">{t("Tap")}</span>
+              <span className="flex-1 flex items-center gap-1">
+                {t("Then hold")}
+                <InfoTip
+                  text={t(
+                    "What the key does if it is still held down after this many taps. Leave it unset and the tap action is held instead.",
+                  )}
+                />
+              </span>
+            </div>
+          )}
+          <ul className="space-y-2">
+            {slot.taps.map((tap, tapIndex) => {
+              const binding = tapBinding(tap);
+              const name = tapLabel(binding);
+              const holdBinding = tapBinding(slot.holds[tapIndex]);
+              const holdName = tapLabel(holdBinding);
+              return (
+                <li
+                  key={tap.value?.arrayValue?.index ?? tapIndex}
+                  className="flex items-center gap-3"
                 >
-                  <span
-                    className={`block text-sm truncate ${
-                      name
-                        ? "text-[var(--color-text)]"
-                        : "text-[var(--color-text-muted)]"
-                    }`}
-                  >
-                    {name || t("Not set — click to choose")}
+                  <span className="w-20 shrink-0 text-xs text-[var(--color-text-muted)]">
+                    {t("{{count}} taps", { count: tapIndex + 1 })}
                   </span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+                  <button
+                    className="flex-1 min-w-0 px-3 py-2 rounded-lg bg-[var(--color-bg)] border border-[var(--color-border)] hover:border-[var(--color-electric)]/50 text-left transition-colors disabled:opacity-40"
+                    disabled={disabled}
+                    onClick={() => setEditing({ tapIndex, kind: "tap" })}
+                  >
+                    <span
+                      className={`block text-sm truncate ${
+                        name
+                          ? "text-[var(--color-text)]"
+                          : "text-[var(--color-text-muted)]"
+                      }`}
+                    >
+                      {name || t("Not set — click to choose")}
+                    </span>
+                  </button>
+                  {slot.holdsSupported && (
+                    <button
+                      className="flex-1 min-w-0 px-3 py-2 rounded-lg bg-[var(--color-bg)] border border-dashed border-[var(--color-border)] hover:border-[var(--color-electric)]/50 text-left transition-colors disabled:opacity-40"
+                      disabled={disabled}
+                      onClick={() => setEditing({ tapIndex, kind: "hold" })}
+                    >
+                      <span
+                        className={`block text-sm truncate ${
+                          holdName
+                            ? "text-[var(--color-text)]"
+                            : "text-[var(--color-text-muted)]"
+                        }`}
+                      >
+                        {holdName || t("Same as tap")}
+                      </span>
+                    </button>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       )}
 
       <div className="flex items-center gap-2 flex-wrap">
@@ -175,16 +215,31 @@ export function TapDanceEditorCard({
       {/* The same picker the keymap uses, so a tap is chosen exactly the way
           a key is. */}
       <KeycodeSelector
-        open={editingTap !== null}
-        onClose={() => setEditingTap(null)}
+        open={editing !== null}
+        onClose={() => setEditing(null)}
         onSelect={(binding) => {
-          if (editingTap !== null) {
-            void tapDance.setTap(slot, editingTap, binding);
+          if (editing) {
+            if (editing.kind === "tap") {
+              void tapDance.setTap(slot, editing.tapIndex, binding);
+            } else {
+              // Choosing None clears the hold: the tap action is held again.
+              void tapDance.setHold(
+                slot,
+                editing.tapIndex,
+                tapDance.isUnset(binding) ? null : binding,
+              );
+            }
           }
-          setEditingTap(null);
+          setEditing(null);
         }}
         currentBinding={
-          editingTap !== null ? tapBinding(slot.taps[editingTap]) : null
+          editing
+            ? tapBinding(
+                editing.kind === "tap"
+                  ? slot.taps[editing.tapIndex]
+                  : slot.holds[editing.tapIndex],
+              )
+            : null
         }
         behaviors={behaviors}
         layers={layers}

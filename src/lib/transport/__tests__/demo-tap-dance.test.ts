@@ -48,7 +48,9 @@ function listTapDance(handler: CustomSettingsHandler): Promise<Setting[]> {
       },
     }),
   );
-  return new Promise((resolve) => setTimeout(() => resolve(listed), 250));
+  // The demo emits one row every 25 ms; every slot's term, taps and holds plus
+  // the two capacities is a dozen rows.
+  return new Promise((resolve) => setTimeout(() => resolve(listed), 600));
 }
 
 function tapsRef(slot: number) {

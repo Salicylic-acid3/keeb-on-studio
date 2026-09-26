@@ -53,7 +53,8 @@ export type ParamType =
   | "mouse_keycode" // Mouse keycode (LCK, RCLK, ...)
   | "key_and_mouse" // A keycode in param1 and a mouse keycode in param2, picked together
   | "mouse_movement" // Mouse movement (X/Y deltas)
-  | "mouse_scroll"; // Mouse scroll (vertical/horizontal)
+  | "mouse_scroll" // Mouse scroll (vertical/horizontal)
+  | "tap_dance"; // Runtime tap dance slot index
 
 /**
  * Parameter-dependent operation mapping
@@ -421,7 +422,20 @@ const BEHAVIOR_METADATA_BASE: BehaviorMetadata[] = [
     },
     description: "A sticky layer stays pressed until another key is pressed",
   },
-  // Tap Dance does not have pre-defined behavior
+  {
+    // zmk-feature-runtime-tap-dance's &rtd: one behavior, the slot index as
+    // its parameter. The firmware publishes the slot range; this only names
+    // the values, since "Tap dance 2" means more than "2".
+    category: "miscellaneous",
+    displayNameVariants: ["Tap Dance", "rtd", "runtime_tap_dance", "tap_dance"],
+    shortCode: "TD",
+    param1Type: "tap_dance",
+    getDisplayText: (binding) => `TD ${binding.param1}`,
+    formatParam: (param1, _param2, paramNumber) =>
+      paramNumber === 1 ? `Tap dance ${param1}` : "",
+    description: "Runs a different action for one, two or three taps",
+    param1Description: "Which tap dance slot",
+  },
   {
     category: "keypress",
     displayNameVariants: ["Caps Word", "caps_word"],

@@ -27,6 +27,11 @@
             "zh": "点击舞：与宏和组合键一样，左侧列表、右侧编辑，由标签页的保存按钮保存。添加和设置点击现在能真正写入键盘——此前固件拒绝了所有写入"
           },
           {
+            "en": "Tap dance: a \"then hold\" action per tap count — tap for Escape, hold for Control, double-tap-and-hold for something else (firmware from zmk-feature-runtime-tap-dance with hold actions)",
+            "ja": "タップダンス: タップ回数ごとに「そのままホールド」の動作を設定可能に。1回タップは Escape、押しっぱなしは Control、2回タップしてホールドは別の動作、のように（ホールド対応の zmk-feature-runtime-tap-dance で作ったファームウェアが必要）",
+            "zh": "点击舞：每个点击次数都可设置“随后按住”动作——点一次 Escape、按住 Control、点两次后按住执行其他动作（需要带按住动作的 zmk-feature-runtime-tap-dance 固件）"
+          },
+          {
             "en": "Trackpad: a \"held while a finger is on a pad\" gesture, which can hold a key and a mouse button together (Shift + middle click to pan), follows the layer and skips the default layer",
             "ja": "トラックパッド: 「指が乗っている間ホールド」ジェスチャー。キーとマウスボタンを同時に押しっぱなしにでき（Shift＋中クリックでパン）、レイヤーに追従し、デフォルトレイヤーでは効きません",
             "zh": "触控板：新增“手指停留时按住”手势，可同时按住按键和鼠标按钮（Shift + 中键平移），跟随层切换，并在默认层不生效"
@@ -53,6 +58,21 @@
           }
         ],
         "minor": [
+          {
+            "en": "Keymap: the Tap Dance behavior offers every slot (Tap dance 0–3), not only slot 0 (needs the same firmware)",
+            "ja": "キーマップ: タップダンスのビヘイビアで 0 だけでなく全スロット（タップダンス 0〜3）を選べます（同じファームウェアが必要）",
+            "zh": "键位图：点击舞行为可选择所有槽位（点击舞 0–3），不再只有 0（需要同一固件）"
+          },
+          {
+            "en": "Connection: a connection's default layer is chosen from \"Follow OS detection\", Base and Alt Base only; \"Not set\" and the momentary layers are gone from the list",
+            "ja": "接続: 各接続先のデフォルトレイヤーは「OS検出に従う」「Base」「Alt Base」からだけ選ぶようにしました。「未設定」と一時的なレイヤーは一覧から外しました",
+            "zh": "连接：各连接目标的默认层只能从“跟随系统检测”、Base、Alt Base 中选择；列表中不再有“未设置”和临时层"
+          },
+          {
+            "en": "The Home and Firmware tabs are gone from the connected app: both live on the top screen now, where they are read before connecting",
+            "ja": "接続後の画面からホームタブとファームウェアタブを外しました。どちらも接続前のトップ画面にあります",
+            "zh": "连接后的界面移除了首页和固件标签页：两者现在都在连接前的首页上"
+          },
           {
             "en": "Gallery in demo mode shows only the keymaps made for the keyboard on screen",
             "ja": "デモモードのギャラリーは、表示中のキーボード向けのキーマップだけを出します",
@@ -90,6 +110,11 @@
           }
         ],
         "patch": [
+          {
+            "en": "The Subsystems tab looks the same in demo mode as with a keyboard: the demo-only toggle panel is gone, and the demo keyboard advertises what ErgoTrack does",
+            "ja": "サブシステムタブがデモモードとキーボード接続時で同じ見た目に。デモ専用の切り替えパネルを外し、デモのキーボードは ErgoTrack と同じサブシステムを持つようにしました",
+            "zh": "子系统标签页在演示模式和连接键盘时外观一致：移除了仅演示模式的切换面板，演示键盘的子系统与 ErgoTrack 相同"
+          },
           {
             "en": "Consumer key labels no longer collide with same-numbered keyboard keys (Mute showed as LAlt)",
             "ja": "Consumer キーのラベルが同じ番号のキーボードキーと混ざらなくなりました（Mute が LAlt と出ていた）",

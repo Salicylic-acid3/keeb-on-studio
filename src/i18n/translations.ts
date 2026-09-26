@@ -9,6 +9,13 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  "Then hold": "そのままホールド",
+  "Same as tap": "タップと同じ",
+  "What the key does if it is still held down after this many taps. Leave it unset and the tap action is held instead.":
+    "この回数タップしたあと、キーを押したままにしたときの動作です。未設定なら、タップの動作を押しっぱなしにします。",
+  "Runs a different action for one, two or three taps":
+    "1回・2回・3回のタップで別々の動作をします",
+  "Which tap dance slot": "どのタップダンスか",
   "What is Tap Dance?": "タップダンスとは？",
   "A tap dance key does something different depending on how many times you tap it in a row.":
     "タップダンスのキーは、続けて何回タップしたかで違う動作をします。",
@@ -1802,6 +1809,13 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
+  "Then hold": "随后按住",
+  "Same as tap": "与点击相同",
+  "What the key does if it is still held down after this many taps. Leave it unset and the tap action is held instead.":
+    "点击这么多次之后仍按住按键时执行的动作。留空则改为按住点击动作。",
+  "Runs a different action for one, two or three taps":
+    "点击一次、两次或三次分别执行不同的动作",
+  "Which tap dance slot": "使用哪个点击舞槽位",
   "What is Tap Dance?": "什么是点击舞？",
   "A tap dance key does something different depending on how many times you tap it in a row.":
     "点击舞按键会根据连续点击的次数执行不同的动作。",

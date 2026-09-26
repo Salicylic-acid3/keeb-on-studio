@@ -23,10 +23,15 @@ import type { Setting } from "../../proto/cormoran/zmk/custom_settings/custom_se
 export const TAP_DANCE_SUBSYSTEM_ID = "keebon__runtime_tap_dance";
 
 /** `tap_dance3/taps` -> slot 3, part "taps". */
-const KEY_PATTERN = /^tap_dance(\d+)\/(taps|term)$/;
+const KEY_PATTERN = /^tap_dance(\d+)\/(taps|holds|term)$/;
 
 /** The module-wide capacity setting, shared by every slot. */
 const MAX_TAPS_KEY = "max_taps";
+/**
+ * Published by firmware that has hold actions. Its presence is the only way
+ * to tell: a holds array with nothing in it is not listed at all.
+ */
+const MAX_HOLDS_KEY = "max_holds";
 
 /** What it takes to name a slot's taps array, listed or not. */
 export interface TapsRef {
@@ -41,6 +46,14 @@ export interface TapDanceSlot {
   taps: Setting[];
   /** How to name the taps array — valid even when it holds nothing. */
   tapsRef: TapsRef;
+  /**
+   * What each tap count does when the key is still held once the dance is
+   * decided; parallel to `taps`. Empty on firmware without hold actions.
+   */
+  holds: Setting[];
+  holdsRef: TapsRef;
+  /** False on firmware from before hold actions existed. */
+  holdsSupported: boolean;
   term: Setting | null;
   /** Capacity, or 0 when the firmware did not say. */
   maxTaps: number;
@@ -56,6 +69,7 @@ export interface TapDanceSlot {
 export function groupIntoSlots(settings: Setting[]): TapDanceSlot[] {
   const slots = new Map<number, TapDanceSlot>();
   let maxTaps = 0;
+  let holdsSupported = false;
 
   const slotFor = (index: number, from: Setting): TapDanceSlot => {
     let slot = slots.get(index);
@@ -71,6 +85,13 @@ export function groupIntoSlots(settings: Setting[]): TapDanceSlot[] {
           key: `tap_dance${index}/taps`,
           source: from.source,
         },
+        holds: [],
+        holdsRef: {
+          customSubsystemIndex: from.customSubsystemIndex,
+          key: `tap_dance${index}/holds`,
+          source: from.source,
+        },
+        holdsSupported: false,
         term: null,
         maxTaps: 0,
       };
@@ -84,6 +105,10 @@ export function groupIntoSlots(settings: Setting[]): TapDanceSlot[] {
       maxTaps = Math.max(maxTaps, setting.value?.int32Value ?? 0);
       continue;
     }
+    if (setting.key === MAX_HOLDS_KEY) {
+      holdsSupported = true;
+      continue;
+    }
 
     const match = KEY_PATTERN.exec(setting.key ?? "");
     if (!match) continue;
@@ -95,16 +120,17 @@ export function groupIntoSlots(settings: Setting[]): TapDanceSlot[] {
     }
 
     if (setting.value?.arrayValue) {
-      slot.taps.push(setting);
+      (match[2] === "holds" ? slot.holds : slot.taps).push(setting);
     }
   }
 
+  const byIndex = (a: Setting, b: Setting) =>
+    (a.value?.arrayValue?.index ?? 0) - (b.value?.arrayValue?.index ?? 0);
   for (const slot of slots.values()) {
     slot.maxTaps = maxTaps;
-    slot.taps.sort(
-      (a, b) =>
-        (a.value?.arrayValue?.index ?? 0) - (b.value?.arrayValue?.index ?? 0),
-    );
+    slot.holdsSupported = holdsSupported;
+    slot.taps.sort(byIndex);
+    slot.holds.sort(byIndex);
   }
 
   return [...slots.values()].sort((a, b) => a.index - b.index);
