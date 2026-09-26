@@ -9,6 +9,7 @@ import type { ReactNode } from "react";
 import KeebOnLogo from "../assets/keebon-logo.svg?react";
 import { useLanguage } from "../hooks/useLanguage";
 import { LanguageToggle } from "./LanguageToggle";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function StandaloneFrame({
   onBack,
@@ -45,6 +46,7 @@ export function StandaloneFrame({
               <span className="hidden sm:inline">{t("Back")}</span>
             </button>
             <LanguageToggle />
+            <ThemeToggle />
           </div>
         </div>
       </header>

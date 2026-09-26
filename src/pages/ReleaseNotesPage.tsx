@@ -3,6 +3,7 @@ import { IconArrowLeft, IconSparkles, IconTag } from "@tabler/icons-react";
 import KeebOnLogo from "../assets/keebon-logo.svg?react";
 import { useLanguage } from "../hooks/useLanguage";
 import { LanguageToggle } from "../components/LanguageToggle";
+import { ThemeToggle } from "../components/ThemeToggle";
 import {
   CHANGE_CATEGORIES,
   getReleases,
@@ -218,6 +219,7 @@ export function ReleaseNotesPage({ onBack }: { onBack: () => void }) {
               <span className="hidden sm:inline">{t("Back")}</span>
             </button>
             <LanguageToggle />
+            <ThemeToggle />
           </div>
         </div>
       </header>

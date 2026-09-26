@@ -101,20 +101,12 @@ export function SplashGuide({
                   </span>
                 </span>
               )}
-              <p className="mt-0.5 text-xs text-[var(--color-text-muted)]">
-                {t(article.description)}
-              </p>
             </li>
           ))}
           <li className="text-sm">
             <button onClick={onShowAbout} className={linkClass}>
               {t("Supported keyboards and Q&A")}
             </button>
-            <p className="mt-0.5 text-xs text-[var(--color-text-muted)]">
-              {t(
-                "Which keyboards this app drives, what each tab does, and the questions people ask.",
-              )}
-            </p>
           </li>
         </ul>
       </Card>

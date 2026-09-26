@@ -10,6 +10,7 @@ import { ConnectionNoticeDialog } from "./ConnectionNoticeDialog";
 import { hasAcceptedNotice } from "../lib/connectionNoticeStorage";
 import { BLE_CONNECTION_ENABLED } from "../lib/connectionMethods";
 import { LanguageToggle } from "./LanguageToggle";
+import { ThemeToggle } from "./ThemeToggle";
 import { useLanguage } from "../hooks/useLanguage";
 import { getCurrentVersion } from "../i18n/releaseNotes";
 import { KikkoField } from "./brand/KikkoField";
@@ -182,8 +183,9 @@ export function SplashScreen({
       <div className="pointer-events-none fixed inset-0">
         <KikkoField />
       </div>
-      <div className="fixed right-6 top-6 z-20">
+      <div className="fixed right-6 top-6 z-20 flex items-center gap-3">
         <LanguageToggle />
+        <ThemeToggle />
       </div>
       <div className="relative flex min-h-full flex-col items-center px-6 pb-8 pt-16">
         {/* The card is the shop entrance: noren across the top, mark below. */}

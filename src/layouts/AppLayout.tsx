@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
-import { IconSun, IconMoon, IconPlugConnectedX } from "@tabler/icons-react";
+import { IconPlugConnectedX } from "@tabler/icons-react";
 import KeebOnLogo from "../assets/keebon-logo.svg?react";
-import { useTheme } from "../hooks/useTheme";
 import { useLanguage } from "../hooks/useLanguage";
 import type { ConnectionMethod } from "../components/DeviceConnection";
 import { LanguageToggle } from "../components/LanguageToggle";
+import { ThemeToggle } from "../components/ThemeToggle";
 import { BUILD_LABEL } from "../lib/viteEnv";
 
 interface AppLayoutProps {
@@ -24,7 +24,6 @@ export function AppLayout({
   onDisconnect,
   isConnecting,
 }: AppLayoutProps) {
-  const { theme, toggleTheme } = useTheme();
   const { t } = useLanguage();
 
   return (
@@ -87,18 +86,7 @@ export function AppLayout({
             </button>
           )}
           <LanguageToggle />
-          {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            className="theme-toggle"
-            aria-label={
-              theme === "dark"
-                ? t("Switch to light mode")
-                : t("Switch to dark mode")
-            }
-          >
-            {theme === "dark" ? <IconSun size={18} /> : <IconMoon size={18} />}
-          </button>
+          <ThemeToggle />
         </div>
       </header>
 

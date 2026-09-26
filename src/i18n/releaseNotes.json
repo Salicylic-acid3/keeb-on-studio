@@ -5,8 +5,25 @@
       "date": null,
       "changes": {
         "major": [],
-        "minor": [],
-        "patch": []
+        "minor": [
+          {
+            "en": "Top screen: the Keeb-On! Studio manual and a keymap guide for 30% keyboards are linked under \"Learn how to use it\"; the one-line descriptions under each link are gone",
+            "ja": "トップ画面: 「使い方を知る」に Keeb-On! Studio の使い方記事と「30%サイズキーボードのキーマップ解説」へのリンクを追加。各リンクの下の短い説明は外しました",
+            "zh": "首页：在“了解用法”中加入 Keeb-On! Studio 使用说明和 30% 尺寸键盘键位图解说的链接；去掉了各链接下方的简短说明"
+          },
+          {
+            "en": "The light/dark switch is on every page, including the top screen, the downloads page and the release notes",
+            "ja": "ライト／ダークの切り替えボタンを全ページに。トップ画面、ダウンロードページ、リリースノートでも切り替えられます",
+            "zh": "浅色／深色切换按钮出现在所有页面，包括首页、下载页和发布说明"
+          }
+        ],
+        "patch": [
+          {
+            "en": "Firmware: the flashing steps say how to reach the bootloader once the board is built in (System → Bootloader on a key), not only by double-tapping the reset switch",
+            "ja": "ファームウェア: 書き込み手順に、組み込み後にリセットスイッチが押せない場合の方法（キーに「システム」→「Bootloader」を設定）を追記",
+            "zh": "固件：刷写步骤补充了装入键盘后无法按复位开关时进入引导程序的方法（给按键设置“系统”→“Bootloader”）"
+          }
+        ]
       }
     },
     {

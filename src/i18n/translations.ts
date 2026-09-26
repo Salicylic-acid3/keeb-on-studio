@@ -9,6 +9,9 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  "Before the board is built into the keyboard, double-tap the reset switch on the usu-aoba. Once it is built in and the reset switch cannot be reached, temporarily put System → Bootloader on a key in the keymap and press it. Either way, the keyboard then appears as a USB drive.":
+    "キーボードに組み込む前なら usu-aoba のリセットスイッチをすばやく2回押します。キーボードに組み込んでリセットスイッチが押せない場合は、キーマップで一時的にキーに「システム」→「Bootloader」を設定して押してください。以上の操作を行うと USB ドライブとして認識されます。",
+  "A keymap guide for 30% keyboards": "30%サイズキーボードのキーマップ解説",
   "Then hold": "そのままホールド",
   "Same as tap": "タップと同じ",
   "What the key does if it is still held down after this many taps. Leave it unset and the tap action is held instead.":
@@ -52,15 +55,9 @@ const ja: Record<string, string> = {
     "使い方について意見や質問はこちら",
   "Learn how to use it": "使い方を知る",
   "How to use Keeb-On! Studio": "Keeb-On! Studio の使い方",
-  "Connecting, editing the keymap, saving, and what each tab is for.":
-    "接続のしかた、キーマップの編集と保存、各タブで何ができるか。",
   "How layers work": "レイヤーの解説",
-  "What a layer is, why a small keyboard needs them, and how to hold and switch them.":
-    "レイヤーとは何か、小さいキーボードになぜ必要か、押している間の切り替えと固定の使い分け。",
   "Coming soon": "準備中",
   "Supported keyboards and Q&A": "対応キーボードと Q&A",
-  "Which keyboards this app drives, what each tab does, and the questions people ask.":
-    "このアプリが対応するキーボード、各タブでできること、よくある質問。",
   "Set keys one after another": "キーを続けて設定",
   "Setting: {{key}}": "設定中: {{key}}",
   "Pick a key on the board to start.": "盤面のキーを選ぶと始まります。",
@@ -514,8 +511,6 @@ const ja: Record<string, string> = {
   "How to flash": "書き込み方法",
   "Download the .uf2 file for your keyboard below.":
     "下の一覧から、お使いのキーボードの .uf2 ファイルをダウンロードします。",
-  "Connect the keyboard over USB and double-tap its reset switch. It restarts into the bootloader and appears as a USB drive.":
-    "キーボードを USB で接続し、リセットスイッチをすばやく2回押します。ブートローダーで起動し、USB ドライブとして認識されます。",
   "Copy the .uf2 file onto that drive. The keyboard writes it and restarts on its own, and the drive disappears — that is normal, not an error.":
     "そのドライブに .uf2 ファイルをコピーします。書き込みが終わるとキーボードが自動で再起動し、ドライブは消えます。これは正常な動作でエラーではありません。",
   "On a split keyboard, repeat for the other half: each half runs its own firmware.":
@@ -1809,6 +1804,9 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
+  "Before the board is built into the keyboard, double-tap the reset switch on the usu-aoba. Once it is built in and the reset switch cannot be reached, temporarily put System → Bootloader on a key in the keymap and press it. Either way, the keyboard then appears as a USB drive.":
+    "装入键盘之前，快速按两次 usu-aoba 上的复位开关。装入键盘后无法按到复位开关时，请在键位图中临时给某个键设置“系统”→“Bootloader”并按下它。完成以上操作后，键盘会被识别为 USB 驱动器。",
+  "A keymap guide for 30% keyboards": "30% 尺寸键盘的键位图解说",
   "Then hold": "随后按住",
   "Same as tap": "与点击相同",
   "What the key does if it is still held down after this many taps. Leave it unset and the tap action is held instead.":
@@ -1852,15 +1850,9 @@ const zh: Record<string, string> = {
     "关于用法的意见和问题请到这里",
   "Learn how to use it": "了解用法",
   "How to use Keeb-On! Studio": "Keeb-On! Studio 使用方法",
-  "Connecting, editing the keymap, saving, and what each tab is for.":
-    "如何连接、编辑并保存键位图，以及各个标签页的用途。",
   "How layers work": "层的原理",
-  "What a layer is, why a small keyboard needs them, and how to hold and switch them.":
-    "层是什么、小键盘为什么需要它、按住切换与锁定切换的区别。",
   "Coming soon": "即将推出",
   "Supported keyboards and Q&A": "支持的键盘与问答",
-  "Which keyboards this app drives, what each tab does, and the questions people ask.":
-    "本应用支持哪些键盘、各标签页能做什么，以及常见问题。",
   "Set keys one after another": "连续设置按键",
   "Setting: {{key}}": "正在设置：{{key}}",
   "Pick a key on the board to start.": "先在键盘图上选一个键。",
@@ -2292,8 +2284,6 @@ const zh: Record<string, string> = {
   "How to flash": "刷写方法",
   "Download the .uf2 file for your keyboard below.":
     "从下面的列表下载对应键盘的 .uf2 文件。",
-  "Connect the keyboard over USB and double-tap its reset switch. It restarts into the bootloader and appears as a USB drive.":
-    "用 USB 连接键盘，然后快速按两次复位开关。键盘会进入引导程序并显示为 USB 驱动器。",
   "Copy the .uf2 file onto that drive. The keyboard writes it and restarts on its own, and the drive disappears — that is normal, not an error.":
     "把 .uf2 文件复制到该驱动器。写入完成后键盘会自动重启，驱动器随之消失，这是正常现象而非错误。",
   "On a split keyboard, repeat for the other half: each half runs its own firmware.":

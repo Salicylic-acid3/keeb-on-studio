@@ -15,7 +15,7 @@ export function FlashInstructions({ className = "" }: { className?: string }) {
         <li>{t("Download the .uf2 file for your keyboard below.")}</li>
         <li>
           {t(
-            "Connect the keyboard over USB and double-tap its reset switch. It restarts into the bootloader and appears as a USB drive.",
+            "Before the board is built into the keyboard, double-tap the reset switch on the usu-aoba. Once it is built in and the reset switch cannot be reached, temporarily put System → Bootloader on a key in the keymap and press it. Either way, the keyboard then appears as a USB drive.",
           )}
         </li>
         <li>
