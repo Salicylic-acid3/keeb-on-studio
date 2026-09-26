@@ -5,6 +5,15 @@
       "date": null,
       "changes": {
         "major": [],
+        "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.09.26.2",
+      "date": "2026-09-26",
+      "changes": {
+        "major": [],
         "minor": [
           {
             "en": "Top screen: the Keeb-On! Studio manual and a keymap guide for 30% keyboards are linked under \"Learn how to use it\"; the one-line descriptions under each link are gone",
