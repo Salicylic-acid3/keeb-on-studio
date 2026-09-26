@@ -4,6 +4,22 @@
       "version": "upcoming",
       "date": null,
       "changes": {
+        "major": [],
+        "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.09.26.0",
+      "date": "2026-09-26",
+      "summary": {
+        "lead": {
+          "en": "Everything shipped since 2026.09.11 without a version of its own, plus a tap dance editor that works on the keyboard. Tap dance needs firmware built from zmk-feature-runtime-tap-dance 5fdf0a7 or later.",
+          "ja": "2026.09.11 以降にバージョンを付けずに配信していた変更のまとめと、実機で動くタップダンスの編集画面。タップダンスは zmk-feature-runtime-tap-dance 5fdf0a7 以降で作ったファームウェアが必要です。",
+          "zh": "汇总自 2026.09.11 以来未单独标注版本的所有更新，以及能在实机上使用的点击舞编辑器。点击舞需要基于 zmk-feature-runtime-tap-dance 5fdf0a7 或更高版本构建的固件。"
+        }
+      },
+      "changes": {
         "major": [
           {
             "en": "Tap dance: a list on the left and an editor on the right, like macros and combos, saved by the tab's Save button. Adding and setting taps now actually reaches the keyboard — the firmware had been refusing every write",
@@ -90,13 +106,6 @@
             "zh": "键盘不再发送的手势不再显示对应行"
           }
         ]
-      },
-      "summary": {
-        "lead": {
-          "en": "Everything shipped since 2026.09.11 without a version of its own, plus a tap dance editor that works on the keyboard. Tap dance needs firmware built from zmk-feature-runtime-tap-dance 5fdf0a7 or later.",
-          "ja": "2026.09.11 以降にバージョンを付けずに配信していた変更のまとめと、実機で動くタップダンスの編集画面。タップダンスは zmk-feature-runtime-tap-dance 5fdf0a7 以降で作ったファームウェアが必要です。",
-          "zh": "汇总自 2026.09.11 以来未单独标注版本的所有更新，以及能在实机上使用的点击舞编辑器。点击舞需要基于 zmk-feature-runtime-tap-dance 5fdf0a7 或更高版本构建的固件。"
-        }
       }
     },
     {
