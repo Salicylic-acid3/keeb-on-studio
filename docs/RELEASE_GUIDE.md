@@ -1,38 +1,60 @@
 # Release & Release Notes Guide
 
-Keeb-On! Studio ships from `main` via a manually triggered release, and every release
-is recorded in the in-app **Release Notes** page
-(`https://studio.dya.cormoran.works/release-notes`).
+Keeb-On! Studio ships from `main` by hand, and every release is recorded in the
+in-app **Release Notes** page (`https://keeb-on.studio/release-notes`), which is
+also where the app gets the version it shows on the top screen.
+
+The rule that makes this work: **a change and its release note are one
+commit.** A patch that changes something a person would notice carries its
+own entry in the `upcoming` section of `src/i18n/releaseNotes.json`. The
+release step then only stamps a version on what is already written.
 
 ## Versioning
 
 Versions are date based: `YYYY.MM.DD.N`, where `N` starts at `0` and increments
-for each additional release on the same day (e.g. `2026.04.01.0`,
-`2026.04.01.1`). The version is decided by the release CI at dispatch time — you
-never set it by hand.
+for each additional release on the same day (e.g. `2026.09.26.0`,
+`2026.09.26.1`). The version is decided by the release script from the date and
+the existing `vYYYY.MM.DD.N` git tags — you never set it by hand.
 
 ## How a release happens
 
-The **Release Keeb-On! Studio** workflow (`.github/workflows/release.yml`) is run
-manually (`workflow_dispatch`). It:
+```
+cd ~/自キ設計_パブリック/keeb-on-studio
+git status --short          # must be clean apart from releaseNotes.json
+npm run release
+git push origin main --tags
+```
 
-1. Runs `node scripts/release.ts`, which resolves the next `YYYY.MM.DD.N` from
-   today's date and existing git tags, then rewrites
-   `src/i18n/releaseNotes.json`: the `upcoming` section becomes that version
-   (dated today) and a fresh empty `upcoming` is prepended.
-2. Commits that change to `main`, tags it `vYYYY.MM.DD.N`, and pushes.
-3. Builds and deploys to Cloudflare Pages.
-4. Creates a GitHub Release whose body links to the matching section of the
-   release notes page (`/release-notes#YYYY.MM.DD.N`).
+`npm run release` is `scripts/release.ts --commit`, then the build, then the
+deploy:
+
+1. **Refuses** if the `upcoming` section is empty (nothing to say means the
+   notes were not written — go write them), or if the working tree has
+   uncommitted changes other than the release notes (they would be deployed
+   without being committed).
+2. Rewrites `src/i18n/releaseNotes.json`: `upcoming` becomes the new version,
+   dated today, and a fresh empty `upcoming` is prepended.
+3. Commits that one file as `Release vYYYY.MM.DD.N` and tags the commit
+   `vYYYY.MM.DD.N`.
+4. `npm run build`, then `npx wrangler deploy --env release`.
+
+The push at the end is yours: the tag is what the next release counts from, so
+it has to reach GitHub.
 
 The version-resolution and JSON-rewrite logic lives in
 `src/lib/releaseVersioning.ts` and is unit-tested
 (`src/lib/__tests__/releaseVersioning.test.ts`).
 
-## Editing release notes in a PR
+To deploy without a release (a hotfix you will fold into the next notes, say)
+the old pair still works: `npm run build && npx wrangler deploy --env release`.
+The top screen then keeps showing the previous version, which is honest.
 
-**When your PR adds or changes something a user would notice, add an entry to
-the `upcoming` section of `src/i18n/releaseNotes.json`.**
+## Writing release notes in a patch
+
+**When a patch adds or changes something a user would notice, it includes an
+entry in the `upcoming` section of `src/i18n/releaseNotes.json`.** Patches
+handed over for `git am` follow this too: the entry is part of the same
+commit.
 
 - The `upcoming` section is the first entry in `releases`, with
   `"version": "upcoming"`. **If it is missing, create it** at the top of
@@ -46,30 +68,30 @@ the `upcoming` section of `src/i18n/releaseNotes.json`.**
   }
   ```
 
-- Add each change as an object under the right category with **both English and
-  Japanese** text:
+- Add each change as an object under the right category, in English,
+  Japanese and Chinese:
 
   ```json
-  { "en": "Short user-facing description.", "ja": "利用者向けの短い説明。" }
+  {
+    "en": "Short user-facing description.",
+    "ja": "利用者向けの短い説明。",
+    "zh": "面向用户的简短说明。"
+  }
   ```
 
 - Optionally reference the pull request(s) with a `pr` field — a single number
-  or an array. It renders as a `#123` link to GitHub on the release notes page:
-
-  ```json
-  { "en": "Added X.", "ja": "X を追加しました。", "pr": 153 }
-  { "en": "Reworked Y.", "ja": "Y を刷新しました。", "pr": [150, 128] }
-  ```
+  or an array. It renders as a `#123` link to GitHub on the release notes page.
 
 - Write from the user's perspective (what changed for them), not the
-  implementation. Keep each entry to one sentence.
+  implementation. Keep each entry to one sentence. When a change only works
+  with newer firmware, say which commit of which repository.
 
 ### Optional release summary
 
 A release can carry an optional `summary` above the categorized changes — a
 `lead` sentence and a few `highlights` — for a human overview of a big release.
-Both are bilingual `{ "en": ..., "ja": ... }`. Add it to the `upcoming` section
-(it carries into the release), and only when it adds value:
+Add it to the `upcoming` section (it carries into the release), and only when
+it adds value:
 
 ```json
 {
@@ -78,16 +100,19 @@ Both are bilingual `{ "en": ..., "ja": ... }`. Add it to the `upcoming` section
   "summary": {
     "lead": {
       "en": "A big update across the board.",
-      "ja": "全体的に大規模にアップデートしました。"
+      "ja": "全体的に大規模にアップデートしました。",
+      "zh": "全面的大幅更新。"
     },
-    "highlights": [{ "en": "Added X.", "ja": "X を追加しました。" }]
+    "highlights": [
+      { "en": "Added X.", "ja": "X を追加しました。", "zh": "新增 X。" }
+    ]
   },
   "changes": { "major": [], "minor": [], "patch": [] }
 }
 ```
 
-Purely internal changes (refactors, test-only changes, CI tweaks, dependency
-bumps with no user-visible effect) do **not** need an entry.
+Purely internal changes (refactors, test-only changes, dependency bumps with no
+user-visible effect) do **not** need an entry.
 
 ## Classifying a change: major / minor / patch
 

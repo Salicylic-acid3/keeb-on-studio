@@ -4,9 +4,99 @@
       "version": "upcoming",
       "date": null,
       "changes": {
-        "major": [],
-        "minor": [],
-        "patch": []
+        "major": [
+          {
+            "en": "Tap dance: a list on the left and an editor on the right, like macros and combos, saved by the tab's Save button. Adding and setting taps now actually reaches the keyboard — the firmware had been refusing every write",
+            "ja": "タップダンス: マクロ・コンボと同じく左に一覧、右に編集。保存はタブの保存ボタンで。タップの追加と設定が実機に届くようになりました（ファームウェアが全部の書き込みを拒否していました）",
+            "zh": "点击舞：与宏和组合键一样，左侧列表、右侧编辑，由标签页的保存按钮保存。添加和设置点击现在能真正写入键盘——此前固件拒绝了所有写入"
+          },
+          {
+            "en": "Trackpad: a \"held while a finger is on a pad\" gesture, which can hold a key and a mouse button together (Shift + middle click to pan), follows the layer and skips the default layer",
+            "ja": "トラックパッド: 「指が乗っている間ホールド」ジェスチャー。キーとマウスボタンを同時に押しっぱなしにでき（Shift＋中クリックでパン）、レイヤーに追従し、デフォルトレイヤーでは効きません",
+            "zh": "触控板：新增“手指停留时按住”手势，可同时按住按键和鼠标按钮（Shift + 中键平移），跟随层切换，并在默认层不生效"
+          },
+          {
+            "en": "Trackpad: the two-finger horizontal swipe is chosen per layer; on layers where it is off the rows are greyed out and it stays a horizontal scroll",
+            "ja": "トラックパッド: 2本指横スワイプをレイヤーごとに選べます。オフのレイヤーでは行がグレーになり、横スクロールのままです",
+            "zh": "触控板：双指横向滑动可按层选择；未启用的层中对应行变灰，保持横向滚动"
+          },
+          {
+            "en": "Trackpad: pointer speed, the sensor's own filter, ripple correction and the swipe thresholds are on the tab, with the rarely-touched ones behind an advanced-settings switch and each half shown separately",
+            "ja": "トラックパッド: ポインタ速度、センサーのフィルタ、リップル補正、スワイプのしきい値をタブで調整可能に。滅多に触らないものは詳細設定スイッチの奥に、左右は別々に表示",
+            "zh": "触控板：指针速度、传感器自带滤波、涟漪校正和滑动阈值都可在标签页调整；很少用到的项放在高级设置开关之后，左右两侧分别显示"
+          },
+          {
+            "en": "Top screen: a guide under the connect buttons — why a custom keyboard is remapped, how to learn the app, a firmware downloads page reachable without connecting, and where to ask on Discord",
+            "ja": "トップ画面: 接続ボタンの下に案内を追加。自作キーボードをリマップする意味、使い方の記事、接続せずに開けるファームウェアのダウンロードページ、Discord での質問先",
+            "zh": "首页：连接按钮下方新增指南——自制键盘为何要重新映射、如何学习本应用、无需连接即可打开的固件下载页，以及在 Discord 提问的入口"
+          },
+          {
+            "en": "Keymap: mouse pointer movement, scrolling and clicks can be put on keys (needs firmware built with CONFIG_ZMK_POINTING; GoFortyMax has it from 2695b3e)",
+            "ja": "キーマップ: マウスポインタの移動・スクロール・クリックをキーに割り当て可能に（CONFIG_ZMK_POINTING を入れたファームウェアが必要。GoFortyMax は 2695b3e 以降）",
+            "zh": "键位图：可把鼠标指针移动、滚动和点击分配到按键（需要启用 CONFIG_ZMK_POINTING 构建的固件；GoFortyMax 自 2695b3e 起支持）"
+          }
+        ],
+        "minor": [
+          {
+            "en": "Gallery in demo mode shows only the keymaps made for the keyboard on screen",
+            "ja": "デモモードのギャラリーは、表示中のキーボード向けのキーマップだけを出します",
+            "zh": "演示模式的画廊只显示为当前键盘制作的键位图"
+          },
+          {
+            "en": "Keymap: with the live key view on, editing a key on another layer no longer jumps back to the keyboard's layer",
+            "ja": "キーマップ: キー入力表示をオンにしたまま別レイヤーのキーを編集しても、キーボードのレイヤーに戻らなくなりました",
+            "zh": "键位图：开启实时按键显示时，在其他层编辑按键不再跳回键盘当前层"
+          },
+          {
+            "en": "Trackpad: a key and a mouse button can be chosen together in the key search; swipe rows say when the keymap needs saving",
+            "ja": "トラックパッド: キー検索でキーとマウスボタンを一緒に選べます。スワイプの行はキーマップの保存が必要なときにそう言います",
+            "zh": "触控板：在按键搜索中可同时选择按键和鼠标按钮；滑动行会提示何时需要保存键位图"
+          },
+          {
+            "en": "Settings: when the keyboard refuses a sleep timeout (firmware without CONFIG_ZMK_SLEEP) the app says so instead of \"Saved\"",
+            "ja": "設定: スリープタイムアウトをキーボードが受け付けなかったとき（CONFIG_ZMK_SLEEP の無いファームウェア）、「保存しました」ではなくそう伝えます",
+            "zh": "设置：当键盘拒绝睡眠超时（固件未启用 CONFIG_ZMK_SLEEP）时，应用会如实提示，而不是显示“已保存”"
+          },
+          {
+            "en": "Troubleshooting: chatter statistics leave out the trackpad's gesture keys; the stack-usage note says it is a devtool-build item rather than a missing module",
+            "ja": "トラブルシューティング: チャタリングの統計からトラックパッドのジェスチャーキーを除外。スタック使用量の注記は「モジュールなし」ではなく開発用ビルド向けの項目だと説明",
+            "zh": "故障排查：抖动统计不再包含触控板手势键；栈使用量说明改为“开发用构建项目”而非“缺少模块”"
+          },
+          {
+            "en": "Keymap: a JIS keyboard is drawn when the OS layout is JIS, and the 81-key ErgoTrack layout is followed",
+            "ja": "キーマップ: OS のレイアウトが JIS のときは JIS 配列で描画。81 キーの ErgoTrack 配列に追従",
+            "zh": "键位图：系统布局为 JIS 时绘制 JIS 键盘，并跟随 81 键的 ErgoTrack 布局"
+          },
+          {
+            "en": "Stack usage is shown in the Devtool window as well, not only on a tab that could crash the keyboard",
+            "ja": "スタック使用量を Devtool ウィンドウにも表示（キーボードを落としかねないタブだけに頼らない）",
+            "zh": "栈使用量也显示在 Devtool 窗口中，而不只在可能让键盘崩溃的标签页上"
+          }
+        ],
+        "patch": [
+          {
+            "en": "Consumer key labels no longer collide with same-numbered keyboard keys (Mute showed as LAlt)",
+            "ja": "Consumer キーのラベルが同じ番号のキーボードキーと混ざらなくなりました（Mute が LAlt と出ていた）",
+            "zh": "Consumer 键标签不再与同编号的键盘键混淆（Mute 曾显示为 LAlt）"
+          },
+          {
+            "en": "Trackpad settings are asked of the keyboard once per open, not twice",
+            "ja": "トラックパッドの設定を開くたびに 2 回問い合わせていたのを 1 回に",
+            "zh": "打开触控板设置时只向键盘查询一次，而不是两次"
+          },
+          {
+            "en": "A gesture the keyboard no longer sends has no row",
+            "ja": "キーボードがもう送らないジェスチャーの行は出しません",
+            "zh": "键盘不再发送的手势不再显示对应行"
+          }
+        ]
+      },
+      "summary": {
+        "lead": {
+          "en": "Everything shipped since 2026.09.11 without a version of its own, plus a tap dance editor that works on the keyboard. Tap dance needs firmware built from zmk-feature-runtime-tap-dance 5fdf0a7 or later.",
+          "ja": "2026.09.11 以降にバージョンを付けずに配信していた変更のまとめと、実機で動くタップダンスの編集画面。タップダンスは zmk-feature-runtime-tap-dance 5fdf0a7 以降で作ったファームウェアが必要です。",
+          "zh": "汇总自 2026.09.11 以来未单独标注版本的所有更新，以及能在实机上使用的点击舞编辑器。点击舞需要基于 zmk-feature-runtime-tap-dance 5fdf0a7 或更高版本构建的固件。"
+        }
       }
     },
     {
