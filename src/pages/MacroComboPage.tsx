@@ -51,12 +51,21 @@ import { macroDoc, comboDoc } from "../i18n/featureDocs";
 import type { Combo } from "../hooks/useRuntimeCombo";
 import type { MacroSummary } from "../proto/cormoran/runtime_macro/runtime_macro";
 import { HexIcon } from "../components/brand/HexIcon";
-import { TapDanceSection } from "../components/tapDance/TapDanceSection";
+import { useTapDance } from "../components/tapDance/useTapDance";
+import { TapDanceListCard } from "../components/tapDance/TapDanceListCard";
+import { TapDanceEditorCard } from "../components/tapDance/TapDanceEditorCard";
+import type { TapDanceSlot } from "../lib/tapDance/slots";
 
 /** What the right column currently shows. `null` renders the placeholder
  * (until the macro auto-select picks the first macro, mirroring the old
  * MacroPage behavior). */
-type RightView = "macro" | "combo" | "macro-settings" | "combo-settings" | null;
+type RightView =
+  | "macro"
+  | "combo"
+  | "macro-settings"
+  | "combo-settings"
+  | "tapdance"
+  | null;
 
 export function MacroComboPage() {
   const { t } = useLanguage();
@@ -65,6 +74,8 @@ export function MacroComboPage() {
   const keymap = useKeymap();
   const runtimeMacro = useRuntimeMacro();
   const runtimeCombo = useRuntimeCombo();
+  const tapDance = useTapDance(keymap.behaviors);
+  const [selectedTapDance, setSelectedTapDance] = useState<number | null>(null);
   // Proactive lock state: show a lock badge in place of Save/Discard when
   // Studio is locked. Editing is guarded by the shared unlock gate below.
   const { locked } = useStudioLockState();
@@ -78,10 +89,14 @@ export function MacroComboPage() {
 
   const macroAvailable = runtimeMacro.isAvailable;
   const comboAvailable = runtimeCombo.isAvailable;
-  const anyAvailable = macroAvailable || comboAvailable;
-  const anyLoading = runtimeMacro.isLoading || runtimeCombo.isLoading;
+  const tapDanceAvailable = tapDance.isAvailable;
+  const anyAvailable = macroAvailable || comboAvailable || tapDanceAvailable;
+  const anyLoading =
+    runtimeMacro.isLoading || runtimeCombo.isLoading || tapDance.isLoading;
   const hasPendingChanges =
-    runtimeMacro.hasUnsavedChanges || runtimeCombo.hasPendingChanges;
+    runtimeMacro.hasUnsavedChanges ||
+    runtimeCombo.hasPendingChanges ||
+    tapDance.hasUnsavedChanges;
 
   // Version history capture point. Every macro/combo edit toggles the hooks'
   // `isLoading` too, so "the tab finished reading the keyboard" can't be read
@@ -114,6 +129,14 @@ export function MacroComboPage() {
     }));
   }, [keymap.keymap?.layers]);
 
+  const selectedTapDanceSlot = useMemo(
+    () =>
+      selectedTapDance === null
+        ? undefined
+        : tapDance.slots.find((slot) => slot.index === selectedTapDance),
+    [selectedTapDance, tapDance.slots],
+  );
+
   // Auto-selecting the first macro (old MacroPage behavior) may only claim the
   // right column while nothing else owns it.
   const onMacroAutoSelected = useCallback(() => {
@@ -121,6 +144,10 @@ export function MacroComboPage() {
   }, []);
   const onComboSelected = useCallback(() => {
     setRightView("combo");
+  }, []);
+  const handleSelectTapDance = useCallback((slot: TapDanceSlot) => {
+    setSelectedTapDance(slot.index);
+    setRightView("tapdance");
   }, []);
 
   const macroEditor = useMacroEditor({
@@ -220,6 +247,7 @@ export function MacroComboPage() {
     await Promise.all([
       macroAvailable ? runtimeMacro.loadMacros() : Promise.resolve(),
       comboAvailable ? runtimeCombo.reload() : Promise.resolve(),
+      tapDanceAvailable ? tapDance.refresh() : Promise.resolve(),
     ]);
     // A completed read is exactly when a new version may be worth keeping.
     await versionHistory.capture();
@@ -228,6 +256,8 @@ export function MacroComboPage() {
     macroAvailable,
     runtimeCombo,
     runtimeMacro,
+    tapDance,
+    tapDanceAvailable,
     versionHistory,
   ]);
 
@@ -239,7 +269,7 @@ export function MacroComboPage() {
     if (
       !confirm(
         t(
-          "Reset every runtime macro and combo to the firmware defaults? Your customizations will be lost.",
+          "Reset every runtime macro, combo and tap dance to the firmware defaults? Your customizations will be lost.",
         ),
       )
     ) {
@@ -257,6 +287,9 @@ export function MacroComboPage() {
           await runtimeCombo.resetCombo(combo.index);
         }
       }
+      if (tapDanceAvailable) {
+        await tapDance.resetToDefault();
+      }
       await handleRefresh();
     } finally {
       setIsResetting(false);
@@ -269,6 +302,8 @@ export function MacroComboPage() {
     runtimeCombo,
     runtimeMacro,
     t,
+    tapDance,
+    tapDanceAvailable,
   ]);
 
   const handleSave = useCallback(async () => {
@@ -293,6 +328,9 @@ export function MacroComboPage() {
           );
         }
       }
+      if (tapDanceAvailable) {
+        await tapDance.save();
+      }
       // What is now on the keyboard is worth keeping as a version.
       await versionHistory.capture();
     } finally {
@@ -307,6 +345,8 @@ export function MacroComboPage() {
     runtimeCombo,
     runtimeMacro,
     t,
+    tapDance,
+    tapDanceAvailable,
     versionHistory,
   ]);
 
@@ -337,6 +377,9 @@ export function MacroComboPage() {
           setRightView((view) => (view === "combo" ? null : view));
         }
       }
+      if (tapDanceAvailable) {
+        await tapDance.discard();
+      }
       // Memory now mirrors what is stored on the keyboard again.
       await versionHistory.capture();
     } finally {
@@ -351,6 +394,8 @@ export function MacroComboPage() {
     runtimeCombo,
     runtimeMacro,
     t,
+    tapDance,
+    tapDanceAvailable,
     versionHistory,
   ]);
 
@@ -359,6 +404,7 @@ export function MacroComboPage() {
     macroEditor.encodedSizeError ||
     macroEditor.stringConversionError ||
     runtimeCombo.error ||
+    tapDance.error ||
     keymap.error;
 
   return (
@@ -417,14 +463,14 @@ export function MacroComboPage() {
                     }
                     resetToDefault={{
                       description: t(
-                        "Puts every macro and combo back to the firmware's compile-time defaults.",
+                        "Puts every macro, combo and tap dance back to the firmware's compile-time defaults.",
                       ),
                       onSelect: () => void handleResetToInitial(),
                       disabled: isResetting || anyLoading,
                     }}
                     discard={{
                       description: t(
-                        "Drops the edits held in keyboard memory and reloads the macros and combos saved on the keyboard.",
+                        "Drops the edits held in keyboard memory and reloads the macros, combos and tap dances saved on the keyboard.",
                       ),
                       onSelect: () => void handleDiscard(),
                       disabled: isDiscarding || !hasPendingChanges,
@@ -720,10 +766,35 @@ export function MacroComboPage() {
                   </div>
                 </section>
               )}
+
+              {/* Tap dance list */}
+              {tapDanceAvailable && (
+                <TapDanceListCard
+                  tapDance={tapDance}
+                  behaviors={keymap.behaviors}
+                  layers={layersForSelector}
+                  keyboardLayout={keyboardLayoutContext.layout}
+                  selectedIndex={
+                    rightView === "tapdance" ? selectedTapDance : null
+                  }
+                  onSelect={handleSelectTapDance}
+                />
+              )}
             </div>
 
             <div className="min-w-0">
-              {rightView === "macro" && macroAvailable ? (
+              {rightView === "tapdance" &&
+              tapDanceAvailable &&
+              selectedTapDanceSlot ? (
+                <TapDanceEditorCard
+                  tapDance={tapDance}
+                  slot={selectedTapDanceSlot}
+                  behaviors={keymap.behaviors}
+                  layers={layersForSelector}
+                  keyboardLayout={keyboardLayoutContext.layout}
+                  disabled={locked}
+                />
+              ) : rightView === "macro" && macroAvailable ? (
                 <MacroEditorCard
                   macro={macroEditor}
                   runtimeMacro={runtimeMacro}
@@ -761,7 +832,7 @@ export function MacroComboPage() {
                       className="mx-auto mb-3 text-[var(--color-electric)]"
                     />
                     <h2 className="text-sm font-medium text-[var(--color-text)]">
-                      {t("Select a macro or combo")}
+                      {t("Select a macro, combo or tap dance")}
                     </h2>
                     <p className="text-sm text-[var(--color-text-muted)] mt-1">
                       {t("Choose an item from the lists on the left.")}
@@ -770,20 +841,6 @@ export function MacroComboPage() {
                 </section>
               )}
             </div>
-          </div>
-        )}
-
-        {/* Tap dance sits with macros and combos because it is the third
-            runtime-editable behavior, not because it is a kind of macro.
-            It renders nothing when the firmware does not have the module. */}
-        {connection.isConnected && (
-          <div className="mt-6">
-            <TapDanceSection
-              behaviors={keymap.behaviors}
-              layers={layersForSelector}
-              keyboardLayout={keyboardLayoutContext.layout}
-              disabled={locked}
-            />
           </div>
         )}
       </div>

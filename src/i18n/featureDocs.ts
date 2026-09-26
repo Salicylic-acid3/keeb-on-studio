@@ -57,6 +57,34 @@ export function comboDoc(t: TranslateFn): DocTipContent {
   };
 }
 
+/** Explains tap dance, shown next to the Tap Dance list header. */
+export function tapDanceDoc(t: TranslateFn): DocTipContent {
+  return {
+    title: t("What is Tap Dance?"),
+    intro: t(
+      "A tap dance key does something different depending on how many times you tap it in a row.",
+    ),
+    sections: [
+      {
+        heading: t("Typical uses"),
+        bullets: [
+          t("One tap for a letter, two taps for the symbol on the same key"),
+          t("Tap once for Escape, twice to lock the screen"),
+        ],
+      },
+      {
+        heading: t("How it works"),
+        bullets: [
+          t(
+            "Each slot lists what one, two and three taps do; taps within the wait time count as one dance",
+          ),
+          t("Put &rtd N on a key in the Keymap tab to use dance N there"),
+        ],
+      },
+    ],
+  };
+}
+
 /** Explains the trackpad's input processors, shown next to the Processors header. */
 export function processorDoc(t: TranslateFn): DocTipContent {
   return {

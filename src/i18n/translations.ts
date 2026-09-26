@@ -9,6 +9,29 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  "What is Tap Dance?": "タップダンスとは？",
+  "A tap dance key does something different depending on how many times you tap it in a row.":
+    "タップダンスのキーは、続けて何回タップしたかで違う動作をします。",
+  "One tap for a letter, two taps for the symbol on the same key":
+    "1回で文字、2回で同じキーの記号",
+  "Tap once for Escape, twice to lock the screen":
+    "1回で Escape、2回で画面ロック",
+  "Each slot lists what one, two and three taps do; taps within the wait time count as one dance":
+    "スロットごとに1回・2回・3回の動作を並べます。待ち時間内のタップが1つのダンスになります",
+  "Put &rtd N on a key in the Keymap tab to use dance N there":
+    "キーマップタブでキーに &rtd N を置くと、そのキーでダンス N が使えます",
+  "No taps — does nothing": "タップなし — 何もしません",
+  "Put &rtd {{index}} on a key in the Keymap tab. Tapping that key once, twice or three times does what is set here.":
+    "キーマップタブでキーに &rtd {{index}} を置いてください。そのキーを1回・2回・3回タップしたときの動作をここで決めます。",
+  "This keyboard allows up to {{count}} taps.":
+    "このキーボードでは {{count}} 回までです。",
+  "Select a macro, combo or tap dance": "マクロ・コンボ・タップダンスを選択",
+  "Reset every runtime macro, combo and tap dance to the firmware defaults? Your customizations will be lost.":
+    "すべてのマクロ・コンボ・タップダンスをファームウェアの初期値に戻しますか？ カスタマイズは失われます。",
+  "Puts every macro, combo and tap dance back to the firmware's compile-time defaults.":
+    "すべてのマクロ・コンボ・タップダンスを、ファームウェアのビルド時の初期値に戻します。",
+  "Drops the edits held in keyboard memory and reloads the macros, combos and tap dances saved on the keyboard.":
+    "キーボードのメモリ上の編集を捨て、キーボードに保存されているマクロ・コンボ・タップダンスを読み直します。",
   'This keyboard has no "None" behavior to start a tap from.':
     "このキーボードには、タップの初期値にする「None」ビヘイビアがありません。",
   "A custom keyboard comes into its own once you change its keymap to fit what you actually use it for. Keeb-On! Studio was made to support that trial and error, so you can shape the keyboard to your own use.":
@@ -260,8 +283,6 @@ const ja: Record<string, string> = {
   "Edit runtime macro, combo and tap dance slots":
     "ランタイムマクロ・コンボ・タップダンスのスロットを編集",
   "Tap Dance": "タップダンス",
-  "What one tap, two taps and three taps each do":
-    "1回・2回・3回タップしたときの動作",
   "Tap dance {{index}}": "タップダンス {{index}}",
   "Wait between taps": "タップ間隔",
   "{{count}} taps": "{{count}}回",
@@ -797,7 +818,6 @@ const ja: Record<string, string> = {
   "Combo Global Settings": "コンボのグローバル設定",
   "Connect your keyboard to edit runtime macros and combos":
     "ランタイムマクロとコンボを編集するにはキーボードを接続してください",
-  "Select a macro or combo": "マクロまたはコンボを選択",
   "Choose an item from the lists on the left.":
     "左のリストから項目を選択してください。",
   "Edit runtime macro slots": "ランタイムマクロスロットを編集",
@@ -1782,6 +1802,29 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
+  "What is Tap Dance?": "什么是点击舞？",
+  "A tap dance key does something different depending on how many times you tap it in a row.":
+    "点击舞按键会根据连续点击的次数执行不同的动作。",
+  "One tap for a letter, two taps for the symbol on the same key":
+    "点一次输入字母，点两次输入同一键上的符号",
+  "Tap once for Escape, twice to lock the screen":
+    "点一次 Escape，点两次锁定屏幕",
+  "Each slot lists what one, two and three taps do; taps within the wait time count as one dance":
+    "每个槽位列出一次、两次、三次点击各做什么；等待时间内的点击算作同一次点击舞",
+  "Put &rtd N on a key in the Keymap tab to use dance N there":
+    "在键位图标签页把 &rtd N 放到某个键上，即可在该键使用点击舞 N",
+  "No taps — does nothing": "没有点击——不做任何事",
+  "Put &rtd {{index}} on a key in the Keymap tab. Tapping that key once, twice or three times does what is set here.":
+    "在键位图标签页把 &rtd {{index}} 放到某个键上。该键点一次、两次或三次时的动作在这里设置。",
+  "This keyboard allows up to {{count}} taps.":
+    "此键盘最多允许 {{count}} 次点击。",
+  "Select a macro, combo or tap dance": "选择宏、组合键或点击舞",
+  "Reset every runtime macro, combo and tap dance to the firmware defaults? Your customizations will be lost.":
+    "将所有宏、组合键和点击舞重置为固件默认值？你的自定义将丢失。",
+  "Puts every macro, combo and tap dance back to the firmware's compile-time defaults.":
+    "将所有宏、组合键和点击舞恢复为固件编译时的默认值。",
+  "Drops the edits held in keyboard memory and reloads the macros, combos and tap dances saved on the keyboard.":
+    "丢弃键盘内存中的编辑，重新读取键盘上已保存的宏、组合键和点击舞。",
   'This keyboard has no "None" behavior to start a tap from.':
     "此键盘没有可用作新点击初始值的“None”行为。",
   "A custom keyboard comes into its own once you change its keymap to fit what you actually use it for. Keeb-On! Studio was made to support that trial and error, so you can shape the keyboard to your own use.":
@@ -2025,8 +2068,6 @@ const zh: Record<string, string> = {
   "Edit runtime macro, combo and tap dance slots":
     "编辑运行时宏、组合键与点击舞插槽",
   "Tap Dance": "点击舞",
-  "What one tap, two taps and three taps each do":
-    "点击 1 次、2 次、3 次分别执行什么",
   "Tap dance {{index}}": "点击舞 {{index}}",
   "Wait between taps": "点击间隔",
   "{{count}} taps": "{{count}} 次",
@@ -2531,7 +2572,6 @@ const zh: Record<string, string> = {
   "Combo Global Settings": "组合键的全局设置",
   "Connect your keyboard to edit runtime macros and combos":
     "连接键盘以编辑运行时宏和组合键",
-  "Select a macro or combo": "选择宏或组合键",
   "Choose an item from the lists on the left.":
     "请从左侧的列表中选择一个项目。",
   "Edit runtime macro slots": "编辑运行时宏插槽",
