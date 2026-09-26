@@ -583,8 +583,12 @@ describe("ConnectionPage", () => {
       const options = Array.from(usbSelect.querySelectorAll("option")).map(
         (o) => o.textContent,
       );
-      expect(options).toContain("Not set");
-      expect(options).toContain("Follow OS detection");
+      // Only what a connection can start on: OS detection and the base pair.
+      // No "Not set" (the firmware treats it as the keymap default, which is
+      // one of these) and no momentary layers.
+      expect(options[0]).toBe("Follow OS detection");
+      expect(options).not.toContain("Not set");
+      expect(options.length).toBeLessThanOrEqual(3);
     });
 
     it("explains what Output Priority does", () => {

@@ -24,6 +24,7 @@ import { Os } from "../proto/cormoran/os_detection/os_detection";
 import { useLanguage } from "../hooks/useLanguage";
 import { OsBadge } from "../components/OsBadge";
 import { LayerSelect } from "../components/LayerSelect";
+import { ALT_BASE_LAYER_NAME, BASE_LAYER_NAME } from "../lib/keymap/copyLayer";
 import { InfoTip } from "../components/InfoTip";
 import { DocTip } from "../components/DocTip";
 import { defaultLayerDoc } from "../i18n/featureDocs";
@@ -65,6 +66,17 @@ export function ConnectionPage() {
   const osDetection = useOsDetection();
   const defaultLayer = useDefaultLayer();
   const { layerNames, load: loadLayerNames } = useLayerNames();
+  // Only the base pair can be a default layer: Base and Alt Base by name, or
+  // the first two layers on a keymap that names them differently. A layer
+  // above that is a momentary or toggled layer, never something a
+  // connection should start on.
+  const defaultLayerCandidates = useMemo(() => {
+    const byName = [BASE_LAYER_NAME, ALT_BASE_LAYER_NAME].map((name) =>
+      layerNames.indexOf(name),
+    );
+    if (byName.every((index) => index >= 0)) return byName;
+    return [0, 1].filter((index) => index < Math.max(layerNames.length, 2));
+  }, [layerNames]);
 
   // Version history. Both domains write straight through to persistent
   // storage, so there is nothing to discard and no firmware-default RPC —
@@ -455,7 +467,7 @@ export function ConnectionPage() {
                               </p>
                               <LayerSelect
                                 value={usbEndpoint.value}
-                                layerCount={defaultLayer.state?.layerCount ?? 0}
+                                layerIndices={defaultLayerCandidates}
                                 layerNames={layerNames}
                                 allowOsDetection
                                 disabled={defaultLayer.isLoading}
@@ -676,7 +688,7 @@ export function ConnectionPage() {
                               </p>
                               <LayerSelect
                                 value={endpoint.value}
-                                layerCount={defaultLayer.state?.layerCount ?? 0}
+                                layerIndices={defaultLayerCandidates}
                                 layerNames={layerNames}
                                 allowOsDetection
                                 disabled={defaultLayer.isLoading}
@@ -771,7 +783,7 @@ export function ConnectionPage() {
                         </p>
                         <LayerSelect
                           value={endpoint.value}
-                          layerCount={defaultLayer.state?.layerCount ?? 0}
+                          layerIndices={defaultLayerCandidates}
                           layerNames={layerNames}
                           allowOsDetection
                           disabled={defaultLayer.isLoading}
@@ -834,7 +846,7 @@ export function ConnectionPage() {
                     <OsBadge os={protoOs} />
                     <LayerSelect
                       value={entry?.value ?? -1}
-                      layerCount={defaultLayer.state?.layerCount ?? 0}
+                      layerIndices={defaultLayerCandidates}
                       layerNames={layerNames}
                       disabled={
                         defaultLayer.isLoading ||

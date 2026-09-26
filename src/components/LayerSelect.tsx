@@ -4,7 +4,8 @@ import { useLanguage } from "../hooks/useLanguage";
 
 interface LayerSelectProps {
   value: number;
-  layerCount: number;
+  /** The layer indices to offer, in order. */
+  layerIndices: number[];
   layerNames: string[];
   /** Whether to offer the "Follow OS detection" sentinel option (-2). Endpoints only. */
   allowOsDetection?: boolean;
@@ -14,9 +15,18 @@ interface LayerSelectProps {
   className?: string;
 }
 
+/**
+ * A default-layer picker.
+ *
+ * Only the layers that can be a default layer are offered -- the base pair,
+ * on these keyboards -- and there is no "Not set": the firmware treats an
+ * unset endpoint as "the keymap's default layer" and an unset OS entry the
+ * same way, which is one of the offered options, so a stored -1 is shown as
+ * what it does rather than as a fourth state nobody chose.
+ */
 export function LayerSelect({
   value,
-  layerCount,
+  layerIndices,
   layerNames,
   allowOsDetection = false,
   disabled = false,
@@ -26,21 +36,29 @@ export function LayerSelect({
 }: LayerSelectProps) {
   const { t } = useLanguage();
 
-  const layerOptions = Array.from({ length: layerCount }, (_, index) => index);
+  // A value nothing offers (unset, or a layer outside the pair) shows as
+  // what the firmware resolves it to: OS detection where that is offered
+  // (an endpoint's natural default), otherwise the first layer.
+  const offered = new Set<number>(layerIndices);
+  if (allowOsDetection) offered.add(LAYER_OS_DETECTION);
+  const shown = offered.has(value)
+    ? value
+    : allowOsDetection
+      ? LAYER_OS_DETECTION
+      : (layerIndices[0] ?? LAYER_UNSET);
 
   return (
     <select
       className={`select-field text-sm w-full tablet:w-56 ${className}`}
-      value={value}
+      value={shown}
       disabled={disabled}
       aria-label={ariaLabel}
       onChange={(event) => onChange(Number.parseInt(event.target.value, 10))}
     >
-      <option value={LAYER_UNSET}>{t("Not set")}</option>
       {allowOsDetection && (
         <option value={LAYER_OS_DETECTION}>{t("Follow OS detection")}</option>
       )}
-      {layerOptions.map((index) => (
+      {layerIndices.map((index) => (
         <option key={index} value={index}>
           {layerLabel(layerNames, index)}
         </option>
