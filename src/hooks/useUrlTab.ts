@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 
+/** The tab the app opens on: the keymap, which is what a keyboard is for. */
+export const DEFAULT_TAB_ID = "keymap";
+
 export function tabIdFromPathname(pathname: string): string {
   const segment = pathname.replace(/^\/+/, "").split("/")[0];
-  return segment || "home";
+  return segment || DEFAULT_TAB_ID;
 }
 
 export function pathnameFromTabId(tabId: string): string {
-  return tabId === "home" ? "/" : `/${tabId}`;
+  return tabId === DEFAULT_TAB_ID ? "/" : `/${tabId}`;
 }
 
 /**

@@ -67,7 +67,7 @@ describe("App routing", () => {
     expect(window.location.pathname).toBe(RELEASE_NOTES_PATH);
   });
 
-  it("canonicalizes an unknown path back to the home tab", async () => {
+  it("canonicalizes an unknown path back to the default tab", async () => {
     goTo("/not-a-real-tab");
 
     render(<App />);

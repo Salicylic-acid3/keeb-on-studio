@@ -1,13 +1,12 @@
 /**
- * Demo-mode custom-subsystem registry + per-subsystem enable/disable toggles.
+ * Demo-mode custom-subsystem registry.
  *
- * The demo transport advertises a fixed set of custom subsystems. In demo mode
- * the Subsystems tab lets the user turn each one on/off to exercise different
- * app code paths (most importantly: turning the read-only `cormoran__fast_keymap`
- * subsystem on to test the fast keymap-loading path vs. the official protocol).
- *
- * Overrides are persisted in localStorage. They only take effect on the next
- * connect, since the app fetches the subsystem list once per connection.
+ * The demo transport advertises a fixed set of custom subsystems: the ones
+ * the keyboards this app is for actually carry (ErgoTrack's right half is
+ * the reference), so the demo shows the same tabs and the same Subsystems
+ * list as a real keyboard. Nothing here is toggled at runtime any more --
+ * the Subsystems tab used to offer per-subsystem switches in demo mode,
+ * which made the demo and a connected keyboard look like different apps.
  */
 import { BLE_MANAGEMENT_IDENTIFIER } from "./demo-ble";
 import { SETTINGS_IDENTIFIER } from "./demo-settings";
@@ -41,22 +40,18 @@ export const SETTING_EXPOSE_IDENTIFIER = "zmk__setting_expose";
 export const SETTING_EXPOSE_UI_URL =
   "https://cormoran.github.io/zmk-feature-zephyr-setting-expose/";
 
-/** localStorage key holding `{ [identifier]: boolean }` overrides. */
-const OVERRIDES_KEY = "dya-studio-demo-subsystem-overrides";
-
 export interface DemoSubsystemInfo {
   index: number;
   identifier: string;
   /** Short human label for the toggle UI. */
   label: string;
-  /** Whether it's enabled unless the user overrides it. */
+  /** Whether the demo keyboard advertises it. */
   defaultEnabled: boolean;
 }
 
 // Canonical list, indices matching the demo transport's subsystem indices.
-// Everything defaults on EXCEPT fast-keymap (so the demo keeps using the
-// official keymap protocol until the user opts into the fast path) and
-// sensor-rotate (no supported keyboard has an encoder).
+// Off: sensor-rotate (no supported keyboard has an encoder) and
+// setting-expose (no supported keyboard carries that module).
 export const DEMO_SUBSYSTEMS: DemoSubsystemInfo[] = [
   {
     index: 0,
@@ -150,13 +145,13 @@ export const DEMO_SUBSYSTEMS: DemoSubsystemInfo[] = [
     index: 14,
     identifier: FAST_KEYMAP_IDENTIFIER,
     label: "Fast Keymap",
-    defaultEnabled: false,
+    defaultEnabled: true,
   },
   {
     index: 15,
     identifier: SETTING_EXPOSE_IDENTIFIER,
     label: "Setting Expose",
-    defaultEnabled: true,
+    defaultEnabled: false,
   },
   {
     // On by default: a 30% keymap is the case tap dance exists for, and
@@ -175,40 +170,8 @@ export const DEMO_SUBSYSTEMS: DemoSubsystemInfo[] = [
   },
 ];
 
-function readOverrides(): Record<string, boolean> {
-  try {
-    const raw = localStorage.getItem(OVERRIDES_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw) as unknown;
-    if (parsed && typeof parsed === "object") {
-      return parsed as Record<string, boolean>;
-    }
-  } catch {
-    // Ignore storage/parse errors — fall back to defaults.
-  }
-  return {};
-}
-
-/** Whether a demo subsystem should be advertised/served, honoring overrides. */
+/** Whether the demo keyboard advertises and serves a subsystem. */
 export function isDemoSubsystemEnabled(identifier: string): boolean {
-  const overrides = readOverrides();
-  if (identifier in overrides) {
-    return overrides[identifier];
-  }
   const info = DEMO_SUBSYSTEMS.find((s) => s.identifier === identifier);
   return info?.defaultEnabled ?? true;
-}
-
-/** Persist an enable/disable override for a demo subsystem. */
-export function setDemoSubsystemEnabled(
-  identifier: string,
-  enabled: boolean,
-): void {
-  try {
-    const overrides = readOverrides();
-    overrides[identifier] = enabled;
-    localStorage.setItem(OVERRIDES_KEY, JSON.stringify(overrides));
-  } catch {
-    // Ignore storage errors (private browsing / quota).
-  }
 }

@@ -2,12 +2,10 @@ import { useContext, useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   IconCloudUpload,
-  IconHome,
   IconKeyboard,
   IconPlugConnected,
   IconPointer,
   IconPuzzle,
-  IconDownload,
   IconSettings,
   IconStethoscope,
   IconWand,
@@ -29,7 +27,6 @@ import { StudioUnlockProvider } from "./contexts/StudioUnlockContext";
 import { TabNavigation } from "./components/TabNavigation";
 import type { TabItem } from "./components/TabNavigation";
 import { AppLayout } from "./layouts/AppLayout";
-import { HomePage } from "./pages/HomePage";
 import { ConnectionPage } from "./pages/ConnectionPage";
 import { KeymapPage } from "./pages/KeymapPage";
 import { TrackpadPage } from "./pages/TrackpadPage";
@@ -44,21 +41,22 @@ import {
 import { AbyssCallbackPage } from "./pages/AbyssCallbackPage";
 import { isAbyssConfigured } from "./lib/abyss/abyssConfig";
 import { OAUTH_CALLBACK_PATH } from "./lib/abyss/abyssOAuth";
-import { FirmwarePage } from "./pages/FirmwarePage";
 import { useLanguage } from "./hooks/useLanguage";
-import { useUrlTab, pathnameFromTabId } from "./hooks/useUrlTab";
+import {
+  useUrlTab,
+  pathnameFromTabId,
+  DEFAULT_TAB_ID,
+} from "./hooks/useUrlTab";
 import { useDevtool } from "./hooks/useDevtool";
 import { DevtoolWindow } from "./components/DevtoolWindow";
 import { trackPageView } from "./lib/analytics";
 
 function getTabs(t: (key: string) => string): TabItem[] {
   return [
-    {
-      id: "home",
-      label: t("Home"),
-      icon: <IconHome size={18} />,
-      content: <HomePage />,
-    },
+    // No Home or Firmware tab once a keyboard is connected: both live on the
+    // top screen now (the guide, /about and /downloads), where someone
+    // reads them before connecting. Inside the app they only took space
+    // from the tabs that need a keyboard.
     {
       id: "keymap",
       label: t("Keymap"),
@@ -94,12 +92,6 @@ function getTabs(t: (key: string) => string): TabItem[] {
       label: t("Troubleshooting"),
       icon: <IconStethoscope size={18} />,
       content: <TroubleshootingPage />,
-    },
-    {
-      id: "firmware",
-      label: t("Firmware"),
-      icon: <IconDownload size={18} />,
-      content: <FirmwarePage />,
     },
     {
       id: "subsystems",
@@ -151,7 +143,9 @@ function AppContent() {
   const tabs = getTabs(t);
   const { isAvailable: isDevtoolAvailable } = useDevtool();
   const [devtoolOpen, setDevtoolOpen] = useState(false);
-  const activeTab = tabs.some((tab) => tab.id === urlTab) ? urlTab : "home";
+  const activeTab = tabs.some((tab) => tab.id === urlTab)
+    ? urlTab
+    : DEFAULT_TAB_ID;
 
   // The release notes page is a standalone, connection-independent route so it
   // stays reachable from the splash screen and via GitHub Release deep links.
