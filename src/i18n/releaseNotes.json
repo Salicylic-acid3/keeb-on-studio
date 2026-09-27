@@ -5,6 +5,15 @@
       "date": null,
       "changes": {
         "major": [],
+        "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.09.27.0",
+      "date": "2026-09-27",
+      "changes": {
+        "major": [],
         "minor": [
           {
             "en": "Troubleshooting: a freeze incident shows where the stuck thread was — what it was waiting on and the functions on its stack, named when the build's ELF is loaded (needs the watchdog with freeze locations)",
