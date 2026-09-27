@@ -5,7 +5,13 @@
       "date": null,
       "changes": {
         "major": [],
-        "minor": [],
+        "minor": [
+          {
+            "en": "Troubleshooting: a freeze incident shows where the stuck thread was — what it was waiting on and the functions on its stack, named when the build's ELF is loaded (needs the watchdog with freeze locations)",
+            "ja": "トラブルシューティング: フリーズの記録に、止まっていたスレッドの場所（何を待っていたか、スタック上の関数）を表示。ビルドの ELF を読み込むと関数名で出ます（フリーズ位置を記録するウォッチドッグが必要）",
+            "zh": "故障排查：冻结记录会显示卡住的线程在哪里——在等待什么、栈上有哪些函数；加载构建的 ELF 后显示函数名（需要记录冻结位置的看门狗）"
+          }
+        ],
         "patch": []
       }
     },

@@ -1,5 +1,10 @@
 import { useCallback, useState } from "react";
-import { ElfParseError, parseElf, resolveAddress } from "../lib/elfAnalysis";
+import {
+  ElfParseError,
+  parseElf,
+  resolveAddress,
+  resolveDataAddress,
+} from "../lib/elfAnalysis";
 import type { ElfInfo, ResolvedAddress } from "../lib/elfAnalysis";
 
 export type { ResolvedAddress };
@@ -12,11 +17,14 @@ export interface UseElfAnalysisReturn {
   isLoading: boolean;
   error: string | null;
   resolve: (address: number) => ResolvedAddress | null;
+  /** Name the data object (a kernel object, say) an address falls in. */
+  resolveData: (address: number) => { name: string; offset: number } | null;
   loadFile: (file: File) => Promise<void>;
   clear: () => void;
 }
 
 const NULL_RESOLVE = (): ResolvedAddress | null => null;
+const NULL_RESOLVE_DATA = (): { name: string; offset: number } | null => null;
 
 export function useElfAnalysis(): UseElfAnalysisReturn {
   const [elfInfo, setElfInfo] = useState<ElfInfo | null>(null);
@@ -56,6 +64,12 @@ export function useElfAnalysis(): UseElfAnalysisReturn {
     [elfInfo],
   );
 
+  const resolveData = useCallback(
+    (address: number) =>
+      elfInfo ? resolveDataAddress(elfInfo, address) : null,
+    [elfInfo],
+  );
+
   return {
     fileName: elfInfo?.fileName ?? null,
     hasElf: elfInfo !== null,
@@ -64,6 +78,7 @@ export function useElfAnalysis(): UseElfAnalysisReturn {
     isLoading,
     error,
     resolve: elfInfo ? resolve : NULL_RESOLVE,
+    resolveData: elfInfo ? resolveData : NULL_RESOLVE_DATA,
     loadFile,
     clear,
   };

@@ -8,6 +8,7 @@ import {
 } from "@tabler/icons-react";
 import { ZMKAppContext } from "@cormoran/zmk-studio-react-hook";
 import { useLanguage } from "../hooks/useLanguage";
+import { freezeLocationLines } from "../lib/freezeLocation";
 import { useDeviceInfo } from "../hooks/useDeviceInfo";
 import { useWatchdog } from "../hooks/useWatchdog";
 import { useKscanDiagnostics } from "../hooks/useKscanDiagnostics";
@@ -69,6 +70,18 @@ export function TroubleshootingPage() {
           })
       : undefined;
 
+    const freezeLocations = watchdog.incidents
+      .filter((i) => i.freeze)
+      .map((i) => ({
+        id: i.id,
+        lines: freezeLocationLines(
+          i.freeze!,
+          t,
+          elfAnalysis.hasElf ? elfAnalysis : undefined,
+        ),
+      }))
+      .filter((location) => location.lines.length > 0);
+
     const report = buildSupportReport({
       generatedAt: new Date().toISOString(),
       deviceName: zmkApp?.state.deviceInfo?.name ?? null,
@@ -87,6 +100,7 @@ export function TroubleshootingPage() {
               incidents: watchdog.incidents,
               elfFileName: elfAnalysis.fileName,
               elfResolved,
+              freezeLocations,
             }
           : null,
         error: watchdog.error,

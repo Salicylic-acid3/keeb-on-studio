@@ -41,6 +41,12 @@ export interface WatchdogReportData {
   /** Present when user uploaded a debug ELF for symbol resolution. */
   elfFileName?: string | null;
   elfResolved?: ElfResolvedIncident[];
+  /**
+   * Where each frozen queue's thread was stuck, by incident id, already
+   * formatted (with names when an ELF is loaded). Firmware that does not
+   * capture a location contributes nothing.
+   */
+  freezeLocations?: { id: number; lines: string[] }[];
 }
 
 export interface KscanReportData {
@@ -137,6 +143,16 @@ export function buildSupportReport(input: SupportReportInput): string {
             return s;
           };
           body.push(`- Incident #${ri.id}: PC ${fmt(ri.pc)}, LR ${fmt(ri.lr)}`);
+        }
+      }
+      if (data.freezeLocations && data.freezeLocations.length > 0) {
+        body.push(
+          "",
+          `### Freeze locations${data.elfFileName ? ` (${data.elfFileName})` : ""}`,
+        );
+        for (const location of data.freezeLocations) {
+          body.push(`- Incident #${location.id}:`);
+          for (const line of location.lines) body.push(`  - ${line}`);
         }
       }
       return body;

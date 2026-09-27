@@ -27,7 +27,16 @@ function initialIncidents(): Incident[] {
       type: IncidentType.FREEZE,
       bootOrdinal: 3,
       uptimeS: 1200,
-      freeze: { channelId: 0, queueName: "sysworkq" },
+      // A freeze with a captured location, as newer firmware records it:
+      // waiting on an object, with a few code addresses. Hex only in demo
+      // mode -- there is no ELF to name them.
+      freeze: {
+        channelId: 0,
+        queueName: "sysworkq",
+        threadState: 0x02,
+        pendedOn: 0x20004a10,
+        frames: [0x0003c2a4, 0x0003c1f9, 0x0002e7c5, 0x0005a3b1],
+      },
     },
     {
       id: 2,

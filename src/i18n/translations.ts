@@ -9,6 +9,14 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  "waiting on a kernel object": "カーネルのオブジェクトを待機中",
+  sleeping: "スリープ中",
+  suspended: "停止中",
+  "ready but not running (higher-priority work kept it off the CPU)":
+    "実行可能だが動けない（優先度の高い処理に CPU を取られていた）",
+  "state 0x{{bits}}": "状態 0x{{bits}}",
+  Thread: "スレッド",
+  "Waiting on": "待っていた相手",
   "Before the board is built into the keyboard, double-tap the reset switch on the usu-aoba. Once it is built in and the reset switch cannot be reached, temporarily put System → Bootloader on a key in the keymap and press it. Either way, the keyboard then appears as a USB drive.":
     "キーボードに組み込む前なら usu-aoba のリセットスイッチをすばやく2回押します。キーボードに組み込んでリセットスイッチが押せない場合は、キーマップで一時的にキーに「システム」→「Bootloader」を設定して押してください。以上の操作を行うと USB ドライブとして認識されます。",
   "A keymap guide for 30% keyboards": "30%サイズキーボードのキーマップ解説",
@@ -1804,6 +1812,14 @@ const ja: Record<string, string> = {
 };
 
 const zh: Record<string, string> = {
+  "waiting on a kernel object": "正在等待内核对象",
+  sleeping: "休眠中",
+  suspended: "已挂起",
+  "ready but not running (higher-priority work kept it off the CPU)":
+    "可运行但未运行（CPU 被更高优先级的任务占用）",
+  "state 0x{{bits}}": "状态 0x{{bits}}",
+  Thread: "线程",
+  "Waiting on": "等待对象",
   "Before the board is built into the keyboard, double-tap the reset switch on the usu-aoba. Once it is built in and the reset switch cannot be reached, temporarily put System → Bootloader on a key in the keymap and press it. Either way, the keyboard then appears as a USB drive.":
     "装入键盘之前，快速按两次 usu-aoba 上的复位开关。装入键盘后无法按到复位开关时，请在键位图中临时给某个键设置“系统”→“Bootloader”并按下它。完成以上操作后，键盘会被识别为 USB 驱动器。",
   "A keymap guide for 30% keyboards": "30% 尺寸键盘的键位图解说",

@@ -28,6 +28,15 @@ export namespace IncidentType {
 export interface FreezeDetail {
   channelId: number;
   queueName: string;
+  /**
+   * Where the queue's thread was stuck (all zero/empty on older firmware).
+   * thread_state: Zephyr thread_state bits. pended_on: address of the
+   * kernel object it waited on, 0 if none. frames: PC, LR, then return
+   * addresses found on its stack, innermost first.
+   */
+  threadState: number;
+  pendedOn: number;
+  frames: number[];
 }
 
 /** Mirrors struct zmk_watchdog_incident_fatal_detail. */
@@ -194,7 +203,7 @@ export interface RelayResponse {
 }
 
 function createBaseFreezeDetail(): FreezeDetail {
-  return { channelId: 0, queueName: "" };
+  return { channelId: 0, queueName: "", threadState: 0, pendedOn: 0, frames: [] };
 }
 
 export const FreezeDetail: MessageFns<FreezeDetail> = {
@@ -205,6 +214,17 @@ export const FreezeDetail: MessageFns<FreezeDetail> = {
     if (message.queueName !== "") {
       writer.uint32(18).string(message.queueName);
     }
+    if (message.threadState !== 0) {
+      writer.uint32(24).uint32(message.threadState);
+    }
+    if (message.pendedOn !== 0) {
+      writer.uint32(32).uint32(message.pendedOn);
+    }
+    writer.uint32(42).fork();
+    for (const v of message.frames) {
+      writer.uint32(v);
+    }
+    writer.join();
     return writer;
   },
 
@@ -231,6 +251,40 @@ export const FreezeDetail: MessageFns<FreezeDetail> = {
           message.queueName = reader.string();
           continue;
         }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.threadState = reader.uint32();
+          continue;
+        }
+        case 4: {
+          if (tag !== 32) {
+            break;
+          }
+
+          message.pendedOn = reader.uint32();
+          continue;
+        }
+        case 5: {
+          if (tag === 40) {
+            message.frames.push(reader.uint32());
+
+            continue;
+          }
+
+          if (tag === 42) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.frames.push(reader.uint32());
+            }
+
+            continue;
+          }
+
+          break;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -247,6 +301,9 @@ export const FreezeDetail: MessageFns<FreezeDetail> = {
     const message = createBaseFreezeDetail();
     message.channelId = object.channelId ?? 0;
     message.queueName = object.queueName ?? "";
+    message.threadState = object.threadState ?? 0;
+    message.pendedOn = object.pendedOn ?? 0;
+    message.frames = object.frames?.map((e) => e) || [];
     return message;
   },
 };

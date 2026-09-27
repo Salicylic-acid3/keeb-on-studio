@@ -7,6 +7,7 @@
  */
 
 // ELF section types (STT = symbol type)
+const STT_OBJECT = 1;
 const STT_FUNC = 2;
 const SHN_UNDEF = 0;
 
@@ -43,6 +44,12 @@ export interface ElfInfo {
   fileName: string;
   /** Function symbols sorted by address (Thumb bit cleared). */
   symbols: SymbolEntry[];
+  /**
+   * Data symbols sorted by address -- the kernel objects a frozen thread
+   * can be waiting on (a mutex, a semaphore). Optional so an ElfInfo built
+   * elsewhere without them still type-checks.
+   */
+  objects?: SymbolEntry[];
   /** DWARF line table sorted by address; empty when .debug_line is absent/compressed. */
   lines: LineEntry[];
 }
@@ -164,6 +171,7 @@ function parseSectionHeaders(
 function parseSymbols(
   bytes: Uint8Array,
   sections: SectionHeader[],
+  wantedType: number = STT_FUNC,
 ): SymbolEntry[] {
   const symtabSection = sections.find((s) => s.name === ".symtab");
   if (!symtabSection || symtabSection.sh_size === 0) return [];
@@ -200,12 +208,13 @@ function parseSymbols(
 
     const stType = st_info & 0x0f;
 
-    if (stType === STT_FUNC && st_shndx !== SHN_UNDEF && st_value !== 0) {
+    if (stType === wantedType && st_shndx !== SHN_UNDEF && st_value !== 0) {
       const name = readNullString(strtab, st_name);
       if (name) {
         symbols.push({
           name,
-          address: st_value & ~1, // clear Thumb mode bit
+          // Clear the Thumb mode bit on code; data addresses are exact.
+          address: wantedType === STT_FUNC ? st_value & ~1 : st_value,
           size: st_size,
         });
       }
@@ -523,6 +532,7 @@ export function parseElf(buffer: ArrayBuffer, fileName: string): ElfInfo {
   const view = new DataView(buffer);
   const sections = parseSectionHeaders(bytes, view);
   const symbols = parseSymbols(bytes, sections);
+  const objects = parseSymbols(bytes, sections, STT_OBJECT);
 
   // Parse .debug_line (best-effort; skip if absent or compressed)
   let lines: LineEntry[] = [];
@@ -539,7 +549,36 @@ export function parseElf(buffer: ArrayBuffer, fileName: string): ElfInfo {
     }
   }
 
-  return { fileName, symbols, lines };
+  return { fileName, symbols, objects, lines };
+}
+
+/**
+ * Name the data object an address falls in: "rpc_transport_mutex", or
+ * "work_q+0x18" for an address inside a larger object. Null when no data
+ * symbol covers it.
+ */
+export function resolveDataAddress(
+  elf: ElfInfo,
+  address: number,
+): { name: string; offset: number } | null {
+  const objects = elf.objects ?? [];
+  let lo = 0,
+    hi = objects.length - 1,
+    idx = -1;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    if (objects[mid].address <= address) {
+      idx = mid;
+      lo = mid + 1;
+    } else {
+      hi = mid - 1;
+    }
+  }
+  if (idx < 0) return null;
+  const sym = objects[idx];
+  const offset = address - sym.address;
+  if (sym.size > 0 && offset >= sym.size) return null;
+  return { name: sym.name, offset };
 }
 
 /** Resolve a raw register value (PC or LR) to function/source info. */

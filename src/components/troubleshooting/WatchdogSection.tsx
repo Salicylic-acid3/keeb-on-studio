@@ -12,6 +12,7 @@ import type { Incident } from "../../proto/cormoran/watchdog/watchdog";
 import { IncidentType } from "../../proto/cormoran/watchdog/watchdog";
 import type { UseWatchdogReturn } from "../../hooks/useWatchdog";
 import type { UseElfAnalysisReturn } from "../../hooks/useElfAnalysis";
+import { freezeLocationLines } from "../../lib/freezeLocation";
 import { useLanguage } from "../../hooks/useLanguage";
 import {
   formatFatalReason,
@@ -372,6 +373,24 @@ export function WatchdogSection({
                           </td>
                           <td className="py-2 pr-3 text-[var(--color-text-secondary)] break-all">
                             <div>{incidentDetail(incident, t)}</div>
+                            {incident.freeze &&
+                              freezeLocationLines(
+                                incident.freeze,
+                                t,
+                                elfAnalysis?.hasElf ? elfAnalysis : undefined,
+                              ).length > 0 && (
+                                <div className="mt-1 font-mono text-[10px] text-[var(--color-electric)] space-y-0.5">
+                                  {freezeLocationLines(
+                                    incident.freeze,
+                                    t,
+                                    elfAnalysis?.hasElf
+                                      ? elfAnalysis
+                                      : undefined,
+                                  ).map((line, index) => (
+                                    <div key={index}>{line}</div>
+                                  ))}
+                                </div>
+                              )}
                             {(resolvedPc || resolvedLr) && (
                               <div className="mt-1 font-mono text-[10px] text-[var(--color-electric)] space-y-0.5">
                                 {resolvedPc && <div>{resolvedPc}</div>}
