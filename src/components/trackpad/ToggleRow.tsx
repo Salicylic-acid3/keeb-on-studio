@@ -29,7 +29,7 @@ export function ToggleRow({
     <div className="flex items-center justify-between gap-3">
       <span className="flex min-w-0 flex-col">
         <span className="flex min-w-0 items-center gap-1.5 text-sm text-[var(--color-text-secondary)]">
-          <span className="truncate">{label}</span>
+          <span className="min-w-0 break-words">{label}</span>
           <InfoTip text={info} />
         </span>
         {disagree && (

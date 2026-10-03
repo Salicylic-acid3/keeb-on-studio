@@ -5,8 +5,25 @@
       "date": null,
       "changes": {
         "major": [],
-        "minor": [],
-        "patch": []
+        "minor": [
+          {
+            "en": "Trackpad tab: the swipe settings are grouped as Swipes, with the two-finger horizontal swipe (per-layer switches and, with zmk-driver-iqs9151 f2ed2b77 or later, its distance) beside the three-finger swipe; the finger split factor has its own Finger detection heading and a fuller explanation.",
+            "ja": "トラックパッドタブ: スワイプの設定を「スワイプ」にまとめ、2本指の横スワイプ(レイヤーごとのスイッチと、zmk-driver-iqs9151 f2ed2b77 以降ではスワイプとみなす距離)を3本指スワイプと並べました。「2本の指の見分け」は「指の検出」の見出しの下に移し、説明を詳しくしました。",
+            "zh": "触控板标签页：滑动设置归入“滑动手势”，两指横向滑动（每层开关，以及 zmk-driver-iqs9151 f2ed2b77 起的判定距离）与三指滑动并列；“区分两根手指”移到“手指检测”标题下并补充了说明。"
+          }
+        ],
+        "patch": [
+          {
+            "en": "Trackpad and Settings tabs: long setting names wrap instead of being cut off with an ellipsis.",
+            "ja": "トラックパッドタブと設定タブ: 長い項目名が途中で「…」に省略されず、折り返して全文表示されるようになりました。",
+            "zh": "触控板和设置标签页：较长的项目名会换行完整显示，不再被省略号截断。"
+          },
+          {
+            "en": "ClickBoard ErgoTrack: with the two-finger horizontal swipe off on a layer, two fingers scroll diagonally and sideways again; the scroll axis lock now applies only where the swipe is on (firmware from zmk-keyboard-clickboard-ergotrack 31bd03b).",
+            "ja": "ClickBoard ErgoTrack: 2本指の横スワイプがオフのレイヤーでは、2本指で斜めにも横にもスクロールできるようになりました。スクロールの軸固定は横スワイプがオンのレイヤーでだけ効きます(zmk-keyboard-clickboard-ergotrack 31bd03b 以降のファームウェア)。",
+            "zh": "ClickBoard ErgoTrack：在关闭两指横向滑动的层上，两指可以再次斜向和横向滚动；滚动轴锁定只在打开滑动的层上生效（zmk-keyboard-clickboard-ergotrack 31bd03b 起的固件）。"
+          }
+        ]
       }
     },
     {

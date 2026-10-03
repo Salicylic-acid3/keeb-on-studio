@@ -153,12 +153,12 @@ const ja: Record<string, string> = {
   "Correct the ripple with a map of the pad":
     "パッドの地図でリップルを補正する",
   "Show advanced settings": "高度な設定を表示",
-  "Pointer speed per axis, smoothing, the report interval, touch sensitivity, the ripple map switch, and the pinch and three-finger swipe settings. For tuning; once the pad feels right there is little reason to open it.":
-    "軸ごとのポインタ速度、なめらかさ、送信間隔、タッチの感度、リップル補正のスイッチ、ピンチと 3 本指スワイプの設定。調整用で、しっくりきたら開く必要はほぼありません。",
+  "Pointer speed per axis, smoothing, the report interval, touch sensitivity, the ripple map switch, and the pinch, swipe and finger detection settings. For tuning; once the pad feels right there is little reason to open it.":
+    "軸ごとのポインタ速度、なめらかさ、送信間隔、タッチの感度、リップル補正のスイッチ、ピンチ・スワイプ・指の検出の設定。調整用で、しっくりきたら開く必要はほぼありません。",
   "Touch threshold ({{n}})": "タッチの感度(しきい値 {{n}})",
   "Telling two fingers apart ({{n}})": "2本の指の見分け({{n}})",
-  "How readily two fingers close together count as two. If a two-finger scroll does not start when the fingers are close, try one step at a time in either direction and keep whichever works. 3 is the default; 0 never counts them as two.":
-    "近づけた 2 本の指を 2 本として認識しやすくするか。指を近づけたときに 2 本指スクロールが始まらないなら、1 ずつどちらかへ動かして、効いた方を残してください。既定は 3、0 だと 2 本と見なしません。",
+  "The sensor's own finger split factor: how readily one touched area is taken for two fingers. Higher splits more readily, 0 never splits, 3 is the sensor's default. It only matters when the fingers are nearly touching each other; two fingers with a gap between them are always two. If a close two-finger scroll does not start, raise it one step at a time; if one finger sometimes counts as two, lower it.":
+    "センサ自身の「指の分割係数」。1つにつながって見える接触を2本の指と見なす度合いで、大きいほど分割しやすく、0 だと分割せず、3 がセンサの既定です。効くのは指と指がほぼくっついているときだけで、隙間のある2本は常に2本です。近づけた2本指でスクロールが始まらないなら1ずつ上げ、1本の指が2本と数えられることがあるなら下げてください。",
   "Tap dead zone ({{n}} counts)": "タップの遊び({{n}} カウント)",
   "Lift guard ({{n}} frames)": "離すときのずれ止め({{n}} フレーム)",
   "Stops the pointer from jumping as the finger leaves the pad, which makes clicks on small targets miss. After the finger has paused, the first few frames of movement are held back and thrown away if the finger lifts right after them; a real stroke goes through unchanged after that. 2 is the default (about 10 ms of the start of a stroke after a pause). Raise it if the pointer still jumps on lift; 0 turns it off.":
@@ -216,13 +216,18 @@ const ja: Record<string, string> = {
   "Reverse the pinch direction": "ピンチの向きを逆にする",
   "Three-finger swipe": "3本指スワイプ",
   "Two-finger horizontal swipe": "2本指の横スワイプ",
-  "On a layer with the switch on, moving two fingers sideways is a swipe (bound as a key on the trackpad tab). With it off, the same movement scrolls sideways instead. Only the half connected to the computer follows the layer; the other half always swipes.":
-    "スイッチがオンのレイヤーでは、2 本の指を横に動かすとスワイプになります(割り当てはトラックパッドタブのジェスチャー)。オフのレイヤーでは同じ動きが横スクロールになります。レイヤーに従うのは PC につながる側だけで、もう片方は常にスワイプです。",
+  "On a layer with the switch on, moving two fingers sideways is a swipe (bound as a key on the trackpad tab), and a scroll that starts there is held to the axis it started on, so it does not drift sideways. With the switch off, two fingers scroll sideways and diagonally as well as up and down. Only the half connected to the computer follows the layer; the other half always swipes.":
+    "スイッチがオンのレイヤーでは、2本の指を横に動かすとスワイプになり(割り当てはトラックパッドタブのジェスチャー)、スクロールは始まった軸に固定されて横に流れません。オフのレイヤーでは、2本指で横にも斜めにもスクロールできます。レイヤーに従うのは PC につながる側だけで、もう片方は常にスワイプです。",
   "Swipe on {{layer}}": "{{layer}} で横スワイプ",
-  "Off: two fingers moving sideways scroll horizontally on this layer.":
-    "オフにすると、このレイヤーでは 2 本指の横の動きが横スクロールになります。",
-  "How far three fingers travel before it is a swipe, in sensor counts (about 23 to the millimetre). Lower if swipes are missed, raise if they fire while you meant to hold.":
-    "3本指がどれだけ動いたらスワイプとみなすか(センサのカウント、約23で1mm)。反応しないなら下げ、押さえているつもりで発火するなら上げます。",
+  Swipes: "スワイプ",
+  "Swipe distance ({{n}} counts)": "スワイプとみなす距離({{n}} カウント)",
+  "How far sideways two fingers travel before it is a swipe, in sensor counts (about 23 to the millimetre). Lower if swipes are missed, raise if they fire while you meant to scroll.":
+    "2本指がどれだけ横に動いたらスワイプとみなすか(センサのカウント、約23で1mm)。反応しないなら下げ、スクロールのつもりで発火するなら上げます。",
+  "Finger detection": "指の検出",
+  "On: two fingers sideways is a swipe and scrolling stays on one axis. Off: two fingers scroll sideways and diagonally on this layer.":
+    "オン: 2本指の横の動きはスワイプになり、スクロールは1軸に固定されます。オフ: このレイヤーでは2本指で横にも斜めにもスクロールできます。",
+  "Three fingers moving in any of the four directions is a swipe (bound as keys on the trackpad tab); they never scroll. These are how far they travel before it counts, in sensor counts (about 23 to the millimetre). Lower if swipes are missed, raise if they fire while you meant to hold.":
+    "3本指を上下左右のどれかへ動かすとスワイプになります(割り当てはトラックパッドタブのジェスチャー)。3本指はスクロールしません。以下はどれだけ動いたらスワイプとみなすか(センサのカウント、約23で1mm)。反応しないなら下げ、押さえているつもりで発火するなら上げます。",
   "Up and down ({{n}} counts)": "縦 ({{n}}カウント)",
   "Along the long side of the pad, where three fingers have room to travel.":
     "パッドの長辺方向。3 本指でも動かせる余裕があります。",
@@ -1973,12 +1978,12 @@ const zh: Record<string, string> = {
     "短边的同一校正。除非速度波形工具在该轴也测到周期，否则保持 0；这块触控板上没有。",
   "Correct the ripple with a map of the pad": "用触控板地图校正波纹",
   "Show advanced settings": "显示高级设置",
-  "Pointer speed per axis, smoothing, the report interval, touch sensitivity, the ripple map switch, and the pinch and three-finger swipe settings. For tuning; once the pad feels right there is little reason to open it.":
-    "每个轴的指针速度、平滑、上报间隔、触摸灵敏度、波纹校正开关，以及捏合和三指滑动设置。用于调校；触控板手感合适后基本不需要再打开。",
+  "Pointer speed per axis, smoothing, the report interval, touch sensitivity, the ripple map switch, and the pinch, swipe and finger detection settings. For tuning; once the pad feels right there is little reason to open it.":
+    "每个轴的指针速度、平滑、上报间隔、触摸灵敏度、波纹校正开关，以及捏合、滑动和手指检测设置。用于调校；触控板手感合适后基本不需要再打开。",
   "Touch threshold ({{n}})": "触摸灵敏度（阈值 {{n}}）",
   "Telling two fingers apart ({{n}})": "区分两根手指（{{n}}）",
-  "How readily two fingers close together count as two. If a two-finger scroll does not start when the fingers are close, try one step at a time in either direction and keep whichever works. 3 is the default; 0 never counts them as two.":
-    "两指靠得很近时多容易被认成两指。两指靠近时两指滚动不启动，就每次调一格试试，留下有效的那个。默认 3，0 时不会认成两指。",
+  "The sensor's own finger split factor: how readily one touched area is taken for two fingers. Higher splits more readily, 0 never splits, 3 is the sensor's default. It only matters when the fingers are nearly touching each other; two fingers with a gap between them are always two. If a close two-finger scroll does not start, raise it one step at a time; if one finger sometimes counts as two, lower it.":
+    "传感器自身的“手指分割系数”：把连成一片的触摸区域判定为两根手指的难易程度。越大越容易分开，0 时从不分开，3 是传感器默认值。只在两指几乎贴在一起时起作用；中间有缝隙的两指始终算两指。两指靠得很近时滚动不启动就每次调高一格；一根手指有时被算成两根就调低。",
   "Tap dead zone ({{n}} counts)": "点按死区（{{n}} 计数）",
   "Lift guard ({{n}} frames)": "抬起防跳（{{n}} 帧）",
   "Stops the pointer from jumping as the finger leaves the pad, which makes clicks on small targets miss. After the finger has paused, the first few frames of movement are held back and thrown away if the finger lifts right after them; a real stroke goes through unchanged after that. 2 is the default (about 10 ms of the start of a stroke after a pause). Raise it if the pointer still jumps on lift; 0 turns it off.":
@@ -2037,13 +2042,18 @@ const zh: Record<string, string> = {
   "Reverse the pinch direction": "反转捏合方向",
   "Three-finger swipe": "三指滑动",
   "Two-finger horizontal swipe": "两指横向滑动",
-  "On a layer with the switch on, moving two fingers sideways is a swipe (bound as a key on the trackpad tab). With it off, the same movement scrolls sideways instead. Only the half connected to the computer follows the layer; the other half always swipes.":
-    "开关打开的层上，两指横向移动是滑动手势（在触控板标签页里绑定按键）。关闭时同样的动作变成横向滚动。只有连接电脑的一半会跟随层；另一半始终是滑动。",
+  "On a layer with the switch on, moving two fingers sideways is a swipe (bound as a key on the trackpad tab), and a scroll that starts there is held to the axis it started on, so it does not drift sideways. With the switch off, two fingers scroll sideways and diagonally as well as up and down. Only the half connected to the computer follows the layer; the other half always swipes.":
+    "开关打开的层上，两指横向移动是滑动手势（在触控板标签页里绑定按键），且滚动会锁定在开始时的轴上，不会横向漂移。关闭的层上，两指除了上下还可以横向和斜向滚动。只有连接电脑的一半会跟随层；另一半始终是滑动。",
   "Swipe on {{layer}}": "{{layer}} 上横向滑动",
-  "Off: two fingers moving sideways scroll horizontally on this layer.":
-    "关闭后，此层上两指横向移动会横向滚动。",
-  "How far three fingers travel before it is a swipe, in sensor counts (about 23 to the millimetre). Lower if swipes are missed, raise if they fire while you meant to hold.":
-    "三指移动多远才算滑动（传感器计数，约 23 为 1 毫米）。滑动被漏掉就调低，想按住却触发了就调高。",
+  Swipes: "滑动手势",
+  "Swipe distance ({{n}} counts)": "判定为滑动的距离（{{n}} 计数）",
+  "How far sideways two fingers travel before it is a swipe, in sensor counts (about 23 to the millimetre). Lower if swipes are missed, raise if they fire while you meant to scroll.":
+    "两指横向移动多远才算滑动（传感器计数，约 23 为 1 毫米）。滑动被漏掉就调低，想滚动却触发了就调高。",
+  "Finger detection": "手指检测",
+  "On: two fingers sideways is a swipe and scrolling stays on one axis. Off: two fingers scroll sideways and diagonally on this layer.":
+    "打开：两指横向移动是滑动手势，滚动固定在一个轴上。关闭：此层上两指可以横向和斜向滚动。",
+  "Three fingers moving in any of the four directions is a swipe (bound as keys on the trackpad tab); they never scroll. These are how far they travel before it counts, in sensor counts (about 23 to the millimetre). Lower if swipes are missed, raise if they fire while you meant to hold.":
+    "三指向上下左右任一方向移动都是滑动手势（在触控板标签页里绑定按键）；三指从不滚动。下面是移动多远才算滑动（传感器计数，约 23 为 1 毫米）。滑动被漏掉就调低，想按住却触发了就调高。",
   "Up and down ({{n}} counts)": "上下（{{n}} 计数）",
   "Along the long side of the pad, where three fingers have room to travel.":
     "沿触控板长边，三指有足够的移动空间。",

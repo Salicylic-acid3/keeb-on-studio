@@ -32,6 +32,7 @@ import {
   SWIPE2_LAYERS_KEY,
   ONE_HAND_PINCH_KEY,
   PINCH_INVERT_KEY,
+  SWIPE2_THRESHOLD_KEY,
   SWIPE3_THRESHOLD_X_KEY,
   SWIPE3_THRESHOLD_Y_KEY,
   commitTrackpadNumber,
@@ -58,6 +59,7 @@ export function PinchSettings({
   const invert = readTrackpadToggle(rows, PINCH_INVERT_KEY);
   const swipeX = readTrackpadNumber(rows, SWIPE3_THRESHOLD_X_KEY);
   const swipeY = readTrackpadNumber(rows, SWIPE3_THRESHOLD_Y_KEY);
+  const swipe2Distance = readTrackpadNumber(rows, SWIPE2_THRESHOLD_KEY);
   const fingerSplit = readTrackpadNumber(rows, FINGER_SPLIT_KEY);
   const swipe2Layers = readTrackpadNumber(rows, SWIPE2_LAYERS_KEY);
 
@@ -102,7 +104,15 @@ export function PinchSettings({
 
   // Nothing to draw for a keyboard that does not have these. The shared
   // loading indicator lives in TrackpadSettings.
-  if (!pinch && !invert && !swipeX && !swipeY && !fingerSplit && !swipe2Layers)
+  if (
+    !pinch &&
+    !invert &&
+    !swipeX &&
+    !swipeY &&
+    !swipe2Distance &&
+    !fingerSplit &&
+    !swipe2Layers
+  )
     return null;
 
   return (
@@ -142,44 +152,77 @@ export function PinchSettings({
         />
       )}
 
-      {swipe2Layers && layers.length > 0 && (
-        <div className="border-t border-[var(--color-border)] pt-3 space-y-3">
+      {/* The two swipes are different gestures with different consequences
+          for scrolling, so they sit under one heading but keep their own
+          names. Two fingers sideways is either a swipe or a horizontal
+          scroll, never both, and that choice also decides whether a scroll
+          is held to one axis. Three fingers never scroll. */}
+      {(swipe2Layers || swipe2Distance || swipeX || swipeY) && (
+        <div className="border-t border-[var(--color-border)] pt-3">
+          <h4 className="text-sm font-medium text-[var(--color-text)]">
+            {t("Swipes")}
+          </h4>
+        </div>
+      )}
+
+      {(swipe2Layers || swipe2Distance) && (
+        <div className="space-y-3">
           <div>
-            <h4 className="text-sm font-medium text-[var(--color-text)]">
+            <h5 className="text-sm text-[var(--color-text)]">
               {t("Two-finger horizontal swipe")}
-            </h4>
+            </h5>
             <p className="mt-1 text-xs text-[var(--color-text-muted)]">
               {t(
-                "On a layer with the switch on, moving two fingers sideways is a swipe (bound as a key on the trackpad tab). With it off, the same movement scrolls sideways instead. Only the half connected to the computer follows the layer; the other half always swipes.",
+                "On a layer with the switch on, moving two fingers sideways is a swipe (bound as a key on the trackpad tab), and a scroll that starts there is held to the axis it started on, so it does not drift sideways. With the switch off, two fingers scroll sideways and diagonally as well as up and down. Only the half connected to the computer follows the layer; the other half always swipes.",
               )}
             </p>
           </div>
-          {layers.map((layer, index) => (
-            <ToggleRow
-              key={layer.id}
-              label={t("Swipe on {{layer}}", {
-                layer: layer.name || t("Layer {{id}}", { id: index }),
+          {swipe2Layers &&
+            layers.map((layer, index) => (
+              <ToggleRow
+                key={layer.id}
+                label={t("Swipe on {{layer}}", {
+                  layer: layer.name || t("Layer {{id}}", { id: index }),
+                })}
+                info={t(
+                  "On: two fingers sideways is a swipe and scrolling stays on one axis. Off: two fingers scroll sideways and diagonally on this layer.",
+                )}
+                checked={swipe2On(layer.id)}
+                disagree={sidesDisagree(swipe2Layers)}
+                disabled={settings.isLoading}
+                onCheckedChange={(checked) => void setSwipe2(layer.id, checked)}
+              />
+            ))}
+          {swipe2Distance && (
+            <NumberRow
+              label={t("Swipe distance ({{n}} counts)", {
+                n: swipe2Distance.value,
               })}
               info={t(
-                "Off: two fingers moving sideways scroll horizontally on this layer.",
+                "How far sideways two fingers travel before it is a swipe, in sensor counts (about 23 to the millimetre). Lower if swipes are missed, raise if they fire while you meant to scroll.",
               )}
-              checked={swipe2On(layer.id)}
-              disagree={sidesDisagree(swipe2Layers)}
+              field={swipe2Distance}
+              step={10}
               disabled={settings.isLoading}
-              onCheckedChange={(checked) => void setSwipe2(layer.id, checked)}
+              onCommit={(typed) =>
+                void commitTrackpadNumber(settings, swipe2Distance, typed, {
+                  min: 1,
+                  max: 1000,
+                })
+              }
             />
-          ))}
+          )}
         </div>
       )}
 
       {(swipeX || swipeY) && (
-        <div className="border-t border-[var(--color-border)] pt-3">
-          <h4 className="text-sm font-medium text-[var(--color-text)]">
+        <div>
+          <h5 className="text-sm text-[var(--color-text)]">
             {t("Three-finger swipe")}
-          </h4>
+          </h5>
           <p className="mt-1 text-xs text-[var(--color-text-muted)]">
             {t(
-              "How far three fingers travel before it is a swipe, in sensor counts (about 23 to the millimetre). Lower if swipes are missed, raise if they fire while you meant to hold.",
+              "Three fingers moving in any of the four directions is a swipe (bound as keys on the trackpad tab); they never scroll. These are how far they travel before it counts, in sensor counts (about 23 to the millimetre). Lower if swipes are missed, raise if they fire while you meant to hold.",
             )}
           </p>
         </div>
@@ -222,12 +265,19 @@ export function PinchSettings({
       )}
 
       {fingerSplit && (
+        <div className="border-t border-[var(--color-border)] pt-3">
+          <h4 className="text-sm font-medium text-[var(--color-text)]">
+            {t("Finger detection")}
+          </h4>
+        </div>
+      )}
+      {fingerSplit && (
         <NumberRow
           label={t("Telling two fingers apart ({{n}})", {
             n: fingerSplit.value,
           })}
           info={t(
-            "How readily two fingers close together count as two. If a two-finger scroll does not start when the fingers are close, try one step at a time in either direction and keep whichever works. 3 is the default; 0 never counts them as two.",
+            "The sensor's own finger split factor: how readily one touched area is taken for two fingers. Higher splits more readily, 0 never splits, 3 is the sensor's default. It only matters when the fingers are nearly touching each other; two fingers with a gap between them are always two. If a close two-finger scroll does not start, raise it one step at a time; if one finger sometimes counts as two, lower it.",
           )}
           field={fingerSplit}
           step={1}

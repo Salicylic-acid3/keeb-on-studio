@@ -165,6 +165,11 @@ export const TOUCH_THRESHOLD_HYSTERESIS = 6;
 /** Three-finger swipe thresholds per sensor axis, in counts. */
 export const SWIPE3_THRESHOLD_X_KEY = "swipe3_threshold_x";
 export const SWIPE3_THRESHOLD_Y_KEY = "swipe3_threshold_y";
+/**
+ * Two-finger horizontal swipe distance, in counts (zmk-driver-iqs9151
+ * f2ed2b77 and later; older firmware has only the build-time value).
+ */
+export const SWIPE2_THRESHOLD_KEY = "swipe2_threshold";
 /** How readily two fingers close together are told apart (0..255; 0 never). */
 export const FINGER_SPLIT_KEY = "finger_split_factor";
 

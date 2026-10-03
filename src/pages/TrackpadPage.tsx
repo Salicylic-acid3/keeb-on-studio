@@ -114,7 +114,7 @@ function ToggleRow({
   return (
     <div className="flex items-center justify-between gap-3">
       <span className="text-sm text-[var(--color-text-secondary)] flex items-center gap-1.5 min-w-0">
-        <span className="truncate">{label}</span>
+        <span className="min-w-0 break-words">{label}</span>
         <InfoTip text={info} />
       </span>
       <Switch.Root

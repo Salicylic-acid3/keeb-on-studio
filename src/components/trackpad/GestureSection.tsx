@@ -158,7 +158,7 @@ export function GestureSection({
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   {swipeOff ? (
-                    <span className="text-sm text-[var(--color-text-muted)] truncate max-w-[220px]">
+                    <span className="text-sm text-[var(--color-text-muted)] max-w-[220px] text-right">
                       {t("Scrolls sideways — swipe is off on this layer")}
                     </span>
                   ) : (

@@ -844,7 +844,7 @@ function SettingRow({
     >
       <div className="min-w-0">
         <div className="flex items-center gap-2">
-          <p className="truncate text-sm font-medium text-[var(--color-text)]">
+          <p className="min-w-0 break-words text-sm font-medium text-[var(--color-text)]">
             {settingLabel(setting)}
           </p>
           <RowStatusIndicator saveState={saveState} editStatus={editStatus} />
@@ -981,7 +981,7 @@ export function CustomSettingsSectionCard({
             />
           )}
           <div className="min-w-0">
-            <h4 className="truncate text-sm font-medium text-[var(--color-text)]">
+            <h4 className="min-w-0 break-words text-sm font-medium text-[var(--color-text)]">
               {subsystemLabel(section.identifier, t)}
             </h4>
             <p className="text-xs text-[var(--color-text-muted)]">
