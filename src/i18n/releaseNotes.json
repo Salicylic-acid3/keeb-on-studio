@@ -6,6 +6,15 @@
       "changes": {
         "major": [],
         "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.03.2",
+      "date": "2026-10-03",
+      "changes": {
+        "major": [],
+        "minor": [],
         "patch": [
           {
             "en": "Trackpad and Settings tabs: number boxes are the small size they were meant to be instead of stretching across the row, and setting names stay on one line again.",
