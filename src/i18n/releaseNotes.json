@@ -6,7 +6,13 @@
       "changes": {
         "major": [],
         "minor": [],
-        "patch": []
+        "patch": [
+          {
+            "en": "Trackpad and Settings tabs: number boxes are the small size they were meant to be instead of stretching across the row, and setting names stay on one line again.",
+            "ja": "トラックパッドタブと設定タブ: 数値の入力欄が行いっぱいに伸びていたのを本来の小さなサイズにし、項目名が折り返されず1行に収まるようにしました。",
+            "zh": "触控板和设置标签页：数值输入框不再横向撑满整行，恢复为应有的小尺寸，项目名重新保持在一行内。"
+          }
+        ]
       }
     },
     {

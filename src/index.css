@@ -328,18 +328,25 @@
   );
 }
 
-.input-field {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  color: var(--color-text);
-  transition: all 0.2s;
-}
+/*
+ * In the components layer so that utilities win: an unlayered rule beats
+ * every Tailwind utility, which meant `input-field w-24` was still 100%
+ * wide and every number box in the app stretched across its row.
+ */
+@layer components {
+  .input-field {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    transition: all 0.2s;
+  }
 
-.input-field::placeholder {
-  color: var(--color-text-muted);
+  .input-field::placeholder {
+    color: var(--color-text-muted);
+  }
 }
 
 /*

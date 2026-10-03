@@ -56,7 +56,7 @@ export function NumberRow({
     <div className="flex items-center justify-between gap-3">
       <span className="flex min-w-0 flex-col">
         <span className="flex min-w-0 items-center gap-1.5 text-sm text-[var(--color-text-secondary)]">
-          <span className="min-w-0 break-words">{label}</span>
+          <span className="whitespace-nowrap">{label}</span>
           <InfoTip text={info} />
         </span>
         {disagree && (
@@ -72,7 +72,7 @@ export function NumberRow({
       </span>
       <RetainedInput
         type="number"
-        className="input-field w-24 text-sm"
+        className="input-field w-24 shrink-0 px-3 py-1.5 text-right text-sm"
         value={shown(field.value)}
         min={field.min === null ? undefined : field.min / scale}
         max={field.max === null ? undefined : field.max / scale}
