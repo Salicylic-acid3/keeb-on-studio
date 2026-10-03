@@ -5,6 +5,15 @@
       "date": null,
       "changes": {
         "major": [],
+        "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.03.1",
+      "date": "2026-10-03",
+      "changes": {
+        "major": [],
         "minor": [
           {
             "en": "Trackpad tab: the swipe settings are grouped as Swipes, with the two-finger horizontal swipe (per-layer switches and, with zmk-driver-iqs9151 f2ed2b77 or later, its distance) beside the three-finger swipe; the finger split factor has its own Finger detection heading and a fuller explanation.",
