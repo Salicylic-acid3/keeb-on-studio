@@ -219,6 +219,17 @@ const ja: Record<string, string> = {
   "On a layer with the switch on, moving two fingers sideways is a swipe (bound as a key on the trackpad tab), and a scroll that starts there is held to the axis it started on, so it does not drift sideways. With the switch off, two fingers scroll sideways and diagonally as well as up and down. Only the half connected to the computer follows the layer; the other half always swipes.":
     "スイッチがオンのレイヤーでは、2本の指を横に動かすとスワイプになり(割り当てはトラックパッドタブのジェスチャー)、スクロールは始まった軸に固定されて横に流れません。オフのレイヤーでは、2本指で横にも斜めにもスクロールできます。レイヤーに従うのは PC につながる側だけで、もう片方は常にスワイプです。",
   "Swipe on {{layer}}": "{{layer}} で横スワイプ",
+  "Tap to click": "タップでクリック",
+  "A quick touch with one finger clicks": "1本指で軽く触れるとクリック",
+  "Off: tapping the pad does nothing; clicks come from the switches only. Turn it off if the pad gets brushed while typing and clicks where you did not mean to.":
+    "オフ: パッドを叩いても何も起きず、クリックはスイッチだけになります。打鍵中にパッドに触れて意図しない場所をクリックしてしまうならオフにしてください。",
+  "Longest touch that is a tap ({{n}} ms)": "タップとみなす最長時間({{n}} ms)",
+  "A finger held down longer than this is not a tap. Lower it if the pad clicks when you only meant to rest a finger on it; 250 is the default, 120 to 150 is strict.":
+    "これより長く触れていたらタップではありません。指を置いただけでクリックされるなら下げてください。既定は 250、120〜150 だと厳しめです。",
+  "Farthest a tap may move ({{n}} counts)":
+    "タップとみなす最大の動き({{n}} カウント)",
+  "A finger that moves further than this while down is a stroke, not a tap (about 23 counts to the millimetre). Lower it if brushing the pad clicks; 50 is the default, 20 to 30 is strict.":
+    "触れている間にこれより大きく動いたらタップではなくなぞりです(約23カウントで1mm)。パッドをかすめただけでクリックされるなら下げてください。既定は 50、20〜30 だと厳しめです。",
   Swipes: "スワイプ",
   "Swipe distance ({{n}} counts)": "スワイプとみなす距離({{n}} カウント)",
   "How far sideways two fingers travel before it is a swipe, in sensor counts (about 23 to the millimetre). Lower if swipes are missed, raise if they fire while you meant to scroll.":
@@ -2045,6 +2056,18 @@ const zh: Record<string, string> = {
   "On a layer with the switch on, moving two fingers sideways is a swipe (bound as a key on the trackpad tab), and a scroll that starts there is held to the axis it started on, so it does not drift sideways. With the switch off, two fingers scroll sideways and diagonally as well as up and down. Only the half connected to the computer follows the layer; the other half always swipes.":
     "开关打开的层上，两指横向移动是滑动手势（在触控板标签页里绑定按键），且滚动会锁定在开始时的轴上，不会横向漂移。关闭的层上，两指除了上下还可以横向和斜向滚动。只有连接电脑的一半会跟随层；另一半始终是滑动。",
   "Swipe on {{layer}}": "{{layer}} 上横向滑动",
+  "Tap to click": "轻点点击",
+  "A quick touch with one finger clicks": "单指快速轻触即点击",
+  "Off: tapping the pad does nothing; clicks come from the switches only. Turn it off if the pad gets brushed while typing and clicks where you did not mean to.":
+    "关闭：轻点触控板不会有任何动作，只有按键开关会点击。打字时蹭到触控板导致误点击时请关闭。",
+  "Longest touch that is a tap ({{n}} ms)":
+    "判定为轻点的最长触摸时间（{{n}} ms）",
+  "A finger held down longer than this is not a tap. Lower it if the pad clicks when you only meant to rest a finger on it; 250 is the default, 120 to 150 is strict.":
+    "手指按住超过这个时间就不算轻点。只是把手指放上去就被点击的话请调低；默认 250，120 到 150 较严格。",
+  "Farthest a tap may move ({{n}} counts)":
+    "判定为轻点的最大移动（{{n}} 计数）",
+  "A finger that moves further than this while down is a stroke, not a tap (about 23 counts to the millimetre). Lower it if brushing the pad clicks; 50 is the default, 20 to 30 is strict.":
+    "按住期间移动超过这个距离就算滑动而不是轻点（约 23 计数为 1 毫米）。蹭到触控板就被点击的话请调低；默认 50，20 到 30 较严格。",
   Swipes: "滑动手势",
   "Swipe distance ({{n}} counts)": "判定为滑动的距离（{{n}} 计数）",
   "How far sideways two fingers travel before it is a swipe, in sensor counts (about 23 to the millimetre). Lower if swipes are missed, raise if they fire while you meant to scroll.":

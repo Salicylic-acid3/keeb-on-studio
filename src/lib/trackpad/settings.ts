@@ -66,6 +66,14 @@ export const CURSOR_SMOOTHING_KEY = "cursor_smoothing";
 /** Pointer movement withheld after a finger lands, in counts; 0 is off. */
 export const TAP_DEAD_ZONE_KEY = "tap_dead_zone";
 export const LIFT_GUARD_KEY = "lift_guard";
+/**
+ * The single-finger tap (zmk-driver-iqs9151 838755fe and later): whether a
+ * quick touch clicks, the longest touch (ms) and the largest movement
+ * (counts) that still count as one.
+ */
+export const TAP1_ENABLE_KEY = "tap1_enable";
+export const TAP1_MAX_MS_KEY = "tap1_max_ms";
+export const TAP1_MOVE_KEY = "tap1_move";
 export const SWIPE2_LAYERS_KEY = "swipe2_layers";
 
 /**

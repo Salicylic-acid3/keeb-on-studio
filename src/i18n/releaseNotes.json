@@ -5,8 +5,20 @@
       "date": null,
       "changes": {
         "major": [],
-        "minor": [],
-        "patch": []
+        "minor": [
+          {
+            "en": "Trackpad tab: a Tap to click card — turn the single-finger tap off, or make it stricter with the longest touch and the farthest movement that still count as a tap (needs firmware from zmk-keyboard-clickboard-ergotrack bc21a5e or later).",
+            "ja": "トラックパッドタブ: 「タップでクリック」のカードを追加。1本指タップをオフにしたり、タップとみなす最長時間と最大の動きで厳しくしたりできます(zmk-keyboard-clickboard-ergotrack bc21a5e 以降のファームウェアが必要)。",
+            "zh": "触控板标签页：新增“轻点点击”卡片——可以关闭单指轻点，或通过最长触摸时间和最大移动距离让判定更严格（需要 zmk-keyboard-clickboard-ergotrack bc21a5e 或更新的固件）。"
+          }
+        ],
+        "patch": [
+          {
+            "en": "ClickBoard ErgoTrack firmware (bc21a5e): wakes from deep sleep faster — the trackpad no longer holds up the keys and Bluetooth while it starts, and the right half looks for the left at full strength for the first 20 seconds; the pointer no longer hops when a stroke begins; the touch threshold, finger split and other sensor settings changed from the app now actually reach the sensor.",
+            "ja": "ClickBoard ErgoTrack のファームウェア(bc21a5e): ディープスリープからの復帰が速くなりました(トラックパッドの起動がキーや Bluetooth の開始を待たせなくなり、右半身は最初の20秒間、左を全力で探します)。なぞり始めにポインタが飛ばなくなりました。アプリから変えたタッチの感度・指の見分けなどのセンサ設定が実際にセンサへ届くようになりました。",
+            "zh": "ClickBoard ErgoTrack 固件（bc21a5e）：从深度睡眠唤醒更快——触控板启动不再拖住按键和蓝牙，右半边在最初 20 秒全力搜索左半边；开始滑动时指针不再跳动；在应用中修改的触摸灵敏度、手指分割等传感器设置现在会真正写入传感器。"
+          }
+        ]
       }
     },
     {

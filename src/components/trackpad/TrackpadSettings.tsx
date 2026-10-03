@@ -28,6 +28,7 @@ import {
 import type { Layer } from "../../hooks/useKeymap";
 import { PinchSettings } from "./PinchSettings";
 import { ScaleSettings } from "./ScaleSettings";
+import { TapSettings } from "./TapSettings";
 import { ToggleRow } from "./ToggleRow";
 
 /**
@@ -108,6 +109,7 @@ export function TrackpadSettings({
 
   return (
     <>
+      <TapSettings settings={settings} rows={rows} />
       <div className="glass-card p-4">
         <ToggleRow
           label={t("Show advanced settings")}
