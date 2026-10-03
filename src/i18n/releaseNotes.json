@@ -5,6 +5,15 @@
       "date": null,
       "changes": {
         "major": [],
+        "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.03.0",
+      "date": "2026-10-03",
+      "changes": {
+        "major": [],
         "minor": [
           {
             "en": "Key picker: Left Click (Drag) and the pointer speed keys are listed under Mouse with descriptions, External Power under System, and System Reset, Studio Unlock and internal firmware behaviors are no longer offered.",
