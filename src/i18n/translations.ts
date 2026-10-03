@@ -1182,6 +1182,28 @@ const ja: Record<string, string> = {
   "Repeat last-pressed key while held":
     "押している間、最後に押したキーを繰り返す",
   "Mouse key press": "マウスボタン入力",
+  "Hold a key and a mouse button together":
+    "キーとマウスボタンを同時に押し続ける",
+  "The key (with modifiers) and the mouse button to hold together while a finger is on the pad. Either can be left empty.":
+    "パッドに指が乗っている間、同時に押し続けるキー(修飾キー付き可)とマウスボタン。どちらか片方だけでも構いません。",
+  "Mouse button to hold (0 for none)": "押し続けるマウスボタン(0 でなし)",
+  "Left click. After the click, the drag continues for as long as a finger stays on the trackpad.":
+    "左クリック。クリック後、トラックパッドから指を離さない限りドラッグを継続します。",
+  "Make the cursor or scrolling faster or slower. The keyboard remembers the speed.":
+    "カーソルやスクロールの速さを一段階ずつ変えます。速さはキーボードが記憶します。",
+  "Which speed to change: the cursor, scrolling, or both":
+    "どの速さを変えるか: カーソル、スクロール、または両方",
+  "Faster, slower, or back to the default": "速く、遅く、または既定に戻す",
+  "Set the cursor or scroll speed to a fixed multiplier (10 = normal speed, 20 = twice as fast).":
+    "カーソルやスクロールの速さを決まった倍率にします(10 = 標準、20 = 2倍)。",
+  "Which speed to set: the cursor, scrolling, or both":
+    "どの速さを設定するか: カーソル、スクロール、または両方",
+  "Ten times the multiplier: 10 is normal, 5 is half, 20 is double":
+    "倍率の10倍の値: 10 が標準、5 が半分、20 が2倍",
+  "Internal: turns a trackpad gesture into a press of a key position.":
+    "内部用: トラックパッドのジェスチャーをキー位置の押下に変換します。",
+  "Turn the external power output (for LEDs, say) on or off":
+    "外部電源出力(LED など)のオン/オフ",
   "Move mouse cursor.": "マウスカーソルを移動します。",
   "Scroll mouse wheel.": "マウスホイールをスクロールします。",
   "Enter bootloader mode": "ブートローダーモードに入る",
@@ -2920,6 +2942,27 @@ const zh: Record<string, string> = {
   "Caps lock, but automatically deactivates": "大写锁定，但自动取消激活",
   "Repeat last-pressed key while held": "按住时重复最后一次按下的键",
   "Mouse key press": "鼠标按键",
+  "Hold a key and a mouse button together": "同时按住一个按键和一个鼠标按键",
+  "The key (with modifiers) and the mouse button to hold together while a finger is on the pad. Either can be left empty.":
+    "手指放在触控板上时同时按住的按键(可带修饰键)和鼠标按键。两者可以只设置一个。",
+  "Mouse button to hold (0 for none)": "要按住的鼠标按键(0 表示无)",
+  "Left click. After the click, the drag continues for as long as a finger stays on the trackpad.":
+    "左键点击。点击后,只要手指不离开触控板,拖动就会继续。",
+  "Make the cursor or scrolling faster or slower. The keyboard remembers the speed.":
+    "让光标或滚动变快或变慢。键盘会记住该速度。",
+  "Which speed to change: the cursor, scrolling, or both":
+    "要调整哪种速度:光标、滚动或两者",
+  "Faster, slower, or back to the default": "变快、变慢或恢复默认",
+  "Set the cursor or scroll speed to a fixed multiplier (10 = normal speed, 20 = twice as fast).":
+    "将光标或滚动速度设为固定倍率(10 = 正常速度,20 = 两倍)。",
+  "Which speed to set: the cursor, scrolling, or both":
+    "要设置哪种速度:光标、滚动或两者",
+  "Ten times the multiplier: 10 is normal, 5 is half, 20 is double":
+    "倍率的 10 倍:10 为正常,5 为一半,20 为两倍",
+  "Internal: turns a trackpad gesture into a press of a key position.":
+    "内部用途:将触控板手势转换为某个按键位置的按下。",
+  "Turn the external power output (for LEDs, say) on or off":
+    "打开或关闭外部电源输出(例如 LED)",
   "Move mouse cursor.": "移动鼠标光标。",
   "Scroll mouse wheel.": "滚动鼠标滚轮。",
   "Enter bootloader mode": "进入引导加载程序模式",

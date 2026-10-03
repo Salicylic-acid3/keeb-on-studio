@@ -190,6 +190,15 @@ export interface BehaviorMetadata {
   description?: string;
   param1Description?: string;
   param2Description?: string;
+
+  /**
+   * Keep the behavior out of the picker. Keys that already hold it are still
+   * shown and formatted; it just cannot be chosen anew. For firmware
+   * plumbing that Studio lists because it lists every behavior (a gesture
+   * dispatcher wired up in the shield overlay), and for behaviors that do
+   * nothing useful from a key on these keyboards.
+   */
+  hidden?: boolean;
 }
 
 /**
@@ -536,6 +545,85 @@ const BEHAVIOR_METADATA_BASE: BehaviorMetadata[] = [
     param1Description:
       "Configure scroll amount (upper 16 bits = X, lower 16 bits = Y)",
   },
+  {
+    // zmk-driver-iqs9151's zmk,behavior-drag-click (ClickBoard ErgoTrack's
+    // &drag_lclk, the switch under the trackpad). Pressing it is a left
+    // click; releasing it with a finger still on either pad keeps the button
+    // held until every finger has left, so the drag goes on. No parameters.
+    category: "mouse",
+    displayNameVariants: [
+      "Left Click (Drag)",
+      "drag_lclk",
+      "drag_click",
+      "drag click",
+    ],
+    shortCode: "LClk Drag",
+    getDisplayText: (_binding, context) =>
+      context.shortFormat ? "L-Click (Drag)" : "Left Click (Drag)",
+    description:
+      "Left click. After the click, the drag continues for as long as a finger stays on the trackpad.",
+  },
+  {
+    // zmk-driver-iqs9151's zmk,behavior-zip-dynamic-scale: steps the cursor
+    // or scroll speed multiplier the trackpad's dynamic scaler applies, and
+    // the keyboard remembers the result. The values -- which group, which
+    // direction -- are described by the firmware's metadata; this names the
+    // behavior and the two parameters, and keeps the key label short.
+    category: "mouse",
+    displayNameVariants: [
+      "Pointer Speed Adjust",
+      "zip_dyn_scale",
+      "zip_dynamic_scale",
+    ],
+    shortCode: "Speed",
+    param1ValueMap: { 0: "Cursor", 1: "Scroll", 2: "Cursor+Scroll" },
+    param2ValueMap: { 1: "+", 2: "−", 3: "Reset" },
+    getDisplayText: (binding, _context, metadata) => {
+      const group = metadata.param1ValueMap?.[binding.param1];
+      const step = metadata.param2ValueMap?.[binding.param2];
+      if (!group || !step) return null;
+      return `${group} speed ${step}`;
+    },
+    description:
+      "Make the cursor or scrolling faster or slower. The keyboard remembers the speed.",
+    param1Description: "Which speed to change: the cursor, scrolling, or both",
+    param2Description: "Faster, slower, or back to the default",
+  },
+  {
+    // zmk-driver-iqs9151's zmk,behavior-zip-dynamic-scale-set: the same
+    // multiplier set to a fixed value, ten times the multiplier (10 = 1.0x).
+    category: "mouse",
+    displayNameVariants: [
+      "Pointer Speed Set",
+      "zip_dyn_scale_set",
+      "zip_dynamic_scale_set",
+    ],
+    shortCode: "Speed=",
+    param1ValueMap: { 0: "Cursor", 1: "Scroll", 2: "Cursor+Scroll" },
+    getDisplayText: (binding, _context, metadata) => {
+      const group = metadata.param1ValueMap?.[binding.param1];
+      if (!group) return null;
+      return `${group} speed ×${(binding.param2 / 10).toFixed(1)}`;
+    },
+    description:
+      "Set the cursor or scroll speed to a fixed multiplier (10 = normal speed, 20 = twice as fast).",
+    param1Description: "Which speed to set: the cursor, scrolling, or both",
+    param2Description:
+      "Ten times the multiplier: 10 is normal, 5 is half, 20 is double",
+  },
+  {
+    // zmk-driver-iqs9151's zmk,behavior-trackpad-to-pos: how the shield
+    // overlay turns a trackpad gesture into a virtual key position. Studio
+    // lists every behavior, this one included, but putting it on a key does
+    // nothing a person would want; it stays out of the picker.
+    category: "others",
+    displayNameVariants: ["tp_to_pos", "trackpad_to_pos", "Trackpad Gesture"],
+    shortCode: "Gesture",
+    hidden: true,
+    getDisplayText: (binding) => `Gesture → key ${binding.param1}`,
+    description:
+      "Internal: turns a trackpad gesture into a press of a key position.",
+  },
   // ============================================================================
   // System Behaviors
   // ============================================================================
@@ -547,11 +635,24 @@ const BEHAVIOR_METADATA_BASE: BehaviorMetadata[] = [
     description: "Enter bootloader mode",
   },
   {
+    // Restarts the keyboard, which from a key is only ever done by mistake:
+    // Bootloader is what firmware updates need, and a stuck keyboard is
+    // power-cycled. Kept out of the picker; a key that has it still shows it.
     category: "system",
     displayNameVariants: ["System Reset", "sys_reset", "reset"],
     shortCode: "Reset",
+    hidden: true,
     getDisplayText: () => "Reset",
     description: "System reset",
+  },
+  {
+    // Switches the board's external power rail (LEDs, say) on or off. The
+    // keyboards this app ships with have no such rail, so it only turns up
+    // in demo mode, but it should still read as what it is.
+    category: "system",
+    displayNameVariants: ["External Power", "ext_power"],
+    shortCode: "ExtPwr",
+    description: "Turn the external power output (for LEDs, say) on or off",
   },
 
   // ============================================================================
@@ -613,9 +714,12 @@ const BEHAVIOR_METADATA_BASE: BehaviorMetadata[] = [
   // TODO: Power management
   // TODO: Softoff
   {
+    // The supported keyboards build with Studio locking off, so this key
+    // would do nothing; it stays out of the picker.
     category: "system",
     displayNameVariants: ["Studio Unlock", "studio_unlock"],
     shortCode: "Studio",
+    hidden: true,
     description: "Unlock keyboard for ZMK Studio and Keeb-On! Studio",
   },
   {

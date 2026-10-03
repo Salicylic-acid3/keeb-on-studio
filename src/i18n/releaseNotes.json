@@ -5,8 +5,20 @@
       "date": null,
       "changes": {
         "major": [],
-        "minor": [],
-        "patch": []
+        "minor": [
+          {
+            "en": "Key picker: Left Click (Drag) and the pointer speed keys are listed under Mouse with descriptions, External Power under System, and System Reset, Studio Unlock and internal firmware behaviors are no longer offered.",
+            "ja": "キー割り当て: Left Click (Drag) とポインタ速度のキーが説明付きでマウス分類に、External Power がシステム分類に入りました。System Reset、Studio Unlock、ファームウェア内部用の動作は候補に出なくなりました。",
+            "zh": "按键选择:Left Click (Drag) 和指针速度按键带说明归入“鼠标”分类,External Power 归入“系统”分类;System Reset、Studio Unlock 和固件内部用的行为不再出现在候选中。"
+          }
+        ],
+        "patch": [
+          {
+            "en": "ClickBoard ErgoTrack: Left Click (Drag) can be put on a key again after the key was changed to a plain Left Click (the firmware had been refusing it; needs firmware built from zmk-keyboard-clickboard-ergotrack c76ea2f or later).",
+            "ja": "ClickBoard ErgoTrack: キーを普通の Left Click に変えたあと Left Click (Drag) に戻せなかったのを修正(ファームウェア側が拒否していました。zmk-keyboard-clickboard-ergotrack c76ea2f 以降のファームウェアが必要です)。",
+            "zh": "ClickBoard ErgoTrack:将按键改为普通 Left Click 之后无法再设回 Left Click (Drag) 的问题已修复(此前固件会拒绝;需要 zmk-keyboard-clickboard-ergotrack c76ea2f 或更新的固件)。"
+          }
+        ]
       }
     },
     {

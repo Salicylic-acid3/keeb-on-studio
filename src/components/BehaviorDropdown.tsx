@@ -88,6 +88,9 @@ export function BehaviorDropdown({
     const allOptions: BehaviorOption[] = [];
     behaviors.forEach((behavior, id) => {
       const metadata = getBehaviorMetadata(behavior.displayName);
+      // Hidden behaviors are not offered, but one the key already holds
+      // stays in the list so the current choice is still visible.
+      if (metadata?.hidden && id !== selectedBehaviorId) return;
       const category = metadata?.category || "others";
       allOptions.push({
         id,
@@ -104,7 +107,7 @@ export function BehaviorDropdown({
       if (catA !== catB) return catA - catB;
       return a.displayName.localeCompare(b.displayName);
     });
-  }, [behaviors]);
+  }, [behaviors, selectedBehaviorId]);
 
   // Filtered options
   const filteredOptions = useMemo(() => {
@@ -157,6 +160,9 @@ export function BehaviorDropdown({
     const predefinedIds = new Set(predefined.map((b) => b.id));
     const recent = recentBehaviors
       .filter((id) => !predefinedIds.has(id) && behaviors.has(id))
+      .filter(
+        (id) => !getBehaviorMetadata(behaviors.get(id)!.displayName)?.hidden,
+      )
       .map((id) => {
         const behavior = behaviors.get(id)!;
         const metadata = getBehaviorMetadata(behavior.displayName);
