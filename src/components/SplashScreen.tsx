@@ -16,6 +16,8 @@ import { getCurrentVersion } from "../i18n/releaseNotes";
 import { KikkoField } from "./brand/KikkoField";
 import { NorenRule } from "./brand/NorenRule";
 import { SplashGuide } from "./SplashGuide";
+import { FirmwareToggle } from "./FirmwareToggle";
+import type { Firmware } from "../lib/firmware";
 
 interface SplashScreenProps {
   onConnect: (method: ConnectionMethod) => void;
@@ -34,6 +36,13 @@ interface SplashScreenProps {
    * simply does not drive that keyboard, and never connected to it.
    */
   unsupportedDevice: boolean;
+  /** Which entrance is open: ZMK (the default) or QMK. */
+  firmware?: Firmware;
+  onFirmwareChange?: (firmware: Firmware) => void;
+  /** Model names shown under the switch so people can find their side. */
+  supportedModels?: string[];
+  /** Shown after a connect attempt that found nothing, pointing at the switch. */
+  connectHint?: string | null;
 }
 
 function LoadingDots() {
@@ -129,6 +138,10 @@ export function SplashScreen({
   error,
   onShowReleaseNotes,
   unsupportedDevice,
+  firmware = "zmk",
+  onFirmwareChange,
+  supportedModels,
+  connectHint,
 }: SplashScreenProps) {
   const { t } = useLanguage();
   const version = getCurrentVersion();
@@ -184,6 +197,9 @@ export function SplashScreen({
         <KikkoField />
       </div>
       <div className="fixed right-6 top-6 z-20 flex items-center gap-3">
+        {onFirmwareChange && (
+          <FirmwareToggle value={firmware} onChange={onFirmwareChange} />
+        )}
         <LanguageToggle />
         <ThemeToggle />
       </div>
@@ -213,6 +229,17 @@ export function SplashScreen({
               <p className="mt-2 text-[11px] uppercase tracking-[0.32em] text-[var(--color-text-muted)]">
                 Salicylic_acid3 Keyboards
               </p>
+              {supportedModels && supportedModels.length > 0 && (
+                <p className="mt-3 text-xs text-[var(--color-text-secondary)]">
+                  <span className="text-[var(--color-text-muted)]">
+                    {firmware === "qmk"
+                      ? t("QMK (Vial) keyboards")
+                      : t("ZMK keyboards")}
+                    :
+                  </span>{" "}
+                  {supportedModels.join(", ")}
+                </p>
+              )}
             </div>
 
             <div className="flex flex-col items-center gap-4">
@@ -287,6 +314,16 @@ export function SplashScreen({
             >
               studio.dya.cormoran.works
             </a>
+          </motion.div>
+        )}
+
+        {connectHint && (
+          <motion.div
+            className="mt-4 max-w-md px-4 py-2 text-center text-xs text-[var(--color-text-muted)]"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            {connectHint}
           </motion.div>
         )}
 

@@ -52,6 +52,9 @@ import { useDevtool } from "./hooks/useDevtool";
 import { DevtoolWindow } from "./components/DevtoolWindow";
 import { trackPageView } from "./lib/analytics";
 import { keyboardHasTrackpadTab } from "./lib/keyboardTabs";
+import { QmkApp } from "./qmk/QmkApp";
+import { firmwareFromPathname, QMK_PATH, type Firmware } from "./lib/firmware";
+import { ZMK_MODELS } from "./lib/supportedDevices";
 
 function getTabs(
   t: (key: string) => string,
@@ -187,6 +190,11 @@ function AppContent() {
     window.history.replaceState(null, "", path);
     window.dispatchEvent(new PopStateEvent("popstate"));
   }, []);
+  const onQmk = firmwareFromPathname(pathname) === "qmk";
+  const navigateFirmware = useCallback(
+    (firmware: Firmware) => navigatePath(firmware === "qmk" ? QMK_PATH : "/"),
+    [navigatePath],
+  );
   const onReleaseNotes = pathname === RELEASE_NOTES_PATH;
   const onAbout = pathname === ABOUT_PATH;
   const onDownloads = pathname === DOWNLOADS_PATH;
@@ -198,6 +206,7 @@ function AppContent() {
     // rewriting it to "/" would discard the ?code=&state= query string before
     // AbyssCallbackPage ever gets to read it.
     if (
+      !onQmk &&
       !onReleaseNotes &&
       !onAbout &&
       !onDownloads &&
@@ -210,6 +219,7 @@ function AppContent() {
   }, [
     urlTab,
     activeTab,
+    onQmk,
     onReleaseNotes,
     onAbout,
     onDownloads,
@@ -249,6 +259,18 @@ function AppContent() {
     return <DownloadsPage onBack={() => navigatePath("/")} />;
   }
 
+  // The QMK (Vial) half: its own connection and tabs, the same top page.
+  if (onQmk) {
+    return (
+      <QmkApp
+        onFirmwareChange={navigateFirmware}
+        onShowReleaseNotes={() => navigatePath(RELEASE_NOTES_PATH)}
+        onShowAbout={() => navigatePath(ABOUT_PATH)}
+        onShowDownloads={() => navigatePath(DOWNLOADS_PATH)}
+      />
+    );
+  }
+
   return (
     <>
       <AnimatePresence>
@@ -273,6 +295,9 @@ function AppContent() {
                 onShowAbout={() => navigatePath(ABOUT_PATH)}
                 onShowDownloads={() => navigatePath(DOWNLOADS_PATH)}
                 unsupportedDevice={connection.unsupportedDevice}
+                firmware="zmk"
+                onFirmwareChange={navigateFirmware}
+                supportedModels={ZMK_MODELS}
               />
             </motion.div>
           )

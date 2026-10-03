@@ -111,3 +111,10 @@ export function isKnownDeviceName(name: string | undefined | null): boolean {
   const normalized = name.trim().toLowerCase();
   return SUPPORTED_DEVICE_NAMES.some((known) => known === normalized);
 }
+
+/**
+ * Marketing names of the ZMK boards, for the line under the ZMK/QMK switch on
+ * the top page. Separate from the roster above because that one is keyed by
+ * firmware identifier and must never be renamed.
+ */
+export const ZMK_MODELS = ["ClickBoard ErgoTrack", "GoFortyMax Ortho"];

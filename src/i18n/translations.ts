@@ -9,6 +9,87 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  // QMK (Vial) side
+  "After setting a key, move on to the next one automatically":
+    "キーを設定したら、自動的に次のキーへ進みます",
+  "Always Linux": "常にLinux",
+  "Always Windows": "常にWindows",
+  "Always macOS": "常にmacOS",
+  "Back to normal": "元に戻す",
+  Base: "ベース",
+  "Block {{id}}": "ブロック{{id}}",
+  "Block {{id}} (unused)": "ブロック{{id}}（未使用）",
+  "Block {{id}}: layers {{layers}}": "ブロック{{id}}：レイヤー {{layers}}",
+  "Choose a modifier above, then the key.":
+    "上で修飾キーを選んでから、キーを選んでください。",
+  "Choose...": "選択...",
+  "Click a key to change what it does. Changes are written to the keyboard right away.":
+    "キーをクリックすると動作を変えられます。変更はすぐにキーボードへ書き込まれます。",
+  "Continuous entry": "連続入力",
+  Copy: "コピー",
+  "Copy this block to": "このブロックをコピー →",
+  "Detected OS": "認識しているOS",
+  "Follow the detected OS": "自動（認識したOSに従う）",
+  "Hold for layer, tap several times to toggle":
+    "押している間はレイヤー、連打で固定",
+  "Japanese input": "日本語入力",
+  "Keyboard firmware": "キーボードのファームウェア",
+  "Keymap of layer {{n}}": "レイヤー{{n}}のキーマップ",
+  "Layer for the next key": "次の1キーだけレイヤー",
+  "Layer keys are renumbered for the target block (MO(1) becomes MO(5))":
+    "レイヤーキーはコピー先に合わせて付け替えます（MO(1) → MO(5)）",
+  "Layer while held": "押している間だけレイヤー",
+  "Layer while held, key when tapped (LT): pick the layer, then the key.":
+    "押している間はレイヤー、タップでキー（LT）：レイヤーを選んでからキーを選びます。",
+  "Layer {{n}}": "レイヤー{{n}}",
+  "Layers {{layers}}": "レイヤー {{layers}}",
+  "Make this the default layer": "デフォルトレイヤーにする",
+  "Mod-tap: the modifier while held, the key when tapped":
+    "モッドタップ：押している間は修飾キー、タップでキー",
+  "Modifier + key": "修飾キー＋キー",
+  "Modifier alone": "修飾キー単体",
+  "Modifier applies to the next key only": "次の1キーだけ修飾キーがかかります",
+  More: "その他",
+  "No keyboard picked. If yours was not in the list, it may be a ZMK keyboard: switch to ZMK at the top right.":
+    "キーボードが選ばれませんでした。一覧に無かった場合はZMKのキーボードかもしれません。右上でZMKに切り替えてみてください。",
+  None: "なし",
+  "Not a keycode Keeb-On! Studio can read.":
+    "Keeb-On! Studioが読めるキーコードではありません。",
+  Nothing: "空",
+  "OS blocks": "OSブロック",
+  "One-shot": "ワンショット",
+  "Pin one when detection gets it wrong, for example behind a KVM switch or in a virtual machine.":
+    "KVM切替器や仮想マシンなどで判定が外れるときは、OSを固定してください。",
+  "Point two OSes at the same block to share one keymap between them, e.g. Linux using the Windows block.":
+    "2つのOSを同じブロックに向けると、同じキーマップを共有できます（例：LinuxでWindowsのブロックを使う）。",
+  "Press the key with the modifier held, e.g. Ctrl+C":
+    "修飾キーを押しながらキーを送ります（例：Ctrl+C）",
+  "QMK (Vial) keyboards": "QMK（Vial）のキーボード",
+  "QMK keyboards (Vial)": "QMKのキーボード（Vial）",
+  "QMK notation, e.g. LT(1,KC_SPC) or LCTL(KC_C)":
+    "QMKの表記で入力（例：LT(1,KC_SPC)、LCTL(KC_C)）",
+  "Right side": "右側",
+  "Switch the keyboard to a block for a moment to type on it. Not saved; unplugging ends it.":
+    "一時的にブロックを切り替えて試し打ちできます。保存はされず、抜き差しで元に戻ります。",
+  "Tap dance": "タップダンス",
+  "The keyboard works out the OS from how the computer talks to it over USB. A Mac often shows up as iOS; that is the same block.":
+    "キーボードはUSBでのやり取りの癖からOSを判定します。MacはiOSと判定されることがよくありますが、同じブロックが使われます。",
+  "This block is not the one the keyboard is using right now.":
+    "このブロックは、いまキーボードが使っているものではありません。",
+  "This browser has no WebHID. Chrome or Edge on a computer can connect.":
+    "このブラウザにはWebHIDがありません。パソコンのChromeかEdgeで接続できます。",
+  "Toggle layer": "レイヤーを切り替え（固定）",
+  Transparent: "透過",
+  "Try another block": "別のブロックを試す",
+  "Unknown OS": "不明なOS",
+  "Using block {{block}} (layers {{layers}})":
+    "ブロック{{block}}（レイヤー {{layers}}）を使用中",
+  "Which OS to assume": "どのOSとして動くか",
+  "Which block each OS uses": "OSごとに使うブロック",
+  "ZMK keyboards": "ZMKのキーボード",
+  "ZMK keyboards (wireless)": "ZMKのキーボード（無線）",
+  "macOS / iOS": "macOS / iOS",
+  preview: "プレビュー中",
   "waiting on a kernel object": "カーネルのオブジェクトを待機中",
   sleeping: "スリープ中",
   suspended: "停止中",
