@@ -38,7 +38,7 @@ function renderApp() {
 }
 
 describe("QmkApp demo mode", () => {
-  test("connects to the demo keyboard, shows OS blocks and edits a key", async () => {
+  test("connects to the demo keyboard and shows the keymap page like the ZMK side", async () => {
     renderApp();
     expect(screen.getByText(/ClickBoard ErgoMini/)).toBeInTheDocument();
     fireEvent.click(screen.getByLabelText("Try Demo Mode"));
@@ -48,28 +48,41 @@ describe("QmkApp demo mode", () => {
         screen.getByText("ClickBoard ErgoMini (demo)"),
       ).toBeInTheDocument(),
     );
-    // Three OS blocks, one of them active.
-    const blocks = screen.getByRole("tablist", { name: "OS blocks" });
-    expect(within(blocks).getAllByRole("tab")).toHaveLength(3);
-    expect(within(blocks).getByText("Active")).toBeInTheDocument();
-    // 50 keys drawn.
-    const board = screen.getByRole("group", { name: /Keymap of layer/ });
-    expect(within(board).getAllByRole("button")).toHaveLength(50);
+    // The same page chrome as the ZMK keymap page.
+    expect(
+      screen.getByText("Configure key bindings and layers"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("combobox", { name: "OS Layout:" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("Saved");
 
-    // Pick the Tab key and make it Escape through the picker's key picture.
-    const tabKey = within(board).getByRole("button", {
-      name: /Key position 0:/,
+    // Three OS blocks, four layers in the open one.
+    const blocks = screen.getByRole("group", { name: "OS blocks" });
+    expect(within(blocks).getAllByRole("button")).toHaveLength(3);
+    const layers = screen.getByRole("group", { name: "Keymap layers" });
+    expect(within(layers).getAllByRole("button")).toHaveLength(4);
+    expect(
+      within(layers).getByRole("button", { name: "Base" }),
+    ).toBeInTheDocument();
+
+    // 50 keys drawn with the shared keycap, labelled through the bridge.
+    const board = screen.getByRole("group", {
+      name: "Keyboard layout for Base",
     });
-    fireEvent.click(tabKey);
-    fireEvent.click(screen.getByRole("button", { name: "Esc" }));
-    await waitFor(() =>
-      expect(tabKey).toHaveAttribute("data-binding-label", "Escape"),
-    );
-    expect(screen.getByText("KC_ESC")).toBeInTheDocument();
+    const keys = within(board).getAllByRole("button", {
+      name: /Key position \d+:/,
+    });
+    expect(keys).toHaveLength(50);
+    expect(keys[0]).toHaveAttribute("data-binding-label", "Tab");
 
     // The OS tab exists because the demo firmware has the module.
     expect(screen.getAllByRole("tab", { name: "OS" }).length).toBeGreaterThan(
       0,
     );
+
+    // Clicking a key opens the shared picker dialog.
+    fireEvent.click(keys[0]);
+    expect(await screen.findByText("Select Key Binding")).toBeInTheDocument();
   });
 });

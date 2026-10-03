@@ -12,6 +12,9 @@ workshop's Vial keyboards (vial-qmk fork, Vial protocol 6) over WebHID.
 - `src/qmk/lib/vial/` — transport (WebHID + demo), protocol client,
   definition decoding (xz + vial.json), KLE layout parsing.
 - `src/qmk/lib/keycodes/` — QMK keycode table (generated), codec, captions.
+- `src/qmk/lib/zmkBridge.ts` — shows the QMK keymap to the shared UI as a
+  ZMK-shaped keymap (pretend behaviors, lossless keycode translation), so
+  KeyboardLayout, KeycodeSelector and QuickAssignBar serve both sides.
 - `src/qmk/lib/osBlocks.ts` — OS-block grouping of layers and block copy.
 - `src/qmk/demo/` — the demo keyboard's data, generated from the firmware.
 

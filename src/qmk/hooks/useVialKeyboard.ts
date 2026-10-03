@@ -2,10 +2,9 @@
  * One connected Vial keyboard: its definition, its keymap, the edits waiting
  * to be written, and the OS-switch module's state.
  *
- * Keymap edits are written to the keyboard as they are made (Vial keyboards
- * keep the keymap in EEPROM, so every write is immediately persistent); the
- * "original" copy is what the keyboard held when we connected, which is what
- * the key's reset button goes back to.
+ * Edits are held here and written on Save, the same rhythm as the ZMK side:
+ * `keymap` is what the page shows (saved values plus pending edits), `saved`
+ * is what the keyboard holds, and a key's reset goes back to `saved`.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -35,10 +34,12 @@ export interface VialKeyboardInfo {
 
 export interface UseVialKeyboard {
   info: VialKeyboardInfo | null;
-  /** keycodes[layer][row][col] as the keyboard currently holds them */
+  /** keycodes[layer][row][col] as shown: saved values plus pending edits */
   keymap: number[][][] | null;
-  /** what the keyboard held when we connected */
-  originalKeymap: number[][][] | null;
+  /** keycodes[layer][row][col] as the keyboard holds them */
+  saved: number[][][] | null;
+  hasUnsavedChanges: boolean;
+  isSaving: boolean;
   layoutOptions: number;
   visible: VialKey[];
   os: KeebOnOsState | null;
@@ -50,13 +51,13 @@ export interface UseVialKeyboard {
   ): Promise<void>;
   connectDemo(): Promise<void>;
   disconnect(): Promise<void>;
-  setKeycode(
-    layer: number,
-    row: number,
-    col: number,
-    code: number,
-  ): Promise<void>;
-  resetKey(layer: number, row: number, col: number): Promise<void>;
+  /** Stage an edit; nothing reaches the keyboard until saveChanges(). */
+  setKeycode(layer: number, row: number, col: number, code: number): void;
+  /** Drop the pending edit on one key. */
+  resetKey(layer: number, row: number, col: number): void;
+  saveChanges(): Promise<void>;
+  discardChanges(): void;
+  reload(): Promise<void>;
   setLayoutOptions(value: number): Promise<void>;
   setOs(mode: number, blocks: [number, number, number, number]): Promise<void>;
   setOsPreview(block: number | null): Promise<void>;
@@ -91,9 +92,8 @@ export function useVialKeyboard(): UseVialKeyboard {
   const clientRef = useRef<VialClient | null>(null);
   const [info, setInfo] = useState<VialKeyboardInfo | null>(null);
   const [keymap, setKeymap] = useState<number[][][] | null>(null);
-  const [originalKeymap, setOriginalKeymap] = useState<number[][][] | null>(
-    null,
-  );
+  const [saved, setSaved] = useState<number[][][] | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   const [layoutOptions, setLayoutOptionsState] = useState(0);
   const [os, setOsState] = useState<KeebOnOsState | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -103,7 +103,7 @@ export function useVialKeyboard(): UseVialKeyboard {
     clientRef.current = null;
     setInfo(null);
     setKeymap(null);
-    setOriginalKeymap(null);
+    setSaved(null);
     setOsState(null);
     setLayoutOptionsState(0);
   }, []);
@@ -160,7 +160,7 @@ export function useVialKeyboard(): UseVialKeyboard {
           unlockKeys: unlock.unlockKeys,
         });
         setKeymap(map);
-        setOriginalKeymap(map.map((l) => l.map((r) => [...r])));
+        setSaved(map.map((l) => l.map((r) => [...r])));
         setLayoutOptionsState(options);
         setOsState(osState);
       } catch (err) {
@@ -184,12 +184,9 @@ export function useVialKeyboard(): UseVialKeyboard {
   }, [connect]);
 
   const setKeycode = useCallback(
-    async (layer: number, row: number, col: number, code: number) => {
-      const client = clientRef.current;
-      if (!client) return;
-      await client.setKeycode(layer, row, col, code);
+    (layer: number, row: number, col: number, code: number) => {
       setKeymap((prev) => {
-        if (!prev) return prev;
+        if (!prev || prev[layer]?.[row]?.[col] === code) return prev;
         const next = prev.map((l, li) =>
           li === layer ? l.map((r) => [...r]) : l,
         );
@@ -201,13 +198,52 @@ export function useVialKeyboard(): UseVialKeyboard {
   );
 
   const resetKey = useCallback(
-    async (layer: number, row: number, col: number) => {
-      const original = originalKeymap?.[layer]?.[row]?.[col];
-      if (original === undefined) return;
-      await setKeycode(layer, row, col, original);
+    (layer: number, row: number, col: number) => {
+      const original = saved?.[layer]?.[row]?.[col];
+      if (original !== undefined) setKeycode(layer, row, col, original);
     },
-    [originalKeymap, setKeycode],
+    [saved, setKeycode],
   );
+
+  const hasUnsavedChanges = useMemo(() => {
+    if (!keymap || !saved) return false;
+    return keymap.some((l, li) =>
+      l.some((r, ri) => r.some((c, ci) => c !== saved[li][ri][ci])),
+    );
+  }, [keymap, saved]);
+
+  const saveChanges = useCallback(async () => {
+    const client = clientRef.current;
+    if (!client || !keymap || !saved) return;
+    setIsSaving(true);
+    try {
+      for (let l = 0; l < keymap.length; l++) {
+        for (let r = 0; r < keymap[l].length; r++) {
+          for (let c = 0; c < keymap[l][r].length; c++) {
+            if (keymap[l][r][c] !== saved[l][r][c]) {
+              await client.setKeycode(l, r, c, keymap[l][r][c]);
+            }
+          }
+        }
+      }
+      setSaved(keymap.map((l) => l.map((r) => [...r])));
+    } finally {
+      setIsSaving(false);
+    }
+  }, [keymap, saved]);
+
+  const discardChanges = useCallback(() => {
+    if (saved) setKeymap(saved.map((l) => l.map((r) => [...r])));
+  }, [saved]);
+
+  const reload = useCallback(async () => {
+    const client = clientRef.current;
+    if (!client || !info) return;
+    const { rows, cols } = info.definition.matrix;
+    const map = await client.getKeymap(info.layerCount, rows, cols);
+    setKeymap(map);
+    setSaved(map.map((l) => l.map((r) => [...r])));
+  }, [info]);
 
   const setLayoutOptions = useCallback(async (value: number) => {
     const client = clientRef.current;
@@ -263,7 +299,9 @@ export function useVialKeyboard(): UseVialKeyboard {
   return {
     info,
     keymap,
-    originalKeymap,
+    saved,
+    hasUnsavedChanges,
+    isSaving,
     layoutOptions,
     visible,
     os,
@@ -274,6 +312,9 @@ export function useVialKeyboard(): UseVialKeyboard {
     disconnect,
     setKeycode,
     resetKey,
+    saveChanges,
+    discardChanges,
+    reload,
     setLayoutOptions,
     setOs,
     setOsPreview,

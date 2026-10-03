@@ -117,8 +117,14 @@ export function parseDefinition(json: string): VialDefinition {
     : null;
   return {
     name: typeof data.name === "string" ? data.name : "keyboard",
-    vendorId: parseNumber(data.vendorId, "vendorId"),
-    productId: parseNumber(data.productId, "productId"),
+    // Vial itself does not need these (the USB descriptor has them), so an
+    // older vial.json may leave them out.
+    vendorId:
+      data.vendorId === undefined ? 0 : parseNumber(data.vendorId, "vendorId"),
+    productId:
+      data.productId === undefined
+        ? 0
+        : parseNumber(data.productId, "productId"),
     matrix: {
       rows: parseNumber(matrix.rows, "matrix rows"),
       cols: parseNumber(matrix.cols, "matrix cols"),

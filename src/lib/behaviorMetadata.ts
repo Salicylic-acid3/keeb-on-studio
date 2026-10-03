@@ -747,6 +747,19 @@ BEHAVIOR_METADATA_BASE.forEach((metadata) => {
 });
 
 /**
+ * Add metadata for behaviors that are not ZMK's: the QMK side synthesizes its
+ * own behavior list (see src/qmk/lib/zmkBridge.ts) and registers the names
+ * ZMK has no equivalent for, so the same picker and keycap labels serve both.
+ */
+export function registerBehaviorMetadata(entries: BehaviorMetadata[]): void {
+  entries.forEach((metadata) => {
+    metadata.displayNameVariants.forEach((variant) => {
+      BEHAVIOR_METADATA[variant.toLowerCase()] = metadata;
+    });
+  });
+}
+
+/**
  * A firmware that offers the same behavior at several tap/hold thresholds
  * names the instances after the threshold: "Mod-Tap 150ms", "Layer-Tap 280ms".
  * ZMK has no way to say "this is a Mod-Tap with a different timing", so

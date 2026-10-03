@@ -10,6 +10,34 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // QMK (Vial) side
+  "Click on a key to modify its binding. Modified keys are highlighted in green and show the original binding on hover. Use the Discard button to drop unsaved changes.":
+    "キーをクリックして割り当てを変更します。変更したキーは緑色で表示され、ホバーすると元の割り当てが見られます。保存前の変更を取り消すには「破棄」を押してください。",
+  "Copy this block to another": "このブロックを別のブロックへコピー",
+  "Copy {{source}} onto another block?":
+    "{{source}}を別のブロックへコピーしますか？",
+  "Every layer of the target block is replaced. Layer keys are renumbered for the target block (MO(1) becomes MO(5)). Nothing is written until you Save.":
+    "コピー先ブロックの全レイヤーが置き換わります。レイヤーキーはコピー先に合わせて付け替えます（MO(1) → MO(5)）。保存するまでキーボードには書き込まれません。",
+  "The keyboard is using this block now": "いまキーボードが使っているブロック",
+  "Which keymap the keyboard uses on each computer":
+    "つないだパソコンごとに、どのキーマップを使うか",
+  "Activate layer while held; tap several times to lock it":
+    "押している間レイヤーを有効化。連打で固定",
+  "Layer while held; tap several times to lock it":
+    "押している間はレイヤー、連打で固定",
+  "Make this layer the default": "このレイヤーをデフォルトにする",
+  "Mouse cursor speed while held": "押している間のマウス速度",
+  "Any QMK keycode, by number": "QMKのキーコードを番号で指定",
+  "QMK cannot mix left and right modifiers on one key":
+    "QMKでは1つのキーに左右の修飾キーを混ぜられません",
+  "Mod-Tap: the first key must be a modifier":
+    "モッドタップ：1つ目のキーは修飾キーにしてください",
+  "QMK one-shot keys are modifiers only":
+    "QMKのワンショットは修飾キーだけに使えます",
+  "Mouse: pick a direction": "マウス：方向を選んでください",
+  "Mouse button: pick one button": "マウスボタン：ボタンを1つ選んでください",
+  "Layer Tap-Toggle": "レイヤー タップトグル",
+  "Mouse Speed": "マウス速度",
+  "QMK Keycode": "QMKキーコード",
   "After setting a key, move on to the next one automatically":
     "キーを設定したら、自動的に次のキーへ進みます",
   "Always Linux": "常にLinux",
