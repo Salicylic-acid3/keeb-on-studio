@@ -6,6 +6,15 @@
       "changes": {
         "major": [],
         "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.04.6",
+      "date": "2026-10-04",
+      "changes": {
+        "major": [],
+        "minor": [],
         "patch": [
           {
             "en": "Trackpad: \"Pointer speed, per axis\" now holds only the two speeds. Smoothing, the report interval, the tap dead zone, the lift guard, the touch threshold and the ripple map are a card of their own, \"Pointer precision\". The two-finger swipe heading is named like the three-finger one.",
