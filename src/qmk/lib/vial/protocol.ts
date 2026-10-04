@@ -22,6 +22,10 @@ const ID_SET_KEYBOARD_VALUE = 0x03;
 const ID_DYNAMIC_KEYMAP_GET_KEYCODE = 0x04;
 const ID_DYNAMIC_KEYMAP_SET_KEYCODE = 0x05;
 const ID_DYNAMIC_KEYMAP_GET_LAYER_COUNT = 0x11;
+const ID_DYNAMIC_KEYMAP_MACRO_GET_COUNT = 0x0c;
+const ID_DYNAMIC_KEYMAP_MACRO_GET_BUFFER_SIZE = 0x0d;
+const ID_DYNAMIC_KEYMAP_MACRO_GET_BUFFER = 0x0e;
+const ID_DYNAMIC_KEYMAP_MACRO_SET_BUFFER = 0x0f;
 const ID_DYNAMIC_KEYMAP_GET_BUFFER = 0x12;
 const ID_VIAL_PREFIX = 0xfe;
 export const ID_UNHANDLED = 0xff;
@@ -459,6 +463,53 @@ export class VialClient {
     );
     if (r[0] !== 0)
       throw new VialProtocolError(`QMK setting ${qsid} could not be written`);
+  }
+
+  async getMacroCount(): Promise<number> {
+    return (await this.send(ID_DYNAMIC_KEYMAP_MACRO_GET_COUNT))[1];
+  }
+
+  async getMacroBufferSize(): Promise<number> {
+    const r = await this.send(ID_DYNAMIC_KEYMAP_MACRO_GET_BUFFER_SIZE);
+    return (r[1] << 8) | r[2];
+  }
+
+  async getMacroBuffer(size: number): Promise<Uint8Array> {
+    const out = new Uint8Array(size);
+    for (let offset = 0; offset < size; offset += KEYMAP_BUFFER_CHUNK) {
+      const n = Math.min(KEYMAP_BUFFER_CHUNK, size - offset);
+      const r = await this.send(
+        ID_DYNAMIC_KEYMAP_MACRO_GET_BUFFER,
+        offset >> 8,
+        offset & 0xff,
+        n,
+      );
+      out.set(r.slice(4, 4 + n), offset);
+    }
+    return out;
+  }
+
+  /**
+   * Write the whole macro buffer. Vial refuses this while the keyboard is
+   * locked (via.c), so callers unlock first. The last byte goes last: the
+   * firmware will not play macros while it is not 0, which keeps a write cut
+   * short from playing half-written bytes.
+   */
+  async setMacroBuffer(buffer: Uint8Array): Promise<void> {
+    const size = buffer.length;
+    const chunks: Array<[number, number]> = [];
+    for (let offset = 0; offset < size; offset += KEYMAP_BUFFER_CHUNK) {
+      chunks.push([offset, Math.min(KEYMAP_BUFFER_CHUNK, size - offset)]);
+    }
+    for (const [offset, n] of chunks) {
+      await this.send(
+        ID_DYNAMIC_KEYMAP_MACRO_SET_BUFFER,
+        offset >> 8,
+        offset & 0xff,
+        n,
+        ...buffer.slice(offset, offset + n),
+      );
+    }
   }
 
   /** Null when the firmware has no OS-switch module. */

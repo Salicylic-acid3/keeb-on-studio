@@ -32,6 +32,10 @@ import {
 import type { QmkKeyContext } from "../lib/keyLabel";
 import { QmkSettingsCard } from "../components/QmkSettingsCard";
 import {
+  QmkMacroEditorCard,
+  QmkMacroListCard,
+} from "../components/QmkMacroCards";
+import {
   COMBO_SETTINGS,
   readField,
   supportedFields,
@@ -49,6 +53,7 @@ import {
 import type { UseVialKeyboard } from "../hooks/useVialKeyboard";
 
 type RightView =
+  | "macro"
   | "tapdance"
   | "combo"
   | "keyoverride"
@@ -64,6 +69,8 @@ export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
   const [selectedTapDance, setSelectedTapDance] = useState<number | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedCombo, setSelectedCombo] = useState<number | null>(null);
+  const [selectedMacro, setSelectedMacro] = useState<number | null>(null);
+  const [shownMacros, setShownMacros] = useState<Set<number>>(new Set());
   const [selectedOverride, setSelectedOverride] = useState<number | null>(null);
   // Slots created with "+" and still empty, so they stay in the list.
   const [shownCombos, setShownCombos] = useState<Set<number>>(new Set());
@@ -71,8 +78,12 @@ export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
   const counts = keyboard.info?.entryCounts;
 
   const behaviors = useMemo(
-    () => qmkBehaviors({ tapDanceCount: counts?.tapDance ?? 0, macroCount: 0 }),
-    [counts?.tapDance],
+    () =>
+      qmkBehaviors({
+        tapDanceCount: counts?.tapDance ?? 0,
+        macroCount: keyboard.macros.length,
+      }),
+    [counts?.tapDance, keyboard.macros.length],
   );
   const layers = useMemo(
     () =>
@@ -102,8 +113,25 @@ export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
     );
 
   const forgetShown = () => {
+    setShownMacros(new Set());
     setShownCombos(new Set());
     setShownOverrides(new Set());
+  };
+  const newMacro = () => {
+    const index = keyboard.macros.findIndex(
+      (m, i) => m.length === 0 && !shownMacros.has(i),
+    );
+    if (index < 0) return;
+    setShownMacros(new Set(shownMacros).add(index));
+    setSelectedMacro(index);
+    setRightView("macro");
+  };
+  const deleteMacro = (index: number) => {
+    keyboard.setMacro(index, []);
+    const next = new Set(shownMacros);
+    next.delete(index);
+    setShownMacros(next);
+    setRightView(null);
   };
   const newCombo = () => {
     const index = keyboard.combos.findIndex(
@@ -249,6 +277,19 @@ export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
 
         <div className="grid grid-cols-1 desktop:grid-cols-[300px_1fr] gap-4 min-w-0">
           <div className="space-y-4">
+            {keyboard.macros.length > 0 && (
+              <QmkMacroListCard
+                macros={keyboard.macros}
+                saved={keyboard.savedMacros}
+                shown={shownMacros}
+                selectedIndex={rightView === "macro" ? selectedMacro : null}
+                onSelect={(index) => {
+                  setSelectedMacro(index);
+                  setRightView("macro");
+                }}
+                onNew={newMacro}
+              />
+            )}
             {keyboard.combos.length > 0 && (
               <QmkComboListCard
                 combos={keyboard.combos}
@@ -318,8 +359,21 @@ export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
           </div>
 
           <div className="min-w-0">
-            {rightView === "combo-settings" ||
-            rightView === "tap-hold-settings" ? (
+            {rightView === "macro" &&
+            selectedMacro !== null &&
+            keyboard.macros[selectedMacro] ? (
+              <QmkMacroEditorCard
+                index={selectedMacro}
+                steps={keyboard.macros[selectedMacro]}
+                saved={keyboard.savedMacros[selectedMacro]}
+                allMacros={keyboard.macros}
+                bufferSize={keyboard.macroBufferSize}
+                onChange={(steps) => keyboard.setMacro(selectedMacro, steps)}
+                onDelete={() => deleteMacro(selectedMacro)}
+                ctx={ctx}
+              />
+            ) : rightView === "combo-settings" ||
+              rightView === "tap-hold-settings" ? (
               <QmkSettingsCard
                 title={
                   rightView === "combo-settings"

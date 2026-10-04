@@ -3,7 +3,8 @@
  * the top page, theme, language and keycap drawing with the ZMK half; owns
  * its own connection (WebHID), keymap model and tabs.
  */
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { KeyboardLayoutContext } from "../contexts/KeyboardLayoutContext";
 import { AnimatePresence, motion } from "framer-motion";
 import { IconDeviceDesktop, IconKeyboard, IconWand } from "@tabler/icons-react";
 import { SplashScreen } from "../components/SplashScreen";
@@ -22,6 +23,9 @@ import {
 import { QmkKeymapPage } from "./pages/QmkKeymapPage";
 import { QmkOsPage } from "./pages/QmkOsPage";
 import { QmkMacroComboPage } from "./pages/QmkMacroComboPage";
+import { QmkUnlockDialog } from "./components/QmkUnlockDialog";
+import { qmkKeyLabel } from "./lib/keyLabel";
+import { qmkBehaviors } from "./lib/zmkBridge";
 
 interface QmkAppProps {
   /** Replace the URL and let the ZMK side take over. */
@@ -52,6 +56,7 @@ export function QmkApp({
 }: QmkAppProps) {
   const { t } = useLanguage();
   const keyboard = useVialKeyboard();
+  const { layout: keyboardLayout } = useContext(KeyboardLayoutContext);
   const [connectHint, setConnectHint] = useState<string | null>(null);
   const [tab, setTab] = useState<TabId>(() =>
     tabFromPathname(window.location.pathname),
@@ -170,6 +175,20 @@ export function QmkApp({
           </motion.div>
         )}
       </AnimatePresence>
+      {keyboard.unlock && (
+        <QmkUnlockDialog
+          open
+          keyNames={keyboard.unlock.keys.map((k) =>
+            qmkKeyLabel(keyboard.keymap?.[0]?.[k.row]?.[k.col] ?? 0, {
+              behaviors: qmkBehaviors({ tapDanceCount: 0, macroCount: 0 }),
+              layers: [],
+              keyboardLayout: keyboardLayout,
+            }),
+          )}
+          progress={keyboard.unlock.progress}
+          onCancel={keyboard.cancelUnlock}
+        />
+      )}
       {connected && (
         <motion.div
           initial={{ opacity: 0 }}

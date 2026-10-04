@@ -95,6 +95,10 @@ describe("QmkApp demo mode", () => {
     })[0];
     fireEvent.mouseDown(mcTab, { button: 0 });
     fireEvent.click(mcTab);
+    fireEvent.click(await screen.findByTitle("Create macro"));
+    expect(
+      await screen.findByText("No steps in this macro"),
+    ).toBeInTheDocument();
     fireEvent.click(await screen.findByTitle("New combo"));
     expect(await screen.findByText("Combo Editor")).toBeInTheDocument();
     fireEvent.click(screen.getByTitle("Combo Global Settings"));

@@ -12,6 +12,7 @@ import { bindingToKeycode, keycodeToBinding } from "../lib/zmkBridge";
 import { keycodeToText, parseKeycode } from "../lib/keycodes/qmkKeycode";
 import { tapBinding } from "../../components/tapDance/useTapDance";
 import { VialClient } from "../lib/vial/protocol";
+import { decodeMacro, splitMacroBuffer, type MacroStep } from "../lib/macro";
 import {
   supportedFields,
   TAP_HOLD_SETTINGS,
@@ -161,6 +162,38 @@ describe("QMK Settings", () => {
     const client = new VialClient(transport);
     expect(await client.getQmkSetting(7, 2)).toBe(230);
     expect(await client.getQmkSetting(8, 1)).toBe(1);
+  });
+});
+
+describe("Vial macros", () => {
+  test("Save unlocks the keyboard first, then writes the buffer", async () => {
+    const { transport, hook } = setup();
+    await act(async () =>
+      hook.result.current.keyboard.connect(transport, "demo"),
+    );
+    await waitFor(() =>
+      expect(hook.result.current.keyboard.macros).toHaveLength(16),
+    );
+    expect(hook.result.current.keyboard.macroBufferSize).toBe(1024);
+    const steps: MacroStep[] = [
+      { action: "string", text: "hi" },
+      { action: "tap", keycode: parseKeycode("KC_ENT")! },
+    ];
+    act(() => hook.result.current.keyboard.setMacro(1, steps));
+    expect(hook.result.current.keyboard.hasUnsavedChanges).toBe(true);
+    await act(async () => hook.result.current.keyboard.saveChanges());
+    expect(hook.result.current.keyboard.unlock).toBeNull();
+    expect(hook.result.current.keyboard.hasUnsavedChanges).toBe(false);
+    // The keyboard was asked to unlock before the buffer was written.
+    const cmds = transport.log.map((r) =>
+      r[0] === 0xfe ? `v${r[1]}` : `${r[0]}`,
+    );
+    expect(cmds.indexOf("v6")).toBeGreaterThan(-1);
+    expect(cmds.indexOf("15")).toBeGreaterThan(cmds.lastIndexOf("v7"));
+
+    const client = new VialClient(transport);
+    const buffer = await client.getMacroBuffer(1024);
+    expect(splitMacroBuffer(buffer, 16).map(decodeMacro)[1]).toEqual(steps);
   });
 });
 

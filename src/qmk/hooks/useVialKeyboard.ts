@@ -18,6 +18,12 @@ import {
 } from "../lib/vial/protocol";
 import { readDefinition, type VialDefinition } from "../lib/vial/definition";
 import { QMK_SETTING_WIDTH } from "../lib/qmkSettings";
+import {
+  decodeMacro,
+  packMacroBuffer,
+  splitMacroBuffer,
+  type MacroStep,
+} from "../lib/macro";
 import { parseKleLayout, visibleKeys, type VialKey } from "../lib/vial/kle";
 import type { VialTransport } from "../lib/vial/transport";
 import { DemoTransport, base64ToBytes } from "../lib/vial/demoTransport";
@@ -62,6 +68,17 @@ export interface UseVialKeyboard {
   savedQmkSettings: Record<number, number>;
   qmkSettingIds: Set<number>;
   setQmkSetting(qsid: number, value: number): void;
+  /** Dynamic macros as steps, shown and saved; and the buffer they share. */
+  macros: MacroStep[][];
+  savedMacros: MacroStep[][];
+  macroBufferSize: number;
+  setMacro(index: number, steps: MacroStep[]): void;
+  /**
+   * Non-null while Save waits for the keyboard to be unlocked (Vial will
+   * not take macros otherwise): which keys to hold and how far along.
+   */
+  unlock: UnlockProgress | null;
+  cancelUnlock(): void;
   layoutOptions: number;
   visible: VialKey[];
   os: KeebOnOsState | null;
@@ -85,6 +102,17 @@ export interface UseVialKeyboard {
   setOsPreview(block: number | null): Promise<void>;
   refreshOs(): Promise<void>;
 }
+
+export interface UnlockProgress {
+  keys: Array<{ row: number; col: number }>;
+  /** 0..1 */
+  progress: number;
+}
+
+/** vial.c VIAL_UNLOCK_COUNTER_MAX: polls (>100 ms apart) holding the keys. */
+const UNLOCK_COUNTER_MAX = 50;
+
+export class UnlockCancelledError extends Error {}
 
 export function createDemoTransport(): DemoTransport {
   return new DemoTransport({
@@ -116,6 +144,8 @@ interface LoadedEntries {
   keyOverrides: VialKeyOverrideEntry[];
   settingIds: number[];
   settings: Record<number, number>;
+  macros: MacroStep[][];
+  macroBufferSize: number;
 }
 
 async function readEntries(
@@ -128,6 +158,8 @@ async function readEntries(
     keyOverrides: [],
     settingIds: [],
     settings: {},
+    macros: [],
+    macroBufferSize: 0,
   };
   for (let i = 0; i < counts.tapDance; i++)
     out.tapDances.push(await client.getTapDance(i));
@@ -141,6 +173,12 @@ async function readEntries(
   );
   for (const id of out.settingIds) {
     out.settings[id] = await client.getQmkSetting(id, QMK_SETTING_WIDTH[id]);
+  }
+  const macroCount = await client.getMacroCount();
+  if (macroCount > 0) {
+    out.macroBufferSize = await client.getMacroBufferSize();
+    const buffer = await client.getMacroBuffer(out.macroBufferSize);
+    out.macros = splitMacroBuffer(buffer, macroCount).map(decodeMacro);
   }
   return out;
 }
@@ -175,7 +213,17 @@ export function useVialKeyboard(): UseVialKeyboard {
   >({});
   const [qmkSettingIds, setQmkSettingIds] = useState<Set<number>>(new Set());
 
+  const [macros, setMacros] = useState<MacroStep[][]>([]);
+  const [savedMacros, setSavedMacros] = useState<MacroStep[][]>([]);
+  const [macroBufferSize, setMacroBufferSize] = useState(0);
+  const [unlock, setUnlock] = useState<UnlockProgress | null>(null);
+  const unlockCancelled = useRef(false);
+  const unlocking = useRef(false);
+
   const applyEntries = useCallback((e: LoadedEntries) => {
+    setMacros(e.macros);
+    setSavedMacros(copy(e.macros));
+    setMacroBufferSize(e.macroBufferSize);
     setQmkSettingIds(new Set(e.settingIds));
     setQmkSettings({ ...e.settings });
     setSavedQmkSettings({ ...e.settings });
@@ -314,8 +362,10 @@ export function useVialKeyboard(): UseVialKeyboard {
     );
   }, [keymap, saved]);
   const settingsChanged = !same(qmkSettings, savedQmkSettings);
+  const macrosChanged = changed(macros, savedMacros);
   const entriesChanged =
     settingsChanged ||
+    macrosChanged ||
     changed(tapDances, savedTapDances) ||
     changed(combos, savedCombos) ||
     changed(keyOverrides, savedKeyOverrides);
@@ -340,6 +390,49 @@ export function useVialKeyboard(): UseVialKeyboard {
     },
     [],
   );
+
+  const setMacro = useCallback((index: number, steps: MacroStep[]) => {
+    setMacros((prev) =>
+      prev.map((m, i) => (i === index ? steps.map((x) => ({ ...x })) : m)),
+    );
+  }, []);
+
+  /**
+   * Vial's unlock: start it, then poll (more than 100 ms apart) while the
+   * person holds the unlock keys; the firmware counts down 50 polls of
+   * them held. It cannot be called off from here once started.
+   */
+  const runUnlock = useCallback(async (client: VialClient) => {
+    const status = await client.getUnlockStatus();
+    if (status.unlocked) return;
+    unlockCancelled.current = false;
+    unlocking.current = true;
+    setUnlock({ keys: status.unlockKeys, progress: 0 });
+    try {
+      await client.unlockStart();
+      for (;;) {
+        await new Promise((r) => setTimeout(r, 150));
+        if (unlockCancelled.current)
+          throw new UnlockCancelledError("Unlock cancelled");
+        const p = await client.unlockPoll();
+        if (p.unlocked) return;
+        setUnlock({
+          keys: status.unlockKeys,
+          progress: Math.max(
+            0,
+            (UNLOCK_COUNTER_MAX - p.counter) / UNLOCK_COUNTER_MAX,
+          ),
+        });
+      }
+    } finally {
+      unlocking.current = false;
+      setUnlock(null);
+    }
+  }, []);
+
+  const cancelUnlock = useCallback(() => {
+    unlockCancelled.current = true;
+  }, []);
 
   const setQmkSetting = useCallback((qsid: number, value: number) => {
     setQmkSettings((prev) => ({ ...prev, [qsid]: value }));
@@ -381,6 +474,21 @@ export function useVialKeyboard(): UseVialKeyboard {
         }
       }
       setSavedQmkSettings({ ...qmkSettings });
+      // Macros last: they need the keyboard unlocked, and everything else
+      // is already saved if the person gives up on that.
+      if (macrosChanged) {
+        const buffer = packMacroBuffer(macros, macroBufferSize);
+        try {
+          await runUnlock(client);
+        } catch (err) {
+          // Called off: the macros stay unsaved (and marked so); the rest
+          // above is already on the keyboard.
+          if (err instanceof UnlockCancelledError) return;
+          throw err;
+        }
+        await client.setMacroBuffer(buffer);
+        setSavedMacros(copy(macros));
+      }
       setSavedTapDances(copy(tapDances));
       setSavedCombos(copy(combos));
       setSavedKeyOverrides(copy(keyOverrides));
@@ -398,6 +506,10 @@ export function useVialKeyboard(): UseVialKeyboard {
     savedKeyOverrides,
     qmkSettings,
     savedQmkSettings,
+    macros,
+    macrosChanged,
+    macroBufferSize,
+    runUnlock,
   ]);
 
   const discardChanges = useCallback(() => {
@@ -406,7 +518,15 @@ export function useVialKeyboard(): UseVialKeyboard {
     setCombos(copy(savedCombos));
     setKeyOverrides(copy(savedKeyOverrides));
     setQmkSettings({ ...savedQmkSettings });
-  }, [saved, savedTapDances, savedCombos, savedKeyOverrides, savedQmkSettings]);
+    setMacros(copy(savedMacros));
+  }, [
+    saved,
+    savedTapDances,
+    savedCombos,
+    savedKeyOverrides,
+    savedQmkSettings,
+    savedMacros,
+  ]);
 
   const reload = useCallback(async () => {
     const client = clientRef.current;
@@ -427,7 +547,8 @@ export function useVialKeyboard(): UseVialKeyboard {
 
   const refreshOs = useCallback(async () => {
     const client = clientRef.current;
-    if (!client) return;
+    // While an unlock is running the firmware answers nothing else.
+    if (!client || unlocking.current) return;
     setOsState(await client.getKeebOnOs());
   }, []);
 
@@ -488,6 +609,12 @@ export function useVialKeyboard(): UseVialKeyboard {
     savedQmkSettings,
     qmkSettingIds,
     setQmkSetting,
+    macros,
+    savedMacros,
+    macroBufferSize,
+    setMacro,
+    unlock,
+    cancelUnlock,
     layoutOptions,
     visible,
     os,

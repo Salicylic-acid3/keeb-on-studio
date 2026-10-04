@@ -10,6 +10,20 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // QMK (Vial) side
+  "All macros share this memory": "すべてのマクロでこの容量を共有します",
+  "Create macro": "マクロを作成",
+  "Hold the unlock keys together until the bar fills.":
+    "アンロック用のキーを、バーがいっぱいになるまで同時に押し続けてください。",
+  "Hold {{keys}} together until the bar fills.":
+    "{{keys}} を、バーがいっぱいになるまで同時に押し続けてください。",
+  "If you cancel, the keyboard keeps waiting for these keys until it is unplugged.":
+    "キャンセルしても、キーボードは抜き差しするまでこのキーを待ち続けます。",
+  "No macros yet. Create one above.":
+    "マクロはまだありません。上から作成してください。",
+  "Only letters, numbers and symbols on a US keyboard can be typed":
+    "入力できるのは、USキーボードの英数字と記号だけです",
+  "Vial only accepts macros from an unlocked keyboard.":
+    "Vialのキーボードは、アンロックした状態でないとマクロを受け付けません。",
   "Cursor: delay before moving": "カーソル：動き出すまでの待ち時間",
   "From pressing a cursor key to the first movement":
     "カーソルキーを押してから最初に動くまで",

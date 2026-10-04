@@ -122,9 +122,10 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
 
   // Tap dances are picked from the same key picker as on the ZMK side.
   const tapDanceCount = info?.entryCounts.tapDance ?? 0;
+  const macroCount = keyboard.macros.length;
   const behaviors = useMemo(
-    () => qmkBehaviors({ tapDanceCount, macroCount: 0 }),
-    [tapDanceCount],
+    () => qmkBehaviors({ tapDanceCount, macroCount }),
+    [tapDanceCount, macroCount],
   );
 
   const physicalLayout = useMemo<PhysicalLayout>(

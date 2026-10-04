@@ -76,6 +76,9 @@ export class DemoTransport implements VialTransport {
     [20, new Uint8Array([5])],
     [21, new Uint8Array([0, 0, 0, 0])],
   ]);
+  /** Macro buffer (DYNAMIC_KEYMAP_MACRO_COUNT macros, each 0-ended). */
+  private readonly macroCount = 16;
+  private readonly macroBuffer = new Uint8Array(1024);
   private disconnectListeners: Array<() => void> = [];
   /** Every request seen, for tests. */
   readonly log: Uint8Array[] = [];
@@ -211,6 +214,36 @@ export class DemoTransport implements VialTransport {
       case 0x05: // set keycode
         this.writeKeycode(d[1], d[2], d[3], (d[4] << 8) | d[5]);
         break;
+      case 0x0c: // macro count
+        r[1] = this.macroCount;
+        break;
+      case 0x0d: // macro buffer size
+        r[1] = this.macroBuffer.length >> 8;
+        r[2] = this.macroBuffer.length & 0xff;
+        break;
+      case 0x0e: {
+        const offset = (d[1] << 8) | d[2];
+        const size = d[3];
+        if (size <= 28) {
+          for (let i = 0; i < size; i++)
+            r[4 + i] = this.macroBuffer[offset + i] ?? 0;
+        }
+        break;
+      }
+      case 0x0f: {
+        // Refused while locked, as via.c does (goto skip: the reply is the
+        // request echoed back, and nothing is written).
+        if (!this.unlocked) break;
+        const offset = (d[1] << 8) | d[2];
+        const size = d[3];
+        if (size <= 28) {
+          for (let i = 0; i < size; i++) {
+            if (offset + i < this.macroBuffer.length)
+              this.macroBuffer[offset + i] = d[4 + i];
+          }
+        }
+        break;
+      }
       case 0x11: // layer count
         r[1] = this.layers;
         break;
