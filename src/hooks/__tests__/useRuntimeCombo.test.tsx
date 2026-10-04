@@ -66,13 +66,23 @@ describe("useRuntimeCombo", () => {
       timeoutMs: 0,
       requirePriorIdleMs: 0,
       slowReleaseOverride: SlowReleaseOverride.SLOW_RELEASE_OVERRIDE_INHERIT,
+      source: ComboSource.COMBO_SOURCE_RUNTIME,
+    };
+    // A slot that was reset and has no compile-time default: the firmware
+    // lists it as empty, and the app must not show it as a combo.
+    const emptied = {
+      ...combo,
+      index: 1,
+      name: "",
+      keyPositions: [],
+      enabled: false,
       source: ComboSource.COMBO_SOURCE_EMPTY,
     };
 
     mockCallRPC
       .mockResolvedValueOnce(
         Response.encode(
-          Response.create({ listCombos: { combos: [combo] } }),
+          Response.create({ listCombos: { combos: [emptied, combo] } }),
         ).finish(),
       )
       .mockResolvedValueOnce(

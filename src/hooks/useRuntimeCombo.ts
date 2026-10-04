@@ -8,6 +8,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useCustomSubsystem } from "./useCustomSubsystem";
 import { studioLockErrorText } from "../lib/studioUnlock";
 import {
+  ComboSource,
   Request,
   Response,
   type Combo,
@@ -143,8 +144,14 @@ export function useRuntimeCombo(): UseRuntimeComboReturn {
         Request.create({ listCombos: {} }),
       );
       if (response?.listCombos) {
+        // The firmware lists every slot it has ever written, an emptied one
+        // included: a reset slot with no compile-time default comes back as
+        // "empty" with no key positions. That is a free slot, not a combo,
+        // and showing it is how a deleted combo seemed to come back.
         setCombos(
-          [...response.listCombos.combos].sort((a, b) => a.index - b.index),
+          response.listCombos.combos
+            .filter((combo) => combo.source !== ComboSource.COMBO_SOURCE_EMPTY)
+            .sort((a, b) => a.index - b.index),
         );
       }
     } catch (err) {

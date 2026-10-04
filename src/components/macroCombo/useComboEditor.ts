@@ -8,6 +8,7 @@ import { useDebouncedMemoryWrite } from "../../hooks/useDebouncedMemoryWrite";
 import type { UseRuntimeComboReturn } from "../../hooks/useRuntimeCombo";
 import type { UseKeymapReturn } from "../../hooks/useKeymap";
 import type { Combo } from "../../hooks/useRuntimeCombo";
+import { ComboSource } from "../../proto/cormoran/runtime_combo/runtime_combo";
 import type { TranslationParams } from "../../i18n/translations";
 import {
   comboToDraft,
@@ -255,10 +256,41 @@ export function useComboEditor({
     [draft, maxCombo, t],
   );
 
+  /*
+   * "Delete" has to mean "gone from the list", and the firmware offers two
+   * ways to make a slot go away, neither of which is its delete request:
+   * that one only switches the combo off, so after the next reload the
+   * combo was back, dimmed. A slot that only exists because it was written
+   * from here is emptied with a reset, which the firmware persists at once
+   * and which the listing then leaves out. A slot the firmware ships a
+   * default for cannot be removed, only put back to that default or
+   * switched off; it is switched off, as before, and says so.
+   */
   const handleDeleteCombo = useCallback(async () => {
     if (!requireUnlocked()) return;
+    const current = runtimeCombo.combos.find(
+      (combo) => combo.index === draft.index,
+    );
+    const shipped =
+      current?.source === ComboSource.COMBO_SOURCE_DEFAULT ||
+      current?.source === ComboSource.COMBO_SOURCE_OVERRIDDEN;
+    if (
+      !window.confirm(
+        shipped
+          ? t(
+              "This combo is built into the firmware and cannot be removed; it will be switched off instead. Continue?",
+            )
+          : t(
+              "Delete this combo? It is removed from the keyboard right away; Discard will not bring it back.",
+            ),
+      )
+    ) {
+      return;
+    }
     comboMemoryWrite.cancel();
-    const deleted = await runtimeCombo.deleteCombo(draft.index);
+    const deleted = shipped
+      ? await runtimeCombo.deleteCombo(draft.index)
+      : await runtimeCombo.resetCombo(draft.index);
     if (deleted) {
       const remaining = runtimeCombo.combos.filter(
         (combo) => combo.index !== draft.index,
@@ -281,6 +313,7 @@ export function useComboEditor({
     runtimeCombo,
     selectDraft,
     requireUnlocked,
+    t,
   ]);
 
   const handleResetCombo = useCallback(async () => {

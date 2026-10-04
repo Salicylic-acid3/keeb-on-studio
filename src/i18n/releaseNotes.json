@@ -6,7 +6,13 @@
       "changes": {
         "major": [],
         "minor": [],
-        "patch": []
+        "patch": [
+          {
+            "en": "Combos: deleting a combo now removes it for good — before, it only switched the combo off, so it came back dimmed after the next reload. A combo built into the firmware cannot be removed and is switched off instead, and the app says so.",
+            "ja": "コンボ: 削除したコンボが本当に消えるようになりました。以前は無効にしているだけだったので、次の読み込みで薄い表示のまま戻ってきていました。ファームウェア組み込みのコンボは削除できず無効になります(その旨を表示します)。",
+            "zh": "组合键：删除后会真正移除——此前只是将其停用，重新加载后会以灰色显示回来。固件内置的组合键无法移除，会改为停用，并会提示。"
+          }
+        ]
       }
     },
     {

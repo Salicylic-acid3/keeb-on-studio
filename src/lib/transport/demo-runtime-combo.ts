@@ -212,11 +212,14 @@ export class RuntimeComboHandler {
 
     if (request.deleteCombo !== undefined) {
       const { index, persist } = request.deleteCombo;
-      const before = this.combos.length;
-      // Deleting removes any stored runtime value for this slot, which is
-      // conceptually source = COMBO_SOURCE_EMPTY; represented here by
-      // filtering the combo out of the in-memory list entirely.
-      this.combos = this.combos.filter((item) => item.index !== index);
+      // What the firmware's delete really does: the slot keeps its value and
+      // is switched off (zmk_runtime_combo_delete writes enabled = false).
+      // The demo used to drop the slot from the list here, which is why the
+      // app's delete looked right in demo mode and wrong on a keyboard.
+      const target = this.combos.find((item) => item.index === index);
+      if (target) {
+        target.enabled = false;
+      }
       if (persist) {
         this.persistentCombos = this.combos.map(cloneCombo);
       } else {
@@ -224,7 +227,7 @@ export class RuntimeComboHandler {
       }
       return {
         status: {
-          affectedCount: before === this.combos.length ? 0 : 1,
+          affectedCount: target ? 1 : 0,
           message: "Combo disabled",
         },
       };
@@ -233,6 +236,7 @@ export class RuntimeComboHandler {
     if (request.resetCombo !== undefined) {
       const { index } = request.resetCombo;
       const defaultCombo = MOCK_COMBOS.find((item) => item.index === index);
+      const current = this.combos.find((item) => item.index === index);
       if (defaultCombo) {
         this.combos = [
           ...this.combos.filter((item) => item.index !== index),
@@ -241,10 +245,17 @@ export class RuntimeComboHandler {
             source: ComboSource.COMBO_SOURCE_DEFAULT,
           },
         ].sort((a, b) => a.index - b.index);
-      } else {
-        this.combos = this.combos.filter((item) => item.index !== index);
+      } else if (current) {
+        // No default to fall back to: the firmware persists an empty record
+        // and keeps listing the slot as empty, with no key positions. The
+        // app is expected to leave such a slot out.
+        current.name = "";
+        current.keyPositions = [];
+        current.enabled = false;
+        current.source = ComboSource.COMBO_SOURCE_EMPTY;
       }
-      this.pendingChanges = true;
+      // A reset is persisted by the firmware at once.
+      this.persistentCombos = this.combos.map(cloneCombo);
       return {
         status: { affectedCount: 1, message: "Combo reset to default" },
       };

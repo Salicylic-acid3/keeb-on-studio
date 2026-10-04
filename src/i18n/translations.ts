@@ -219,6 +219,10 @@ const ja: Record<string, string> = {
   "On a layer with the switch on, moving two fingers sideways is a swipe (bound as a key on the trackpad tab), and a scroll that starts there is held to the axis it started on, so it does not drift sideways. With the switch off, two fingers scroll sideways and diagonally as well as up and down. Only the half connected to the computer follows the layer; the other half always swipes.":
     "スイッチがオンのレイヤーでは、2本の指を横に動かすとスワイプになり(割り当てはトラックパッドタブのジェスチャー)、スクロールは始まった軸に固定されて横に流れません。オフのレイヤーでは、2本指で横にも斜めにもスクロールできます。レイヤーに従うのは PC につながる側だけで、もう片方は常にスワイプです。",
   "Swipe on {{layer}}": "{{layer}} で横スワイプ",
+  "This combo is built into the firmware and cannot be removed; it will be switched off instead. Continue?":
+    "このコンボはファームウェアに組み込まれているため削除できません。代わりに無効にします。続けますか?",
+  "Delete this combo? It is removed from the keyboard right away; Discard will not bring it back.":
+    "このコンボを削除しますか? すぐにキーボードから消去され、「破棄」では戻せません。",
   "Tap to click": "タップでクリック",
   "A quick touch with one finger clicks": "1本指で軽く触れるとクリック",
   "Off: tapping the pad does nothing; clicks come from the switches only. Turn it off if the pad gets brushed while typing and clicks where you did not mean to.":
@@ -2056,6 +2060,10 @@ const zh: Record<string, string> = {
   "On a layer with the switch on, moving two fingers sideways is a swipe (bound as a key on the trackpad tab), and a scroll that starts there is held to the axis it started on, so it does not drift sideways. With the switch off, two fingers scroll sideways and diagonally as well as up and down. Only the half connected to the computer follows the layer; the other half always swipes.":
     "开关打开的层上，两指横向移动是滑动手势（在触控板标签页里绑定按键），且滚动会锁定在开始时的轴上，不会横向漂移。关闭的层上，两指除了上下还可以横向和斜向滚动。只有连接电脑的一半会跟随层；另一半始终是滑动。",
   "Swipe on {{layer}}": "{{layer}} 上横向滑动",
+  "This combo is built into the firmware and cannot be removed; it will be switched off instead. Continue?":
+    "此组合键内置于固件中，无法删除；将改为停用。要继续吗？",
+  "Delete this combo? It is removed from the keyboard right away; Discard will not bring it back.":
+    "要删除此组合键吗？它会立即从键盘中移除，“放弃”无法恢复。",
   "Tap to click": "轻点点击",
   "A quick touch with one finger clicks": "单指快速轻触即点击",
   "Off: tapping the pad does nothing; clicks come from the switches only. Turn it off if the pad gets brushed while typing and clicks where you did not mean to.":
