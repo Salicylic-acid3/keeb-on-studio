@@ -5,6 +5,15 @@
       "date": null,
       "changes": {
         "major": [],
+        "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.04.4",
+      "date": "2026-10-04",
+      "changes": {
+        "major": [],
         "minor": [
           {
             "en": "Troubleshooting: the battery card shows each half's voltage instead of a percentage, with a per-keyboard guide to what the voltage means — ClickBoard ErgoTrack has stopped working at about 2.7 V, so its bar reads empty there; GoFortyMax Ortho's AAA cells are done at about 2.0 V. The half connected to the computer reports its voltage directly (ClickBoard ErgoTrack firmware ef94cd9 / GoFortyMax Ortho 0e1fdba or later); the other half's is read back from the percentage it sends. Older firmware still shows the percentage.",
