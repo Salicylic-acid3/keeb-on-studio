@@ -163,10 +163,13 @@ export const DEMO_SUBSYSTEMS: DemoSubsystemInfo[] = [
     defaultEnabled: true,
   },
   {
+    // Off: the battery card is withdrawn from the troubleshooting page for
+    // now (see TroubleshootingPage), so the demo keyboard does not advertise
+    // a reading nobody can see.
     index: 17,
     identifier: BATTERY_IDENTIFIER,
     label: "Battery Report",
-    defaultEnabled: true,
+    defaultEnabled: false,
   },
 ];
 

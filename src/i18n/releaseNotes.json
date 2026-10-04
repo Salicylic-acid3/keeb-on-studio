@@ -10,6 +10,11 @@
             "en": "The Trackpad tab appears only on keyboards that have the runtime input processor (the trackpad settings module). On GoFortyMax Ortho it used to open on a warning asking you to enable a firmware module the keyboard has no use for.",
             "ja": "トラックパッドタブは、ランタイム入力プロセッサ(トラックパッド設定のモジュール)を持つキーボードでだけ表示するようにしました。GoFortyMax Ortho では、キーボードに関係のないファームウェアモジュールを有効にするよう促す警告が開いていました。",
             "zh": "触控板标签页现在只在具备运行时输入处理器（触控板设置模块）的键盘上显示。此前在 GoFortyMax Ortho 上打开它只会看到一条要求启用与该键盘无关的固件模块的警告。"
+          },
+          {
+            "en": "Troubleshooting: the battery card is withdrawn for now. The firmware measures the supply rail, and on ClickBoard ErgoTrack and GoFortyMax Ortho that rail sits behind a regulator, so the reading stays the same from a fresh cell to a nearly dead one and then the keyboard stops. A number that says nothing until it is too late is worse than none; it comes back when a board can measure the cell itself.",
+            "ja": "トラブルシューティング: 電池カードをいったん外しました。ファームウェアが測っているのは電源ラインで、ClickBoard ErgoTrack と GoFortyMax Ortho ではそこがレギュレータの後ろにあるため、新品でも空に近くても同じ値を示し、そのまま止まります。手遅れになるまで何も言わない数字は無いほうがましなので、電池そのものを測れる基板ができたときに戻します。",
+            "zh": "故障排除：电池卡片暂时撤下。固件测量的是供电轨，而在 ClickBoard ErgoTrack 和 GoFortyMax Ortho 上供电轨位于稳压器之后，因此从新电池到几乎耗尽读数都一样，然后键盘就停了。一个到来不及时才说话的数字不如没有；等有能直接测量电池的板子再恢复。"
           }
         ],
         "patch": []

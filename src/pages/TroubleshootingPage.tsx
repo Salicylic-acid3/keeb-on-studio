@@ -15,7 +15,6 @@ import { useKscanDiagnostics } from "../hooks/useKscanDiagnostics";
 import { useElfAnalysis } from "../hooks/useElfAnalysis";
 import { useDevtoolStackUsage } from "../hooks/useDevtoolStackUsage";
 import { DeviceInfoSection } from "../components/troubleshooting/DeviceInfoSection";
-import { BatterySection } from "../components/troubleshooting/BatterySection";
 import { WatchdogSection } from "../components/troubleshooting/WatchdogSection";
 import { KscanDiagnosticsSection } from "../components/troubleshooting/KscanDiagnosticsSection";
 import { DevtoolStackUsageSection } from "../components/troubleshooting/DevtoolStackUsageSection";
@@ -189,9 +188,12 @@ export function TroubleshootingPage() {
         {/* Section cards */}
         <div className="space-y-6">
           <DeviceInfoSection deviceInfo={deviceInfo} />
-          {/* Near the top: on a keyboard that is dropping input, a flat cell
-              is both the most likely cause and the cheapest one to rule out. */}
-          <BatterySection deviceName={zmkApp?.state.deviceInfo?.name} />
+          {/* The battery card (BatterySection) is withdrawn for now. The
+              firmware measures VDD, and on these boards VDD sits behind a
+              regulator: it reads the same from a fresh cell to a nearly
+              dead one, and then the keyboard stops. A reading that says
+              nothing until it is too late is worse than none. It comes
+              back when a board can measure the cell itself. */}
           <WatchdogSection watchdog={watchdog} elfAnalysis={elfAnalysis} />
           <KscanDiagnosticsSection kscan={kscan} />
           <DevtoolStackUsageSection stackUsage={stackUsage} />
