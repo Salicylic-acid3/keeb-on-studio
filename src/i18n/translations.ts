@@ -10,6 +10,7 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // QMK (Vial) side
+  "Firmware for QMK (Vial) keyboards": "QMK（Vial）キーボードのファームウェア",
   "Keyboards with a .uf2 file": ".uf2 ファイルのキーボード",
   "Keyboards with a .bin file": ".bin ファイルのキーボード",
   "Download the .bin file for your keyboard below.":

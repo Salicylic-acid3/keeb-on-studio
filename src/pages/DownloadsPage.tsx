@@ -9,13 +9,24 @@
  */
 import { StandaloneFrame } from "../components/StandaloneFrame";
 import { FirmwarePage } from "./FirmwarePage";
+import type { Firmware } from "../lib/firmware";
 
 export const DOWNLOADS_PATH = "/downloads";
+/** The QMK (Vial) keyboards' firmware: its own page, like the QMK side. */
+export const QMK_DOWNLOADS_PATH = "/qmk/downloads";
 
-export function DownloadsPage({ onBack }: { onBack: () => void }) {
+export function DownloadsPage({
+  onBack,
+  firmware = "zmk",
+  onFirmwareChange,
+}: {
+  onBack: () => void;
+  firmware?: Firmware;
+  onFirmwareChange?: (firmware: Firmware) => void;
+}) {
   return (
     <StandaloneFrame onBack={onBack}>
-      <FirmwarePage />
+      <FirmwarePage firmware={firmware} onFirmwareChange={onFirmwareChange} />
     </StandaloneFrame>
   );
 }

@@ -15,7 +15,11 @@ import {
 import { SplashScreen } from "./components/SplashScreen";
 import { ReleaseNotesPage, RELEASE_NOTES_PATH } from "./pages/ReleaseNotesPage";
 import { AboutPage, ABOUT_PATH } from "./pages/AboutPage";
-import { DownloadsPage, DOWNLOADS_PATH } from "./pages/DownloadsPage";
+import {
+  DownloadsPage,
+  DOWNLOADS_PATH,
+  QMK_DOWNLOADS_PATH,
+} from "./pages/DownloadsPage";
 import { ReconnectingOverlay } from "./components/ReconnectingOverlay";
 import {
   DeviceConnectionProvider,
@@ -198,6 +202,7 @@ function AppContent() {
   const onReleaseNotes = pathname === RELEASE_NOTES_PATH;
   const onAbout = pathname === ABOUT_PATH;
   const onDownloads = pathname === DOWNLOADS_PATH;
+  const onQmkDownloads = pathname === QMK_DOWNLOADS_PATH;
   const onOauthCallback = pathname === OAUTH_CALLBACK_PATH;
 
   useEffect(() => {
@@ -255,8 +260,18 @@ function AppContent() {
     return <AboutPage onBack={() => navigatePath("/")} />;
   }
 
-  if (onDownloads) {
-    return <DownloadsPage onBack={() => navigatePath("/")} />;
+  // ZMK and QMK firmware on separate pages, switched the same way as the
+  // top page (ZMK / QMK at the top right).
+  if (onDownloads || onQmkDownloads) {
+    return (
+      <DownloadsPage
+        firmware={onQmkDownloads ? "qmk" : "zmk"}
+        onBack={() => navigatePath(onQmkDownloads ? QMK_PATH : "/")}
+        onFirmwareChange={(fw) =>
+          navigatePath(fw === "qmk" ? QMK_DOWNLOADS_PATH : DOWNLOADS_PATH)
+        }
+      />
+    );
   }
 
   // The QMK (Vial) half: its own connection and tabs, the same top page.
@@ -266,7 +281,7 @@ function AppContent() {
         onFirmwareChange={navigateFirmware}
         onShowReleaseNotes={() => navigatePath(RELEASE_NOTES_PATH)}
         onShowAbout={() => navigatePath(ABOUT_PATH)}
-        onShowDownloads={() => navigatePath(`${DOWNLOADS_PATH}#qmk`)}
+        onShowDownloads={() => navigatePath(QMK_DOWNLOADS_PATH)}
       />
     );
   }

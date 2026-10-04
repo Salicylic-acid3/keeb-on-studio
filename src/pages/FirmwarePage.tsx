@@ -5,9 +5,10 @@ import {
 } from "@tabler/icons-react";
 
 import { useLanguage } from "../hooks/useLanguage";
-import { useEffect } from "react";
 import { FlashInstructions } from "../components/FlashInstructions";
 import { QmkFlashInstructions } from "../components/QmkFlashInstructions";
+import { FirmwareToggle } from "../components/FirmwareToggle";
+import type { Firmware } from "../lib/firmware";
 import {
   FIRMWARE_BOARDS,
   firmwareDownloadUrl,
@@ -113,54 +114,48 @@ function BoardCard({ board }: { board: FirmwareBoard }) {
   );
 }
 
-export function FirmwarePage() {
+export function FirmwarePage({
+  firmware = "zmk",
+  onFirmwareChange,
+}: {
+  firmware?: Firmware;
+  onFirmwareChange?: (firmware: Firmware) => void;
+}) {
   const { t } = useLanguage();
-  // Arriving from the QMK side: show its keyboards rather than the ZMK ones.
-  useEffect(() => {
-    if (window.location.hash === "#qmk") {
-      document.getElementById("qmk")?.scrollIntoView();
-    }
-  }, []);
 
   return (
     <div className="h-full overflow-auto p-6">
       <div className="mx-auto max-w-4xl">
-        <div className="mb-6">
-          <h1 className="text-xl font-medium text-[var(--color-text)]">
-            {t("Firmware")}
-          </h1>
-          <p className="mt-1 text-sm text-[var(--color-text-muted)]">
-            {t(
-              "Download the latest firmware for your keyboard. Each link always points at the newest release.",
-            )}
-          </p>
+        <div className="mb-6 flex items-start gap-4">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-xl font-medium text-[var(--color-text)]">
+              {firmware === "qmk"
+                ? t("Firmware for QMK (Vial) keyboards")
+                : t("Firmware")}
+            </h1>
+            <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+              {t(
+                "Download the latest firmware for your keyboard. Each link always points at the newest release.",
+              )}
+            </p>
+          </div>
+          {onFirmwareChange && (
+            <FirmwareToggle value={firmware} onChange={onFirmwareChange} />
+          )}
         </div>
 
         <div className="glass-card mb-6 p-6">
           <h2 className="mb-4 text-sm font-medium text-[var(--color-text-secondary)]">
             {t("How to flash")}
           </h2>
-          <FlashInstructions />
-        </div>
-
-        <div className="space-y-6">
-          {FIRMWARE_BOARDS.map((board) => (
-            <BoardCard key={board.repo} board={board} />
-          ))}
-        </div>
-
-        {/* QMK (Vial) keyboards: one list, one repository. /downloads#qmk
-            (the link from the QMK side's top page) scrolls here. */}
-        <div id="qmk" className="mt-10 scroll-mt-6">
-          <h2 className="text-lg font-medium text-[var(--color-text)]">
-            {t("QMK (Vial) keyboards")}
-          </h2>
-          <div className="glass-card mt-4 mb-6 p-6">
-            <h2 className="mb-4 text-sm font-medium text-[var(--color-text-secondary)]">
-              {t("How to flash")}
-            </h2>
+          {firmware === "qmk" ? (
             <QmkFlashInstructions />
-          </div>
+          ) : (
+            <FlashInstructions />
+          )}
+        </div>
+
+        {firmware === "qmk" ? (
           <div className="glass-card p-6">
             <div className="mb-4 flex justify-end">
               <a
@@ -191,7 +186,13 @@ export function FirmwarePage() {
               ))}
             </ul>
           </div>
-        </div>
+        ) : (
+          <div className="space-y-6">
+            {FIRMWARE_BOARDS.map((board) => (
+              <BoardCard key={board.repo} board={board} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
