@@ -5,7 +5,13 @@
       "date": null,
       "changes": {
         "major": [],
-        "minor": [],
+        "minor": [
+          {
+            "en": "Troubleshooting: the battery card shows each half's voltage instead of a percentage, with a per-keyboard guide to what the voltage means — ClickBoard ErgoTrack has stopped working at about 2.7 V, so its bar reads empty there; GoFortyMax Ortho's AAA cells are done at about 2.0 V. The half connected to the computer reports its voltage directly (ClickBoard ErgoTrack firmware ef94cd9 / GoFortyMax Ortho 0e1fdba or later); the other half's is read back from the percentage it sends. Older firmware still shows the percentage.",
+            "ja": "トラブルシューティング: 電池カードが % ではなく左右それぞれの電圧を表示するようになり、その電圧が何を意味するかの目安をキーボードごとに添えました。ClickBoard ErgoTrack は 2.7 V あたりで動かなくなった実績があるので、そこでバーが空になります。GoFortyMax Ortho の単4電池は 2.0 V あたりで使い切りです。PC につながる側は電圧をそのまま報告し(ClickBoard ErgoTrack ファームウェア ef94cd9 / GoFortyMax Ortho 0e1fdba 以降)、もう片方は送ってくる % から電圧に読み戻します。古いファームウェアでは引き続き % 表示です。",
+            "zh": "故障排除：电池卡片改为显示两半各自的电压而非百分比，并按键盘附上电压含义的参考——ClickBoard ErgoTrack 曾在约 2.7 V 时停止工作，因此电量条在那里归零；GoFortyMax Ortho 的 AAA 电池约 2.0 V 时耗尽。连接电脑的一半直接报告电压（需要 ClickBoard ErgoTrack 固件 ef94cd9 / GoFortyMax Ortho 0e1fdba 或更新），另一半由其发送的百分比换算回电压。旧固件仍显示百分比。"
+          }
+        ],
         "patch": []
       }
     },

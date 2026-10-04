@@ -6,7 +6,14 @@
  * the owner to change the battery in the half that was fine, and the symptom
  * they are chasing does not move.
  */
-import { readBatteryLevels, BATTERY_SUBSYSTEM_ID } from "../levels";
+import {
+  BATTERY_SUBSYSTEM_ID,
+  batteryGuideFor,
+  firmwareCutoffMv,
+  millivoltsFromPercent,
+  readBatteryLevels,
+  voltagePercent,
+} from "../levels";
 import type { Setting } from "../../../proto/cormoran/zmk/custom_settings/custom_settings";
 
 function level(key: string, percent: number) {
@@ -83,5 +90,68 @@ describe("reading battery levels", () => {
       source: 0,
     } as Setting;
     expect(readBatteryLevels([missing])).toEqual([]);
+  });
+
+  it("carries the central's voltage and leaves the peripheral's null", () => {
+    // battery-report 65f3fc7d publishes `central_mv` beside the percentage.
+    // The peripheral's voltage never crosses the split link, so it has none.
+    const levels = readBatteryLevels(
+      [
+        level("central", 95),
+        level("central_mv", 2950),
+        level("peripheral0", 72),
+      ],
+      "ergotrack",
+    );
+    expect(levels.map((l) => [l.key, l.millivolts])).toEqual([
+      ["central", 2950],
+      ["peripheral0", null],
+    ]);
+  });
+
+  it("treats a zero voltage as no voltage", () => {
+    // 0 is what the firmware publishes when it has no voltage channel.
+    const levels = readBatteryLevels([
+      level("central", 40),
+      level("central_mv", 0),
+    ]);
+    expect(levels[0].millivolts).toBeNull();
+    expect(firmwareCutoffMv([level("cutoff_mv", 0)])).toBeNull();
+    expect(firmwareCutoffMv([level("cutoff_mv", 1200)])).toBe(1200);
+  });
+});
+
+describe("reading a voltage against the keyboard's guide", () => {
+  it("knows ErgoTrack dies at 2.7 V", () => {
+    // Observed: the keyboard stopped working at 2.7 V. The bar must read
+    // empty there, whatever the firmware's percentage says.
+    const guide = batteryGuideFor("ergotrack")!;
+    expect(guide.deadMv).toBe(2700);
+    expect(voltagePercent(2700, guide)).toBe(0);
+    expect(voltagePercent(3200, guide)).toBe(100);
+    expect(voltagePercent(2950, guide)).toBe(50);
+  });
+
+  it("reads the demo keyboard like ErgoTrack and knows nothing of others", () => {
+    expect(batteryGuideFor("Keeb-On! Demo Keyboard")).toBe(
+      batteryGuideFor("ergotrack"),
+    );
+    expect(batteryGuideFor("goforty-max")?.deadMv).toBe(2000);
+    expect(batteryGuideFor("someone-elses")).toBeNull();
+  });
+
+  it("reads a percentage-only half back to the firmware's voltage", () => {
+    // The firmware's percentage is a linear clamp between 2.0 and 3.0 V, so
+    // 72% is 2.72 V exactly; 100% only says the cell is at or above 3.0 V.
+    const guide = batteryGuideFor("ergotrack")!;
+    expect(millivoltsFromPercent(72, guide)).toEqual({
+      millivolts: 2720,
+      atLeast: false,
+    });
+    expect(millivoltsFromPercent(100, guide)).toEqual({
+      millivolts: 3000,
+      atLeast: true,
+    });
+    expect(millivoltsFromPercent(0, guide).millivolts).toBe(2000);
   });
 });

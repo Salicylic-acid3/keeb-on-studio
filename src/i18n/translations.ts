@@ -219,8 +219,8 @@ const ja: Record<string, string> = {
   "On a layer with the switch on, moving two fingers sideways is a swipe (bound as a key on the trackpad tab), and a scroll that starts there is held to the axis it started on, so it does not drift sideways. With the switch off, two fingers scroll sideways and diagonally as well as up and down. Only the half connected to the computer follows the layer; the other half always swipes.":
     "スイッチがオンのレイヤーでは、2本の指を横に動かすとスワイプになり(割り当てはトラックパッドタブのジェスチャー)、スクロールは始まった軸に固定されて横に流れません。オフのレイヤーでは、2本指で横にも斜めにもスクロールできます。レイヤーに従うのは PC につながる側だけで、もう片方は常にスワイプです。",
   "Swipe on {{layer}}": "{{layer}} で横スワイプ",
-  "The half connected over USB is powered by it and cannot measure its battery now; its number is the last level it measured while running on battery. 0% means it has never run on battery since the firmware was written.":
-    "USB でつながっている側は USB から給電されているため、いまは電池を測れません。表示は電池で動いていたときに最後に測った値です。0% は、ファームウェアを書いてから一度も電池で動いていないことを示します。",
+  "The half connected over USB is powered by it and cannot measure its battery now; its reading is the last one it took while running on battery. A reading at the very bottom of the scale means it has never run on battery since the firmware was written.":
+    "USB でつながっている側は USB から給電されているため、いまは電池を測れません。表示は電池で動いていたときに最後に測った値です。目盛りの一番下の値は、ファームウェアを書いてから一度も電池で動いていないことを示します。",
   "This combo is built into the firmware and cannot be removed; it will be switched off instead. Continue?":
     "このコンボはファームウェアに組み込まれているため削除できません。代わりに無効にします。続けますか?",
   "Delete this combo? It is removed from the keyboard right away; Discard will not bring it back.":
@@ -295,12 +295,19 @@ const ja: Record<string, string> = {
   "Key {{position}}": "キー {{position}}",
   Battery: "電池",
   "How much charge each half has left": "左右それぞれの電池残量",
+  "The voltage of each half's cells": "左右それぞれの電池の電圧",
   "This keyboard does not report its battery level.":
     "このキーボードは電池残量を報告しません。",
-  "The keyboard measures this about once a minute, so 0% just after connecting means it has not measured yet.":
-    "キーボードは1分に1回ほど測るので、接続直後の 0% は「まだ測っていない」という意味です。",
+  "The keyboard measures this about once a minute, so a reading at the very bottom of the scale just after connecting means it has not measured yet.":
+    "キーボードは1分に1回ほど測るので、接続直後に目盛りの一番下にあるのは「まだ測っていない」という意味です。",
   "A cell this low can still run the keys while failing to run a trackpad — the pointer goes first.":
     "ここまで減った電池でもキーは動きますが、トラックパッドには足りなくなります。ポインタから先に落ちます。",
+  "Below {{volts}} the firmware switches the keyboard off to protect its cells.":
+    "{{volts}} を下回ると、ファームウェアは電池を保護するためにキーボードの電源を切ります。",
+  "Two CR2032 cells in parallel in each half: new cells read 3.0 to 3.3 V. Below about 2.7 V this keyboard has stopped working — the trackpad goes before the keys do — so treat that as empty.":
+    "左右それぞれ CR2032 を 2 個並列: 新品は 3.0〜3.3 V です。このキーボードは 2.7 V あたりを下回ると動かなくなった実績があります(キーより先にトラックパッドが落ちます)。そこを「空」と考えてください。",
+  "Two AAA cells in series: new alkaline cells read 3.0 to 3.2 V and are used up at about 2.0 V. NiMH cells sit at 2.4 to 2.6 V almost until the end; that is normal, not a fault.":
+    "単4電池 2 本直列: 新品のアルカリは 3.0〜3.2 V で、2.0 V あたりで使い切りです。ニッケル水素は最後近くまで 2.4〜2.6 V に留まりますが、それは正常で故障ではありません。",
   "Hold a left-click key and press the top-right key on the right half (Delete on the base layer).":
     "左クリックのキーを押しながら、右手側の一番右上のキーを押す（Baseでは Delete）。",
   "Hold the layer 1 key and press the top-left key (the Bluetooth previous-profile key on the base layer).":
@@ -2063,8 +2070,8 @@ const zh: Record<string, string> = {
   "On a layer with the switch on, moving two fingers sideways is a swipe (bound as a key on the trackpad tab), and a scroll that starts there is held to the axis it started on, so it does not drift sideways. With the switch off, two fingers scroll sideways and diagonally as well as up and down. Only the half connected to the computer follows the layer; the other half always swipes.":
     "开关打开的层上，两指横向移动是滑动手势（在触控板标签页里绑定按键），且滚动会锁定在开始时的轴上，不会横向漂移。关闭的层上，两指除了上下还可以横向和斜向滚动。只有连接电脑的一半会跟随层；另一半始终是滑动。",
   "Swipe on {{layer}}": "{{layer}} 上横向滑动",
-  "The half connected over USB is powered by it and cannot measure its battery now; its number is the last level it measured while running on battery. 0% means it has never run on battery since the firmware was written.":
-    "通过 USB 连接的一半由 USB 供电，目前无法测量电池；显示的是它上次用电池运行时测得的电量。0% 表示写入固件后从未用电池运行过。",
+  "The half connected over USB is powered by it and cannot measure its battery now; its reading is the last one it took while running on battery. A reading at the very bottom of the scale means it has never run on battery since the firmware was written.":
+    "通过 USB 连接的一半由 USB 供电，目前无法测量电池；显示的是它上次用电池运行时测得的读数。读数位于刻度最底端表示写入固件后从未用电池运行过。",
   "This combo is built into the firmware and cannot be removed; it will be switched off instead. Continue?":
     "此组合键内置于固件中，无法删除；将改为停用。要继续吗？",
   "Delete this combo? It is removed from the keyboard right away; Discard will not bring it back.":
@@ -2137,11 +2144,18 @@ const zh: Record<string, string> = {
   "Key {{position}}": "键 {{position}}",
   Battery: "电池",
   "How much charge each half has left": "左右两侧各自的剩余电量",
+  "The voltage of each half's cells": "左右两侧各自的电池电压",
   "This keyboard does not report its battery level.": "此键盘不报告电池电量。",
-  "The keyboard measures this about once a minute, so 0% just after connecting means it has not measured yet.":
-    "键盘约每分钟测量一次，因此刚连接时的 0% 表示尚未测量。",
+  "The keyboard measures this about once a minute, so a reading at the very bottom of the scale just after connecting means it has not measured yet.":
+    "键盘约每分钟测量一次，因此刚连接时读数位于刻度最底端表示尚未测量。",
   "A cell this low can still run the keys while failing to run a trackpad — the pointer goes first.":
     "电量低到这个程度时按键仍可工作，但已不足以驱动触控板——指针会先失效。",
+  "Below {{volts}} the firmware switches the keyboard off to protect its cells.":
+    "低于 {{volts}} 时，固件会关闭键盘以保护电池。",
+  "Two CR2032 cells in parallel in each half: new cells read 3.0 to 3.3 V. Below about 2.7 V this keyboard has stopped working — the trackpad goes before the keys do — so treat that as empty.":
+    "每半边两颗 CR2032 并联：新电池为 3.0〜3.3 V。此键盘在低于约 2.7 V 时曾停止工作（触控板比按键先失效），请把那里视为电量耗尽。",
+  "Two AAA cells in series: new alkaline cells read 3.0 to 3.2 V and are used up at about 2.0 V. NiMH cells sit at 2.4 to 2.6 V almost until the end; that is normal, not a fault.":
+    "两节 AAA 电池串联：新碱性电池为 3.0〜3.2 V，约 2.0 V 时耗尽。镍氢电池几乎到最后都停在 2.4〜2.6 V，这是正常现象，不是故障。",
   "Hold a left-click key and press the top-right key on the right half (Delete on the base layer).":
     "按住左键单击的按键，再按右手侧最右上角的键（Base 层上是 Delete）。",
   "Hold the layer 1 key and press the top-left key (the Bluetooth previous-profile key on the base layer).":

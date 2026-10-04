@@ -8,7 +8,11 @@
  * starts low. That is the state worth being able to look at: a cell with
  * enough left for the key matrix and not enough for a capacitive trackpad is
  * what a failing half actually looks like, and it is the reading that makes
- * the panel worth having.
+ * the panel worth having. The demo keyboard is ErgoTrack-shaped, whose cells
+ * are done at about 2.7 V, so the peripheral sits just above that; the
+ * central's voltage is published alongside its percentage the way
+ * battery-report 65f3fc7d does (the percentage is the firmware's linear clamp
+ * between 2.0 and 3.0 V, so the two agree).
  */
 import type { Setting } from "../../proto/cormoran/zmk/custom_settings/custom_settings";
 
@@ -16,9 +20,12 @@ import type { Setting } from "../../proto/cormoran/zmk/custom_settings/custom_se
 export const BATTERY_IDENTIFIER = "keebon__battery";
 
 const LEVELS: Record<string, number> = {
-  central: 74,
-  peripheral0: 12,
+  central: 95,
+  peripheral0: 72,
 };
+const CENTRAL_MV = 2950;
+/** CONFIG_ZMK_NON_LIPO_LOW_MV on ErgoTrack. */
+const CUTOFF_MV = 1200;
 
 export function createBatterySettings(customSubsystemIndex: number): Setting[] {
   const levels: Setting[] = Object.entries(LEVELS).map(([key, percent]) => ({
@@ -52,5 +59,23 @@ export function createBatterySettings(customSubsystemIndex: number): Setting[] {
     },
     value: { boolValue: true },
   });
+  for (const [key, value] of [
+    ["central_mv", CENTRAL_MV],
+    ["cutoff_mv", CUTOFF_MV],
+  ] as const) {
+    levels.push({
+      customSubsystemIndex,
+      key,
+      source: 0,
+      hasUnsavedValue: false,
+      meta: {
+        confidentiality: 2,
+        readPermission: 0,
+        writePermission: 1,
+        constraints: [],
+      },
+      value: { int32Value: value },
+    });
+  }
   return levels;
 }

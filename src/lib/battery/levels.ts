@@ -19,19 +19,118 @@ import type { Setting } from "../../proto/cormoran/zmk/custom_settings/custom_se
 export const BATTERY_SUBSYSTEM_ID = "keebon__battery";
 
 const CENTRAL_KEY = "central";
+const CENTRAL_MV_KEY = "central_mv";
 const CENTRAL_ON_USB_KEY = "central_on_usb";
+const CUTOFF_MV_KEY = "cutoff_mv";
 const PERIPHERAL_PATTERN = /^peripheral(\d+)$/;
 
 export interface BatteryLevel {
   /** `central`, or `peripheral0`, `peripheral1`, … */
   key: string;
-  /** 0–100. */
+  /** 0–100, the firmware's linear clamp between its configured voltages. */
   percent: number;
+  /**
+   * The same sample in millivolts (battery-report 65f3fc7d and later; only
+   * the central half has it), or null. This is what the card shows when it
+   * can: a cell dies at a voltage, and its owner learns which one, while a
+   * percentage between two configured voltages says less the lower it gets.
+   */
+  millivolts: number | null;
   /**
    * Which half this is, in words the owner of *this* keyboard would use, or
    * null when the keyboard is not one we know the halves of.
    */
   label: string | null;
+}
+
+/**
+ * What a voltage means on a given keyboard: the cells it takes, and where
+ * "full" and "empty" are for them. The firmware's percentage is a clamp
+ * between two configured voltages that were set before anyone had watched a
+ * cell run down; these come from watching.
+ */
+export interface BatteryGuide {
+  /** Reads as full at and above this. */
+  fullMv: number;
+  /** Reads as empty at and below this; the bar hits zero here. */
+  emptyMv: number;
+  /** Below this the keyboard has actually stopped working. */
+  deadMv: number;
+  /**
+   * The two voltages the firmware's own percentage is a linear clamp between
+   * (CONFIG_ZMK_NON_LIPO_MIN_MV / MAX_MV). A half that only reports the
+   * percentage — a split peripheral, whose voltage never crosses the link —
+   * can be read back to a voltage through these, to within the firmware's
+   * rounding.
+   */
+  percentMinMv: number;
+  percentMaxMv: number;
+  /** The one-line explanation shown under the readings. */
+  note: string;
+}
+
+/**
+ * Keyed by `CONFIG_ZMK_KEYBOARD_NAME`, like the half labels.
+ *
+ * ErgoTrack: two CR2032 in parallel per half, 3.0 to 3.3 V new, and the
+ * keyboard has stopped working below about 2.7 V (observed by its owner;
+ * the keys outlive the pointer). GoFortyMax: two AAA cells in series,
+ * 3.0 to 3.2 V new for alkaline and used up around 2.0 V; NiMH cells sit at
+ * 2.4 to 2.6 V almost the whole way, which is not a fault.
+ */
+const BATTERY_GUIDES: Record<string, BatteryGuide> = {
+  ergotrack: {
+    fullMv: 3200,
+    emptyMv: 2700,
+    deadMv: 2700,
+    percentMinMv: 2000,
+    percentMaxMv: 3000,
+    note: "Two CR2032 cells in parallel in each half: new cells read 3.0 to 3.3 V. Below about 2.7 V this keyboard has stopped working — the trackpad goes before the keys do — so treat that as empty.",
+  },
+  "goforty-max": {
+    fullMv: 3200,
+    emptyMv: 2000,
+    deadMv: 2000,
+    percentMinMv: 2000,
+    percentMaxMv: 3000,
+    note: "Two AAA cells in series: new alkaline cells read 3.0 to 3.2 V and are used up at about 2.0 V. NiMH cells sit at 2.4 to 2.6 V almost until the end; that is normal, not a fault.",
+  },
+};
+BATTERY_GUIDES["keeb-on! demo keyboard"] = BATTERY_GUIDES.ergotrack;
+
+export function batteryGuideFor(
+  deviceName?: string | null,
+): BatteryGuide | null {
+  return BATTERY_GUIDES[(deviceName ?? "").trim().toLowerCase()] ?? null;
+}
+
+/**
+ * The voltage a firmware percentage stands for, undoing the firmware's linear
+ * clamp. Exact to the firmware's rounding below the top; at 100% the cell is
+ * at or above `percentMaxMv` and the answer is a floor, which the caller
+ * shows as such.
+ */
+export function millivoltsFromPercent(
+  percent: number,
+  guide: BatteryGuide,
+): { millivolts: number; atLeast: boolean } {
+  const clamped = Math.max(0, Math.min(100, percent));
+  const span = guide.percentMaxMv - guide.percentMinMv;
+  return {
+    millivolts: Math.round(guide.percentMinMv + (span * clamped) / 100),
+    atLeast: clamped >= 100,
+  };
+}
+
+/** Where a voltage sits between a guide's empty and full, 0–100. */
+export function voltagePercent(
+  millivolts: number,
+  guide: BatteryGuide,
+): number {
+  const span = guide.fullMv - guide.emptyMv;
+  if (span <= 0) return 0;
+  const ratio = (millivolts - guide.emptyMv) / span;
+  return Math.round(Math.max(0, Math.min(1, ratio)) * 100);
 }
 
 /**
@@ -77,6 +176,10 @@ export function readBatteryLevels(
   const labels = HALF_LABELS[(deviceName ?? "").trim().toLowerCase()] ?? {};
   const central: BatteryLevel[] = [];
   const peripherals: { index: number; level: BatteryLevel }[] = [];
+  // 0 is "no voltage channel", not a reading.
+  const centralMv =
+    settings.find((setting) => setting.key === CENTRAL_MV_KEY)?.value
+      ?.int32Value || null;
 
   for (const setting of settings) {
     const key = setting.key ?? "";
@@ -84,7 +187,12 @@ export function readBatteryLevels(
     if (percent === undefined) continue;
 
     if (key === CENTRAL_KEY) {
-      central.push({ key, percent, label: labels[key] ?? null });
+      central.push({
+        key,
+        percent,
+        millivolts: centralMv,
+        label: labels[key] ?? null,
+      });
       continue;
     }
 
@@ -92,12 +200,24 @@ export function readBatteryLevels(
     if (!match) continue;
     peripherals.push({
       index: Number(match[1]),
-      level: { key, percent, label: labels[key] ?? null },
+      level: { key, percent, millivolts: null, label: labels[key] ?? null },
     });
   }
 
   peripherals.sort((a, b) => a.index - b.index);
   return [...central, ...peripherals.map((p) => p.level)];
+}
+
+/**
+ * The voltage below which the firmware switches the keyboard off to protect
+ * its cells, in millivolts, or null when the firmware does not say (older
+ * battery-report, or a build without the non-LiPo module).
+ */
+export function firmwareCutoffMv(settings: readonly Setting[]): number | null {
+  return (
+    settings.find((setting) => setting.key === CUTOFF_MV_KEY)?.value
+      ?.int32Value || null
+  );
 }
 
 /**
