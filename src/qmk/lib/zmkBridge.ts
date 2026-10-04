@@ -411,18 +411,9 @@ export function bindingToKeycode(binding: BehaviorBinding): number {
 
 // ---- The pretend behavior list ------------------------------------------
 
-// Parameter names are what the picker shows ("Select Keycode"), so they use
-// the same words ZMK firmware does.
-const hid = {
-  name: "Keycode",
-  hidUsage: { keyboardMax: 0xff, consumerMax: 0x2ff },
-};
-const modKey = {
-  name: "Modifier",
-  hidUsage: { keyboardMax: 0xff, consumerMax: 0 },
-};
-const layer = { name: "Layer", layerId: {} };
-const nil = { name: "None", nil: {} };
+const hid = { hidUsage: { keyboardMax: 0xff, consumerMax: 0x2ff } };
+const layer = { layerId: {} };
+const nil = { nil: {} };
 function def(
   id: number,
   displayName: string,
@@ -434,8 +425,8 @@ function def(
     displayName,
     metadata: [
       {
-        param1: param1 as BehaviorDefinition["metadata"][number]["param1"],
-        param2: param2 as BehaviorDefinition["metadata"][number]["param2"],
+        param1: param1.map((p, i) => ({ name: `p1-${i}`, ...p })),
+        param2: param2.map((p, i) => ({ name: `p2-${i}`, ...p })),
       },
     ],
   };
@@ -457,21 +448,21 @@ export function qmkBehaviors(
     def(QMK_BEHAVIOR.layerTap, "Layer-Tap", [layer], [hid]),
     def(QMK_BEHAVIOR.trans, "Trans"),
     def(QMK_BEHAVIOR.none, "None"),
-    def(QMK_BEHAVIOR.modTap, "Mod-Tap", [modKey], [hid]),
-    def(QMK_BEHAVIOR.stickyKey, "Sticky Key", [modKey]),
+    def(QMK_BEHAVIOR.modTap, "Mod-Tap", [hid], [hid]),
+    def(QMK_BEHAVIOR.stickyKey, "Sticky Key", [hid]),
     def(QMK_BEHAVIOR.stickyLayer, "Sticky Layer", [layer]),
     def(QMK_BEHAVIOR.layerTapToggle, "Layer Tap-Toggle", [layer]),
     def(QMK_BEHAVIOR.defaultLayer, "Default Layer", [layer]),
     def(QMK_BEHAVIOR.bootloader, "Bootloader"),
     def(QMK_BEHAVIOR.sysReset, "System Reset"),
     def(QMK_BEHAVIOR.mouseButton, "Mouse Key Press", [
-      { name: "Mouse button", range: { min: 1, max: 16 } },
+      { range: { min: 1, max: 16 } },
     ]),
     def(QMK_BEHAVIOR.mouseMove, "Mouse Move", [
-      { name: "Direction", range: { min: 0, max: 0xffffffff } },
+      { range: { min: 0, max: 0xffffffff } },
     ]),
     def(QMK_BEHAVIOR.mouseScroll, "Mouse Scroll", [
-      { name: "Direction", range: { min: 0, max: 0xffffffff } },
+      { range: { min: 0, max: 0xffffffff } },
     ]),
     def(
       QMK_BEHAVIOR.mouseSpeed,
@@ -482,23 +473,20 @@ export function qmkBehaviors(
       })),
     ),
     def(QMK_BEHAVIOR.qmkKeycode, "QMK Keycode", [
-      { name: "Keycode number", range: { min: 0, max: 0xffff } },
+      { range: { min: 0, max: 0xffff } },
     ]),
   ];
   if (options.tapDanceCount > 0) {
     list.push(
       def(QMK_BEHAVIOR.tapDance, "Tap Dance", [
-        {
-          name: "Tap dance",
-          range: { min: 0, max: options.tapDanceCount - 1 },
-        },
+        { range: { min: 0, max: options.tapDanceCount - 1 } },
       ]),
     );
   }
   if (options.macroCount > 0) {
     list.push(
       def(QMK_BEHAVIOR.macro, "Runtime Macro", [
-        { name: "Macro", range: { min: 0, max: options.macroCount - 1 } },
+        { range: { min: 0, max: options.macroCount - 1 } },
       ]),
     );
   }

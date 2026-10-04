@@ -135,8 +135,7 @@ function getParamTypeDescription(
       ? behaviorInfo.param1Descriptions
       : behaviorInfo.param2Descriptions;
   if (paramDescriptions.length == 1) {
-    // The name is the firmware's; translate it when we know the word.
-    return t("Select {{name}}", { name: t(paramDescriptions[0].name) });
+    return t("Select {{name}}", { name: paramDescriptions[0].name });
   }
   return t("Select options"); // Contains constant from multiple options
 }
