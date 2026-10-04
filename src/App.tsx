@@ -1,4 +1,5 @@
-import { useContext, useCallback, useEffect, useState } from "react";
+import { useContext, useCallback, useEffect, useMemo, useState } from "react";
+import { ZMKAppContext } from "@cormoran/zmk-studio-react-hook";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   IconCloudUpload,
@@ -50,8 +51,12 @@ import {
 import { useDevtool } from "./hooks/useDevtool";
 import { DevtoolWindow } from "./components/DevtoolWindow";
 import { trackPageView } from "./lib/analytics";
+import { keyboardHasTrackpadTab } from "./lib/keyboardTabs";
 
-function getTabs(t: (key: string) => string): TabItem[] {
+function getTabs(
+  t: (key: string) => string,
+  { trackpad }: { trackpad: boolean },
+): TabItem[] {
   return [
     // No Home or Firmware tab once a keyboard is connected: both live on the
     // top screen now (the guide, /about and /downloads), where someone
@@ -69,12 +74,19 @@ function getTabs(t: (key: string) => string): TabItem[] {
       icon: <IconWand size={18} />,
       content: <MacroComboPage />,
     },
-    {
-      id: "trackpad",
-      label: t("Trackpad"),
-      icon: <IconPointer size={18} />,
-      content: <TrackpadPage />,
-    },
+    // Only for a keyboard that has the runtime input processor: on one
+    // without it the page could open on nothing but a warning to enable a
+    // firmware module the keyboard has no use for (see keyboardTabs.ts).
+    ...(trackpad
+      ? [
+          {
+            id: "trackpad",
+            label: t("Trackpad"),
+            icon: <IconPointer size={18} />,
+            content: <TrackpadPage />,
+          },
+        ]
+      : []),
     {
       id: "connection",
       label: t("Connection"),
@@ -138,9 +150,16 @@ function AppRouter() {
 
 function AppContent() {
   const connection = useContext(ConnectionContext);
+  const zmkApp = useContext(ZMKAppContext);
   const { t } = useLanguage();
   const [urlTab, navigateToTab] = useUrlTab();
-  const tabs = getTabs(t);
+  // The subsystem listing arrives in the same state update as the connection,
+  // so the tab set is right from the first connected render; a URL pointing at
+  // a tab this keyboard lacks falls back to the default below.
+  const trackpad = keyboardHasTrackpadTab(
+    zmkApp?.state.customSubsystems?.subsystems,
+  );
+  const tabs = useMemo(() => getTabs(t, { trackpad }), [t, trackpad]);
   const { isAvailable: isDevtoolAvailable } = useDevtool();
   const [devtoolOpen, setDevtoolOpen] = useState(false);
   const activeTab = tabs.some((tab) => tab.id === urlTab)

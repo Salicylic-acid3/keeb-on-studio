@@ -5,7 +5,13 @@
       "date": null,
       "changes": {
         "major": [],
-        "minor": [],
+        "minor": [
+          {
+            "en": "The Trackpad tab appears only on keyboards that have the runtime input processor (the trackpad settings module). On GoFortyMax Ortho it used to open on a warning asking you to enable a firmware module the keyboard has no use for.",
+            "ja": "トラックパッドタブは、ランタイム入力プロセッサ(トラックパッド設定のモジュール)を持つキーボードでだけ表示するようにしました。GoFortyMax Ortho では、キーボードに関係のないファームウェアモジュールを有効にするよう促す警告が開いていました。",
+            "zh": "触控板标签页现在只在具备运行时输入处理器（触控板设置模块）的键盘上显示。此前在 GoFortyMax Ortho 上打开它只会看到一条要求启用与该键盘无关的固件模块的警告。"
+          }
+        ],
         "patch": []
       }
     },
