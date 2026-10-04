@@ -10,6 +10,20 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // QMK (Vial) side
+  "Keyboards with a .uf2 file": ".uf2 ファイルのキーボード",
+  "Keyboards with a .bin file": ".bin ファイルのキーボード",
+  "Download the .bin file for your keyboard below.":
+    "下から自分のキーボードの .bin ファイルをダウンロードします。",
+  "Double-tap the reset switch, or press a key set to Bootloader (QK_BOOT). The keyboard appears as a USB drive named RPI-RP2.":
+    "リセットスイッチを2回素早く押すか、Bootloader（QK_BOOT）を割り当てたキーを押します。キーボードが RPI-RP2 という名前のUSBドライブとして現れます。",
+  "Press a key set to Bootloader (QK_BOOT), or hold the BOOT switch while plugging in. The keyboard switches to firmware update mode (DFU).":
+    "Bootloader（QK_BOOT）を割り当てたキーを押すか、BOOTスイッチを押しながらUSBを挿します。キーボードがファームウェア書き込みモード（DFU）になります。",
+  "Write the .bin file with QMK Toolbox: open the file, then press Flash.":
+    "QMK Toolbox で .bin ファイルを書き込みます。ファイルを開いて「Flash」を押してください。",
+  "These are the Keeb-On! Studio builds: Vial with the OS switching. They also work with Vial itself.":
+    "Keeb-On! Studio 用のビルド（Vial＋OS切り替え）です。Vial 本家でもそのまま使えます。",
+  "Write with QMK Toolbox (DFU).": "QMK Toolbox（DFU）で書き込みます。",
+  "Copy onto the RPI-RP2 drive.": "RPI-RP2 ドライブにコピーします。",
   "All macros share this memory": "すべてのマクロでこの容量を共有します",
   "Create macro": "マクロを作成",
   "Hold the unlock keys together until the bar fills.":

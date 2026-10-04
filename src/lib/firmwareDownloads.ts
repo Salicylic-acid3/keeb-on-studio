@@ -85,9 +85,73 @@ export const FIRMWARE_BOARDS: FirmwareBoard[] = [
 ];
 
 /** Permalink to `asset` in the newest release of `repo`. */
-export function firmwareDownloadUrl(repo: string, asset: string): string {
-  return `https://github.com/${repo}/releases/latest/download/${asset}.uf2`;
+export function firmwareDownloadUrl(
+  repo: string,
+  asset: string,
+  ext: FirmwareExt = "uf2",
+): string {
+  return `https://github.com/${repo}/releases/latest/download/${asset}.${ext}`;
 }
+
+export type FirmwareExt = "uf2" | "bin";
+
+/**
+ * The QMK (Vial) keyboards. All built from one repository, the vial-qmk
+ * fork, whose release workflow (.github/workflows/keebon-firmware.yml)
+ * publishes each keyboard's multi-os build as `<keyboard folder>.<ext>`:
+ * .uf2 for RP2040 boards (drag onto the drive), .bin for STM32G0 boards
+ * (written over DFU). The asset names are the folder names, so a renamed
+ * folder needs renaming here too.
+ */
+export const QMK_FIRMWARE_REPO = "Salicylic-acid3/vial-qmk";
+
+export interface QmkFirmware {
+  /** Product name, shown as-is. */
+  name: string;
+  /** keyboards/salicylic_acid3/<asset> */
+  asset: string;
+  ext: FirmwareExt;
+}
+
+const uf2 = (name: string, asset: string): QmkFirmware => ({
+  name,
+  asset,
+  ext: "uf2",
+});
+const bin = (name: string, asset: string): QmkFirmware => ({
+  name,
+  asset,
+  ext: "bin",
+});
+
+export const QMK_FIRMWARE: QmkFirmware[] = [
+  uf2("AtEighty JP", "ateighty_jp"),
+  uf2("AtEighty US", "ateighty_us"),
+  uf2("BeThirty Ortho", "bethirty_ortho"),
+  uf2("BeThirty QAZ", "bethirty_qaz"),
+  uf2("ClickBoard CyberMini", "clickboard_cybermini"),
+  uf2("ClickBoard ErgoMini", "clickboard_ergomini"),
+  uf2("ClickBoard Ortho", "clickboard_ortho"),
+  bin("ClickBoard Tenkey", "clickboard_tenkey"),
+  bin("EzTenkey", "eztenkey"),
+  bin("EzTenkeyMX", "eztenkey_mx"),
+  uf2("Focus40 JP", "focus40_jp"),
+  uf2("Focus40 Ortho", "focus40_ortho"),
+  uf2("Focus60 EN", "focus60_en"),
+  uf2("GoForty JP", "goforty_jp"),
+  uf2("GoForty Ortho", "goforty_ortho"),
+  uf2("GoForty RS", "goforty_rs"),
+  uf2("GoForty US", "goforty_us"),
+  uf2("InSixty EN", "insixty_en"),
+  uf2("InSixty JP", "insixty_jp"),
+  uf2("InSixty MX JP", "insixty_mxjp"),
+  uf2("Tenkey of Tenkey", "tenkey_of_tenkey"),
+  uf2("ToSeventy JP", "toseventy_jp"),
+  uf2("ToSeventy Ortho", "toseventy_ortho"),
+  uf2("ToSeventy US", "toseventy_us"),
+  uf2("WzTwenty", "wztwenty"),
+  bin("WzTwenty STM", "wztwenty_stm"),
+];
 
 /** The repository's releases page, for changelogs and older versions. */
 export function firmwareReleasesUrl(repo: string): string {

@@ -266,7 +266,7 @@ function AppContent() {
         onFirmwareChange={navigateFirmware}
         onShowReleaseNotes={() => navigatePath(RELEASE_NOTES_PATH)}
         onShowAbout={() => navigatePath(ABOUT_PATH)}
-        onShowDownloads={() => navigatePath(DOWNLOADS_PATH)}
+        onShowDownloads={() => navigatePath(`${DOWNLOADS_PATH}#qmk`)}
       />
     );
   }

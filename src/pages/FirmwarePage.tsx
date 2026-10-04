@@ -5,16 +5,29 @@ import {
 } from "@tabler/icons-react";
 
 import { useLanguage } from "../hooks/useLanguage";
+import { useEffect } from "react";
 import { FlashInstructions } from "../components/FlashInstructions";
+import { QmkFlashInstructions } from "../components/QmkFlashInstructions";
 import {
   FIRMWARE_BOARDS,
   firmwareDownloadUrl,
   firmwareReleasesUrl,
+  QMK_FIRMWARE,
+  QMK_FIRMWARE_REPO,
   type FirmwareBoard,
+  type FirmwareExt,
   type FirmwareFile,
 } from "../lib/firmwareDownloads";
 
-function DownloadRow({ repo, file }: { repo: string; file: FirmwareFile }) {
+function DownloadRow({
+  repo,
+  file,
+  ext = "uf2",
+}: {
+  repo: string;
+  file: FirmwareFile;
+  ext?: FirmwareExt;
+}) {
   const { t } = useLanguage();
   return (
     <li
@@ -38,13 +51,13 @@ function DownloadRow({ repo, file }: { repo: string; file: FirmwareFile }) {
           {t(file.description)}
         </p>
         <p className="mt-1 font-mono text-[11px] text-[var(--color-text-muted)]">
-          {file.asset}.uf2
+          {file.asset}.{ext}
         </p>
       </div>
       {/* A plain link, not fetch(): the browser downloads it directly, so no
           GitHub API call and nothing to fail when rate limited. */}
       <a
-        href={firmwareDownloadUrl(repo, file.asset)}
+        href={firmwareDownloadUrl(repo, file.asset, ext)}
         className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg border border-[var(--color-electric)] bg-[var(--color-electric)]/10 px-4 py-2 text-sm font-medium text-[var(--color-electric)] transition-colors hover:bg-[var(--color-electric)]/20"
       >
         <IconDownload size={16} />
@@ -102,6 +115,12 @@ function BoardCard({ board }: { board: FirmwareBoard }) {
 
 export function FirmwarePage() {
   const { t } = useLanguage();
+  // Arriving from the QMK side: show its keyboards rather than the ZMK ones.
+  useEffect(() => {
+    if (window.location.hash === "#qmk") {
+      document.getElementById("qmk")?.scrollIntoView();
+    }
+  }, []);
 
   return (
     <div className="h-full overflow-auto p-6">
@@ -128,6 +147,50 @@ export function FirmwarePage() {
           {FIRMWARE_BOARDS.map((board) => (
             <BoardCard key={board.repo} board={board} />
           ))}
+        </div>
+
+        {/* QMK (Vial) keyboards: one list, one repository. /downloads#qmk
+            (the link from the QMK side's top page) scrolls here. */}
+        <div id="qmk" className="mt-10 scroll-mt-6">
+          <h2 className="text-lg font-medium text-[var(--color-text)]">
+            {t("QMK (Vial) keyboards")}
+          </h2>
+          <div className="glass-card mt-4 mb-6 p-6">
+            <h2 className="mb-4 text-sm font-medium text-[var(--color-text-secondary)]">
+              {t("How to flash")}
+            </h2>
+            <QmkFlashInstructions />
+          </div>
+          <div className="glass-card p-6">
+            <div className="mb-4 flex justify-end">
+              <a
+                href={firmwareReleasesUrl(QMK_FIRMWARE_REPO)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-xs text-[var(--color-electric)] underline transition-colors hover:text-[var(--color-neon)]"
+              >
+                {t("Release notes and older versions")}
+                <IconExternalLink size={13} />
+              </a>
+            </div>
+            <ul className="space-y-2">
+              {QMK_FIRMWARE.map((fw) => (
+                <DownloadRow
+                  key={fw.asset}
+                  repo={QMK_FIRMWARE_REPO}
+                  ext={fw.ext}
+                  file={{
+                    asset: fw.asset,
+                    label: fw.name,
+                    description:
+                      fw.ext === "bin"
+                        ? "Write with QMK Toolbox (DFU)."
+                        : "Copy onto the RPI-RP2 drive.",
+                  }}
+                />
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </div>

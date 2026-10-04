@@ -1,4 +1,6 @@
 import {
+  QMK_FIRMWARE,
+  QMK_FIRMWARE_REPO,
   FIRMWARE_BOARDS,
   firmwareDownloadUrl,
   firmwareReleasesUrl,
@@ -67,5 +69,15 @@ describe("FIRMWARE_BOARDS", () => {
         expect(file.asset).toMatch(/^[\w-]+$/);
       }
     }
+  });
+});
+
+describe("QMK firmware list", () => {
+  it("has one entry per keyboard, linking to the latest release asset", () => {
+    const assets = QMK_FIRMWARE.map((f) => f.asset);
+    expect(new Set(assets).size).toBe(assets.length);
+    expect(firmwareDownloadUrl(QMK_FIRMWARE_REPO, "eztenkey", "bin")).toBe(
+      "https://github.com/Salicylic-acid3/vial-qmk/releases/latest/download/eztenkey.bin",
+    );
   });
 });
