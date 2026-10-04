@@ -82,6 +82,13 @@ describe("QmkApp demo mode", () => {
       screen.getAllByRole("tab", { name: "Macro, Combo & Tap Dance" }).length,
     ).toBeGreaterThan(0);
 
+    // Mouse key speed from the keymap page, as a dialog.
+    fireEvent.click(screen.getByRole("button", { name: /Mouse keys/ }));
+    expect(await screen.findByText("Cursor: step size")).toBeInTheDocument();
+    fireEvent.keyDown(document.activeElement ?? document.body, {
+      key: "Escape",
+    });
+
     // Combos: "+" opens an editor in the right column, as on the ZMK side.
     const mcTab = screen.getAllByRole("tab", {
       name: "Macro, Combo & Tap Dance",

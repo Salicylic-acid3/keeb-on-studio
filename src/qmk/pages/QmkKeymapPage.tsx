@@ -15,10 +15,12 @@ import {
   IconKeyboard,
   IconLoader2,
   IconRefresh,
+  IconMouse,
 } from "@tabler/icons-react";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import * as Dialog from "@radix-ui/react-dialog";
 import { HexIcon } from "../../components/brand/HexIcon";
+import { StatusDot } from "../../components/EditStatusIndicator";
 import { KeyboardLayout } from "../../components/KeyboardLayout";
 import { KeycodeSelector } from "../../components/KeycodeSelector";
 import { QuickAssignBar } from "../../components/keymap/QuickAssignBar";
@@ -51,6 +53,12 @@ import {
 } from "../lib/zmkBridge";
 import type { UseVialKeyboard } from "../hooks/useVialKeyboard";
 import type { VialKey } from "../lib/vial/kle";
+import { QmkSettingsCard } from "../components/QmkSettingsCard";
+import {
+  MOUSE_KEY_SETTINGS,
+  readField,
+  supportedFields,
+} from "../lib/qmkSettings";
 
 interface QmkKeymapPageProps {
   keyboard: UseVialKeyboard;
@@ -80,6 +88,16 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
   const [copyTarget, setCopyTarget] = useState<LayerGroup | null>(null);
   const [bridgeError, setBridgeError] = useState<string | null>(null);
   const [isReloading, setIsReloading] = useState(false);
+  const [mouseSettingsOpen, setMouseSettingsOpen] = useState(false);
+  const mouseSettings = supportedFields(
+    MOUSE_KEY_SETTINGS,
+    keyboard.qmkSettingIds,
+  );
+  const mouseSettingsModified = mouseSettings.some(
+    (f) =>
+      readField(f, keyboard.qmkSettings) !==
+      readField(f, keyboard.savedQmkSettings),
+  );
 
   const group: LayerGroup | undefined = groups[groupIndex];
 
@@ -307,6 +325,22 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
             </div>
           </div>
           <div className="flex items-center gap-2 ml-auto">
+            {mouseSettings.length > 0 && (
+              <button
+                onClick={() => setMouseSettingsOpen(true)}
+                className="relative btn-ghost text-sm flex items-center gap-1.5 flex-shrink-0"
+                title={t("Mouse key speed")}
+              >
+                <IconMouse size={16} />
+                {t("Mouse keys")}
+                {mouseSettingsModified && (
+                  <StatusDot
+                    status="unsaved"
+                    className="absolute -top-0.5 -right-0.5"
+                  />
+                )}
+              </button>
+            )}
             <button
               onClick={handleReload}
               disabled={isReloading || keyboard.isSaving}
@@ -587,6 +621,28 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
         layers={layers.map((l) => ({ id: l.id, name: l.name }))}
         keyboardLayout={keyboardLayoutContext.layout}
       />
+
+      {/* Mouse key settings: QMK Settings, saved with the keymap */}
+      <Dialog.Root open={mouseSettingsOpen} onOpenChange={setMouseSettingsOpen}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" />
+          <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-md max-h-[85vh] overflow-y-auto z-50 rounded-xl shadow-2xl">
+            <Dialog.Title className="sr-only">
+              {t("Mouse Key Settings")}
+            </Dialog.Title>
+            <Dialog.Description className="sr-only">
+              {t("Mouse key speed")}
+            </Dialog.Description>
+            <QmkSettingsCard
+              title="Mouse Key Settings"
+              fields={mouseSettings}
+              values={keyboard.qmkSettings}
+              saved={keyboard.savedQmkSettings}
+              onChange={keyboard.setQmkSetting}
+            />
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
 
       {/* Copy block dialog */}
       <Dialog.Root open={copyDialogOpen} onOpenChange={setCopyDialogOpen}>

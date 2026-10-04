@@ -127,6 +127,86 @@ export const TAP_HOLD_SETTINGS: QmkSettingField[] = [
 ];
 
 /**
+ * Mouse keys (MS_UP, MS_BTN1, MS_WHLU ...): how fast the cursor and the
+ * wheel move. Only on firmware built with mouse keys and without the
+ * three-speed mode (quantum/qmk_settings.c).
+ */
+export const MOUSE_KEY_SETTINGS: QmkSettingField[] = [
+  {
+    kind: "number",
+    qsid: 9,
+    label: "Cursor: delay before moving",
+    hint: "From pressing a cursor key to the first movement",
+    min: 0,
+    max: 10000,
+    unit: "ms",
+  },
+  {
+    kind: "number",
+    qsid: 10,
+    label: "Cursor: time between movements",
+    min: 0,
+    max: 10000,
+    unit: "ms",
+  },
+  {
+    kind: "number",
+    qsid: 11,
+    label: "Cursor: step size",
+    hint: "How far the cursor moves each time",
+    min: 0,
+    max: 1000,
+  },
+  {
+    kind: "number",
+    qsid: 12,
+    label: "Cursor: maximum speed",
+    min: 0,
+    max: 1000,
+  },
+  {
+    kind: "number",
+    qsid: 13,
+    label: "Cursor: time to reach maximum speed",
+    hint: "In movements, not milliseconds",
+    min: 0,
+    max: 1000,
+  },
+  {
+    kind: "number",
+    qsid: 14,
+    label: "Wheel: delay before scrolling",
+    min: 0,
+    max: 10000,
+    unit: "ms",
+  },
+  {
+    kind: "number",
+    qsid: 15,
+    label: "Wheel: time between scrolls",
+    min: 0,
+    max: 10000,
+    unit: "ms",
+  },
+  {
+    kind: "number",
+    qsid: 16,
+    label: "Wheel: maximum speed",
+    hint: "Scroll steps per movement at full speed",
+    min: 0,
+    max: 1000,
+  },
+  {
+    kind: "number",
+    qsid: 17,
+    label: "Wheel: time to reach maximum speed",
+    hint: "In movements, not milliseconds",
+    min: 0,
+    max: 1000,
+  },
+];
+
+/**
  * The fields this firmware has. Where an id-per-setting and a bit-of-id-8
  * version both exist, the newer id wins so a setting never shows twice.
  */

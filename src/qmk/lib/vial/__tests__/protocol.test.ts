@@ -198,7 +198,7 @@ describe("VialClient against the demo keyboard", () => {
   test("QMK Settings: list, read and write", async () => {
     const client = new VialClient(demo());
     expect(await client.listQmkSettings()).toEqual([
-      1, 2, 3, 4, 5, 6, 7, 8, 18, 19, 20, 21,
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
     ]);
     expect(await client.getQmkSetting(7, 2)).toBe(200);
     await client.setQmkSetting(7, 2, 280);

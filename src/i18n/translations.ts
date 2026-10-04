@@ -10,6 +10,24 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // QMK (Vial) side
+  "Cursor: delay before moving": "カーソル：動き出すまでの待ち時間",
+  "From pressing a cursor key to the first movement":
+    "カーソルキーを押してから最初に動くまで",
+  "Cursor: time between movements": "カーソル：移動の間隔",
+  "Cursor: step size": "カーソル：1回の移動量",
+  "How far the cursor moves each time": "1回ごとにカーソルが動く距離",
+  "Cursor: maximum speed": "カーソル：最高速度",
+  "Cursor: time to reach maximum speed": "カーソル：最高速度までの時間",
+  "In movements, not milliseconds": "ミリ秒ではなく移動の回数で指定します",
+  "Wheel: delay before scrolling": "ホイール：スクロールし始めるまでの待ち時間",
+  "Wheel: time between scrolls": "ホイール：スクロールの間隔",
+  "Wheel: maximum speed": "ホイール：最高速度",
+  "Scroll steps per movement at full speed":
+    "最高速度のときに1回でスクロールする量",
+  "Wheel: time to reach maximum speed": "ホイール：最高速度までの時間",
+  "Mouse keys": "マウスキー",
+  "Mouse key speed": "マウスキーの速さ",
+  "Mouse Key Settings": "マウスキーの設定",
   "Another key pressed while held makes it a hold at once":
     "押している間に別のキーを押したら、すぐにホールドとして扱う",
   "Another key tapped while held makes it a hold":
