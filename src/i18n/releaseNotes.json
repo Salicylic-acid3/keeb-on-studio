@@ -5,6 +5,15 @@
       "date": null,
       "changes": {
         "major": [],
+        "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.04.5",
+      "date": "2026-10-04",
+      "changes": {
+        "major": [],
         "minor": [
           {
             "en": "The Trackpad tab appears only on keyboards that have the runtime input processor (the trackpad settings module). On GoFortyMax Ortho it used to open on a warning asking you to enable a firmware module the keyboard has no use for.",
