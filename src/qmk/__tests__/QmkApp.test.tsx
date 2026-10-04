@@ -74,7 +74,8 @@ describe("QmkApp demo mode", () => {
       name: /Key position \d+:/,
     });
     expect(keys).toHaveLength(50);
-    expect(keys[0]).toHaveAttribute("data-binding-label", "Tab");
+    // Keys come in vial.json order: the first is 0,3 (E on the base layer).
+    expect(keys[0]).toHaveAttribute("data-binding-label", "E");
 
     // The OS tab exists because the demo firmware has the module.
     expect(screen.getAllByRole("tab", { name: "OS" }).length).toBeGreaterThan(

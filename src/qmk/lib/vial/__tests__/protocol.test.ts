@@ -49,14 +49,18 @@ describe("VialClient against the demo keyboard", () => {
     expect(def.keebOn?.osBlocks?.[1].layers).toEqual([4, 5, 6, 7]);
     const keys = parseKleLayout(def.keymap);
     expect(keys).toHaveLength(50);
-    expect(keys[0]).toMatchObject({
-      row: 0,
-      col: 0,
-      x: 0,
-      y: 0,
+    // The real layout: column stagger, and four thumb keys rotated 15/30 degrees.
+    expect(keys.find((k) => k.row === 0 && k.col === 0)).toMatchObject({
+      x: 25,
       width: 100,
       height: 100,
     });
+    expect(
+      keys
+        .filter((k) => k.r !== 0)
+        .map((k) => k.r / 100)
+        .sort((a, b) => a - b),
+    ).toEqual([-30, -15, 15, 30]);
     expect(visibleKeys(keys, def.layoutLabels, 0)).toHaveLength(50);
   });
 
