@@ -17,7 +17,13 @@
             "zh": "故障排除：电池卡片暂时撤下。固件测量的是供电轨，而在 ClickBoard ErgoTrack 和 GoFortyMax Ortho 上供电轨位于稳压器之后，因此从新电池到几乎耗尽读数都一样，然后键盘就停了。一个到来不及时才说话的数字不如没有；等有能直接测量电池的板子再恢复。"
           }
         ],
-        "patch": []
+        "patch": [
+          {
+            "en": "Trackpad: the tap and advanced settings are laid out as boxed tiles, two to a line, with each label directly above or beside its own box or switch, instead of labels at the left edge of the card and boxes at the right.",
+            "ja": "トラックパッド: タップ設定と詳細設定を、項目ごとに四角で括ったタイルの2列並びにしました。項目名のすぐ下(スイッチは隣)にその入力欄があり、カードの左端の項目名と右端の入力欄を目で結ぶ必要がなくなりました。",
+            "zh": "触控板：点按设置和高级设置改为每项一个方框的两列排版，标签就在各自的输入框上方（开关则在旁边），不再是标签靠卡片左边、输入框靠右边。"
+          }
+        ]
       }
     },
     {

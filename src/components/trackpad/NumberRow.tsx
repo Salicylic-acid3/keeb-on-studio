@@ -52,27 +52,22 @@ export function NumberRow({
    */
   const typed = useRef(shown(field.value));
 
+  /*
+   * A tile: the label on one line, the box under it, the two boxed together.
+   * In a row with the label at the left edge and the box at the right, the
+   * eye had to travel the width of the card to pair them, and a page of such
+   * rows read as two unrelated columns. Tiles sit two to a line (the grid is
+   * the parent's), so each pair is close and bordered.
+   */
   return (
-    <div className="flex items-center justify-between gap-3">
-      <span className="flex min-w-0 flex-col">
-        <span className="flex min-w-0 items-center gap-1.5 text-sm text-[var(--color-text-secondary)]">
-          <span className="whitespace-nowrap">{label}</span>
-          <InfoTip text={info} />
-        </span>
-        {disagree && (
-          <span className="text-xs text-[var(--color-warning)]">
-            {t(
-              "The halves differ: {{values}}. Press Enter in the box to write both.",
-              {
-                values: field.copies.map(shown).join(" / "),
-              },
-            )}
-          </span>
-        )}
+    <div className="setting-tile">
+      <span className="flex min-w-0 items-center gap-1.5 text-xs text-[var(--color-text-secondary)]">
+        <span className="min-w-0">{label}</span>
+        <InfoTip text={info} />
       </span>
       <RetainedInput
         type="number"
-        className="input-field w-24 shrink-0 px-3 py-1.5 text-right text-sm"
+        className="input-field w-24 px-3 py-1 text-center text-sm"
         value={shown(field.value)}
         min={field.min === null ? undefined : field.min / scale}
         max={field.max === null ? undefined : field.max / scale}
@@ -95,6 +90,16 @@ export function NumberRow({
           }
         }}
       />
+      {disagree && (
+        <span className="text-xs text-[var(--color-warning)]">
+          {t(
+            "The halves differ: {{values}}. Press Enter in the box to write both.",
+            {
+              values: field.copies.map(shown).join(" / "),
+            },
+          )}
+        </span>
+      )}
     </div>
   );
 }

@@ -26,10 +26,10 @@ export function ToggleRow({
 }) {
   const { t } = useLanguage();
   return (
-    <div className="flex items-center justify-between gap-3">
+    <div className="setting-tile flex-row items-center justify-between">
       <span className="flex min-w-0 flex-col">
-        <span className="flex min-w-0 items-center gap-1.5 text-sm text-[var(--color-text-secondary)]">
-          <span className="whitespace-nowrap">{label}</span>
+        <span className="flex min-w-0 items-center gap-1.5 text-xs text-[var(--color-text-secondary)]">
+          <span className="min-w-0">{label}</span>
           <InfoTip text={info} />
         </span>
         {disagree && (

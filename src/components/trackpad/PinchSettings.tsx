@@ -121,36 +121,38 @@ export function PinchSettings({
         {t("One-pad pinch")}
       </h3>
 
-      {pinch && (
-        <ToggleRow
-          label={t("Pinch with two fingers on one pad")}
-          info={t(
-            "Two fingers closing or spreading on one pad zooms. On a small pad this is easy to confuse with two-finger scrolling, and zooming with one finger on each pad does the same job without the confusion — so this is off by default.",
-          )}
-          checked={pinch.enabled}
-          disagree={sidesDisagree(pinch)}
-          disabled={settings.isLoading}
-          onCheckedChange={(checked) => void setToggle(pinch, checked)}
-        />
-      )}
+      <div className="setting-grid">
+        {pinch && (
+          <ToggleRow
+            label={t("Pinch with two fingers on one pad")}
+            info={t(
+              "Two fingers closing or spreading on one pad zooms. On a small pad this is easy to confuse with two-finger scrolling, and zooming with one finger on each pad does the same job without the confusion — so this is off by default.",
+            )}
+            checked={pinch.enabled}
+            disagree={sidesDisagree(pinch)}
+            disabled={settings.isLoading}
+            onCheckedChange={(checked) => void setToggle(pinch, checked)}
+          />
+        )}
 
-      {invert && (
-        <ToggleRow
-          label={t("Reverse the pinch direction")}
-          info={t(
-            "Reverses the zoom direction, for both the one-pad pinch and the one-finger-on-each-pad zoom. Which way is right depends on the computer.",
-          )}
-          checked={invert.enabled}
-          disagree={sidesDisagree(invert)}
-          // Settable while the pinch itself is off. Greying it out was meant to
-          // say "this does nothing right now", but it also means you cannot set
-          // the direction before turning the gesture on — so you turn it on,
-          // find it backwards, and go back for a second switch. The setting is
-          // stored either way; let it be chosen either way.
-          disabled={settings.isLoading}
-          onCheckedChange={(checked) => void setToggle(invert, checked)}
-        />
-      )}
+        {invert && (
+          <ToggleRow
+            label={t("Reverse the pinch direction")}
+            info={t(
+              "Reverses the zoom direction, for both the one-pad pinch and the one-finger-on-each-pad zoom. Which way is right depends on the computer.",
+            )}
+            checked={invert.enabled}
+            disagree={sidesDisagree(invert)}
+            // Settable while the pinch itself is off. Greying it out was meant to
+            // say "this does nothing right now", but it also means you cannot set
+            // the direction before turning the gesture on — so you turn it on,
+            // find it backwards, and go back for a second switch. The setting is
+            // stored either way; let it be chosen either way.
+            disabled={settings.isLoading}
+            onCheckedChange={(checked) => void setToggle(invert, checked)}
+          />
+        )}
+      </div>
 
       {/* The two swipes are different gestures with different consequences
           for scrolling, so they sit under one heading but keep their own
@@ -166,7 +168,7 @@ export function PinchSettings({
       )}
 
       {(swipe2Layers || swipe2Distance) && (
-        <div className="space-y-3">
+        <div className="setting-grid">
           <div>
             <h5 className="text-sm text-[var(--color-text)]">
               {t("Two-finger horizontal swipe")}
@@ -216,52 +218,54 @@ export function PinchSettings({
       )}
 
       {(swipeX || swipeY) && (
-        <div>
-          <h5 className="text-sm text-[var(--color-text)]">
-            {t("Three-finger swipe")}
-          </h5>
-          <p className="mt-1 text-xs text-[var(--color-text-muted)]">
-            {t(
-              "Three fingers moving in any of the four directions is a swipe (bound as keys on the trackpad tab); they never scroll. These are how far they travel before it counts, in sensor counts (about 23 to the millimetre). Lower if swipes are missed, raise if they fire while you meant to hold.",
-            )}
-          </p>
+        <div className="setting-grid">
+          <div>
+            <h5 className="text-sm text-[var(--color-text)]">
+              {t("Three-finger swipe")}
+            </h5>
+            <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+              {t(
+                "Three fingers moving in any of the four directions is a swipe (bound as keys on the trackpad tab); they never scroll. These are how far they travel before it counts, in sensor counts (about 23 to the millimetre). Lower if swipes are missed, raise if they fire while you meant to hold.",
+              )}
+            </p>
+          </div>
+
+          {swipeX && (
+            <NumberRow
+              label={t("Up and down ({{n}} counts)", { n: swipeX.value })}
+              info={t(
+                "Along the long side of the pad, where three fingers have room to travel.",
+              )}
+              field={swipeX}
+              step={10}
+              disabled={settings.isLoading}
+              onCommit={(typed) =>
+                void commitTrackpadNumber(settings, swipeX, typed, {
+                  min: 1,
+                  max: 1000,
+                })
+              }
+            />
+          )}
+
+          {swipeY && (
+            <NumberRow
+              label={t("Left and right ({{n}} counts)", { n: swipeY.value })}
+              info={t(
+                "Across the short side of the pad. Three fingers fill most of it, so this is set lower than the other.",
+              )}
+              field={swipeY}
+              step={10}
+              disabled={settings.isLoading}
+              onCommit={(typed) =>
+                void commitTrackpadNumber(settings, swipeY, typed, {
+                  min: 1,
+                  max: 1000,
+                })
+              }
+            />
+          )}
         </div>
-      )}
-
-      {swipeX && (
-        <NumberRow
-          label={t("Up and down ({{n}} counts)", { n: swipeX.value })}
-          info={t(
-            "Along the long side of the pad, where three fingers have room to travel.",
-          )}
-          field={swipeX}
-          step={10}
-          disabled={settings.isLoading}
-          onCommit={(typed) =>
-            void commitTrackpadNumber(settings, swipeX, typed, {
-              min: 1,
-              max: 1000,
-            })
-          }
-        />
-      )}
-
-      {swipeY && (
-        <NumberRow
-          label={t("Left and right ({{n}} counts)", { n: swipeY.value })}
-          info={t(
-            "Across the short side of the pad. Three fingers fill most of it, so this is set lower than the other.",
-          )}
-          field={swipeY}
-          step={10}
-          disabled={settings.isLoading}
-          onCommit={(typed) =>
-            void commitTrackpadNumber(settings, swipeY, typed, {
-              min: 1,
-              max: 1000,
-            })
-          }
-        />
       )}
 
       {fingerSplit && (
@@ -272,23 +276,25 @@ export function PinchSettings({
         </div>
       )}
       {fingerSplit && (
-        <NumberRow
-          label={t("Telling two fingers apart ({{n}})", {
-            n: fingerSplit.value,
-          })}
-          info={t(
-            "The sensor's own finger split factor: how readily one touched area is taken for two fingers. Higher splits more readily, 0 never splits, 3 is the sensor's default. It only matters when the fingers are nearly touching each other; two fingers with a gap between them are always two. If a close two-finger scroll does not start, raise it one step at a time; if one finger sometimes counts as two, lower it.",
-          )}
-          field={fingerSplit}
-          step={1}
-          disabled={settings.isLoading}
-          onCommit={(typed) =>
-            void commitTrackpadNumber(settings, fingerSplit, typed, {
-              min: 0,
-              max: 255,
-            })
-          }
-        />
+        <div className="setting-grid">
+          <NumberRow
+            label={t("Telling two fingers apart ({{n}})", {
+              n: fingerSplit.value,
+            })}
+            info={t(
+              "The sensor's own finger split factor: how readily one touched area is taken for two fingers. Higher splits more readily, 0 never splits, 3 is the sensor's default. It only matters when the fingers are nearly touching each other; two fingers with a gap between them are always two. If a close two-finger scroll does not start, raise it one step at a time; if one finger sometimes counts as two, lower it.",
+            )}
+            field={fingerSplit}
+            step={1}
+            disabled={settings.isLoading}
+            onCommit={(typed) =>
+              void commitTrackpadNumber(settings, fingerSplit, typed, {
+                min: 0,
+                max: 255,
+              })
+            }
+          />
+        </div>
       )}
     </div>
   );

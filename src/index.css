@@ -347,6 +347,37 @@
   .input-field::placeholder {
     color: var(--color-text-muted);
   }
+
+  /*
+   * One trackpad setting, boxed: the label and its control together, so
+   * the eye never has to pair a label at one edge of the card with a box at
+   * the other. Laid out two to a line by the parent's grid.
+   */
+  .setting-tile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    min-width: 0;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-border);
+    background: color-mix(in srgb, var(--color-surface) 60%, transparent);
+  }
+
+  /* The grid the tiles sit in; headings and notes span it. */
+  .setting-grid {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) {
+    .setting-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .setting-grid > :not(.setting-tile) {
+    grid-column: 1 / -1;
+  }
 }
 
 /*

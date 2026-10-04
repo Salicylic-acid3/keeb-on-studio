@@ -55,56 +55,60 @@ export function TapSettings({
         {t("Tap to click")}
       </h3>
 
-      {enabled && (
-        <ToggleRow
-          label={t("A quick touch with one finger clicks")}
-          info={t(
-            "Off: tapping the pad does nothing; clicks come from the switches only. Turn it off if the pad gets brushed while typing and clicks where you did not mean to.",
-          )}
-          checked={enabled.enabled}
-          disagree={sidesDisagree(enabled)}
-          disabled={settings.isLoading}
-          onCheckedChange={(checked) => void setEnabled(checked)}
-        />
-      )}
+      <div className="setting-grid">
+        {enabled && (
+          <ToggleRow
+            label={t("A quick touch with one finger clicks")}
+            info={t(
+              "Off: tapping the pad does nothing; clicks come from the switches only. Turn it off if the pad gets brushed while typing and clicks where you did not mean to.",
+            )}
+            checked={enabled.enabled}
+            disagree={sidesDisagree(enabled)}
+            disabled={settings.isLoading}
+            onCheckedChange={(checked) => void setEnabled(checked)}
+          />
+        )}
 
-      {maxMs && (
-        <NumberRow
-          label={t("Longest touch that is a tap ({{n}} ms)", {
-            n: maxMs.value,
-          })}
-          info={t(
-            "A finger held down longer than this is not a tap. Lower it if the pad clicks when you only meant to rest a finger on it; 250 is the default, 120 to 150 is strict.",
-          )}
-          field={maxMs}
-          step={10}
-          disabled={settings.isLoading || enabled?.enabled === false}
-          onCommit={(typed) =>
-            void commitTrackpadNumber(settings, maxMs, typed, {
-              min: 1,
-              max: 1000,
-            })
-          }
-        />
-      )}
+        {maxMs && (
+          <NumberRow
+            label={t("Longest touch that is a tap ({{n}} ms)", {
+              n: maxMs.value,
+            })}
+            info={t(
+              "A finger held down longer than this is not a tap. Lower it if the pad clicks when you only meant to rest a finger on it; 250 is the default, 120 to 150 is strict.",
+            )}
+            field={maxMs}
+            step={10}
+            disabled={settings.isLoading || enabled?.enabled === false}
+            onCommit={(typed) =>
+              void commitTrackpadNumber(settings, maxMs, typed, {
+                min: 1,
+                max: 1000,
+              })
+            }
+          />
+        )}
 
-      {move && (
-        <NumberRow
-          label={t("Farthest a tap may move ({{n}} counts)", { n: move.value })}
-          info={t(
-            "A finger that moves further than this while down is a stroke, not a tap (about 23 counts to the millimetre). Lower it if brushing the pad clicks; 50 is the default, 20 to 30 is strict.",
-          )}
-          field={move}
-          step={5}
-          disabled={settings.isLoading || enabled?.enabled === false}
-          onCommit={(typed) =>
-            void commitTrackpadNumber(settings, move, typed, {
-              min: 1,
-              max: 1000,
-            })
-          }
-        />
-      )}
+        {move && (
+          <NumberRow
+            label={t("Farthest a tap may move ({{n}} counts)", {
+              n: move.value,
+            })}
+            info={t(
+              "A finger that moves further than this while down is a stroke, not a tap (about 23 counts to the millimetre). Lower it if brushing the pad clicks; 50 is the default, 20 to 30 is strict.",
+            )}
+            field={move}
+            step={5}
+            disabled={settings.isLoading || enabled?.enabled === false}
+            onCommit={(typed) =>
+              void commitTrackpadNumber(settings, move, typed, {
+                min: 1,
+                max: 1000,
+              })
+            }
+          />
+        )}
+      </div>
     </div>
   );
 }
