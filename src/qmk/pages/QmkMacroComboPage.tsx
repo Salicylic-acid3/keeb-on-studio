@@ -21,9 +21,25 @@ import { useLanguage } from "../../hooks/useLanguage";
 import type { TapDanceSlot } from "../../lib/tapDance/slots";
 import { qmkBehaviors } from "../lib/zmkBridge";
 import { useVialTapDance } from "../hooks/useVialTapDance";
+import {
+  QmkComboEditorCard,
+  QmkComboListCard,
+} from "../components/QmkComboCards";
+import {
+  QmkKeyOverrideEditorCard,
+  QmkKeyOverrideListCard,
+} from "../components/QmkKeyOverrideCards";
+import type { QmkKeyContext } from "../lib/keyLabel";
+import {
+  comboIsUsed,
+  EMPTY_COMBO,
+  EMPTY_KEY_OVERRIDE,
+  keyOverrideIsUsed,
+  NEW_KEY_OVERRIDE,
+} from "../lib/entries";
 import type { UseVialKeyboard } from "../hooks/useVialKeyboard";
 
-type RightView = "tapdance" | null;
+type RightView = "tapdance" | "combo" | "keyoverride" | null;
 
 export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
   const { t } = useLanguage();
@@ -32,6 +48,11 @@ export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
   const [rightView, setRightView] = useState<RightView>(null);
   const [selectedTapDance, setSelectedTapDance] = useState<number | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [selectedCombo, setSelectedCombo] = useState<number | null>(null);
+  const [selectedOverride, setSelectedOverride] = useState<number | null>(null);
+  // Slots created with "+" and still empty, so they stay in the list.
+  const [shownCombos, setShownCombos] = useState<Set<number>>(new Set());
+  const [shownOverrides, setShownOverrides] = useState<Set<number>>(new Set());
   const counts = keyboard.info?.entryCounts;
 
   const behaviors = useMemo(
@@ -46,6 +67,50 @@ export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
       })),
     [keyboard.info?.layerCount, t],
   );
+
+  const ctx: QmkKeyContext = {
+    behaviors,
+    layers,
+    keyboardLayout: keyboardLayoutContext.layout,
+  };
+
+  const forgetShown = () => {
+    setShownCombos(new Set());
+    setShownOverrides(new Set());
+  };
+  const newCombo = () => {
+    const index = keyboard.combos.findIndex(
+      (c, i) => !comboIsUsed(c) && !shownCombos.has(i),
+    );
+    if (index < 0) return;
+    setShownCombos(new Set(shownCombos).add(index));
+    setSelectedCombo(index);
+    setRightView("combo");
+  };
+  const deleteCombo = (index: number) => {
+    keyboard.setCombo(index, EMPTY_COMBO);
+    const next = new Set(shownCombos);
+    next.delete(index);
+    setShownCombos(next);
+    setRightView(null);
+  };
+  const newOverride = () => {
+    const index = keyboard.keyOverrides.findIndex(
+      (o, i) => !keyOverrideIsUsed(o) && !shownOverrides.has(i),
+    );
+    if (index < 0) return;
+    keyboard.setKeyOverride(index, NEW_KEY_OVERRIDE);
+    setShownOverrides(new Set(shownOverrides).add(index));
+    setSelectedOverride(index);
+    setRightView("keyoverride");
+  };
+  const deleteOverride = (index: number) => {
+    keyboard.setKeyOverride(index, EMPTY_KEY_OVERRIDE);
+    const next = new Set(shownOverrides);
+    next.delete(index);
+    setShownOverrides(next);
+    setRightView(null);
+  };
 
   const selectedTapDanceSlot = useMemo(
     () =>
@@ -63,6 +128,7 @@ export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
     try {
+      forgetShown();
       await tapDance.refresh();
     } finally {
       setIsRefreshing(false);
@@ -114,16 +180,28 @@ export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
               disabled={busy}
               resetToDefault={{
                 description: t(
-                  "Clears every tap dance. Nothing is written until you Save.",
+                  "Clears every combo, key override and tap dance. Nothing is written until you Save.",
                 ),
-                onSelect: () => void tapDance.resetToDefault(),
+                onSelect: () => {
+                  keyboard.combos.forEach((_, i) =>
+                    keyboard.setCombo(i, EMPTY_COMBO),
+                  );
+                  keyboard.keyOverrides.forEach((_, i) =>
+                    keyboard.setKeyOverride(i, EMPTY_KEY_OVERRIDE),
+                  );
+                  forgetShown();
+                  void tapDance.resetToDefault();
+                },
                 disabled: busy,
               }}
               discard={{
                 description: t(
                   "Drops the edits not yet saved and goes back to what the keyboard holds.",
                 ),
-                onSelect: () => void tapDance.discard(),
+                onSelect: () => {
+                  forgetShown();
+                  void tapDance.discard();
+                },
                 disabled: busy || !keyboard.hasUnsavedChanges,
               }}
             />
@@ -144,6 +222,36 @@ export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
 
         <div className="grid grid-cols-1 desktop:grid-cols-[300px_1fr] gap-4 min-w-0">
           <div className="space-y-4">
+            {keyboard.combos.length > 0 && (
+              <QmkComboListCard
+                combos={keyboard.combos}
+                saved={keyboard.savedCombos}
+                shown={shownCombos}
+                selectedIndex={rightView === "combo" ? selectedCombo : null}
+                onSelect={(index) => {
+                  setSelectedCombo(index);
+                  setRightView("combo");
+                }}
+                onNew={newCombo}
+                ctx={ctx}
+              />
+            )}
+            {keyboard.keyOverrides.length > 0 && (
+              <QmkKeyOverrideListCard
+                overrides={keyboard.keyOverrides}
+                saved={keyboard.savedKeyOverrides}
+                shown={shownOverrides}
+                selectedIndex={
+                  rightView === "keyoverride" ? selectedOverride : null
+                }
+                onSelect={(index) => {
+                  setSelectedOverride(index);
+                  setRightView("keyoverride");
+                }}
+                onNew={newOverride}
+                ctx={ctx}
+              />
+            )}
             {tapDance.isAvailable && (
               <TapDanceListCard
                 tapDance={tapDance}
@@ -159,7 +267,32 @@ export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
           </div>
 
           <div className="min-w-0">
-            {rightView === "tapdance" && selectedTapDanceSlot ? (
+            {rightView === "combo" &&
+            selectedCombo !== null &&
+            keyboard.combos[selectedCombo] ? (
+              <QmkComboEditorCard
+                index={selectedCombo}
+                combo={keyboard.combos[selectedCombo]}
+                saved={keyboard.savedCombos[selectedCombo]}
+                onChange={(entry) => keyboard.setCombo(selectedCombo, entry)}
+                onDelete={() => deleteCombo(selectedCombo)}
+                ctx={ctx}
+              />
+            ) : rightView === "keyoverride" &&
+              selectedOverride !== null &&
+              keyboard.keyOverrides[selectedOverride] ? (
+              <QmkKeyOverrideEditorCard
+                index={selectedOverride}
+                entry={keyboard.keyOverrides[selectedOverride]}
+                saved={keyboard.savedKeyOverrides[selectedOverride]}
+                layerCount={keyboard.info.layerCount}
+                onChange={(entry) =>
+                  keyboard.setKeyOverride(selectedOverride, entry)
+                }
+                onDelete={() => deleteOverride(selectedOverride)}
+                ctx={ctx}
+              />
+            ) : rightView === "tapdance" && selectedTapDanceSlot ? (
               <TapDanceEditorCard
                 tapDance={tapDance}
                 slot={selectedTapDanceSlot}

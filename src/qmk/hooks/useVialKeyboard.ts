@@ -13,6 +13,8 @@ import {
   type KeebOnOsState,
   type VialDynamicEntryCounts,
   type VialTapDanceEntry,
+  type VialComboEntry,
+  type VialKeyOverrideEntry,
 } from "../lib/vial/protocol";
 import { readDefinition, type VialDefinition } from "../lib/vial/definition";
 import { parseKleLayout, visibleKeys, type VialKey } from "../lib/vial/kle";
@@ -48,6 +50,12 @@ export interface UseVialKeyboard {
   tapDances: VialTapDanceEntry[];
   savedTapDances: VialTapDanceEntry[];
   setTapDance(index: number, entry: VialTapDanceEntry): void;
+  combos: VialComboEntry[];
+  savedCombos: VialComboEntry[];
+  setCombo(index: number, entry: VialComboEntry): void;
+  keyOverrides: VialKeyOverrideEntry[];
+  savedKeyOverrides: VialKeyOverrideEntry[];
+  setKeyOverride(index: number, entry: VialKeyOverrideEntry): void;
   layoutOptions: number;
   visible: VialKey[];
   os: KeebOnOsState | null;
@@ -96,6 +104,35 @@ function guessHostOs(): number {
   return 2;
 }
 
+interface LoadedEntries {
+  tapDances: VialTapDanceEntry[];
+  combos: VialComboEntry[];
+  keyOverrides: VialKeyOverrideEntry[];
+}
+
+async function readEntries(
+  client: VialClient,
+  counts: VialDynamicEntryCounts,
+): Promise<LoadedEntries> {
+  const out: LoadedEntries = { tapDances: [], combos: [], keyOverrides: [] };
+  for (let i = 0; i < counts.tapDance; i++)
+    out.tapDances.push(await client.getTapDance(i));
+  for (let i = 0; i < counts.combo; i++)
+    out.combos.push(await client.getCombo(i));
+  for (let i = 0; i < counts.keyOverride; i++)
+    out.keyOverrides.push(await client.getKeyOverride(i));
+  return out;
+}
+
+const same = (a: unknown, b: unknown) =>
+  JSON.stringify(a) === JSON.stringify(b);
+const copy = <T>(list: T[]): T[] => list.map((e) => structuredCloneSafe(e));
+function structuredCloneSafe<T>(e: T): T {
+  return JSON.parse(JSON.stringify(e)) as T;
+}
+const changed = <T>(list: T[], saved: T[]) =>
+  list.some((e, i) => !same(e, saved[i]));
+
 export function useVialKeyboard(): UseVialKeyboard {
   const clientRef = useRef<VialClient | null>(null);
   const [info, setInfo] = useState<VialKeyboardInfo | null>(null);
@@ -104,6 +141,21 @@ export function useVialKeyboard(): UseVialKeyboard {
   const [isSaving, setIsSaving] = useState(false);
   const [tapDances, setTapDances] = useState<VialTapDanceEntry[]>([]);
   const [savedTapDances, setSavedTapDances] = useState<VialTapDanceEntry[]>([]);
+  const [combos, setCombos] = useState<VialComboEntry[]>([]);
+  const [savedCombos, setSavedCombos] = useState<VialComboEntry[]>([]);
+  const [keyOverrides, setKeyOverrides] = useState<VialKeyOverrideEntry[]>([]);
+  const [savedKeyOverrides, setSavedKeyOverrides] = useState<
+    VialKeyOverrideEntry[]
+  >([]);
+
+  const applyEntries = useCallback((e: LoadedEntries) => {
+    setTapDances(e.tapDances);
+    setSavedTapDances(copy(e.tapDances));
+    setCombos(e.combos);
+    setSavedCombos(copy(e.combos));
+    setKeyOverrides(e.keyOverrides);
+    setSavedKeyOverrides(copy(e.keyOverrides));
+  }, []);
   const [layoutOptions, setLayoutOptionsState] = useState(0);
   const [os, setOsState] = useState<KeebOnOsState | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -116,6 +168,10 @@ export function useVialKeyboard(): UseVialKeyboard {
     setSaved(null);
     setTapDances([]);
     setSavedTapDances([]);
+    setCombos([]);
+    setSavedCombos([]);
+    setKeyOverrides([]);
+    setSavedKeyOverrides([]);
     setOsState(null);
     setLayoutOptionsState(0);
   }, []);
@@ -156,9 +212,7 @@ export function useVialKeyboard(): UseVialKeyboard {
           : 0;
         const unlock = await client.getUnlockStatus();
         const entryCounts = await client.getDynamicEntryCounts();
-        const tds: VialTapDanceEntry[] = [];
-        for (let i = 0; i < entryCounts.tapDance; i++)
-          tds.push(await client.getTapDance(i));
+        const entries = await readEntries(client, entryCounts);
         const osState = definition.keebOn?.osProtocol
           ? await client.getKeebOnOs()
           : null;
@@ -176,8 +230,7 @@ export function useVialKeyboard(): UseVialKeyboard {
           unlockKeys: unlock.unlockKeys,
           entryCounts,
         });
-        setTapDances(tds);
-        setSavedTapDances(tds.map((e) => ({ ...e })));
+        applyEntries(entries);
         setKeymap(map);
         setSaved(map.map((l) => l.map((r) => [...r])));
         setLayoutOptionsState(options);
@@ -195,7 +248,7 @@ export function useVialKeyboard(): UseVialKeyboard {
         setIsConnecting(false);
       }
     },
-    [clear],
+    [clear, applyEntries],
   );
 
   const connectDemo = useCallback(async () => {
@@ -230,20 +283,31 @@ export function useVialKeyboard(): UseVialKeyboard {
       l.some((r, ri) => r.some((c, ci) => c !== saved[li][ri][ci])),
     );
   }, [keymap, saved]);
-  const tapDanceChanged = useMemo(
-    () =>
-      tapDances.some(
-        (e, i) => JSON.stringify(e) !== JSON.stringify(savedTapDances[i]),
-      ),
-    [tapDances, savedTapDances],
-  );
-  const hasUnsavedChanges = keymapChanged || tapDanceChanged;
+  const entriesChanged =
+    changed(tapDances, savedTapDances) ||
+    changed(combos, savedCombos) ||
+    changed(keyOverrides, savedKeyOverrides);
+  const hasUnsavedChanges = keymapChanged || entriesChanged;
 
   const setTapDance = useCallback((index: number, entry: VialTapDanceEntry) => {
     setTapDances((prev) =>
       prev.map((e, i) => (i === index ? { ...entry } : e)),
     );
   }, []);
+
+  const setCombo = useCallback((index: number, entry: VialComboEntry) => {
+    setCombos((prev) =>
+      prev.map((e, i) => (i === index ? structuredCloneSafe(entry) : e)),
+    );
+  }, []);
+  const setKeyOverride = useCallback(
+    (index: number, entry: VialKeyOverrideEntry) => {
+      setKeyOverrides((prev) =>
+        prev.map((e, i) => (i === index ? { ...entry } : e)),
+      );
+    },
+    [],
+  );
 
   // One Save for everything on the keyboard, the same as the ZMK side: the
   // keymap and the tap dances go out together.
@@ -263,22 +327,40 @@ export function useVialKeyboard(): UseVialKeyboard {
       }
       setSaved(keymap.map((l) => l.map((r) => [...r])));
       for (let i = 0; i < tapDances.length; i++) {
-        if (
-          JSON.stringify(tapDances[i]) !== JSON.stringify(savedTapDances[i])
-        ) {
+        if (!same(tapDances[i], savedTapDances[i]))
           await client.setTapDance(i, tapDances[i]);
-        }
       }
-      setSavedTapDances(tapDances.map((e) => ({ ...e })));
+      for (let i = 0; i < combos.length; i++) {
+        if (!same(combos[i], savedCombos[i]))
+          await client.setCombo(i, combos[i]);
+      }
+      for (let i = 0; i < keyOverrides.length; i++) {
+        if (!same(keyOverrides[i], savedKeyOverrides[i]))
+          await client.setKeyOverride(i, keyOverrides[i]);
+      }
+      setSavedTapDances(copy(tapDances));
+      setSavedCombos(copy(combos));
+      setSavedKeyOverrides(copy(keyOverrides));
     } finally {
       setIsSaving(false);
     }
-  }, [keymap, saved, tapDances, savedTapDances]);
+  }, [
+    keymap,
+    saved,
+    tapDances,
+    savedTapDances,
+    combos,
+    savedCombos,
+    keyOverrides,
+    savedKeyOverrides,
+  ]);
 
   const discardChanges = useCallback(() => {
     if (saved) setKeymap(saved.map((l) => l.map((r) => [...r])));
-    setTapDances(savedTapDances.map((e) => ({ ...e })));
-  }, [saved, savedTapDances]);
+    setTapDances(copy(savedTapDances));
+    setCombos(copy(savedCombos));
+    setKeyOverrides(copy(savedKeyOverrides));
+  }, [saved, savedTapDances, savedCombos, savedKeyOverrides]);
 
   const reload = useCallback(async () => {
     const client = clientRef.current;
@@ -287,13 +369,8 @@ export function useVialKeyboard(): UseVialKeyboard {
     const map = await client.getKeymap(info.layerCount, rows, cols);
     setKeymap(map);
     setSaved(map.map((l) => l.map((r) => [...r])));
-    const tds: VialTapDanceEntry[] = [];
-    for (let i = 0; i < info.entryCounts.tapDance; i++) {
-      tds.push(await client.getTapDance(i));
-    }
-    setTapDances(tds);
-    setSavedTapDances(tds.map((e) => ({ ...e })));
-  }, [info]);
+    applyEntries(await readEntries(client, info.entryCounts));
+  }, [info, applyEntries]);
 
   const setLayoutOptions = useCallback(async (value: number) => {
     const client = clientRef.current;
@@ -355,6 +432,12 @@ export function useVialKeyboard(): UseVialKeyboard {
     tapDances,
     savedTapDances,
     setTapDance,
+    combos,
+    savedCombos,
+    setCombo,
+    keyOverrides,
+    savedKeyOverrides,
+    setKeyOverride,
     layoutOptions,
     visible,
     os,

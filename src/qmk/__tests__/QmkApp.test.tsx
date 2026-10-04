@@ -82,6 +82,20 @@ describe("QmkApp demo mode", () => {
       screen.getAllByRole("tab", { name: "Macro, Combo & Tap Dance" }).length,
     ).toBeGreaterThan(0);
 
+    // Combos: "+" opens an editor in the right column, as on the ZMK side.
+    const mcTab = screen.getAllByRole("tab", {
+      name: "Macro, Combo & Tap Dance",
+    })[0];
+    fireEvent.mouseDown(mcTab, { button: 0 });
+    fireEvent.click(mcTab);
+    fireEvent.click(await screen.findByTitle("New combo"));
+    expect(await screen.findByText("Combo Editor")).toBeInTheDocument();
+    fireEvent.click(screen.getByTitle("New key override"));
+    expect(await screen.findByText("Key Override Editor")).toBeInTheDocument();
+    const kmTab = screen.getAllByRole("tab", { name: "Keymap" })[0];
+    fireEvent.mouseDown(kmTab, { button: 0 });
+    fireEvent.click(kmTab);
+
     // The OS tab exists because the demo firmware has the module.
     expect(screen.getAllByRole("tab", { name: "OS" }).length).toBeGreaterThan(
       0,

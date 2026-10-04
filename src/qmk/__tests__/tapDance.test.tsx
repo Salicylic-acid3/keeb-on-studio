@@ -87,6 +87,42 @@ describe("Vial tap dance through the ZMK cards' interface", () => {
   });
 });
 
+describe("Vial combos and key overrides", () => {
+  test("stage, Save and read back", async () => {
+    const { transport, hook } = setup();
+    await act(async () =>
+      hook.result.current.keyboard.connect(transport, "demo"),
+    );
+    await waitFor(() =>
+      expect(hook.result.current.keyboard.combos).toHaveLength(32),
+    );
+    expect(hook.result.current.keyboard.keyOverrides).toHaveLength(32);
+
+    const combo = {
+      input: [0x04, 0x16, 0, 0] as [number, number, number, number],
+      output: 0x29,
+    };
+    const ko = {
+      trigger: 0x2a,
+      replacement: 0x4c,
+      layers: 0xffff,
+      triggerMods: 0x02,
+      negativeModMask: 0,
+      suppressedMods: 0x02,
+      options: 0x87,
+    };
+    act(() => hook.result.current.keyboard.setCombo(2, combo));
+    act(() => hook.result.current.keyboard.setKeyOverride(0, ko));
+    expect(hook.result.current.keyboard.hasUnsavedChanges).toBe(true);
+    await act(async () => hook.result.current.keyboard.saveChanges());
+    expect(hook.result.current.keyboard.hasUnsavedChanges).toBe(false);
+
+    const client = new VialClient(transport);
+    expect(await client.getCombo(2)).toEqual(combo);
+    expect(await client.getKeyOverride(0)).toEqual(ko);
+  });
+});
+
 function tapBindingCode(s: Parameters<typeof tapBinding>[0]): number {
   // Read back through the card's own reader to prove it understands us.
   return bindingToKeycode(tapBinding(s)!);

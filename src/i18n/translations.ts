@@ -10,6 +10,39 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // QMK (Vial) side
+  "Activate when a negative modifier is released":
+    "打ち消しの修飾キーを離したときにも有効にする",
+  "Activate when a required modifier is pressed":
+    "修飾キーを押したときにも有効にする",
+  "Activate when the trigger key is pressed":
+    "元のキーを押したときに有効にする",
+  "Advanced Options": "詳細オプション",
+  "Any one of the modifiers is enough": "修飾キーはどれか1つで発動する",
+  "Clears every combo, key override and tap dance. Nothing is written until you Save.":
+    "すべてのコンボ・キーオーバーライド・タップダンスを空にします。保存するまでキーボードには書き込まれません。",
+  "Do not press the trigger again afterwards":
+    "終わったあとに元のキーを押し直さない",
+  "Keep the replacement held when another key is pressed":
+    "別のキーを押しても置き換え先を押したままにする",
+  "Key Override Editor": "キーオーバーライドエディター",
+  "Key Override {{index}}": "キーオーバーライド {{index}}",
+  "Key Overrides": "キーオーバーライド一覧",
+  "Key {{n}}": "キー {{n}}",
+  "Keys pressed together": "同時に押すキー",
+  "Modifiers held with the trigger key": "元のキーと一緒に押す修飾キー",
+  "Modifiers released before sending the replacement":
+    "置き換え先を送る前に離す修飾キー",
+  "Modifiers that stop the override when held":
+    "押していると置き換えしない修飾キー",
+  "New combo": "新しいコンボ",
+  "New key override": "新しいキーオーバーライド",
+  "No combos configured": "コンボが設定されていません",
+  "No key overrides configured": "キーオーバーライドが設定されていません",
+  Remove: "外す",
+  Replacement: "置き換え先",
+  "Trigger key": "元のキー",
+  "Up to four keys. A QMK combo matches what the keys send, not where they are.":
+    "最大4キーまで。QMKのコンボは、キーの位置ではなく、キーが送る内容で判定します。",
   "Clears every tap dance. Nothing is written until you Save.":
     "すべてのタップダンスを空にします。保存するまでキーボードには書き込まれません。",
   "Drops the edits not yet saved and goes back to what the keyboard holds.":

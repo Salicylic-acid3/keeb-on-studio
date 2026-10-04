@@ -117,7 +117,12 @@ export function QmkApp({
       },
     ];
     // Same tab and place as the ZMK side's "Macro, Combo & Tap Dance".
-    if (keyboard.info && keyboard.info.entryCounts.tapDance > 0) {
+    if (
+      keyboard.info &&
+      (keyboard.info.entryCounts.tapDance > 0 ||
+        keyboard.info.entryCounts.combo > 0 ||
+        keyboard.info.entryCounts.keyOverride > 0)
+    ) {
       items.push({
         id: "macro-combo",
         label: t("Macro, Combo & Tap Dance"),
