@@ -6,7 +6,18 @@
       "changes": {
         "major": [],
         "minor": [],
-        "patch": []
+        "patch": [
+          {
+            "en": "Troubleshooting: the battery card says, for the half plugged in over USB, that its number is the last level measured on battery rather than a live reading (with ClickBoard ErgoTrack firmware f794f9a or later; the firmware now keeps that last reading instead of reporting the USB rail as a full battery).",
+            "ja": "トラブルシューティング: 電池カードは、USB でつながっている側について「電池で動いていたときに最後に測った値」であることを表示するようになりました(ClickBoard ErgoTrack のファームウェア f794f9a 以降。ファームウェア側も、USB の電圧を満充電として報告する代わりにその最後の値を保持します)。",
+            "zh": "故障排除：电池卡片会对通过 USB 连接的一半说明，其数值是上次用电池运行时测得的电量而非实时读数（需要 ClickBoard ErgoTrack 固件 f794f9a 或更新；固件现在会保留该读数，而不是把 USB 电压报告为满电）。"
+          },
+          {
+            "en": "ClickBoard ErgoTrack firmware (4a9e202): on a layer with the two-finger horizontal swipe on, a two-finger scroll is vertical only — no more sideways scrolling from an angled start or right after a vertical scroll — and the swipe is recognised only on a touch that began with no finger on the pad.",
+            "ja": "ClickBoard ErgoTrack のファームウェア(4a9e202): 2本指の横スワイプがオンのレイヤーでは、2本指スクロールは縦のみになりました(斜めに始めても、縦スクロールの直後に横へ動かしても横スクロールしません)。横スワイプは、指を全部離してからの新しいタッチでしか始まりません。",
+            "zh": "ClickBoard ErgoTrack 固件（4a9e202）：在打开两指横向滑动的层上，两指滚动只会纵向进行——斜向起手或纵向滚动后紧接着横移都不再横向滚动——且横向滑动只在手指全部离开后的新触摸中才会识别。"
+          }
+        ]
       }
     },
     {

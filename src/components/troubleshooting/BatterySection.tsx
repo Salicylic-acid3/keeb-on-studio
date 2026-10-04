@@ -19,6 +19,7 @@ import { useLanguage } from "../../hooks/useLanguage";
 import { useCustomSettings } from "../../hooks/useCustomSettings";
 import {
   BATTERY_SUBSYSTEM_ID,
+  centralIsOnUsb,
   readBatteryLevels,
   type BatteryLevel,
 } from "../../lib/battery/levels";
@@ -68,6 +69,10 @@ export function BatterySection({ deviceName }: BatterySectionProps) {
   const levels = useMemo(
     () => readBatteryLevels(section?.settings ?? [], deviceName),
     [section, deviceName],
+  );
+  const onUsb = useMemo(
+    () => centralIsOnUsb(section?.settings ?? []),
+    [section],
   );
 
   if (!settings.isAvailable) {
@@ -127,11 +132,17 @@ export function BatterySection({ deviceName }: BatterySectionProps) {
             ))}
           </div>
           {/* Said once, plainly, because a fresh connection shows 0% and that
-              is the single most confusing thing about this panel. */}
+              is the single most confusing thing about this panel. On USB the
+              half that is plugged in cannot measure its cells at all, so the
+              number is the last one it took on battery, and that is said too. */}
           <p className="mt-4 text-xs text-[var(--color-text-muted)]">
-            {t(
-              "The keyboard measures this about once a minute, so 0% just after connecting means it has not measured yet.",
-            )}
+            {onUsb
+              ? t(
+                  "The half connected over USB is powered by it and cannot measure its battery now; its number is the last level it measured while running on battery. 0% means it has never run on battery since the firmware was written.",
+                )
+              : t(
+                  "The keyboard measures this about once a minute, so 0% just after connecting means it has not measured yet.",
+                )}
           </p>
           {levels.some((level) => level.percent <= LOW_PERCENT) && (
             <p className="mt-2 text-xs text-[var(--color-warning)]">

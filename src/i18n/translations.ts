@@ -219,6 +219,8 @@ const ja: Record<string, string> = {
   "On a layer with the switch on, moving two fingers sideways is a swipe (bound as a key on the trackpad tab), and a scroll that starts there is held to the axis it started on, so it does not drift sideways. With the switch off, two fingers scroll sideways and diagonally as well as up and down. Only the half connected to the computer follows the layer; the other half always swipes.":
     "スイッチがオンのレイヤーでは、2本の指を横に動かすとスワイプになり(割り当てはトラックパッドタブのジェスチャー)、スクロールは始まった軸に固定されて横に流れません。オフのレイヤーでは、2本指で横にも斜めにもスクロールできます。レイヤーに従うのは PC につながる側だけで、もう片方は常にスワイプです。",
   "Swipe on {{layer}}": "{{layer}} で横スワイプ",
+  "The half connected over USB is powered by it and cannot measure its battery now; its number is the last level it measured while running on battery. 0% means it has never run on battery since the firmware was written.":
+    "USB でつながっている側は USB から給電されているため、いまは電池を測れません。表示は電池で動いていたときに最後に測った値です。0% は、ファームウェアを書いてから一度も電池で動いていないことを示します。",
   "This combo is built into the firmware and cannot be removed; it will be switched off instead. Continue?":
     "このコンボはファームウェアに組み込まれているため削除できません。代わりに無効にします。続けますか?",
   "Delete this combo? It is removed from the keyboard right away; Discard will not bring it back.":
@@ -2060,6 +2062,8 @@ const zh: Record<string, string> = {
   "On a layer with the switch on, moving two fingers sideways is a swipe (bound as a key on the trackpad tab), and a scroll that starts there is held to the axis it started on, so it does not drift sideways. With the switch off, two fingers scroll sideways and diagonally as well as up and down. Only the half connected to the computer follows the layer; the other half always swipes.":
     "开关打开的层上，两指横向移动是滑动手势（在触控板标签页里绑定按键），且滚动会锁定在开始时的轴上，不会横向漂移。关闭的层上，两指除了上下还可以横向和斜向滚动。只有连接电脑的一半会跟随层；另一半始终是滑动。",
   "Swipe on {{layer}}": "{{layer}} 上横向滑动",
+  "The half connected over USB is powered by it and cannot measure its battery now; its number is the last level it measured while running on battery. 0% means it has never run on battery since the firmware was written.":
+    "通过 USB 连接的一半由 USB 供电，目前无法测量电池；显示的是它上次用电池运行时测得的电量。0% 表示写入固件后从未用电池运行过。",
   "This combo is built into the firmware and cannot be removed; it will be switched off instead. Continue?":
     "此组合键内置于固件中，无法删除；将改为停用。要继续吗？",
   "Delete this combo? It is removed from the keyboard right away; Discard will not bring it back.":

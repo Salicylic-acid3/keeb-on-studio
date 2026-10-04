@@ -19,6 +19,7 @@ import type { Setting } from "../../proto/cormoran/zmk/custom_settings/custom_se
 export const BATTERY_SUBSYSTEM_ID = "keebon__battery";
 
 const CENTRAL_KEY = "central";
+const CENTRAL_ON_USB_KEY = "central_on_usb";
 const PERIPHERAL_PATTERN = /^peripheral(\d+)$/;
 
 export interface BatteryLevel {
@@ -92,4 +93,17 @@ export function readBatteryLevels(
 
   peripherals.sort((a, b) => a.index - b.index);
   return [...central, ...peripherals.map((p) => p.level)];
+}
+
+/**
+ * True when the central half is powered over USB (battery-report aecfe5ec
+ * and later). Its sensor then reads the USB rail, so the firmware keeps the
+ * last level it measured on battery and this says that is what is shown.
+ * Older firmware has no such key, and the answer is false.
+ */
+export function centralIsOnUsb(settings: readonly Setting[]): boolean {
+  return settings.some(
+    (setting) =>
+      setting.key === CENTRAL_ON_USB_KEY && setting.value?.boolValue === true,
+  );
 }

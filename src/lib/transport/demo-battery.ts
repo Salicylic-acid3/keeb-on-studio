@@ -21,7 +21,7 @@ const LEVELS: Record<string, number> = {
 };
 
 export function createBatterySettings(customSubsystemIndex: number): Setting[] {
-  return Object.entries(LEVELS).map(([key, percent]) => ({
+  const levels: Setting[] = Object.entries(LEVELS).map(([key, percent]) => ({
     customSubsystemIndex,
     key,
     source: 0,
@@ -36,4 +36,21 @@ export function createBatterySettings(customSubsystemIndex: number): Setting[] {
     },
     value: { int32Value: percent },
   }));
+  // The app only ever connects over USB, so the central half is on USB
+  // power and its number is the last one measured on battery -- the same
+  // thing a real keyboard says (battery-report aecfe5ec).
+  levels.push({
+    customSubsystemIndex,
+    key: "central_on_usb",
+    source: 0,
+    hasUnsavedValue: false,
+    meta: {
+      confidentiality: 2,
+      readPermission: 0,
+      writePermission: 1,
+      constraints: [],
+    },
+    value: { boolValue: true },
+  });
+  return levels;
 }
