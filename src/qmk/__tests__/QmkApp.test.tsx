@@ -77,6 +77,11 @@ describe("QmkApp demo mode", () => {
     // Keys come in vial.json order: the first is 0,3 (E on the base layer).
     expect(keys[0]).toHaveAttribute("data-binding-label", "E");
 
+    // The tap dance tab sits where the ZMK side's does.
+    expect(
+      screen.getAllByRole("tab", { name: "Macro, Combo & Tap Dance" }).length,
+    ).toBeGreaterThan(0);
+
     // The OS tab exists because the demo firmware has the module.
     expect(screen.getAllByRole("tab", { name: "OS" }).length).toBeGreaterThan(
       0,

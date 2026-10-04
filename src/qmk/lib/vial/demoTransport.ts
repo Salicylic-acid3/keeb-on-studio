@@ -49,6 +49,8 @@ export class DemoTransport implements VialTransport {
     blocks: number[];
     preview: number | null;
   } | null;
+  /** 10-byte dynamic entries: tap dance, combo, key override. */
+  private readonly entries: Uint8Array[][];
   private disconnectListeners: Array<() => void> = [];
   /** Every request seen, for tests. */
   readonly log: Uint8Array[] = [];
@@ -79,6 +81,19 @@ export class DemoTransport implements VialTransport {
       combo: 0,
       keyOverride: 0,
     };
+    // Firmware defaults (dynamic_keymap.c): empty entries, tap dance term 200.
+    const td = () => new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 200, 0]);
+    this.entries = [
+      Array.from({ length: this.dynamicEntries.tapDance }, td),
+      Array.from(
+        { length: this.dynamicEntries.combo },
+        () => new Uint8Array(10),
+      ),
+      Array.from(
+        { length: this.dynamicEntries.keyOverride },
+        () => new Uint8Array(10),
+      ),
+    ];
     this.os = options.keebOnOs
       ? { ...options.keebOnOs, mode: 0, blocks: [0, 1, 2, 0], preview: null }
       : null;
@@ -258,13 +273,30 @@ export class DemoTransport implements VialTransport {
       case 0x08:
         this.unlocked = false;
         break;
-      case 0x0d:
+      case 0x0d: {
         if (d[2] === 0x00) {
           r[0] = this.dynamicEntries.tapDance;
           r[1] = this.dynamicEntries.combo;
           r[2] = this.dynamicEntries.keyOverride;
+          break;
+        }
+        // 1/2 tap dance, 3/4 combo, 5/6 key override: odd get, even set.
+        const kind = Math.floor((d[2] - 1) / 2);
+        const list = this.entries[kind];
+        const index = d[3];
+        if (!list || index >= list.length) {
+          r[0] = 1;
+          break;
+        }
+        if (d[2] % 2 === 1) {
+          r[0] = 0;
+          r.set(list[index], 1);
+        } else {
+          list[index] = d.slice(4, 14);
+          r[0] = 0;
         }
         break;
+      }
       default:
         break;
     }

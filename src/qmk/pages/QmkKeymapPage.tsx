@@ -102,9 +102,11 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
 
   // ---- The ZMK-shaped view of this keyboard ------------------------------
 
+  // Tap dances are picked from the same key picker as on the ZMK side.
+  const tapDanceCount = info?.entryCounts.tapDance ?? 0;
   const behaviors = useMemo(
-    () => qmkBehaviors({ tapDanceCount: 0, macroCount: 0 }),
-    [],
+    () => qmkBehaviors({ tapDanceCount, macroCount: 0 }),
+    [tapDanceCount],
   );
 
   const physicalLayout = useMemo<PhysicalLayout>(

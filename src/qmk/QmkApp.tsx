@@ -5,7 +5,7 @@
  */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { IconDeviceDesktop, IconKeyboard } from "@tabler/icons-react";
+import { IconDeviceDesktop, IconKeyboard, IconWand } from "@tabler/icons-react";
 import { SplashScreen } from "../components/SplashScreen";
 import { AppLayout } from "../layouts/AppLayout";
 import { TabNavigation, type TabItem } from "../components/TabNavigation";
@@ -21,6 +21,7 @@ import {
 } from "./lib/vial/transport";
 import { QmkKeymapPage } from "./pages/QmkKeymapPage";
 import { QmkOsPage } from "./pages/QmkOsPage";
+import { QmkMacroComboPage } from "./pages/QmkMacroComboPage";
 
 interface QmkAppProps {
   /** Replace the URL and let the ZMK side take over. */
@@ -30,7 +31,7 @@ interface QmkAppProps {
   onShowDownloads: () => void;
 }
 
-const TAB_IDS = ["keymap", "os"] as const;
+const TAB_IDS = ["keymap", "macro-combo", "os"] as const;
 type TabId = (typeof TAB_IDS)[number];
 
 function tabFromPathname(pathname: string): TabId {
@@ -115,6 +116,15 @@ export function QmkApp({
         content: <QmkKeymapPage keyboard={keyboard} />,
       },
     ];
+    // Same tab and place as the ZMK side's "Macro, Combo & Tap Dance".
+    if (keyboard.info && keyboard.info.entryCounts.tapDance > 0) {
+      items.push({
+        id: "macro-combo",
+        label: t("Macro, Combo & Tap Dance"),
+        icon: <IconWand size={18} />,
+        content: <QmkMacroComboPage keyboard={keyboard} />,
+      });
+    }
     if (keyboard.os) {
       items.push({
         id: "os",

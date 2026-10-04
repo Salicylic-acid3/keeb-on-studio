@@ -10,6 +10,10 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // QMK (Vial) side
+  "Clears every tap dance. Nothing is written until you Save.":
+    "すべてのタップダンスを空にします。保存するまでキーボードには書き込まれません。",
+  "Drops the edits not yet saved and goes back to what the keyboard holds.":
+    "保存していない変更を破棄し、キーボードに保存されている内容に戻します。",
   Modifier: "修飾キー",
   Direction: "方向",
   "Click on a key to modify its binding. Modified keys are highlighted in green and show the original binding on hover. Use the Discard button to drop unsaved changes.":

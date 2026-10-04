@@ -41,6 +41,12 @@ const VIAL_UNLOCK_POLL = 0x07;
 const VIAL_LOCK = 0x08;
 const VIAL_DYNAMIC_ENTRY_OP = 0x0d;
 const DYNAMIC_VIAL_GET_NUMBER_OF_ENTRIES = 0x00;
+const DYNAMIC_VIAL_TAP_DANCE_GET = 0x01;
+const DYNAMIC_VIAL_TAP_DANCE_SET = 0x02;
+const DYNAMIC_VIAL_COMBO_GET = 0x03;
+const DYNAMIC_VIAL_COMBO_SET = 0x04;
+const DYNAMIC_VIAL_KEY_OVERRIDE_GET = 0x05;
+const DYNAMIC_VIAL_KEY_OVERRIDE_SET = 0x06;
 
 /** Largest keymap-buffer slice one report can carry (via.c: size <= 28). */
 const KEYMAP_BUFFER_CHUNK = 28;
@@ -64,6 +70,85 @@ export interface VialDynamicEntryCounts {
   tapDance: number;
   combo: number;
   keyOverride: number;
+}
+
+/** quantum/vial.h vial_tap_dance_entry_t (10 bytes, little-endian). */
+export interface VialTapDanceEntry {
+  onTap: number;
+  onHold: number;
+  onDoubleTap: number;
+  onTapHold: number;
+  tappingTerm: number;
+}
+
+/** quantum/vial.h vial_combo_entry_t: up to four keycodes in, one out. */
+export interface VialComboEntry {
+  input: [number, number, number, number];
+  output: number;
+}
+
+/** quantum/vial.h vial_key_override_entry_t. */
+export interface VialKeyOverrideEntry {
+  trigger: number;
+  replacement: number;
+  layers: number;
+  triggerMods: number;
+  negativeModMask: number;
+  suppressedMods: number;
+  options: number;
+}
+
+const u16 = (b: Uint8Array, i: number) => b[i] | (b[i + 1] << 8);
+const le16 = (v: number) => [v & 0xff, (v >> 8) & 0xff];
+
+export function decodeTapDance(b: Uint8Array): VialTapDanceEntry {
+  return {
+    onTap: u16(b, 0),
+    onHold: u16(b, 2),
+    onDoubleTap: u16(b, 4),
+    onTapHold: u16(b, 6),
+    tappingTerm: u16(b, 8),
+  };
+}
+export function encodeTapDance(e: VialTapDanceEntry): number[] {
+  return [
+    ...le16(e.onTap),
+    ...le16(e.onHold),
+    ...le16(e.onDoubleTap),
+    ...le16(e.onTapHold),
+    ...le16(e.tappingTerm),
+  ];
+}
+export function decodeCombo(b: Uint8Array): VialComboEntry {
+  return {
+    input: [u16(b, 0), u16(b, 2), u16(b, 4), u16(b, 6)],
+    output: u16(b, 8),
+  };
+}
+export function encodeCombo(e: VialComboEntry): number[] {
+  return [...e.input.flatMap(le16), ...le16(e.output)];
+}
+export function decodeKeyOverride(b: Uint8Array): VialKeyOverrideEntry {
+  return {
+    trigger: u16(b, 0),
+    replacement: u16(b, 2),
+    layers: u16(b, 4),
+    triggerMods: b[6],
+    negativeModMask: b[7],
+    suppressedMods: b[8],
+    options: b[9],
+  };
+}
+export function encodeKeyOverride(e: VialKeyOverrideEntry): number[] {
+  return [
+    ...le16(e.trigger),
+    ...le16(e.replacement),
+    ...le16(e.layers),
+    e.triggerMods & 0xff,
+    e.negativeModMask & 0xff,
+    e.suppressedMods & 0xff,
+    e.options & 0xff,
+  ];
 }
 
 /** What the OS-switch module reports; see keebon_os.c. */
@@ -258,6 +343,57 @@ export class VialClient {
       DYNAMIC_VIAL_GET_NUMBER_OF_ENTRIES,
     );
     return { tapDance: r[0], combo: r[1], keyOverride: r[2] };
+  }
+
+  private async getEntry(op: number, index: number): Promise<Uint8Array> {
+    const r = await this.sendVial(VIAL_DYNAMIC_ENTRY_OP, op, index);
+    if (r[0] !== 0)
+      throw new VialProtocolError(`Entry ${index} could not be read`);
+    return r.slice(1, 11);
+  }
+
+  private async setEntry(
+    op: number,
+    index: number,
+    bytes: number[],
+  ): Promise<void> {
+    const r = await this.sendVial(VIAL_DYNAMIC_ENTRY_OP, op, index, ...bytes);
+    if (r[0] !== 0)
+      throw new VialProtocolError(`Entry ${index} could not be written`);
+  }
+
+  async getTapDance(index: number): Promise<VialTapDanceEntry> {
+    return decodeTapDance(
+      await this.getEntry(DYNAMIC_VIAL_TAP_DANCE_GET, index),
+    );
+  }
+  async setTapDance(index: number, entry: VialTapDanceEntry): Promise<void> {
+    await this.setEntry(
+      DYNAMIC_VIAL_TAP_DANCE_SET,
+      index,
+      encodeTapDance(entry),
+    );
+  }
+  async getCombo(index: number): Promise<VialComboEntry> {
+    return decodeCombo(await this.getEntry(DYNAMIC_VIAL_COMBO_GET, index));
+  }
+  async setCombo(index: number, entry: VialComboEntry): Promise<void> {
+    await this.setEntry(DYNAMIC_VIAL_COMBO_SET, index, encodeCombo(entry));
+  }
+  async getKeyOverride(index: number): Promise<VialKeyOverrideEntry> {
+    return decodeKeyOverride(
+      await this.getEntry(DYNAMIC_VIAL_KEY_OVERRIDE_GET, index),
+    );
+  }
+  async setKeyOverride(
+    index: number,
+    entry: VialKeyOverrideEntry,
+  ): Promise<void> {
+    await this.setEntry(
+      DYNAMIC_VIAL_KEY_OVERRIDE_SET,
+      index,
+      encodeKeyOverride(entry),
+    );
   }
 
   /** Null when the firmware has no OS-switch module. */

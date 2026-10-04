@@ -143,4 +143,55 @@ describe("VialClient against the demo keyboard", () => {
       keyOverride: 32,
     });
   });
+
+  test("tap dance, combo and key override entries round-trip", async () => {
+    const transport = demo();
+    const client = new VialClient(transport);
+    const td = await client.getTapDance(0);
+    expect(td).toEqual({
+      onTap: 0,
+      onHold: 0,
+      onDoubleTap: 0,
+      onTapHold: 0,
+      tappingTerm: 200,
+    });
+    await client.setTapDance(3, {
+      onTap: 0x29,
+      onHold: 0x5221,
+      onDoubleTap: 0x2b,
+      onTapHold: 0,
+      tappingTerm: 250,
+    });
+    expect(await client.getTapDance(3)).toEqual({
+      onTap: 0x29,
+      onHold: 0x5221,
+      onDoubleTap: 0x2b,
+      onTapHold: 0,
+      tappingTerm: 250,
+    });
+    // Little-endian on the wire, as the firmware memcpy()s the struct.
+    const setReq = transport.log.find((r) => r[0] === 0xfe && r[2] === 0x02)!;
+    expect(Array.from(setReq.slice(3, 14))).toEqual([
+      3, 0x29, 0, 0x21, 0x52, 0x2b, 0, 0, 0, 250, 0,
+    ]);
+
+    await client.setCombo(1, { input: [0x04, 0x05, 0, 0], output: 0x29 });
+    expect(await client.getCombo(1)).toEqual({
+      input: [0x04, 0x05, 0, 0],
+      output: 0x29,
+    });
+
+    const ko = {
+      trigger: 0x2a,
+      replacement: 0x4c,
+      layers: 0xffff,
+      triggerMods: 0x02,
+      negativeModMask: 0,
+      suppressedMods: 0x02,
+      options: 0x87,
+    };
+    await client.setKeyOverride(0, ko);
+    expect(await client.getKeyOverride(0)).toEqual(ko);
+    await expect(client.getTapDance(99)).rejects.toThrow();
+  });
 });
