@@ -6,6 +6,15 @@
       "changes": {
         "major": [],
         "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.04.3",
+      "date": "2026-10-04",
+      "changes": {
+        "major": [],
+        "minor": [],
         "patch": [
           {
             "en": "Troubleshooting: GoFortyMax Ortho shows its battery level too (firmware from zmk-keyboard-gofortymax-ortho 0e57c39 or later), labelled Keyboard rather than the firmware's internal name.",
