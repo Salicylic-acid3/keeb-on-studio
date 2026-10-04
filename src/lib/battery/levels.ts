@@ -47,6 +47,11 @@ const HALF_LABELS: Record<string, Record<string, string>> = {
     central: "Right half",
     peripheral0: "Left half",
   },
+  // One piece: the firmware's "central" is the whole keyboard, and showing
+  // the word "central" for it would send someone looking for another half.
+  "goforty-max": {
+    central: "Keyboard",
+  },
   // The demo keyboard is ErgoTrack-shaped and reports a friendly name rather
   // than a keyboard name. Naming its halves here keeps demo mode honest about
   // the one thing this panel is for: someone trying the app before they own a

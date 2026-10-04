@@ -552,6 +552,7 @@ const ja: Record<string, string> = {
   "Release notes and older versions": "リリースノートと過去のバージョン",
   "Left half": "左手側",
   "Right half": "右手側",
+  Keyboard: "本体",
   "Flash this to the left half.": "左手側に書き込みます。",
   "Flash this to the right half. This is the half that talks to Keeb-On! Studio.":
     "右手側に書き込みます。Keeb-On! Studio と通信するのはこちら側です。",
@@ -2377,6 +2378,7 @@ const zh: Record<string, string> = {
   "Release notes and older versions": "发行说明与历史版本",
   "Left half": "左半边",
   "Right half": "右半边",
+  Keyboard: "键盘本体",
   "Flash this to the left half.": "刷写到左半边。",
   "Flash this to the right half. This is the half that talks to Keeb-On! Studio.":
     "刷写到右半边。与 Keeb-On! Studio 通信的是这一半。",

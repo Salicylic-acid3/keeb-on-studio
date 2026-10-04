@@ -6,7 +6,13 @@
       "changes": {
         "major": [],
         "minor": [],
-        "patch": []
+        "patch": [
+          {
+            "en": "Troubleshooting: GoFortyMax Ortho shows its battery level too (firmware from zmk-keyboard-gofortymax-ortho 0e57c39 or later), labelled Keyboard rather than the firmware's internal name.",
+            "ja": "トラブルシューティング: GoFortyMax Ortho も電池残量を表示するようになりました(zmk-keyboard-gofortymax-ortho 0e57c39 以降のファームウェア)。表記はファームウェア内部の名前ではなく「本体」です。",
+            "zh": "故障排除：GoFortyMax Ortho 也会显示电池电量（需要 zmk-keyboard-gofortymax-ortho 0e57c39 或更新的固件），标注为“键盘本体”而非固件内部名称。"
+          }
+        ]
       }
     },
     {
