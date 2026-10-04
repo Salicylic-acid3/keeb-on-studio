@@ -6,7 +6,7 @@
  * keyboard to click positions on, this has four key fields that open the
  * usual key picker. Empty slots are hidden; "+" takes the first free one.
  */
-import { IconPlus, IconTrash, IconX } from "@tabler/icons-react";
+import { IconPlus, IconSettings, IconTrash, IconX } from "@tabler/icons-react";
 import { StatusDot } from "../../components/EditStatusIndicator";
 import { useLanguage } from "../../hooks/useLanguage";
 import type { VialComboEntry } from "../lib/vial/protocol";
@@ -24,6 +24,9 @@ interface ListProps {
   onSelect: (index: number) => void;
   onNew: () => void;
   ctx: QmkKeyContext;
+  /** Gear beside "+": the combo settings, as on the ZMK side. */
+  onSettings?: () => void;
+  settingsModified?: boolean;
 }
 
 export function QmkComboListCard({
@@ -34,6 +37,8 @@ export function QmkComboListCard({
   onSelect,
   onNew,
   ctx,
+  onSettings,
+  settingsModified,
 }: ListProps) {
   const { t } = useLanguage();
   const visible = combos
@@ -46,14 +51,32 @@ export function QmkComboListCard({
         <h2 className="text-sm font-medium text-[var(--color-text)]">
           {t("Combos")}
         </h2>
-        <button
-          className="p-1 rounded hover:bg-[var(--color-border)] text-[var(--color-electric)] disabled:opacity-40 transition-colors"
-          onClick={onNew}
-          disabled={full}
-          title={t("New combo")}
-        >
-          <IconPlus size={15} />
-        </button>
+        <div className="flex items-center gap-1">
+          {onSettings && (
+            <button
+              className="relative p-1 rounded hover:bg-[var(--color-border)] text-[var(--color-electric)] transition-colors"
+              onClick={onSettings}
+              title={t("Combo Global Settings")}
+              aria-label={t("Combo Global Settings")}
+            >
+              <IconSettings size={15} />
+              {settingsModified && (
+                <StatusDot
+                  status="unsaved"
+                  className="absolute -top-0.5 -right-0.5"
+                />
+              )}
+            </button>
+          )}
+          <button
+            className="p-1 rounded hover:bg-[var(--color-border)] text-[var(--color-electric)] disabled:opacity-40 transition-colors"
+            onClick={onNew}
+            disabled={full}
+            title={t("New combo")}
+          >
+            <IconPlus size={15} />
+          </button>
+        </div>
       </div>
       <div className="space-y-2">
         {visible.length === 0 && (

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 /**
  * The tap dance list, in the left column under Macros and Combos.
  *
@@ -27,6 +28,8 @@ export interface TapDanceListCardProps {
   keyboardLayout: KeyboardLayoutType;
   selectedIndex: number | null;
   onSelect: (slot: TapDanceSlot) => void;
+  /** Extra buttons beside the title (the QMK side's tap-hold settings). */
+  headerActions?: ReactNode;
 }
 
 /** "Esc · Tab · —": one entry per tap, in order. */
@@ -58,6 +61,7 @@ export function TapDanceListCard({
   keyboardLayout,
   selectedIndex,
   onSelect,
+  headerActions,
 }: TapDanceListCardProps) {
   const { t } = useLanguage();
 
@@ -70,12 +74,15 @@ export function TapDanceListCard({
           </h2>
           <DocTip content={tapDanceDoc(t)} />
         </div>
-        {tapDance.isLoading && (
-          <IconLoader2
-            size={14}
-            className="animate-spin text-[var(--color-electric)]"
-          />
-        )}
+        <div className="flex items-center gap-1">
+          {tapDance.isLoading && (
+            <IconLoader2
+              size={14}
+              className="animate-spin text-[var(--color-electric)]"
+            />
+          )}
+          {headerActions}
+        </div>
       </div>
 
       <div className="space-y-2">

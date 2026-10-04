@@ -194,4 +194,17 @@ describe("VialClient against the demo keyboard", () => {
     expect(await client.getKeyOverride(0)).toEqual(ko);
     await expect(client.getTapDance(99)).rejects.toThrow();
   });
+
+  test("QMK Settings: list, read and write", async () => {
+    const client = new VialClient(demo());
+    expect(await client.listQmkSettings()).toEqual([
+      1, 2, 3, 4, 5, 6, 7, 8, 18, 19, 20, 21,
+    ]);
+    expect(await client.getQmkSetting(7, 2)).toBe(200);
+    await client.setQmkSetting(7, 2, 280);
+    expect(await client.getQmkSetting(7, 2)).toBe(280);
+    await client.setQmkSetting(8, 1, 0b1001);
+    expect(await client.getQmkSetting(8, 1)).toBe(9);
+    await expect(client.getQmkSetting(99, 1)).rejects.toThrow();
+  });
 });

@@ -90,6 +90,10 @@ describe("QmkApp demo mode", () => {
     fireEvent.click(mcTab);
     fireEvent.click(await screen.findByTitle("New combo"));
     expect(await screen.findByText("Combo Editor")).toBeInTheDocument();
+    fireEvent.click(screen.getByTitle("Combo Global Settings"));
+    expect(await screen.findByText("Combo timeout")).toBeInTheDocument();
+    fireEvent.click(screen.getByTitle("Tap-Hold Settings"));
+    expect(await screen.findByText("Tapping term")).toBeInTheDocument();
     fireEvent.click(screen.getByTitle("New key override"));
     expect(await screen.findByText("Key Override Editor")).toBeInTheDocument();
     const kmTab = screen.getAllByRole("tab", { name: "Keymap" })[0];

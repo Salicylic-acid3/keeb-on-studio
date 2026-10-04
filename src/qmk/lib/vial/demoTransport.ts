@@ -51,6 +51,21 @@ export class DemoTransport implements VialTransport {
   } | null;
   /** 10-byte dynamic entries: tap dance, combo, key override. */
   private readonly entries: Uint8Array[][];
+  /** QMK Settings, as qsid -> little-endian bytes (qmk_settings_reset()). */
+  private readonly qmkSettings = new Map<number, Uint8Array>([
+    [1, new Uint8Array([0])],
+    [2, new Uint8Array([50, 0])],
+    [3, new Uint8Array([0])],
+    [4, new Uint8Array([175, 0])],
+    [5, new Uint8Array([5])],
+    [6, new Uint8Array([0x88, 0x13])],
+    [7, new Uint8Array([200, 0])],
+    [8, new Uint8Array([0])],
+    [18, new Uint8Array([0, 0])],
+    [19, new Uint8Array([80, 0])],
+    [20, new Uint8Array([5])],
+    [21, new Uint8Array([0, 0, 0, 0])],
+  ]);
   private disconnectListeners: Array<() => void> = [];
   /** Every request seen, for tests. */
   readonly log: Uint8Array[] = [];
@@ -273,6 +288,32 @@ export class DemoTransport implements VialTransport {
       case 0x08:
         this.unlocked = false;
         break;
+      case 0x09: {
+        // QMK Settings query: ids greater than the one asked for.
+        r.fill(0xff);
+        const after = d[2] | (d[3] << 8);
+        [...this.qmkSettings.keys()]
+          .filter((id) => id > after)
+          .slice(0, 16)
+          .forEach((id, i) => {
+            r[i * 2] = id & 0xff;
+            r[i * 2 + 1] = id >> 8;
+          });
+        break;
+      }
+      case 0x0a: {
+        const v = this.qmkSettings.get(d[2] | (d[3] << 8));
+        r[0] = v ? 0 : 1;
+        if (v) r.set(v, 1);
+        break;
+      }
+      case 0x0b: {
+        const qsid = d[2] | (d[3] << 8);
+        const v = this.qmkSettings.get(qsid);
+        r[0] = v ? 0 : 1;
+        if (v) this.qmkSettings.set(qsid, d.slice(4, 4 + v.length));
+        break;
+      }
       case 0x0d: {
         if (d[2] === 0x00) {
           r[0] = this.dynamicEntries.tapDance;

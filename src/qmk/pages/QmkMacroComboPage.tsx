@@ -30,6 +30,15 @@ import {
   QmkKeyOverrideListCard,
 } from "../components/QmkKeyOverrideCards";
 import type { QmkKeyContext } from "../lib/keyLabel";
+import { QmkSettingsCard } from "../components/QmkSettingsCard";
+import {
+  COMBO_SETTINGS,
+  readField,
+  supportedFields,
+  TAP_HOLD_SETTINGS,
+  type QmkSettingField,
+} from "../lib/qmkSettings";
+import { IconSettings } from "@tabler/icons-react";
 import {
   comboIsUsed,
   EMPTY_COMBO,
@@ -39,7 +48,13 @@ import {
 } from "../lib/entries";
 import type { UseVialKeyboard } from "../hooks/useVialKeyboard";
 
-type RightView = "tapdance" | "combo" | "keyoverride" | null;
+type RightView =
+  | "tapdance"
+  | "combo"
+  | "keyoverride"
+  | "combo-settings"
+  | "tap-hold-settings"
+  | null;
 
 export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
   const { t } = useLanguage();
@@ -73,6 +88,18 @@ export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
     layers,
     keyboardLayout: keyboardLayoutContext.layout,
   };
+
+  const comboSettings = supportedFields(COMBO_SETTINGS, keyboard.qmkSettingIds);
+  const tapHoldSettings = supportedFields(
+    TAP_HOLD_SETTINGS,
+    keyboard.qmkSettingIds,
+  );
+  const settingsModified = (fields: QmkSettingField[]) =>
+    fields.some(
+      (f) =>
+        readField(f, keyboard.qmkSettings) !==
+        readField(f, keyboard.savedQmkSettings),
+    );
 
   const forgetShown = () => {
     setShownCombos(new Set());
@@ -234,6 +261,12 @@ export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
                 }}
                 onNew={newCombo}
                 ctx={ctx}
+                onSettings={
+                  comboSettings.length
+                    ? () => setRightView("combo-settings")
+                    : undefined
+                }
+                settingsModified={settingsModified(comboSettings)}
               />
             )}
             {keyboard.keyOverrides.length > 0 && (
@@ -262,14 +295,49 @@ export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
                   rightView === "tapdance" ? selectedTapDance : null
                 }
                 onSelect={handleSelectTapDance}
+                headerActions={
+                  tapHoldSettings.length > 0 && (
+                    <button
+                      className="relative p-1 rounded hover:bg-[var(--color-border)] text-[var(--color-electric)] transition-colors"
+                      onClick={() => setRightView("tap-hold-settings")}
+                      title={t("Tap-Hold Settings")}
+                      aria-label={t("Tap-Hold Settings")}
+                    >
+                      <IconSettings size={15} />
+                      {settingsModified(tapHoldSettings) && (
+                        <StatusDot
+                          status="unsaved"
+                          className="absolute -top-0.5 -right-0.5"
+                        />
+                      )}
+                    </button>
+                  )
+                }
               />
             )}
           </div>
 
           <div className="min-w-0">
-            {rightView === "combo" &&
-            selectedCombo !== null &&
-            keyboard.combos[selectedCombo] ? (
+            {rightView === "combo-settings" ||
+            rightView === "tap-hold-settings" ? (
+              <QmkSettingsCard
+                title={
+                  rightView === "combo-settings"
+                    ? "Combo Global Settings"
+                    : "Tap-Hold Settings"
+                }
+                fields={
+                  rightView === "combo-settings"
+                    ? comboSettings
+                    : tapHoldSettings
+                }
+                values={keyboard.qmkSettings}
+                saved={keyboard.savedQmkSettings}
+                onChange={keyboard.setQmkSetting}
+              />
+            ) : rightView === "combo" &&
+              selectedCombo !== null &&
+              keyboard.combos[selectedCombo] ? (
               <QmkComboEditorCard
                 index={selectedCombo}
                 combo={keyboard.combos[selectedCombo]}

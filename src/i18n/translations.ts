@@ -10,6 +10,32 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // QMK (Vial) side
+  "Another key pressed while held makes it a hold at once":
+    "押している間に別のキーを押したら、すぐにホールドとして扱う",
+  "Another key tapped while held makes it a hold":
+    "押している間に別のキーをタップしたら、ホールドとして扱う",
+  "Combo timeout": "コンボの判定時間",
+  "Held past the tapping term with no other key: still sends the tap":
+    "判定時間を過ぎても、他のキーを押していなければタップとして送る",
+  "Hold On Other Key Press": "Hold On Other Key Press",
+  "How close together the keys of a combo must be pressed":
+    "コンボのキーをどれだけ近いタイミングで押せばよいか",
+  "How long a key is held before it counts as a hold (tap dance, Mod-Tap, Layer-Tap)":
+    "どれだけ押し続けたらホールドとみなすか（タップダンス・Mod-Tap・Layer-Tap 共通）",
+  "Permissive Hold": "Permissive Hold",
+  "Quick tap term": "クイックタップの判定時間",
+  "Retro Tapping": "Retro Tapping",
+  "Tap then hold within this time to repeat the tap instead of holding":
+    "この時間内にタップしてから押し続けると、ホールドではなくタップの連続になる",
+  "Tap-Hold Settings": "タップ/ホールドの設定",
+  "Tapping term": "タップの判定時間",
+  "Tapping toggle": "TT キーの固定回数",
+  "Taps on a TT key that lock its layer":
+    "TT キーを何回タップしたらレイヤーを固定するか",
+  "These apply to the whole keyboard. Nothing is written until you Save.":
+    "キーボード全体に効く設定です。保存するまで書き込まれません。",
+  "This keyboard's firmware has none of these settings.":
+    "このキーボードのファームウェアには、これらの設定がありません。",
   "Activate when a negative modifier is released":
     "打ち消しの修飾キーを離したときにも有効にする",
   "Activate when a required modifier is pressed":

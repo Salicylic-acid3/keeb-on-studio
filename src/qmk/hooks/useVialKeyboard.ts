@@ -17,6 +17,7 @@ import {
   type VialKeyOverrideEntry,
 } from "../lib/vial/protocol";
 import { readDefinition, type VialDefinition } from "../lib/vial/definition";
+import { QMK_SETTING_WIDTH } from "../lib/qmkSettings";
 import { parseKleLayout, visibleKeys, type VialKey } from "../lib/vial/kle";
 import type { VialTransport } from "../lib/vial/transport";
 import { DemoTransport, base64ToBytes } from "../lib/vial/demoTransport";
@@ -56,6 +57,11 @@ export interface UseVialKeyboard {
   keyOverrides: VialKeyOverrideEntry[];
   savedKeyOverrides: VialKeyOverrideEntry[];
   setKeyOverride(index: number, entry: VialKeyOverrideEntry): void;
+  /** QMK Settings by id, as shown and as saved; ids the firmware lists. */
+  qmkSettings: Record<number, number>;
+  savedQmkSettings: Record<number, number>;
+  qmkSettingIds: Set<number>;
+  setQmkSetting(qsid: number, value: number): void;
   layoutOptions: number;
   visible: VialKey[];
   os: KeebOnOsState | null;
@@ -108,19 +114,34 @@ interface LoadedEntries {
   tapDances: VialTapDanceEntry[];
   combos: VialComboEntry[];
   keyOverrides: VialKeyOverrideEntry[];
+  settingIds: number[];
+  settings: Record<number, number>;
 }
 
 async function readEntries(
   client: VialClient,
   counts: VialDynamicEntryCounts,
 ): Promise<LoadedEntries> {
-  const out: LoadedEntries = { tapDances: [], combos: [], keyOverrides: [] };
+  const out: LoadedEntries = {
+    tapDances: [],
+    combos: [],
+    keyOverrides: [],
+    settingIds: [],
+    settings: {},
+  };
   for (let i = 0; i < counts.tapDance; i++)
     out.tapDances.push(await client.getTapDance(i));
   for (let i = 0; i < counts.combo; i++)
     out.combos.push(await client.getCombo(i));
   for (let i = 0; i < counts.keyOverride; i++)
     out.keyOverrides.push(await client.getKeyOverride(i));
+  // Only the ids whose size we know: an unknown one cannot be read safely.
+  out.settingIds = (await client.listQmkSettings()).filter(
+    (id) => QMK_SETTING_WIDTH[id],
+  );
+  for (const id of out.settingIds) {
+    out.settings[id] = await client.getQmkSetting(id, QMK_SETTING_WIDTH[id]);
+  }
   return out;
 }
 
@@ -148,7 +169,16 @@ export function useVialKeyboard(): UseVialKeyboard {
     VialKeyOverrideEntry[]
   >([]);
 
+  const [qmkSettings, setQmkSettings] = useState<Record<number, number>>({});
+  const [savedQmkSettings, setSavedQmkSettings] = useState<
+    Record<number, number>
+  >({});
+  const [qmkSettingIds, setQmkSettingIds] = useState<Set<number>>(new Set());
+
   const applyEntries = useCallback((e: LoadedEntries) => {
+    setQmkSettingIds(new Set(e.settingIds));
+    setQmkSettings({ ...e.settings });
+    setSavedQmkSettings({ ...e.settings });
     setTapDances(e.tapDances);
     setSavedTapDances(copy(e.tapDances));
     setCombos(e.combos);
@@ -283,7 +313,9 @@ export function useVialKeyboard(): UseVialKeyboard {
       l.some((r, ri) => r.some((c, ci) => c !== saved[li][ri][ci])),
     );
   }, [keymap, saved]);
+  const settingsChanged = !same(qmkSettings, savedQmkSettings);
   const entriesChanged =
+    settingsChanged ||
     changed(tapDances, savedTapDances) ||
     changed(combos, savedCombos) ||
     changed(keyOverrides, savedKeyOverrides);
@@ -308,6 +340,10 @@ export function useVialKeyboard(): UseVialKeyboard {
     },
     [],
   );
+
+  const setQmkSetting = useCallback((qsid: number, value: number) => {
+    setQmkSettings((prev) => ({ ...prev, [qsid]: value }));
+  }, []);
 
   // One Save for everything on the keyboard, the same as the ZMK side: the
   // keymap and the tap dances go out together.
@@ -338,6 +374,13 @@ export function useVialKeyboard(): UseVialKeyboard {
         if (!same(keyOverrides[i], savedKeyOverrides[i]))
           await client.setKeyOverride(i, keyOverrides[i]);
       }
+      for (const [id, value] of Object.entries(qmkSettings)) {
+        const qsid = Number(id);
+        if (value !== savedQmkSettings[qsid]) {
+          await client.setQmkSetting(qsid, QMK_SETTING_WIDTH[qsid], value);
+        }
+      }
+      setSavedQmkSettings({ ...qmkSettings });
       setSavedTapDances(copy(tapDances));
       setSavedCombos(copy(combos));
       setSavedKeyOverrides(copy(keyOverrides));
@@ -353,6 +396,8 @@ export function useVialKeyboard(): UseVialKeyboard {
     savedCombos,
     keyOverrides,
     savedKeyOverrides,
+    qmkSettings,
+    savedQmkSettings,
   ]);
 
   const discardChanges = useCallback(() => {
@@ -360,7 +405,8 @@ export function useVialKeyboard(): UseVialKeyboard {
     setTapDances(copy(savedTapDances));
     setCombos(copy(savedCombos));
     setKeyOverrides(copy(savedKeyOverrides));
-  }, [saved, savedTapDances, savedCombos, savedKeyOverrides]);
+    setQmkSettings({ ...savedQmkSettings });
+  }, [saved, savedTapDances, savedCombos, savedKeyOverrides, savedQmkSettings]);
 
   const reload = useCallback(async () => {
     const client = clientRef.current;
@@ -438,6 +484,10 @@ export function useVialKeyboard(): UseVialKeyboard {
     keyOverrides,
     savedKeyOverrides,
     setKeyOverride,
+    qmkSettings,
+    savedQmkSettings,
+    qmkSettingIds,
+    setQmkSetting,
     layoutOptions,
     visible,
     os,

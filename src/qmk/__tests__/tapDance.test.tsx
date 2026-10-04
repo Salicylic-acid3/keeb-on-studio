@@ -12,6 +12,11 @@ import { bindingToKeycode, keycodeToBinding } from "../lib/zmkBridge";
 import { keycodeToText, parseKeycode } from "../lib/keycodes/qmkKeycode";
 import { tapBinding } from "../../components/tapDance/useTapDance";
 import { VialClient } from "../lib/vial/protocol";
+import {
+  supportedFields,
+  TAP_HOLD_SETTINGS,
+  writeField,
+} from "../lib/qmkSettings";
 
 function setup() {
   const transport = createDemoTransport();
@@ -120,6 +125,42 @@ describe("Vial combos and key overrides", () => {
     const client = new VialClient(transport);
     expect(await client.getCombo(2)).toEqual(combo);
     expect(await client.getKeyOverride(0)).toEqual(ko);
+  });
+});
+
+describe("QMK Settings", () => {
+  test("stage and Save, through the same fields the cards use", async () => {
+    const { transport, hook } = setup();
+    await act(async () =>
+      hook.result.current.keyboard.connect(transport, "demo"),
+    );
+    await waitFor(() =>
+      expect(hook.result.current.keyboard.qmkSettingIds.has(7)).toBe(true),
+    );
+    const fields = supportedFields(
+      TAP_HOLD_SETTINGS,
+      hook.result.current.keyboard.qmkSettingIds,
+    );
+    // This firmware has Permissive Hold and Retro Tapping as bits of id 8.
+    expect(fields.map((f) => f.label)).toEqual([
+      "Tapping term",
+      "Permissive Hold",
+      "Retro Tapping",
+      "Tapping toggle",
+    ]);
+    const permissive = fields[1];
+    act(() =>
+      hook.result.current.keyboard.setQmkSetting(
+        permissive.qsid,
+        writeField(permissive, hook.result.current.keyboard.qmkSettings, true),
+      ),
+    );
+    act(() => hook.result.current.keyboard.setQmkSetting(7, 230));
+    expect(hook.result.current.keyboard.hasUnsavedChanges).toBe(true);
+    await act(async () => hook.result.current.keyboard.saveChanges());
+    const client = new VialClient(transport);
+    expect(await client.getQmkSetting(7, 2)).toBe(230);
+    expect(await client.getQmkSetting(8, 1)).toBe(1);
   });
 });
 

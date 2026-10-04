@@ -39,6 +39,9 @@ const VIAL_GET_UNLOCK_STATUS = 0x05;
 const VIAL_UNLOCK_START = 0x06;
 const VIAL_UNLOCK_POLL = 0x07;
 const VIAL_LOCK = 0x08;
+const VIAL_QMK_SETTINGS_QUERY = 0x09;
+const VIAL_QMK_SETTINGS_GET = 0x0a;
+const VIAL_QMK_SETTINGS_SET = 0x0b;
 const VIAL_DYNAMIC_ENTRY_OP = 0x0d;
 const DYNAMIC_VIAL_GET_NUMBER_OF_ENTRIES = 0x00;
 const DYNAMIC_VIAL_TAP_DANCE_GET = 0x01;
@@ -394,6 +397,68 @@ export class VialClient {
       index,
       encodeKeyOverride(entry),
     );
+  }
+
+  /**
+   * The QMK Settings ids this firmware has (quantum/qmk_settings.c). The
+   * firmware lists ids greater than the one asked for, 2 bytes each, until
+   * an 0xFFFF; an empty list means no QMK Settings at all.
+   */
+  async listQmkSettings(): Promise<number[]> {
+    const ids: number[] = [];
+    let after = 0;
+    for (let guard = 0; guard < 64; guard++) {
+      const r = await this.sendVial(
+        VIAL_QMK_SETTINGS_QUERY,
+        after & 0xff,
+        (after >> 8) & 0xff,
+      );
+      let added = false;
+      for (let i = 0; i + 1 < VIAL_REPORT_SIZE; i += 2) {
+        const id = u16(r, i);
+        if (id === 0xffff) break;
+        if (id > after) {
+          ids.push(id);
+          after = id;
+          added = true;
+        }
+      }
+      if (!added) break;
+    }
+    return ids;
+  }
+
+  /** A setting's value; `width` bytes, little-endian. */
+  async getQmkSetting(qsid: number, width: number): Promise<number> {
+    const r = await this.sendVial(
+      VIAL_QMK_SETTINGS_GET,
+      qsid & 0xff,
+      (qsid >> 8) & 0xff,
+    );
+    if (r[0] !== 0)
+      throw new VialProtocolError(`QMK setting ${qsid} could not be read`);
+    let v = 0;
+    for (let i = 0; i < width; i++) v += r[1 + i] * 2 ** (8 * i);
+    return v;
+  }
+
+  async setQmkSetting(
+    qsid: number,
+    width: number,
+    value: number,
+  ): Promise<void> {
+    const bytes = Array.from(
+      { length: width },
+      (_, i) => Math.floor(value / 2 ** (8 * i)) & 0xff,
+    );
+    const r = await this.sendVial(
+      VIAL_QMK_SETTINGS_SET,
+      qsid & 0xff,
+      (qsid >> 8) & 0xff,
+      ...bytes,
+    );
+    if (r[0] !== 0)
+      throw new VialProtocolError(`QMK setting ${qsid} could not be written`);
   }
 
   /** Null when the firmware has no OS-switch module. */
