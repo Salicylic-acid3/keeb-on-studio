@@ -6,6 +6,15 @@
       "changes": {
         "major": [],
         "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.04.2",
+      "date": "2026-10-04",
+      "changes": {
+        "major": [],
+        "minor": [],
         "patch": [
           {
             "en": "Troubleshooting: the battery card says, for the half plugged in over USB, that its number is the last level measured on battery rather than a live reading (with ClickBoard ErgoTrack firmware f794f9a or later; the firmware now keeps that last reading instead of reporting the USB rail as a full battery).",
