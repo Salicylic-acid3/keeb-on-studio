@@ -6,6 +6,15 @@
       "changes": {
         "major": [],
         "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.04.1",
+      "date": "2026-10-04",
+      "changes": {
+        "major": [],
+        "minor": [],
         "patch": [
           {
             "en": "Combos: deleting a combo now removes it for good — before, it only switched the combo off, so it came back dimmed after the next reload. A combo built into the firmware cannot be removed and is switched off instead, and the app says so.",
