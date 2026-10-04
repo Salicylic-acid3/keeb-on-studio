@@ -5,6 +5,15 @@
       "date": null,
       "changes": {
         "major": [],
+        "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.04.0",
+      "date": "2026-10-04",
+      "changes": {
+        "major": [],
         "minor": [
           {
             "en": "Trackpad tab: a Tap to click card — turn the single-finger tap off, or make it stricter with the longest touch and the farthest movement that still count as a tap (needs firmware from zmk-keyboard-clickboard-ergotrack bc21a5e or later).",
