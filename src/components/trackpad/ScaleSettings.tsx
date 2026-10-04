@@ -101,168 +101,211 @@ export function ScaleSettings({
   if (!gainX && !gainY && !smoothing && reportIntervals.length === 0)
     return null;
 
+  const hasSpeed = gainX || gainY;
+  const hasPrecision =
+    smoothing ||
+    reportIntervals.length > 0 ||
+    tapDeadZone ||
+    liftGuard ||
+    (touchSet && touchClear) ||
+    rippleMap;
+
+  /*
+   * Two cards, because they answer two different questions. "How fast" is
+   * the two gains and nothing else; everything after them -- smoothing, the
+   * report interval, the tap dead zone, the lift guard, the touch threshold,
+   * the ripple map -- is about whether the pointer lands where the finger
+   * went, and belongs under "precision". Mixing them put the touch threshold
+   * under a heading that said "speed".
+   */
   return (
-    <div className="glass-card space-y-3 p-4">
-      <h3 className="text-sm font-medium text-[var(--color-text)]">
-        {t("Pointer speed, per axis")}
-      </h3>
-      <p className="text-xs text-[var(--color-text-muted)]">
-        {t(
-          "In tenths: 10 leaves the axis as it is, 16 makes it 1.6×. Raise one and lower the other to change the up/down vs left/right balance without changing the overall speed.",
-        )}
-      </p>
-
-      <div className="setting-grid">
-        {gainX && (
-          <NumberRow
-            label={t("Up and down (×{{factor}})", {
-              factor: (gainX.value / 10).toFixed(1),
-            })}
-            info={t(
-              "The long side of the pad. It usually wants a somewhat higher number than the short side.",
+    <>
+      {hasSpeed && (
+        <div className="glass-card space-y-3 p-4">
+          <h3 className="text-sm font-medium text-[var(--color-text)]">
+            {t("Pointer speed, per axis")}
+          </h3>
+          <p className="text-xs text-[var(--color-text-muted)]">
+            {t(
+              "In tenths: 10 leaves the axis as it is, 16 makes it 1.6×. Raise one and lower the other to change the up/down vs left/right balance without changing the overall speed.",
             )}
-            field={gainX}
-            step={1}
-            disabled={settings.isLoading}
-            onCommit={(typed) => void commit(gainX, typed)}
-          />
-        )}
+          </p>
 
-        {gainY && (
-          <NumberRow
-            label={t("Left and right (×{{factor}})", {
-              factor: (gainY.value / 10).toFixed(1),
-            })}
-            info={t(
-              "The short side of the pad. If the pointer is already fast enough overall, lower this rather than raising the other.",
+          <div className="setting-grid">
+            {gainX && (
+              <NumberRow
+                label={t("Up and down (×{{factor}})", {
+                  factor: (gainX.value / 10).toFixed(1),
+                })}
+                info={t(
+                  "The long side of the pad. It usually wants a somewhat higher number than the short side.",
+                )}
+                field={gainX}
+                step={1}
+                disabled={settings.isLoading}
+                onCommit={(typed) => void commit(gainX, typed)}
+              />
             )}
-            field={gainY}
-            step={1}
-            disabled={settings.isLoading}
-            onCommit={(typed) => void commit(gainY, typed)}
-          />
-        )}
 
-        {smoothing && (
-          <NumberRow
-            label={t("Smoothing ({{n}} reports)", { n: smoothing.value })}
-            info={t(
-              "Smooths slow, careful movement by spreading each move over this many reports. The cost is lag: the pointer trails your finger by about this many reports. 1 is off; 2 is a good balance; 5 and above feel clearly laggy.",
+            {gainY && (
+              <NumberRow
+                label={t("Left and right (×{{factor}})", {
+                  factor: (gainY.value / 10).toFixed(1),
+                })}
+                info={t(
+                  "The short side of the pad. If the pointer is already fast enough overall, lower this rather than raising the other.",
+                )}
+                field={gainY}
+                step={1}
+                disabled={settings.isLoading}
+                onCommit={(typed) => void commit(gainY, typed)}
+              />
             )}
-            field={smoothing}
-            step={1}
-            disabled={settings.isLoading}
-            onCommit={(typed) => void commit(smoothing, typed)}
-          />
-        )}
+          </div>
+        </div>
+      )}
 
-        {reportIntervals.map((field, index) => (
-          <NumberRow
-            key={field.setting.source}
-            label={
-              index === 0
-                ? t(
-                    "Report at most every {{n}} ms — half connected to the computer",
-                    {
-                      n: field.value,
-                    },
+      {hasPrecision && (
+        <div className="glass-card space-y-3 p-4">
+          <h3 className="text-sm font-medium text-[var(--color-text)]">
+            {t("Pointer precision")}
+          </h3>
+          <p className="text-xs text-[var(--color-text-muted)]">
+            {t(
+              "Whether the pointer lands where the finger went: smoothing, how often it reports, what a touch and a lift count as, and the ripple correction.",
+            )}
+          </p>
+
+          <div className="setting-grid">
+            {smoothing && (
+              <NumberRow
+                label={t("Smoothing ({{n}} reports)", { n: smoothing.value })}
+                info={t(
+                  "Smooths slow, careful movement by spreading each move over this many reports. The cost is lag: the pointer trails your finger by about this many reports. 1 is off; 2 is a good balance; 5 and above feel clearly laggy.",
+                )}
+                field={smoothing}
+                step={1}
+                disabled={settings.isLoading}
+                onCommit={(typed) => void commit(smoothing, typed)}
+              />
+            )}
+
+            {reportIntervals.map((field, index) => (
+              <NumberRow
+                key={field.setting.source}
+                label={
+                  index === 0
+                    ? t(
+                        "Report at most every {{n}} ms — half connected to the computer",
+                        {
+                          n: field.value,
+                        },
+                      )
+                    : reportIntervals.length > 2
+                      ? t(
+                          "Report at most every {{n}} ms — wireless half {{i}}",
+                          {
+                            n: field.value,
+                            i: index,
+                          },
+                        )
+                      : t("Report at most every {{n}} ms — wireless half", {
+                          n: field.value,
+                        })
+                }
+                info={
+                  index === 0
+                    ? t(
+                        "How often this half sends pointer movement to the computer. 0 sends every sensor frame (200 a second). Over USB leave it at 0. Over Bluetooth some computers cannot take 200 a second, and the pointer falls further behind the longer you keep moving — Windows did this, and 6 fixed it; a Mac was fine at 0. Movement between reports is added up, so nothing is lost; higher only makes the pointer coarser. This box changes this half only.",
+                      )
+                    : t(
+                        "This half's movement goes to the other half over Bluetooth before it reaches the computer. That link carries fewer reports than the sensor makes, so sending every frame makes the pointer — and this half's keys — lag. 8 matches the link between the halves; lower is finer but risks lag, higher is coarser. Movement between reports is added up, so nothing is lost. This box changes this half only.",
+                      )
+                }
+                field={field}
+                step={1}
+                disabled={settings.isLoading}
+                onCommit={(typed) =>
+                  void commitTrackpadNumber(
+                    settings,
+                    field,
+                    typed,
+                    { min: 0, max: 100 },
+                    1,
+                    false,
                   )
-                : reportIntervals.length > 2
-                  ? t("Report at most every {{n}} ms — wireless half {{i}}", {
-                      n: field.value,
-                      i: index,
-                    })
-                  : t("Report at most every {{n}} ms — wireless half", {
-                      n: field.value,
-                    })
-            }
-            info={
-              index === 0
-                ? t(
-                    "How often this half sends pointer movement to the computer. 0 sends every sensor frame (200 a second). Over USB leave it at 0. Over Bluetooth some computers cannot take 200 a second, and the pointer falls further behind the longer you keep moving — Windows did this, and 6 fixed it; a Mac was fine at 0. Movement between reports is added up, so nothing is lost; higher only makes the pointer coarser. This box changes this half only.",
-                  )
-                : t(
-                    "This half's movement goes to the other half over Bluetooth before it reaches the computer. That link carries fewer reports than the sensor makes, so sending every frame makes the pointer — and this half's keys — lag. 8 matches the link between the halves; lower is finer but risks lag, higher is coarser. Movement between reports is added up, so nothing is lost. This box changes this half only.",
-                  )
-            }
-            field={field}
-            step={1}
-            disabled={settings.isLoading}
-            onCommit={(typed) =>
-              void commitTrackpadNumber(
-                settings,
-                field,
-                typed,
-                { min: 0, max: 100 },
-                1,
-                false,
-              )
-            }
-          />
-        ))}
+                }
+              />
+            ))}
 
-        {tapDeadZone && (
-          <NumberRow
-            label={t("Tap dead zone ({{n}} counts)", { n: tapDeadZone.value })}
-            info={t(
-              "Stops a tap from nudging the pointer. For a moment after the finger lands, movement within this distance of the landing point is ignored (about 23 counts to a millimetre). Raise it if taps still move the pointer. 20 is the default; 0 turns it off.",
+            {tapDeadZone && (
+              <NumberRow
+                label={t("Tap dead zone ({{n}} counts)", {
+                  n: tapDeadZone.value,
+                })}
+                info={t(
+                  "Stops a tap from nudging the pointer. For a moment after the finger lands, movement within this distance of the landing point is ignored (about 23 counts to a millimetre). Raise it if taps still move the pointer. 20 is the default; 0 turns it off.",
+                )}
+                field={tapDeadZone}
+                step={2}
+                disabled={settings.isLoading}
+                onCommit={(typed) =>
+                  void commitTrackpadNumber(settings, tapDeadZone, typed, {
+                    min: 0,
+                    max: 200,
+                  })
+                }
+              />
             )}
-            field={tapDeadZone}
-            step={2}
-            disabled={settings.isLoading}
-            onCommit={(typed) =>
-              void commitTrackpadNumber(settings, tapDeadZone, typed, {
-                min: 0,
-                max: 200,
-              })
-            }
-          />
-        )}
 
-        {liftGuard && (
-          <NumberRow
-            label={t("Lift guard ({{n}} frames)", { n: liftGuard.value })}
-            info={t(
-              "Stops the pointer from jumping as the finger leaves the pad, which makes clicks on small targets miss. After the finger has paused, the first few frames of movement are held back and thrown away if the finger lifts right after them; a real stroke goes through unchanged after that. 2 is the default (about 10 ms of the start of a stroke after a pause). Raise it if the pointer still jumps on lift; 0 turns it off.",
+            {liftGuard && (
+              <NumberRow
+                label={t("Lift guard ({{n}} frames)", { n: liftGuard.value })}
+                info={t(
+                  "Stops the pointer from jumping as the finger leaves the pad, which makes clicks on small targets miss. After the finger has paused, the first few frames of movement are held back and thrown away if the finger lifts right after them; a real stroke goes through unchanged after that. 2 is the default (about 10 ms of the start of a stroke after a pause). Raise it if the pointer still jumps on lift; 0 turns it off.",
+                )}
+                field={liftGuard}
+                step={1}
+                disabled={settings.isLoading}
+                onCommit={(typed) =>
+                  void commitTrackpadNumber(settings, liftGuard, typed, {
+                    min: 0,
+                    max: 8,
+                  })
+                }
+              />
             )}
-            field={liftGuard}
-            step={1}
-            disabled={settings.isLoading}
-            onCommit={(typed) =>
-              void commitTrackpadNumber(settings, liftGuard, typed, {
-                min: 0,
-                max: 8,
-              })
-            }
-          />
-        )}
 
-        {touchSet && touchClear && (
-          <NumberRow
-            label={t("Touch threshold ({{n}})", { n: touchSet.value })}
-            info={t(
-              "How light a touch counts. Lower is more sensitive and movement gets smoother, but too low and a resting palm or a hovering finger registers too. Higher is less sensitive, and too high makes the pointer move in steps. 34 is the starting point here; try steps of 4.",
+            {touchSet && touchClear && (
+              <NumberRow
+                label={t("Touch threshold ({{n}})", { n: touchSet.value })}
+                info={t(
+                  "How light a touch counts. Lower is more sensitive and movement gets smoother, but too low and a resting palm or a hovering finger registers too. Higher is less sensitive, and too high makes the pointer move in steps. 34 is the starting point here; try steps of 4.",
+                )}
+                field={touchSet}
+                step={1}
+                disabled={settings.isLoading}
+                onCommit={(typed) => void commitTouch(typed)}
+              />
             )}
-            field={touchSet}
-            step={1}
-            disabled={settings.isLoading}
-            onCommit={(typed) => void commitTouch(typed)}
-          />
-        )}
 
-        {rippleMap && (
-          <ToggleRow
-            label={t("Correct the ripple with a map of the pad")}
-            info={t(
-              "Evens out a pattern where the pointer slows and hurries at fixed spots on the pad. Leave it on; turn it off only to compare.",
+            {rippleMap && (
+              <ToggleRow
+                label={t("Correct the ripple with a map of the pad")}
+                info={t(
+                  "Evens out a pattern where the pointer slows and hurries at fixed spots on the pad. Leave it on; turn it off only to compare.",
+                )}
+                checked={rippleMap.enabled}
+                disagree={sidesDisagree(rippleMap)}
+                disabled={settings.isLoading}
+                onCheckedChange={(checked) =>
+                  void setToggle(rippleMap, checked)
+                }
+              />
             )}
-            checked={rippleMap.enabled}
-            disagree={sidesDisagree(rippleMap)}
-            disabled={settings.isLoading}
-            onCheckedChange={(checked) => void setToggle(rippleMap, checked)}
-          />
-        )}
-      </div>
-    </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

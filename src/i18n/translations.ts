@@ -120,6 +120,9 @@ const ja: Record<string, string> = {
   "The sensor's Y axis, which the listener swaps onto the screen's horizontal. Set it in proportion to the pad's short side.":
     "センサのY軸で、listener が画面の左右に入れ替えています。パッドの短辺の比に合わせてください。",
   "Pointer speed, per axis": "ポインタの速さ(軸ごと)",
+  "Pointer precision": "ポインタの精度",
+  "Whether the pointer lands where the finger went: smoothing, how often it reports, what a touch and a lift count as, and the ripple correction.":
+    "ポインタが指の動きどおりの場所に行くか: なめらかさ、送信間隔、タッチと離れの判定、リップル補正。",
   "Sensor filter (advanced)": "センサ側フィルタ(詳細)",
   "What the sensor does before it reports anything. If one axis stops and jumps while the other glides, the fix is here, not in smoothing: a report the sensor suppressed cannot be smoothed. Change one value at a time and try a slow drag after each.":
     "センサが報告する前に行っている処理です。片方の軸だけ止まっては跳ぶのに、もう片方は滑らかという場合、直すのはここで、なめらかさではありません。センサが握りつぶした報告は後から均せないからです。一度に1つだけ変えて、そのたびにゆっくり動かして確かめてください。",
@@ -215,7 +218,7 @@ const ja: Record<string, string> = {
     "片方のパッドで 2 本の指を開く・閉じるとズームします。小さいパッドでは 2 本指スクロールと混同しやすく、左右のパッドに 1 本ずつ置くズームなら混同なく同じことができるので、既定ではオフです。",
   "Reverse the pinch direction": "ピンチの向きを逆にする",
   "Three-finger swipe": "3本指スワイプ",
-  "Two-finger horizontal swipe": "2本指の横スワイプ",
+  "Two-finger horizontal swipe": "2本指横スワイプ",
   "On a layer with the switch on, moving two fingers sideways is a swipe (bound as a key on the trackpad tab), and a scroll that starts there is held to the axis it started on, so it does not drift sideways. With the switch off, two fingers scroll sideways and diagonally as well as up and down. Only the half connected to the computer follows the layer; the other half always swipes.":
     "スイッチがオンのレイヤーでは、2本の指を横に動かすとスワイプになり(割り当てはトラックパッドタブのジェスチャー)、スクロールは始まった軸に固定されて横に流れません。オフのレイヤーでは、2本指で横にも斜めにもスクロールできます。レイヤーに従うのは PC につながる側だけで、もう片方は常にスワイプです。",
   "Swipe on {{layer}}": "{{layer}} で横スワイプ",
@@ -1971,6 +1974,9 @@ const zh: Record<string, string> = {
   "The sensor's Y axis, which the listener swaps onto the screen's horizontal. Set it in proportion to the pad's short side.":
     "传感器的Y轴，listener 将其换到屏幕的左右方向。按触控板短边的比例设置。",
   "Pointer speed, per axis": "指针速度（按轴）",
+  "Pointer precision": "指针精度",
+  "Whether the pointer lands where the finger went: smoothing, how often it reports, what a touch and a lift count as, and the ripple correction.":
+    "指针是否落在手指所到之处：平滑、上报频率、触摸与抬起的判定，以及波纹校正。",
   "Sensor filter (advanced)": "传感器侧滤波（高级）",
   "What the sensor does before it reports anything. If one axis stops and jumps while the other glides, the fix is here, not in smoothing: a report the sensor suppressed cannot be smoothed. Change one value at a time and try a slow drag after each.":
     "传感器在上报之前所做的处理。如果一个轴走走停停、另一个轴却很顺滑，要改的是这里而不是平滑：被传感器压掉的上报无法事后补平。每次只改一个值，改完后慢慢拖动试一试。",
