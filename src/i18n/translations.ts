@@ -10,6 +10,8 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // QMK (Vial) side
+  Modifier: "修飾キー",
+  Direction: "方向",
   "Click on a key to modify its binding. Modified keys are highlighted in green and show the original binding on hover. Use the Discard button to drop unsaved changes.":
     "キーをクリックして割り当てを変更します。変更したキーは緑色で表示され、ホバーすると元の割り当てが見られます。保存前の変更を取り消すには「破棄」を押してください。",
   "Copy this block to another": "このブロックを別のブロックへコピー",
