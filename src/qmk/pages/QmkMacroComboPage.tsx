@@ -39,10 +39,9 @@ import {
   COMBO_SETTINGS,
   readField,
   supportedFields,
-  TAP_HOLD_SETTINGS,
   type QmkSettingField,
 } from "../lib/qmkSettings";
-import { IconPlus, IconSettings, IconTrash } from "@tabler/icons-react";
+import { IconPlus, IconTrash } from "@tabler/icons-react";
 import {
   comboIsUsed,
   EMPTY_COMBO,
@@ -58,7 +57,6 @@ type RightView =
   | "combo"
   | "keyoverride"
   | "combo-settings"
-  | "tap-hold-settings"
   | null;
 
 export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
@@ -102,10 +100,6 @@ export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
   };
 
   const comboSettings = supportedFields(COMBO_SETTINGS, keyboard.qmkSettingIds);
-  const tapHoldSettings = supportedFields(
-    TAP_HOLD_SETTINGS,
-    keyboard.qmkSettingIds,
-  );
   const settingsModified = (fields: QmkSettingField[]) =>
     fields.some(
       (f) =>
@@ -381,33 +375,15 @@ export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
                 }
                 onSelect={handleSelectTapDance}
                 headerActions={
-                  <>
-                    <button
-                      className="p-1 rounded hover:bg-[var(--color-border)] text-[var(--color-electric)] disabled:opacity-40 transition-colors"
-                      onClick={newTapDance}
-                      disabled={freeTapDance < 0}
-                      title={t("New tap dance")}
-                      aria-label={t("New tap dance")}
-                    >
-                      <IconPlus size={15} />
-                    </button>
-                    {tapHoldSettings.length > 0 && (
-                      <button
-                        className="relative p-1 rounded hover:bg-[var(--color-border)] text-[var(--color-electric)] transition-colors"
-                        onClick={() => setRightView("tap-hold-settings")}
-                        title={t("Tap-Hold Settings")}
-                        aria-label={t("Tap-Hold Settings")}
-                      >
-                        <IconSettings size={15} />
-                        {settingsModified(tapHoldSettings) && (
-                          <StatusDot
-                            status="unsaved"
-                            className="absolute -top-0.5 -right-0.5"
-                          />
-                        )}
-                      </button>
-                    )}
-                  </>
+                  <button
+                    className="p-1 rounded hover:bg-[var(--color-border)] text-[var(--color-electric)] disabled:opacity-40 transition-colors"
+                    onClick={newTapDance}
+                    disabled={freeTapDance < 0}
+                    title={t("New tap dance")}
+                    aria-label={t("New tap dance")}
+                  >
+                    <IconPlus size={15} />
+                  </button>
                 }
               />
             )}
@@ -427,19 +403,10 @@ export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
                 onDelete={() => deleteMacro(selectedMacro)}
                 ctx={ctx}
               />
-            ) : rightView === "combo-settings" ||
-              rightView === "tap-hold-settings" ? (
+            ) : rightView === "combo-settings" ? (
               <QmkSettingsCard
-                title={
-                  rightView === "combo-settings"
-                    ? "Combo Global Settings"
-                    : "Tap-Hold Settings"
-                }
-                fields={
-                  rightView === "combo-settings"
-                    ? comboSettings
-                    : tapHoldSettings
-                }
+                title="Combo Global Settings"
+                fields={comboSettings}
                 values={keyboard.qmkSettings}
                 saved={keyboard.savedQmkSettings}
                 onChange={keyboard.setQmkSetting}

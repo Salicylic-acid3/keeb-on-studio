@@ -65,35 +65,52 @@ export const COMBO_SETTINGS: QmkSettingField[] = [
   },
 ];
 
+/**
+ * Vial's own "Tap-Hold" tab (vial-gui qmk_settings.json), in its order.
+ * Older Vial firmware keeps four of them as bits of id 8, newer firmware as
+ * ids of their own; whichever this firmware lists is shown.
+ */
 export const TAP_HOLD_SETTINGS: QmkSettingField[] = [
   {
     kind: "number",
     qsid: 7,
     label: "Tapping term",
-    hint: "How long a key is held before it counts as a hold (tap dance, Mod-Tap, Layer-Tap)",
-    min: 0,
-    max: 10000,
-    unit: "ms",
-  },
-  {
-    kind: "number",
-    qsid: 25,
-    label: "Quick tap term",
-    hint: "Tap then hold within this time to repeat the tap instead of holding",
+    hint: "How long a Mod-Tap or Layer-Tap key is held before it counts as a hold (tap dances have their own, in each one)",
     min: 0,
     max: 10000,
     unit: "ms",
   },
   {
     kind: "flag",
-    qsid: 22,
+    qsid: 8,
+    bit: 0,
     label: "Permissive Hold",
     hint: "Another key tapped while held makes it a hold",
   },
   {
     kind: "flag",
     qsid: 8,
-    bit: 0,
+    bit: 1,
+    label: "Ignore Mod Tap Interrupt",
+    hint: "Off: pressing another key while a Mod-Tap or Layer-Tap is held makes it a hold at once. On: only the tapping term decides",
+  },
+  {
+    kind: "flag",
+    qsid: 8,
+    bit: 2,
+    label: "Tapping Force Hold",
+    hint: "Tapping then holding the same key holds it, rather than repeating the tap",
+  },
+  {
+    kind: "flag",
+    qsid: 8,
+    bit: 3,
+    label: "Retro Tapping",
+    hint: "Held past the tapping term with no other key: still sends the tap",
+  },
+  {
+    kind: "flag",
+    qsid: 22,
     label: "Permissive Hold",
     hint: "Another key tapped while held makes it a hold",
   },
@@ -110,11 +127,31 @@ export const TAP_HOLD_SETTINGS: QmkSettingField[] = [
     hint: "Held past the tapping term with no other key: still sends the tap",
   },
   {
-    kind: "flag",
-    qsid: 8,
-    bit: 3,
-    label: "Retro Tapping",
-    hint: "Held past the tapping term with no other key: still sends the tap",
+    kind: "number",
+    qsid: 25,
+    label: "Quick tap term",
+    hint: "Tap then hold within this time to repeat the tap instead of holding",
+    min: 0,
+    max: 10000,
+    unit: "ms",
+  },
+  {
+    kind: "number",
+    qsid: 18,
+    label: "Tap code delay",
+    hint: "How long a tapped key stays pressed before it is released",
+    min: 0,
+    max: 1000,
+    unit: "ms",
+  },
+  {
+    kind: "number",
+    qsid: 19,
+    label: "Tap hold Caps Lock delay",
+    hint: "How long Caps Lock stays pressed when tapped from a tap-hold key (some systems miss shorter ones)",
+    min: 0,
+    max: 1000,
+    unit: "ms",
   },
   {
     kind: "number",
@@ -123,6 +160,21 @@ export const TAP_HOLD_SETTINGS: QmkSettingField[] = [
     hint: "Taps on a TT key that lock its layer",
     min: 0,
     max: 100,
+  },
+  {
+    kind: "flag",
+    qsid: 26,
+    label: "Chordal Hold",
+    hint: "A tap-hold key and a key on the same hand pressed together: counts as a tap",
+  },
+  {
+    kind: "number",
+    qsid: 27,
+    label: "Flow Tap",
+    hint: "While typing fast, a tap-hold key pressed within this time after the previous key is always a tap",
+    min: 0,
+    max: 10000,
+    unit: "ms",
   },
 ];
 
@@ -214,9 +266,20 @@ export function supportedFields(
   fields: QmkSettingField[],
   ids: Set<number>,
 ): QmkSettingField[] {
+  // A setting the firmware has as an id of its own wins over the old bit of
+  // id 8 with the same name, wherever it sits in the list.
+  const ownId = new Set(
+    fields
+      .filter(
+        (f) => ids.has(f.qsid) && !(f.kind === "flag" && f.bit !== undefined),
+      )
+      .map((f) => f.label),
+  );
   const seen = new Set<string>();
   return fields.filter((f) => {
     if (!ids.has(f.qsid) || seen.has(f.label)) return false;
+    if (f.kind === "flag" && f.bit !== undefined && ownId.has(f.label))
+      return false;
     seen.add(f.label);
     return true;
   });
@@ -241,4 +304,12 @@ export function writeField(
   if (f.bit === undefined) return next ? 1 : 0;
   const v = values[f.qsid] ?? 0;
   return next ? v | (1 << f.bit) : v & ~(1 << f.bit);
+}
+
+/** True when the firmware has anything this tab would show. */
+export function hasQmkSettingsTab(ids: Set<number>): boolean {
+  return (
+    supportedFields(TAP_HOLD_SETTINGS, ids).length > 0 ||
+    supportedFields(MOUSE_KEY_SETTINGS, ids).length > 0
+  );
 }

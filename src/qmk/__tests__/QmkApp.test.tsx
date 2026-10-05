@@ -102,13 +102,6 @@ describe("QmkApp demo mode", () => {
     ).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: /My keymaps/ }));
 
-    // Mouse key speed from the keymap page, as a dialog.
-    fireEvent.click(screen.getByRole("button", { name: /Mouse keys/ }));
-    expect(await screen.findByText("Cursor: step size")).toBeInTheDocument();
-    fireEvent.keyDown(document.activeElement ?? document.body, {
-      key: "Escape",
-    });
-
     // Combos: "+" opens an editor in the right column, as on the ZMK side.
     const mcTab = screen.getAllByRole("tab", {
       name: "Macro, Combo & Tap Dance",
@@ -133,8 +126,8 @@ describe("QmkApp demo mode", () => {
     expect(await screen.findByText("Combo Editor")).toBeInTheDocument();
     fireEvent.click(screen.getByTitle("Combo Global Settings"));
     expect(await screen.findByText("Combo timeout")).toBeInTheDocument();
-    fireEvent.click(screen.getByTitle("Tap-Hold Settings"));
-    expect(await screen.findByText("Tapping term")).toBeInTheDocument();
+    // Tap-hold settings are no longer on the tap dance list.
+    expect(screen.queryByTitle("Tap-Hold Settings")).toBeNull();
     fireEvent.click(screen.getByTitle("New key override"));
     expect(await screen.findByText("Key Override Editor")).toBeInTheDocument();
     const kmTab = screen.getAllByRole("tab", { name: "Keymap" })[0];
@@ -145,6 +138,21 @@ describe("QmkApp demo mode", () => {
     expect(screen.getAllByRole("tab", { name: "OS" }).length).toBeGreaterThan(
       0,
     );
+
+    // Keyboard-wide settings on their own tab, as on the ZMK side: Vial's
+    // Tap-Hold fields and mouse keys.
+    const settingsTab = screen.getAllByRole("tab", { name: "Settings" })[0];
+    fireEvent.mouseDown(settingsTab, { button: 0 });
+    fireEvent.click(settingsTab);
+    expect(
+      await screen.findByText("Ignore Mod Tap Interrupt"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Tapping Force Hold")).toBeInTheDocument();
+    expect(screen.getByText("Cursor: step size")).toBeInTheDocument();
+    const kmTab2 = screen.getAllByRole("tab", { name: "Keymap" })[0];
+    fireEvent.mouseDown(kmTab2, { button: 0 });
+    fireEvent.click(kmTab2);
+    await screen.findByRole("button", { name: /My keymaps/ });
 
     // Clicking a key opens the shared picker dialog.
     fireEvent.click(keys[0]);

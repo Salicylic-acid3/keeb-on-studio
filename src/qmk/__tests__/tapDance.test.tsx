@@ -142,13 +142,23 @@ describe("QMK Settings", () => {
       TAP_HOLD_SETTINGS,
       hook.result.current.keyboard.qmkSettingIds,
     );
-    // This firmware has Permissive Hold and Retro Tapping as bits of id 8.
+    // This firmware keeps four of Vial's Tap-Hold switches as bits of id 8.
     expect(fields.map((f) => f.label)).toEqual([
       "Tapping term",
       "Permissive Hold",
+      "Ignore Mod Tap Interrupt",
+      "Tapping Force Hold",
       "Retro Tapping",
+      "Tap code delay",
+      "Tap hold Caps Lock delay",
       "Tapping toggle",
     ]);
+    // Newer firmware with an id of its own for Permissive Hold: that one wins.
+    expect(
+      supportedFields(TAP_HOLD_SETTINGS, new Set([7, 8, 22])).find(
+        (f) => f.label === "Permissive Hold",
+      )?.qsid,
+    ).toBe(22);
     const permissive = fields[1];
     act(() =>
       hook.result.current.keyboard.setQmkSetting(

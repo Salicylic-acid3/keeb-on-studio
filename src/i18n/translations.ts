@@ -10,6 +10,29 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // QMK (Vial) side
+  "Keyboard-wide behaviour (QMK Settings)":
+    "キーボード全体の動作（QMK Settings）",
+  "Tap-Hold": "タップ/ホールド",
+  "How long a Mod-Tap or Layer-Tap key is held before it counts as a hold (tap dances have their own, in each one)":
+    "Mod-Tap・Layer-Tap のキーを、どれだけ押し続けたらホールドとみなすか（タップダンスは個別に設定）",
+  "Ignore Mod Tap Interrupt": "Ignore Mod Tap Interrupt",
+  "Off: pressing another key while a Mod-Tap or Layer-Tap is held makes it a hold at once. On: only the tapping term decides":
+    "オフ：Mod-Tap・Layer-Tap を押している間に別のキーを押すと、すぐにホールドとして扱う。オン：判定時間だけで決める",
+  "Tapping Force Hold": "Tapping Force Hold",
+  "Tapping then holding the same key holds it, rather than repeating the tap":
+    "タップしてすぐ押し続けたとき、タップの連打ではなくホールドにする",
+  "Tap code delay": "タップの押下時間",
+  "How long a tapped key stays pressed before it is released":
+    "タップで送るキーを、離すまでに押しておく時間",
+  "Tap hold Caps Lock delay": "タップ/ホールドの Caps Lock 押下時間",
+  "How long Caps Lock stays pressed when tapped from a tap-hold key (some systems miss shorter ones)":
+    "タップ/ホールドのキーから Caps Lock を送るときに押しておく時間（短いと反応しないOSがあります）",
+  "Chordal Hold": "Chordal Hold",
+  "A tap-hold key and a key on the same hand pressed together: counts as a tap":
+    "タップ/ホールドのキーと同じ手のキーを一緒に押したときは、タップとして扱う",
+  "Flow Tap": "Flow Tap",
+  "While typing fast, a tap-hold key pressed within this time after the previous key is always a tap":
+    "速く打っているとき、前のキーからこの時間内に押したタップ/ホールドのキーは常にタップにする",
   "No tap dances configured": "タップダンスが設定されていません",
   "New tap dance": "新しいタップダンス",
   "Highlights each key on the board as you press it on the keyboard. Useful for checking a key registers. Vial asks for the keyboard to be unlocked first.":

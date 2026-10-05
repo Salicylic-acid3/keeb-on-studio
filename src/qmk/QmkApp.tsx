@@ -6,7 +6,12 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { KeyboardLayoutContext } from "../contexts/KeyboardLayoutContext";
 import { AnimatePresence, motion } from "framer-motion";
-import { IconDeviceDesktop, IconKeyboard, IconWand } from "@tabler/icons-react";
+import {
+  IconDeviceDesktop,
+  IconKeyboard,
+  IconSettings,
+  IconWand,
+} from "@tabler/icons-react";
 import { SplashScreen } from "../components/SplashScreen";
 import { AppLayout } from "../layouts/AppLayout";
 import { TabNavigation, type TabItem } from "../components/TabNavigation";
@@ -23,6 +28,8 @@ import {
 import { QmkKeymapPage } from "./pages/QmkKeymapPage";
 import { QmkOsPage } from "./pages/QmkOsPage";
 import { QmkMacroComboPage } from "./pages/QmkMacroComboPage";
+import { QmkSettingsPage } from "./pages/QmkSettingsPage";
+import { hasQmkSettingsTab } from "./lib/qmkSettings";
 import { QmkUnlockDialog } from "./components/QmkUnlockDialog";
 import { qmkKeyLabel } from "./lib/keyLabel";
 import { qmkBehaviors } from "./lib/zmkBridge";
@@ -35,7 +42,7 @@ interface QmkAppProps {
   onShowDownloads: () => void;
 }
 
-const TAB_IDS = ["keymap", "macro-combo", "os"] as const;
+const TAB_IDS = ["keymap", "macro-combo", "os", "settings"] as const;
 type TabId = (typeof TAB_IDS)[number];
 
 function tabFromPathname(pathname: string): TabId {
@@ -141,6 +148,15 @@ export function QmkApp({
         label: t("OS"),
         icon: <IconDeviceDesktop size={18} />,
         content: <QmkOsPage keyboard={keyboard} />,
+      });
+    }
+    // Keyboard-wide settings, where the ZMK side keeps its own.
+    if (keyboard.info && hasQmkSettingsTab(keyboard.qmkSettingIds)) {
+      items.push({
+        id: "settings",
+        label: t("Settings"),
+        icon: <IconSettings size={18} />,
+        content: <QmkSettingsPage keyboard={keyboard} />,
       });
     }
     return items;
