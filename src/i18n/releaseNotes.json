@@ -4,13 +4,38 @@
       "version": "upcoming",
       "date": null,
       "changes": {
-        "major": [],
+        "major": [
+          {
+            "en": "QMK (Vial) keyboards: a QMK side at /qmk for the Salicylic_acid3 QMK keyboards (GoForty, InSixty, ToSeventy, ClickBoard, AtEighty, EzTenkey and more), using the same screens as the ZMK side. Keymaps are saved to and read from Vial's own .vil files, so they move freely between Vial and Keeb-On! Studio. QMK Settings (Tap-Hold, mouse keys, combo timeout) are on a Settings tab, and the QMK firmware has its own download page.",
+            "ja": "QMK（Vial）キーボード対応：GoForty・InSixty・ToSeventy・ClickBoard・AtEighty・EzTenkeyなど、サリチル酸のQMKキーボード用に /qmk を追加しました。ZMK版と同じ画面で操作できます。キーマップはVialの .vil ファイルで書き出し・読み込みでき、Vialとの間で自由に行き来できます。QMK Settings（タップ/ホールド、マウスキー、コンボの判定時間）は設定タブに、QMKのファームウェアは専用のダウンロードページにあります。",
+            "zh": "QMK（Vial）键盘：为 Salicylic_acid3 的 QMK 键盘（GoForty、InSixty、ToSeventy、ClickBoard、AtEighty、EzTenkey 等）新增 /qmk，界面与 ZMK 端相同。键位可通过 Vial 自己的 .vil 文件导出和导入，在 Vial 与 Keeb-On! Studio 之间自由往来。QMK Settings（Tap-Hold、鼠标键、组合键判定时间）在设置标签页，QMK 固件有单独的下载页面。"
+          }
+        ],
         "minor": [],
         "patch": [
           {
             "en": "Trackpad: \"Pointer speed, per axis\" now holds only the two speeds. Smoothing, the report interval, the tap dead zone, the lift guard, the touch threshold and the ripple map are a card of their own, \"Pointer precision\". The two-finger swipe heading is named like the three-finger one.",
             "ja": "トラックパッド: 「ポインタの速さ(軸ごと)」には上下・左右の速さだけを残し、なめらかさ・送信間隔・タップの遊び・ずれ止め・タッチの感度・リップル補正は「ポインタの精度」という別カードにしました。「2本指横スワイプ」の見出しを3本指スワイプと同じ命名に揃えました。",
             "zh": "触控板：“指针速度（按轴）”只保留上下和左右两个速度。平滑、上报间隔、点按游隙、抬起防偏、触摸阈值和波纹校正移到单独的“指针精度”卡片。两指横向滑动的标题命名与三指滑动统一。"
+          }
+        ]
+      },
+      "summary": {
+        "lead": {
+          "en": "Keeb-On! Studio now configures QMK (Vial) keyboards too. Switch to QMK at the top right of the start page.",
+          "ja": "Keeb-On! StudioでQMK（Vial）のキーボードも設定できるようになりました。トップページ右上の切り替えでQMKを選んでください。",
+          "zh": "Keeb-On! Studio 现在也可以配置 QMK（Vial）键盘。请在首页右上角切换到 QMK。"
+        },
+        "highlights": [
+          {
+            "en": "The same screens as the ZMK side: keymap editing, macros, combos, tap dances and key overrides, Live keys, printing, My keymaps, share links and the gallery.",
+            "ja": "ZMK版と同じ画面で、キーマップ・マクロ・コンボ・タップダンス・キーオーバーライドの編集、ライブキー、印刷、マイキーマップ、共有リンク、ギャラリーが使えます。",
+            "zh": "与 ZMK 端相同的界面：键位、宏、组合键、Tap Dance、按键覆盖的编辑，实时按键、打印、我的键位、分享链接和图库。"
+          },
+          {
+            "en": "Automatic OS switching: Windows, macOS and Linux each get their own block of layers, and the keyboard picks one by itself.",
+            "ja": "OS自動切り替え：Windows・macOS・Linuxそれぞれに専用のレイヤーのまとまりを持たせ、キーボードが自動で切り替えます。",
+            "zh": "自动切换操作系统：Windows、macOS、Linux 各有一组专用层，键盘会自动切换。"
           }
         ]
       }
