@@ -111,49 +111,61 @@ export interface QmkFirmware {
   /** keyboards/salicylic_acid3/<asset> */
   asset: string;
   ext: FirmwareExt;
+  /** The product line it belongs to, for the top page's short list. */
+  series: string;
 }
 
-const uf2 = (name: string, asset: string): QmkFirmware => ({
+const uf2 = (name: string, asset: string, series = name): QmkFirmware => ({
   name,
   asset,
   ext: "uf2",
+  series,
 });
-const bin = (name: string, asset: string): QmkFirmware => ({
+const bin = (name: string, asset: string, series = name): QmkFirmware => ({
   name,
   asset,
   ext: "bin",
+  series,
 });
 
 export const QMK_FIRMWARE: QmkFirmware[] = [
-  uf2("AtEighty JP", "ateighty_jp"),
-  uf2("AtEighty US", "ateighty_us"),
-  uf2("BeThirty Ortho", "bethirty_ortho"),
-  uf2("BeThirty QAZ", "bethirty_qaz"),
+  uf2("AtEighty JP", "ateighty_jp", "AtEighty"),
+  uf2("AtEighty US", "ateighty_us", "AtEighty"),
+  uf2("BeThirty Ortho", "bethirty_ortho", "BeThirty"),
+  uf2("BeThirty QAZ", "bethirty_qaz", "BeThirty"),
   uf2("ClickBoard CyberMini", "clickboard_cybermini"),
   uf2("ClickBoard ErgoMini", "clickboard_ergomini"),
   uf2("ClickBoard Ortho", "clickboard_ortho"),
   bin("ClickBoard Tenkey", "clickboard_tenkey"),
   bin("EzTenkey", "eztenkey"),
   bin("EzTenkeyMX", "eztenkey_mx"),
-  uf2("Focus40 JP", "focus40_jp"),
-  uf2("Focus40 Ortho", "focus40_ortho"),
-  uf2("Focus60 EN", "focus60_en"),
-  uf2("GoForty JP", "goforty_jp"),
-  uf2("GoForty Ortho", "goforty_ortho"),
-  uf2("GoForty RS", "goforty_rs"),
-  uf2("GoForty US", "goforty_us"),
-  uf2("InSixty EN", "insixty_en"),
-  uf2("InSixty JP", "insixty_jp"),
-  uf2("InSixty MX JP", "insixty_mxjp"),
+  uf2("Focus40 JP", "focus40_jp", "Focus40"),
+  uf2("Focus40 Ortho", "focus40_ortho", "Focus40"),
+  uf2("Focus60 EN", "focus60_en", "Focus60"),
+  uf2("GoForty JP", "goforty_jp", "GoForty"),
+  uf2("GoForty Ortho", "goforty_ortho", "GoForty"),
+  uf2("GoForty RS", "goforty_rs", "GoForty"),
+  uf2("GoForty US", "goforty_us", "GoForty"),
+  uf2("InSixty EN", "insixty_en", "InSixty"),
+  uf2("InSixty JP", "insixty_jp", "InSixty"),
+  uf2("InSixty MX JP", "insixty_mxjp", "InSixty"),
   uf2("Tenkey of Tenkey", "tenkey_of_tenkey"),
-  uf2("ToSeventy JP", "toseventy_jp"),
-  uf2("ToSeventy Ortho", "toseventy_ortho"),
-  uf2("ToSeventy US", "toseventy_us"),
-  uf2("WzTwenty", "wztwenty"),
-  bin("WzTwenty STM", "wztwenty_stm"),
+  uf2("ToSeventy JP", "toseventy_jp", "ToSeventy"),
+  uf2("ToSeventy Ortho", "toseventy_ortho", "ToSeventy"),
+  uf2("ToSeventy US", "toseventy_us", "ToSeventy"),
+  uf2("WzTwenty", "wztwenty", "WzTwenty"),
+  bin("WzTwenty STM", "wztwenty_stm", "WzTwenty"),
 ];
 
 /** The repository's releases page, for changelogs and older versions. */
 export function firmwareReleasesUrl(repo: string): string {
   return `https://github.com/${repo}/releases`;
 }
+
+/**
+ * The QMK product lines, for the line under the top page's switch: derived
+ * from the list above, so a keyboard added there shows up here as well.
+ */
+export const QMK_SERIES: string[] = [
+  ...new Set(QMK_FIRMWARE.map((f) => f.series)),
+];

@@ -42,7 +42,7 @@ import {
   TAP_HOLD_SETTINGS,
   type QmkSettingField,
 } from "../lib/qmkSettings";
-import { IconSettings } from "@tabler/icons-react";
+import { IconPlus, IconSettings, IconTrash } from "@tabler/icons-react";
 import {
   comboIsUsed,
   EMPTY_COMBO,
@@ -71,6 +71,7 @@ export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
   const [selectedCombo, setSelectedCombo] = useState<number | null>(null);
   const [selectedMacro, setSelectedMacro] = useState<number | null>(null);
   const [shownMacros, setShownMacros] = useState<Set<number>>(new Set());
+  const [shownTapDances, setShownTapDances] = useState<Set<number>>(new Set());
   const [selectedOverride, setSelectedOverride] = useState<number | null>(null);
   // Slots created with "+" and still empty, so they stay in the list.
   const [shownCombos, setShownCombos] = useState<Set<number>>(new Set());
@@ -113,10 +114,52 @@ export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
     );
 
   const forgetShown = () => {
+    setShownTapDances(new Set());
     setShownMacros(new Set());
     setShownCombos(new Set());
     setShownOverrides(new Set());
   };
+  // Tap dances like the other three lists here: only the slots in use, and
+  // "+" takes the first free one. Vial firmware has dozens of slots, and a
+  // column of thirty-two mostly empty ones buried the ones that mattered.
+  const tapDanceUsed = (index: number) => {
+    const e = keyboard.tapDances[index];
+    return Boolean(e && (e.onTap || e.onHold || e.onDoubleTap || e.onTapHold));
+  };
+  const listedTapDance = {
+    ...tapDance,
+    slots: tapDance.slots.filter(
+      (slot) => tapDanceUsed(slot.index) || shownTapDances.has(slot.index),
+    ),
+  };
+  const freeTapDance = keyboard.tapDances.findIndex(
+    (_, i) => !tapDanceUsed(i) && !shownTapDances.has(i),
+  );
+  const newTapDance = () => {
+    if (freeTapDance < 0) return;
+    setShownTapDances(new Set(shownTapDances).add(freeTapDance));
+    setSelectedTapDance(freeTapDance);
+    setRightView("tapdance");
+    const slot = tapDance.slots.find((s) => s.index === freeTapDance);
+    if (slot) void tapDance.addTap(slot);
+  };
+  const deleteTapDance = (index: number) => {
+    const e = keyboard.tapDances[index];
+    if (e) {
+      keyboard.setTapDance(index, {
+        onTap: 0,
+        onHold: 0,
+        onDoubleTap: 0,
+        onTapHold: 0,
+        tappingTerm: e.tappingTerm,
+      });
+    }
+    const next = new Set(shownTapDances);
+    next.delete(index);
+    setShownTapDances(next);
+    setRightView(null);
+  };
+
   const newMacro = () => {
     const index = keyboard.macros.findIndex(
       (m, i) => m.length === 0 && !shownMacros.has(i),
@@ -328,7 +371,8 @@ export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
             )}
             {tapDance.isAvailable && (
               <TapDanceListCard
-                tapDance={tapDance}
+                tapDance={listedTapDance}
+                emptyMessage={t("No tap dances configured")}
                 behaviors={behaviors}
                 layers={layers}
                 keyboardLayout={keyboardLayoutContext.layout}
@@ -337,22 +381,33 @@ export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
                 }
                 onSelect={handleSelectTapDance}
                 headerActions={
-                  tapHoldSettings.length > 0 && (
+                  <>
                     <button
-                      className="relative p-1 rounded hover:bg-[var(--color-border)] text-[var(--color-electric)] transition-colors"
-                      onClick={() => setRightView("tap-hold-settings")}
-                      title={t("Tap-Hold Settings")}
-                      aria-label={t("Tap-Hold Settings")}
+                      className="p-1 rounded hover:bg-[var(--color-border)] text-[var(--color-electric)] disabled:opacity-40 transition-colors"
+                      onClick={newTapDance}
+                      disabled={freeTapDance < 0}
+                      title={t("New tap dance")}
+                      aria-label={t("New tap dance")}
                     >
-                      <IconSettings size={15} />
-                      {settingsModified(tapHoldSettings) && (
-                        <StatusDot
-                          status="unsaved"
-                          className="absolute -top-0.5 -right-0.5"
-                        />
-                      )}
+                      <IconPlus size={15} />
                     </button>
-                  )
+                    {tapHoldSettings.length > 0 && (
+                      <button
+                        className="relative p-1 rounded hover:bg-[var(--color-border)] text-[var(--color-electric)] transition-colors"
+                        onClick={() => setRightView("tap-hold-settings")}
+                        title={t("Tap-Hold Settings")}
+                        aria-label={t("Tap-Hold Settings")}
+                      >
+                        <IconSettings size={15} />
+                        {settingsModified(tapHoldSettings) && (
+                          <StatusDot
+                            status="unsaved"
+                            className="absolute -top-0.5 -right-0.5"
+                          />
+                        )}
+                      </button>
+                    )}
+                  </>
                 }
               />
             )}
@@ -415,13 +470,26 @@ export function QmkMacroComboPage({ keyboard }: { keyboard: UseVialKeyboard }) {
                 ctx={ctx}
               />
             ) : rightView === "tapdance" && selectedTapDanceSlot ? (
-              <TapDanceEditorCard
-                tapDance={tapDance}
-                slot={selectedTapDanceSlot}
-                behaviors={behaviors}
-                layers={layers}
-                keyboardLayout={keyboardLayoutContext.layout}
-              />
+              <div className="space-y-2">
+                {/* The ZMK editor has no Delete (its slots are fixed); here a
+                    slot leaves the list once emptied, so it gets one. */}
+                <div className="flex justify-end">
+                  <button
+                    className="btn-ghost text-sm flex items-center gap-1.5"
+                    onClick={() => deleteTapDance(selectedTapDanceSlot.index)}
+                  >
+                    <IconTrash size={16} />
+                    {t("Delete")}
+                  </button>
+                </div>
+                <TapDanceEditorCard
+                  tapDance={tapDance}
+                  slot={selectedTapDanceSlot}
+                  behaviors={behaviors}
+                  layers={layers}
+                  keyboardLayout={keyboardLayoutContext.layout}
+                />
+              </div>
             ) : (
               <section className="glass-card p-6 flex items-center justify-center min-h-[320px] text-center">
                 <div>

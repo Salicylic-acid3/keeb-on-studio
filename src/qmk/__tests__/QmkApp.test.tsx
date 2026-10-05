@@ -119,6 +119,16 @@ describe("QmkApp demo mode", () => {
     expect(
       await screen.findByText("No steps in this macro"),
     ).toBeInTheDocument();
+    // Tap dances list only the slots in use; "+" takes a free one.
+    expect(
+      await screen.findByText("No tap dances configured"),
+    ).toBeInTheDocument();
+    fireEvent.click(screen.getByTitle("New tap dance"));
+    expect(screen.queryByText("No tap dances configured")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Delete" }));
+    expect(
+      await screen.findByText("No tap dances configured"),
+    ).toBeInTheDocument();
     fireEvent.click(await screen.findByTitle("New combo"));
     expect(await screen.findByText("Combo Editor")).toBeInTheDocument();
     fireEvent.click(screen.getByTitle("Combo Global Settings"));

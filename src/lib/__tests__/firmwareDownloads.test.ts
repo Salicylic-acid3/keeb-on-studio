@@ -1,6 +1,7 @@
 import {
   QMK_FIRMWARE,
   QMK_FIRMWARE_REPO,
+  QMK_SERIES,
   FIRMWARE_BOARDS,
   firmwareDownloadUrl,
   firmwareReleasesUrl,
@@ -79,5 +80,14 @@ describe("QMK firmware list", () => {
     expect(firmwareDownloadUrl(QMK_FIRMWARE_REPO, "eztenkey", "bin")).toBe(
       "https://github.com/Salicylic-acid3/vial-qmk/releases/latest/download/eztenkey.bin",
     );
+  });
+});
+
+describe("QMK product lines for the top page", () => {
+  it("come from the firmware list, one per line, every keyboard covered", () => {
+    expect(QMK_SERIES).toContain("GoForty");
+    expect(QMK_SERIES).toContain("EzTenkeyMX");
+    expect(new Set(QMK_SERIES).size).toBe(QMK_SERIES.length);
+    for (const f of QMK_FIRMWARE) expect(QMK_SERIES).toContain(f.series);
   });
 });

@@ -30,6 +30,8 @@ export interface TapDanceListCardProps {
   onSelect: (slot: TapDanceSlot) => void;
   /** Extra buttons beside the title (the QMK side's tap-hold settings). */
   headerActions?: ReactNode;
+  /** Shown when the list is empty (the QMK side lists only slots in use). */
+  emptyMessage?: string;
 }
 
 /** "Esc · Tab · —": one entry per tap, in order. */
@@ -62,6 +64,7 @@ export function TapDanceListCard({
   selectedIndex,
   onSelect,
   headerActions,
+  emptyMessage,
 }: TapDanceListCardProps) {
   const { t } = useLanguage();
 
@@ -90,7 +93,7 @@ export function TapDanceListCard({
           <p className="text-sm text-[var(--color-text-muted)] py-4 text-center">
             {tapDance.isLoading
               ? t("Loading…")
-              : t("This keyboard has no tap dance slots.")}
+              : (emptyMessage ?? t("This keyboard has no tap dance slots."))}
           </p>
         )}
         {tapDance.slots.map((slot) => {
