@@ -12,13 +12,7 @@
           }
         ],
         "minor": [],
-        "patch": [
-          {
-            "en": "Trackpad: \"Pointer speed, per axis\" now holds only the two speeds. Smoothing, the report interval, the tap dead zone, the lift guard, the touch threshold and the ripple map are a card of their own, \"Pointer precision\". The two-finger swipe heading is named like the three-finger one.",
-            "ja": "トラックパッド: 「ポインタの速さ(軸ごと)」には上下・左右の速さだけを残し、なめらかさ・送信間隔・タップの遊び・ずれ止め・タッチの感度・リップル補正は「ポインタの精度」という別カードにしました。「2本指横スワイプ」の見出しを3本指スワイプと同じ命名に揃えました。",
-            "zh": "触控板：“指针速度（按轴）”只保留上下和左右两个速度。平滑、上报间隔、点按游隙、抬起防偏、触摸阈值和波纹校正移到单独的“指针精度”卡片。两指横向滑动的标题命名与三指滑动统一。"
-          }
-        ]
+        "patch": []
       },
       "summary": {
         "lead": {
@@ -36,6 +30,21 @@
             "en": "Automatic OS switching: Windows, macOS and Linux each get their own block of layers, and the keyboard picks one by itself.",
             "ja": "OS自動切り替え：Windows・macOS・Linuxそれぞれに専用のレイヤーのまとまりを持たせ、キーボードが自動で切り替えます。",
             "zh": "自动切换操作系统：Windows、macOS、Linux 各有一组专用层，键盘会自动切换。"
+          }
+        ]
+      }
+    },
+    {
+      "version": "2026.10.04.6",
+      "date": "2026-10-04",
+      "changes": {
+        "major": [],
+        "minor": [],
+        "patch": [
+          {
+            "en": "Trackpad: \"Pointer speed, per axis\" now holds only the two speeds. Smoothing, the report interval, the tap dead zone, the lift guard, the touch threshold and the ripple map are a card of their own, \"Pointer precision\". The two-finger swipe heading is named like the three-finger one.",
+            "ja": "トラックパッド: 「ポインタの速さ(軸ごと)」には上下・左右の速さだけを残し、なめらかさ・送信間隔・タップの遊び・ずれ止め・タッチの感度・リップル補正は「ポインタの精度」という別カードにしました。「2本指横スワイプ」の見出しを3本指スワイプと同じ命名に揃えました。",
+            "zh": "触控板：“指针速度（按轴）”只保留上下和左右两个速度。平滑、上报间隔、点按游隙、抬起防偏、触摸阈值和波纹校正移到单独的“指针精度”卡片。两指横向滑动的标题命名与三指滑动统一。"
           }
         ]
       }
