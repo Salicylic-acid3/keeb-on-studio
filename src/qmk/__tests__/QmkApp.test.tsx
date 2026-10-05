@@ -11,6 +11,7 @@ import {
   waitFor,
   fireEvent,
   within,
+  act,
 } from "@testing-library/react";
 import { LanguageProvider } from "../../contexts/LanguageContext";
 import { ThemeProvider } from "../../contexts/ThemeContext";
@@ -81,6 +82,25 @@ describe("QmkApp demo mode", () => {
     expect(
       screen.getAllByRole("tab", { name: "Macro, Combo & Tap Dance" }).length,
     ).toBeGreaterThan(0);
+
+    // My keymaps, as on the ZMK side: keep a named copy in this browser.
+    fireEvent.click(screen.getByRole("button", { name: /My keymaps/ }));
+    fireEvent.click(screen.getByRole("menuitem", { name: /Save this keymap/ }));
+    const menu = screen.getByRole("menu");
+    fireEvent.change(within(menu).getByLabelText("Name"), {
+      target: { value: "温泉" },
+    });
+    fireEvent.click(within(menu).getByRole("button", { name: "Save" }));
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 20));
+    });
+    fireEvent.click(screen.getByRole("button", { name: /My keymaps/ }));
+    expect(await screen.findByText("温泉")).toBeInTheDocument();
+    // Demo mode keeps keymaps but does not hand them out.
+    expect(
+      screen.queryByRole("button", { name: /Publish 温泉 to the gallery/ }),
+    ).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: /My keymaps/ }));
 
     // Mouse key speed from the keymap page, as a dialog.
     fireEvent.click(screen.getByRole("button", { name: /Mouse keys/ }));

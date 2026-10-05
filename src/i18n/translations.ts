@@ -10,6 +10,9 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // QMK (Vial) side
+  "That keymap is for a keyboard this app does not support.":
+    "このキーマップは、このアプリが対応していないキーボード用です。",
+  'Someone shared "{{name}}" with you.': "「{{name}}」が共有されました。",
   "Save everything on the keyboard as a Vial .vil file":
     "キーボードの内容を、Vialの .vil ファイルとして保存します",
   "Load a Vial .vil file. Nothing is written until you Save.":

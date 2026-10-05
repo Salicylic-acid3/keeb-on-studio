@@ -12,6 +12,11 @@
  * rather than the token itself.
  */
 import { parseFile, type SavedKeymapPayload } from "../savedKeymaps";
+import {
+  parseQmkKeymapFile,
+  toQmkKeymapFile,
+  type QmkKeymapPayload,
+} from "../../qmk/lib/savedQmkKeymap";
 
 const API = "/api/gallery";
 const TOKEN_KEY = "keeb-on-studio-gallery-author";
@@ -27,6 +32,8 @@ export interface GalleryCard {
   layers: number;
   keys: number;
   at: number;
+  /** "qmk" for a QMK (Vial) keymap; absent for ZMK. */
+  firmware?: "qmk";
 }
 
 export interface GalleryPage {
@@ -221,5 +228,35 @@ export function deleteGalleryPost(
     method: "DELETE",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ author: authorToken() }),
+  });
+}
+
+/**
+ * The QMK side's posts: the same gallery, a different reader. The keymap is
+ * checked with the QMK file reader before it is handed back, exactly as a
+ * ZMK post goes through `parseFile`.
+ */
+export async function fetchQmkGalleryKeymap(
+  id: string,
+): Promise<GalleryResult<QmkKeymapPayload>> {
+  const result = await call<{ file: unknown }>(`/${encodeURIComponent(id)}`);
+  if (!result.ok) return result;
+  const parsed = parseQmkKeymapFile(JSON.stringify(result.value.file));
+  if (!parsed.ok) return { ok: false, error: "not-a-keymap" };
+  return { ok: true, value: parsed.keymap };
+}
+
+export function publishQmkToGallery(
+  keymap: QmkKeymapPayload,
+): Promise<GalleryResult<{ id: string }>> {
+  return call<{ id: string }>("", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      keymap: toQmkKeymapFile(keymap),
+      author: authorToken(),
+      board: keymap.board,
+      firmware: "qmk",
+    }),
   });
 }

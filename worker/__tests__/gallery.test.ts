@@ -295,3 +295,70 @@ describe("fetching one", () => {
     expect(kv.operations).toHaveLength(0);
   });
 });
+
+describe("QMK (Vial) keymaps", () => {
+  const qmk = (over: Record<string, unknown> = {}) =>
+    JSON.stringify({
+      format: "keeb-on-studio/qmk-keymap",
+      formatVersion: 1,
+      name: "GoForty 温泉",
+      description: "Vial から持ってきた",
+      board: "goforty_jp",
+      vil: {
+        version: 1,
+        layout: [[["KC_A", "KC_B", -1]], [["KC_TRNS", "KC_NO", -1]]],
+      },
+      ...over,
+    });
+
+  it("accepts one for a QMK keyboard and lists it with a QMK card", async () => {
+    const { store } = makeStore();
+    const r = await publish(store, {
+      text: qmk(),
+      author: AUTHOR,
+      board: "goforty_jp",
+      firmware: "qmk",
+    });
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.card).toMatchObject({
+      firmware: "qmk",
+      board: "goforty_jp",
+      layout: "GoForty JP",
+      layers: 2,
+      keys: 2,
+    });
+    const page = await listPosts(store);
+    expect(page.posts[0]).toMatchObject({ id: r.id, firmware: "qmk" });
+    const got = await getPost(store, r.id);
+    expect((got?.file as { name: string }).name).toBe("GoForty 温泉");
+  });
+
+  it("refuses a ZMK board, a mismatched board, junk, and a bare .vil", async () => {
+    const { store } = makeStore();
+    const post = (text: string, board: string) =>
+      publish(store, { text, author: AUTHOR, board, firmware: "qmk" });
+    expect(await post(qmk(), "ergotrack")).toMatchObject({
+      ok: false,
+      reason: "unsupported-board",
+    });
+    expect(await post(qmk(), "goforty_us")).toMatchObject({
+      ok: false,
+      reason: "unsupported-board",
+    });
+    expect(
+      await post(qmk({ vil: { layout: "nope" } }), "goforty_jp"),
+    ).toMatchObject({ ok: false, reason: "not-a-keymap" });
+    expect(
+      await post(JSON.stringify({ layout: [[["KC_A"]]] }), "goforty_jp"),
+    ).toMatchObject({ ok: false });
+    // And a QMK keymap is not accepted as a ZMK one.
+    expect(
+      await publish(store, {
+        text: qmk(),
+        author: AUTHOR,
+        board: "goforty_jp",
+      }),
+    ).toMatchObject({ ok: false });
+  });
+});

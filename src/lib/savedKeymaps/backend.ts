@@ -54,9 +54,9 @@ function promisify<T>(request: IDBRequest<T>): Promise<T> {
   });
 }
 
-function openDatabase(): Promise<IDBDatabase> {
+function openDatabase(name: string): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    const request = indexedDB.open(name, DB_VERSION);
     request.onupgradeneeded = () => {
       const db = request.result;
       if (!db.objectStoreNames.contains(STORE)) {
@@ -70,11 +70,14 @@ function openDatabase(): Promise<IDBDatabase> {
   });
 }
 
-export function createIndexedDbBackend(): SavedKeymapBackend | null {
+/** `name` lets the QMK side keep its keymaps in a database of its own. */
+export function createIndexedDbBackend(
+  name: string = DB_NAME,
+): SavedKeymapBackend | null {
   if (typeof indexedDB === "undefined") return null;
 
   let dbPromise: Promise<IDBDatabase> | null = null;
-  const db = () => (dbPromise ??= openDatabase());
+  const db = () => (dbPromise ??= openDatabase(name));
 
   async function withStore<T>(
     mode: IDBTransactionMode,
@@ -139,8 +142,8 @@ export interface SavedKeymapStore extends SavedKeymapBackend {
   isDurable: boolean;
 }
 
-export function createSavedKeymapStore(): SavedKeymapStore {
-  const indexed = createIndexedDbBackend();
+export function createSavedKeymapStore(name?: string): SavedKeymapStore {
+  const indexed = createIndexedDbBackend(name);
   if (indexed) return { ...indexed, isDurable: true };
   return { ...createMemoryBackend(), isDurable: false };
 }

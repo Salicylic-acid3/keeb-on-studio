@@ -26,6 +26,12 @@
 import { parseFile } from "../src/lib/savedKeymaps/file";
 import type { SavedKeymapPayload } from "../src/lib/savedKeymaps/types";
 import { isKnownDeviceName } from "../src/lib/supportedDevices";
+import {
+  isKnownQmkBoard,
+  parseQmkKeymapFile,
+  qmkBoardName,
+  type QmkKeymapPayload,
+} from "../src/qmk/lib/savedQmkKeymap";
 
 /** Posts one author may have at a time. */
 export const POSTS_PER_AUTHOR = 10;
@@ -73,6 +79,8 @@ export interface PostCard {
   at: number;
   /** Set once reports pass the threshold; such posts are not listed. */
   hidden?: true;
+  /** "qmk" for a QMK (Vial) keymap; absent for ZMK, as every older post. */
+  firmware?: "qmk";
 }
 
 export interface PostBody {
@@ -188,16 +196,32 @@ export interface GalleryStore {
   randomId: () => string;
 }
 
+function qmkCardFor(keymap: QmkKeymapPayload, at: number): PostCard {
+  const layout = keymap.vil.layout as unknown[][][];
+  return {
+    name: keymap.name,
+    blurb: keymap.description.slice(0, BLURB_LENGTH),
+    layout: qmkBoardName(keymap.board),
+    board: keymap.board,
+    layers: layout.length,
+    // -1 is Vial's "no key at this matrix position".
+    keys: layout[0].flat().filter((k) => k !== -1).length,
+    at,
+    firmware: "qmk",
+  };
+}
+
 /** Publish a keymap. The body is whatever the client sent; nothing is trusted. */
 export async function publish(
   store: GalleryStore,
-  input: { text: string; author: unknown; board: unknown },
+  input: { text: string; author: unknown; board: unknown; firmware?: unknown },
 ): Promise<PublishResult> {
   if (input.text.length > MAX_POST_BYTES)
     return { ok: false, reason: "too-large" };
   if (!authorTokenLooksValid(input.author)) {
     return { ok: false, reason: "invalid-author" };
   }
+  if (input.firmware === "qmk") return publishQmk(store, input);
   if (typeof input.board !== "string" || !isKnownDeviceName(input.board)) {
     // Not a security boundary -- the name is self-reported and forgeable, the
     // same as it is over the wire from a keyboard. It keeps the gallery to the
@@ -229,6 +253,51 @@ export async function publish(
   });
   await store.kv.put(`${AUTHOR_PREFIX}${author}:${id}`, "");
 
+  return { ok: true, id, card };
+}
+
+/**
+ * A QMK keymap: the same gate as a ZMK one -- a known keyboard, and the same
+ * reader a file and a link go through (lib/savedQmkKeymap) -- just a
+ * different reader. It shares the author quota and the store.
+ */
+async function publishQmk(
+  store: GalleryStore,
+  input: { text: string; author: unknown; board: unknown },
+): Promise<PublishResult> {
+  if (!isKnownQmkBoard(input.board))
+    return { ok: false, reason: "unsupported-board" };
+  const parsed = parseQmkKeymapFile(input.text);
+  if (!parsed.ok) {
+    return {
+      ok: false,
+      reason:
+        parsed.reason === "unsupported-board"
+          ? "unsupported-board"
+          : "not-a-keymap",
+    };
+  }
+  // The keymap says which keyboard it is for; it must be the one posted for.
+  if (parsed.keymap.board !== input.board)
+    return { ok: false, reason: "unsupported-board" };
+
+  const author = await hashAuthor(input.author as string);
+  const owned = await listAuthorPosts(store, author);
+  if (owned.length >= POSTS_PER_AUTHOR) return { ok: false, reason: "quota" };
+
+  const at = store.now();
+  const id = makeId(at, store.randomId());
+  const card = qmkCardFor(parsed.keymap, at);
+  const body: PostBody = {
+    file: JSON.parse(input.text),
+    author,
+    board: input.board,
+    at,
+  };
+  await store.kv.put(POST_PREFIX + id, JSON.stringify(body), {
+    metadata: card,
+  });
+  await store.kv.put(`${AUTHOR_PREFIX}${author}:${id}`, "");
   return { ok: true, id, card };
 }
 

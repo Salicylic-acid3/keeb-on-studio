@@ -117,7 +117,12 @@ async function handleApi(
     if (raw.length > MAX_POST_BYTES) {
       return json({ error: "too-large" }, 413);
     }
-    let envelope: { keymap?: unknown; author?: unknown; board?: unknown };
+    let envelope: {
+      keymap?: unknown;
+      author?: unknown;
+      board?: unknown;
+      firmware?: unknown;
+    };
     try {
       envelope = JSON.parse(raw);
     } catch {
@@ -129,6 +134,7 @@ async function handleApi(
       text: JSON.stringify(envelope.keymap ?? null),
       author: envelope.author,
       board: envelope.board,
+      firmware: envelope.firmware,
     });
     if (!result.ok) {
       // The quota is the one refusal where the number is the explanation, so

@@ -24,7 +24,6 @@ import {
   IconRefresh,
   IconMouse,
   IconPrinter,
-  IconDownload,
   IconUpload,
 } from "@tabler/icons-react";
 import * as Tooltip from "@radix-ui/react-tooltip";
@@ -65,7 +64,25 @@ import type { UseVialKeyboard } from "../hooks/useVialKeyboard";
 import type { VialKey } from "../lib/vial/kle";
 import { QmkSettingsCard } from "../components/QmkSettingsCard";
 import { KeymapPrintSheet } from "../../components/KeymapPrintSheet";
-import { VilFormatError, type VilImport } from "../lib/vil";
+import { type VilImport } from "../lib/vil";
+import { SavedKeymapsMenu } from "../../components/savedKeymaps/SavedKeymapsMenu";
+import { GalleryDialog } from "../../components/gallery/GalleryDialog";
+import { useGallery } from "../../hooks/useGallery";
+import {
+  fetchQmkGalleryKeymap,
+  forgetPost,
+  galleryErrorMessage,
+  myPostIds,
+  publishQmkToGallery,
+  rememberPost,
+  type GalleryCard,
+} from "../../lib/gallery";
+import {
+  useQmkSavedKeymaps,
+  type MenuRecord,
+} from "../hooks/useQmkSavedKeymaps";
+import { vilText, type QmkKeymapPayload } from "../lib/savedQmkKeymap";
+import { parseQmkShareCode, qmkShareCodeFromHash } from "../lib/qmkShare";
 import {
   MOUSE_KEY_SETTINGS,
   readField,
@@ -104,28 +121,113 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
   const [imported, setImported] = useState<
     (VilImport & { fileName: string }) | null
   >(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Vial's own file format, so a keymap moves between Vial and here.
-  const handleExport = () => {
-    const blob = new Blob([keyboard.exportVil()], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${keyboard.info?.definition.name ?? "keymap"}.vil`;
-    a.click();
-    URL.revokeObjectURL(url);
+  // ---- My keymaps, links and the gallery (as on the ZMK side) ----------
+  const myKeymaps = useQmkSavedKeymaps(keyboard);
+  const gallery = useGallery();
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [galleryBusyId, setGalleryBusyId] = useState<string | null>(null);
+  const [myPosts, setMyPosts] = useState<Set<string>>(() => myPostIds());
+  const [notice, setNotice] = useState<string | null>(null);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [incoming, setIncoming] = useState<QmkKeymapPayload | null>(null);
+
+  const describeRefusal = useCallback(
+    (reason: string) => {
+      const reasons: Record<string, string> = {
+        "too-large": t("That file is too big to be a keymap."),
+        "not-json": t("That file is not JSON."),
+        "not-a-keymap": t("That file is not a Keeb-On! Studio keymap."),
+        "not-a-share-code": t("That link does not carry a keymap."),
+        "unsupported-board": t(
+          "That keymap is for a keyboard this app does not support.",
+        ),
+      };
+      return reasons[reason] ?? reasons["not-a-keymap"];
+    },
+    [t],
+  );
+
+  // Loading puts it into the pending edits; Save writes it, as on the ZMK side.
+  const handleLoadSaved = (record: MenuRecord) => {
+    const result = keyboard.importVil(vilText(record.qmk));
+    setImported({ ...result, fileName: record.name });
+    setNotice(null);
   };
-  const handleImport = async (file: File) => {
+  const handleImportFile = async (file: File) => {
+    const result = await myKeymaps.importFromFile(file);
+    setShareUrl(null);
+    setNotice(
+      result.ok
+        ? t('Added "{{name}}" to your keymaps.', { name: result.record.name })
+        : describeRefusal(result.reason),
+    );
+  };
+  const handleShare = async (record: MenuRecord) => {
+    const url = await myKeymaps.shareLink(record.qmk);
+    if (!url) return;
+    setShareUrl(url);
     try {
-      const result = keyboard.importVil(await file.text());
-      setImported({ ...result, fileName: file.name });
-      setBridgeError(null);
-    } catch (err) {
-      setImported(null);
-      setBridgeError(err instanceof VilFormatError ? err.message : String(err));
+      await navigator.clipboard?.writeText(url);
+      setNotice(t("Share link copied."));
+    } catch {
+      setNotice(t("Copy this link to share the keymap."));
     }
   };
+  const handlePublish = async (record: MenuRecord) => {
+    if (!myKeymaps.canShare) return;
+    const result = await publishQmkToGallery({
+      ...record.qmk,
+      board: record.qmk.board,
+    });
+    setShareUrl(null);
+    if (!result.ok) {
+      setNotice(galleryErrorMessage(result.error, t, result.limit));
+      return;
+    }
+    setMyPosts(rememberPost(result.value.id));
+    setNotice(t('Published "{{name}}" to the gallery.', { name: record.name }));
+    void gallery.refresh();
+  };
+  const handleOpenFromGallery = async (post: GalleryCard) => {
+    setGalleryBusyId(post.id);
+    const result = await fetchQmkGalleryKeymap(post.id);
+    setGalleryBusyId(null);
+    setShareUrl(null);
+    if (!result.ok) {
+      setNotice(galleryErrorMessage(result.error, t));
+      return;
+    }
+    const stored = await myKeymaps.add(result.value);
+    setGalleryOpen(false);
+    setNotice(t('Added "{{name}}" to your keymaps.', { name: stored.name }));
+  };
+  const galleryPosts = useMemo(
+    () =>
+      gallery.posts.filter(
+        (p) => p.firmware === "qmk" && p.board === myKeymaps.board,
+      ),
+    [gallery.posts, myKeymaps.board],
+  );
+
+  // A keymap arriving as a link: read once, fragment cleared, then offered.
+  const sharedCodeHandled = useRef(false);
+  useEffect(() => {
+    if (sharedCodeHandled.current) return;
+    const code = qmkShareCodeFromHash(window.location.hash);
+    if (!code) return;
+    sharedCodeHandled.current = true;
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}${window.location.search}`,
+    );
+    void parseQmkShareCode(code).then((result) => {
+      if (result.ok) setIncoming(result.keymap);
+      else setNotice(describeRefusal(result.reason));
+    });
+  }, [describeRefusal]);
+
   const mouseSettings = supportedFields(
     MOUSE_KEY_SETTINGS,
     keyboard.qmkSettingIds,
@@ -379,6 +481,37 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
                 )}
               </button>
             )}
+            <SavedKeymapsMenu
+              keymaps={myKeymaps.menuRecords}
+              canSave={myKeymaps.canSave}
+              canShare={myKeymaps.canShare}
+              isDurable={myKeymaps.isDurable}
+              compatibility={myKeymaps.compatibility}
+              onSave={(name, description) => {
+                void myKeymaps.save(name, description);
+              }}
+              onLoad={(record) => handleLoadSaved(record as MenuRecord)}
+              onDelete={(record) => {
+                void myKeymaps.remove(record.id);
+              }}
+              onExport={(record) =>
+                myKeymaps.exportToFile((record as MenuRecord).qmk)
+              }
+              onImport={(file) => {
+                void handleImportFile(file);
+              }}
+              onShare={(record) => {
+                void handleShare(record as MenuRecord);
+              }}
+              onPublish={(record) => {
+                void handlePublish(record as MenuRecord);
+              }}
+              onBrowseGallery={() => {
+                setGalleryOpen(true);
+                void gallery.refresh();
+              }}
+              disabled={keyboard.isSaving}
+            />
             <button
               onClick={() => window.print()}
               className="btn-ghost text-sm flex items-center gap-1.5 flex-shrink-0"
@@ -387,37 +520,6 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
               <IconPrinter size={16} />
               {t("Print")}
             </button>
-            <button
-              onClick={handleExport}
-              className="btn-ghost text-sm flex items-center gap-1.5 flex-shrink-0"
-              title={t("Save everything on the keyboard as a Vial .vil file")}
-            >
-              <IconDownload size={16} />
-              {t("Export")}
-            </button>
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={keyboard.isSaving}
-              className="btn-ghost text-sm flex items-center gap-1.5 flex-shrink-0"
-              title={t(
-                "Load a Vial .vil file. Nothing is written until you Save.",
-              )}
-            >
-              <IconUpload size={16} />
-              {t("Import")}
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".vil,application/json"
-              className="hidden"
-              data-testid="vil-file-input"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                e.target.value = "";
-                if (file) void handleImport(file);
-              }}
-            />
             <button
               onClick={handleReload}
               disabled={isReloading || keyboard.isSaving}
@@ -453,6 +555,79 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
             </button>
           </div>
         </div>
+
+        {incoming && (
+          <div className="glass-card p-4 mb-4 flex items-start gap-3">
+            <IconInfoCircle
+              size={20}
+              className="text-[var(--color-electric)] mt-0.5"
+            />
+            <div className="flex-1 text-sm">
+              <p className="text-[var(--color-text)]">
+                {t('Someone shared "{{name}}" with you.', {
+                  name: incoming.name,
+                })}
+              </p>
+              {incoming.description && (
+                <p className="text-[var(--color-text-muted)] mt-1">
+                  {incoming.description}
+                </p>
+              )}
+              <div className="flex gap-2 mt-3">
+                <button
+                  className="btn-electric text-sm"
+                  onClick={() => {
+                    void myKeymaps.add(incoming).then((r) => {
+                      setIncoming(null);
+                      setNotice(
+                        t('Added "{{name}}" to your keymaps.', {
+                          name: r.name,
+                        }),
+                      );
+                    });
+                  }}
+                >
+                  {t("Add to my keymaps")}
+                </button>
+                <button
+                  className="btn-ghost text-sm"
+                  onClick={() => setIncoming(null)}
+                >
+                  {t("Dismiss")}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {notice && (
+          <div className="glass-card p-4 mb-4 flex items-start gap-3">
+            <IconInfoCircle
+              size={20}
+              className="text-[var(--color-electric)] mt-0.5"
+            />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm text-[var(--color-text-muted)]">{notice}</p>
+              {shareUrl && (
+                <input
+                  readOnly
+                  value={shareUrl}
+                  onFocus={(e) => e.target.select()}
+                  className="mt-2 w-full px-3 py-2 rounded-lg bg-[var(--color-bg)] border border-[var(--color-border)] text-xs text-[var(--color-text-secondary)]"
+                />
+              )}
+            </div>
+            <button
+              className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+              onClick={() => {
+                setNotice(null);
+                setShareUrl(null);
+              }}
+            >
+              {t("Dismiss")}
+            </button>
+          </div>
+        )}
 
         {imported && (
           <div className="glass-card p-4 mb-4 border-[var(--color-electric)]/20 bg-[var(--color-electric)]/5">
@@ -733,6 +908,48 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
         behaviors={behaviors}
         layers={layers.map((l) => ({ id: l.id, name: l.name }))}
         keyboardLayout={keyboardLayoutContext.layout}
+      />
+
+      <GalleryDialog
+        open={galleryOpen}
+        onOpenChange={setGalleryOpen}
+        posts={galleryPosts}
+        keyboardName={myKeymaps.board ? info.productName : null}
+        isLoading={gallery.isLoading}
+        isLoadingMore={gallery.isLoadingMore}
+        hasMore={gallery.hasMore}
+        error={gallery.error}
+        mine={myPosts}
+        busyId={galleryBusyId}
+        onOpenPost={(post) => {
+          void handleOpenFromGallery(post);
+        }}
+        onReport={(post) => {
+          setGalleryBusyId(post.id);
+          void gallery.report(post.id).then((error) => {
+            setGalleryBusyId(null);
+            setNotice(
+              error
+                ? galleryErrorMessage(error, t)
+                : t("Reported. The maintainer will take a look."),
+            );
+          });
+        }}
+        onDelete={(post) => {
+          setGalleryBusyId(post.id);
+          void gallery.remove(post.id).then((error) => {
+            setGalleryBusyId(null);
+            if (error) {
+              setNotice(galleryErrorMessage(error, t));
+              return;
+            }
+            setMyPosts(forgetPost(post.id));
+            setNotice(t("Removed from the gallery."));
+          });
+        }}
+        onLoadMore={() => {
+          void gallery.loadMore();
+        }}
       />
 
       {/* Every layer of the OS block on screen, one per page (as on the ZMK side) */}

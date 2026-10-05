@@ -25,6 +25,8 @@
     "worker",
     "src/lib/savedKeymaps/file.ts",
     "src/lib/savedKeymaps/types.ts",
-    "src/lib/supportedDevices.ts"
+    "src/lib/supportedDevices.ts",
+    "src/lib/firmwareDownloads.ts",
+    "src/qmk/lib/savedQmkKeymap.ts"
   ]
 }
