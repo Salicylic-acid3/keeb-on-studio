@@ -40,8 +40,10 @@ export function QmkOsPage({ keyboard }: { keyboard: UseVialKeyboard }) {
 
   return (
     <div className="p-6 h-full overflow-auto">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center gap-3 mb-8">
+      {/* Centred at the Settings tab's width (the ZMK side's settings-style
+          pages use max-w-4xl), so the two tabs side by side line up. */}
+      <div className="max-w-4xl mx-auto">
+        <div className="flex items-center gap-3 mb-6">
           <HexIcon>
             <IconDeviceDesktop
               size={24}
@@ -57,7 +59,7 @@ export function QmkOsPage({ keyboard }: { keyboard: UseVialKeyboard }) {
             </p>
           </div>
         </div>
-        <div className="flex flex-col gap-4 max-w-3xl">
+        <div className="flex flex-col gap-4">
           <section className="glass-card p-4">
             <h2 className="text-sm font-medium text-[var(--color-text)]">
               {t("Detected OS")}
