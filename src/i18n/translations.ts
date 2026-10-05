@@ -10,6 +10,16 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // QMK (Vial) side
+  "Save everything on the keyboard as a Vial .vil file":
+    "キーボードの内容を、Vialの .vil ファイルとして保存します",
+  "Load a Vial .vil file. Nothing is written until you Save.":
+    "Vialの .vil ファイルを読み込みます。保存するまでキーボードには書き込まれません。",
+  "Loaded {{file}}. Save to write it to the keyboard.":
+    "{{file}} を読み込みました。保存するとキーボードに書き込まれます。",
+  "This file was saved from a different keyboard. Check the keys before saving.":
+    "このファイルは別のキーボードで保存されたものです。保存する前にキーの割り当てを確認してください。",
+  "Left out": "読み込まなかったもの",
+  "This is not a .vil file": "これは .vil ファイルではありません",
   "Firmware for QMK (Vial) keyboards": "QMK（Vial）キーボードのファームウェア",
   "Keyboards with a .uf2 file": ".uf2 ファイルのキーボード",
   "Keyboards with a .bin file": ".bin ファイルのキーボード",

@@ -19,6 +19,11 @@ import {
 import { readDefinition, type VialDefinition } from "../lib/vial/definition";
 import { QMK_SETTING_WIDTH } from "../lib/qmkSettings";
 import {
+  exportVil as toVil,
+  importVil as fromVil,
+  type VilImport,
+} from "../lib/vil";
+import {
   decodeMacro,
   packMacroBuffer,
   splitMacroBuffer,
@@ -43,6 +48,9 @@ export interface VialKeyboardInfo {
   unlockKeys: Array<{ row: number; col: number }>;
   /** How many tap dance / combo / key override slots the firmware has. */
   entryCounts: VialDynamicEntryCounts;
+  /** Vial keyboard uid (16 hex digits) and protocol, for .vil files. */
+  uid: string;
+  vialProtocol: number;
 }
 
 export interface UseVialKeyboard {
@@ -79,6 +87,10 @@ export interface UseVialKeyboard {
    */
   unlock: UnlockProgress | null;
   cancelUnlock(): void;
+  /** Everything on the keyboard as shown, as a Vial .vil file. */
+  exportVil(): string;
+  /** Read a .vil file into the pending edits (nothing written until Save). */
+  importVil(text: string): VilImport;
   layoutOptions: number;
   visible: VialKey[];
   os: KeebOnOsState | null;
@@ -307,6 +319,8 @@ export function useVialKeyboard(): UseVialKeyboard {
           isDemo: method === "demo",
           unlockKeys: unlock.unlockKeys,
           entryCounts,
+          uid: id.uid,
+          vialProtocol: id.vialProtocol,
         });
         applyEntries(entries);
         setKeymap(map);
@@ -429,6 +443,66 @@ export function useVialKeyboard(): UseVialKeyboard {
       setUnlock(null);
     }
   }, []);
+
+  const exportVil = useCallback(() => {
+    if (!info || !keymap) return "";
+    return toVil({
+      uid: info.uid,
+      vialProtocol: info.vialProtocol,
+      keymap,
+      layoutOptions,
+      macros,
+      tapDances,
+      combos,
+      keyOverrides,
+      settings: qmkSettings,
+    });
+  }, [
+    info,
+    keymap,
+    layoutOptions,
+    macros,
+    tapDances,
+    combos,
+    keyOverrides,
+    qmkSettings,
+  ]);
+
+  const importVil = useCallback(
+    (text: string): VilImport => {
+      if (!info) throw new Error("No keyboard connected");
+      const imp = fromVil(text, {
+        uid: info.uid,
+        layerCount: info.layerCount,
+        rows: info.definition.matrix.rows,
+        cols: info.definition.matrix.cols,
+        tapDanceCount: info.entryCounts.tapDance,
+        comboCount: info.entryCounts.combo,
+        keyOverrideCount: info.entryCounts.keyOverride,
+        macroCount: macros.length,
+        settingIds: qmkSettingIds,
+      });
+      // Into the pending edits: a slot the file does not mention keeps what
+      // it has, so a file from a smaller keyboard does not wipe the rest.
+      setKeymap((prev) => {
+        if (!prev) return prev;
+        const next = prev.map((l) => l.map((r) => [...r]));
+        for (const k of imp.keymap) next[k.layer][k.row][k.col] = k.code;
+        return next;
+      });
+      const merge = <T>(prev: T[], incoming?: T[]) =>
+        incoming
+          ? prev.map((e, i) => (i < incoming.length ? incoming[i] : e))
+          : prev;
+      setTapDances((p) => merge(p, imp.tapDances));
+      setCombos((p) => merge(p, imp.combos));
+      setKeyOverrides((p) => merge(p, imp.keyOverrides));
+      setMacros((p) => merge(p, imp.macros));
+      if (imp.settings) setQmkSettings((p) => ({ ...p, ...imp.settings }));
+      return imp;
+    },
+    [info, macros.length, qmkSettingIds],
+  );
 
   const cancelUnlock = useCallback(() => {
     unlockCancelled.current = true;
@@ -615,6 +689,8 @@ export function useVialKeyboard(): UseVialKeyboard {
     setMacro,
     unlock,
     cancelUnlock,
+    exportVil,
+    importVil,
     layoutOptions,
     visible,
     os,

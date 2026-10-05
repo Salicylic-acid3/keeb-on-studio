@@ -197,6 +197,51 @@ describe("Vial macros", () => {
   });
 });
 
+describe(".vil export and import", () => {
+  test("what is exported comes back as pending edits", async () => {
+    const { transport, hook } = setup();
+    await act(async () =>
+      hook.result.current.keyboard.connect(transport, "demo"),
+    );
+    await waitFor(() =>
+      expect(hook.result.current.keyboard.macros).toHaveLength(16),
+    );
+    const td = {
+      onTap: 0x29,
+      onHold: 0,
+      onDoubleTap: 0x39,
+      onTapHold: 0,
+      tappingTerm: 210,
+    };
+    act(() => hook.result.current.keyboard.setTapDance(4, td));
+    act(() =>
+      hook.result.current.keyboard.setMacro(0, [
+        { action: "string", text: "ok" },
+      ]),
+    );
+    act(() => hook.result.current.keyboard.setQmkSetting(7, 260));
+    const file = hook.result.current.keyboard.exportVil();
+    expect(JSON.parse(file.replace(/"uid":\d+/, '"uid":0')).version).toBe(1);
+
+    act(() => hook.result.current.keyboard.discardChanges());
+    expect(hook.result.current.keyboard.hasUnsavedChanges).toBe(false);
+    let result:
+      | ReturnType<typeof hook.result.current.keyboard.importVil>
+      | undefined;
+    act(() => {
+      result = hook.result.current.keyboard.importVil(file);
+    });
+    expect(result?.otherKeyboard).toBe(false);
+    expect(result?.skipped).toEqual([]);
+    expect(hook.result.current.keyboard.tapDances[4]).toEqual(td);
+    expect(hook.result.current.keyboard.macros[0]).toEqual([
+      { action: "string", text: "ok" },
+    ]);
+    expect(hook.result.current.keyboard.qmkSettings[7]).toBe(260);
+    expect(hook.result.current.keyboard.hasUnsavedChanges).toBe(true);
+  });
+});
+
 function tapBindingCode(s: Parameters<typeof tapBinding>[0]): number {
   // Read back through the card's own reader to prove it understands us.
   return bindingToKeycode(tapBinding(s)!);

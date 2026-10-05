@@ -5,7 +5,14 @@
  * on both sides. What differs is only what sits above the board: layers are
  * grouped into OS blocks, with a copy between blocks.
  */
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+  useRef,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   IconAlertCircle,
   IconAlertTriangle,
@@ -16,6 +23,9 @@ import {
   IconLoader2,
   IconRefresh,
   IconMouse,
+  IconPrinter,
+  IconDownload,
+  IconUpload,
 } from "@tabler/icons-react";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import * as Dialog from "@radix-ui/react-dialog";
@@ -54,6 +64,8 @@ import {
 import type { UseVialKeyboard } from "../hooks/useVialKeyboard";
 import type { VialKey } from "../lib/vial/kle";
 import { QmkSettingsCard } from "../components/QmkSettingsCard";
+import { KeymapPrintSheet } from "../../components/KeymapPrintSheet";
+import { VilFormatError, type VilImport } from "../lib/vil";
 import {
   MOUSE_KEY_SETTINGS,
   readField,
@@ -89,6 +101,31 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
   const [bridgeError, setBridgeError] = useState<string | null>(null);
   const [isReloading, setIsReloading] = useState(false);
   const [mouseSettingsOpen, setMouseSettingsOpen] = useState(false);
+  const [imported, setImported] = useState<
+    (VilImport & { fileName: string }) | null
+  >(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Vial's own file format, so a keymap moves between Vial and here.
+  const handleExport = () => {
+    const blob = new Blob([keyboard.exportVil()], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${keyboard.info?.definition.name ?? "keymap"}.vil`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+  const handleImport = async (file: File) => {
+    try {
+      const result = keyboard.importVil(await file.text());
+      setImported({ ...result, fileName: file.name });
+      setBridgeError(null);
+    } catch (err) {
+      setImported(null);
+      setBridgeError(err instanceof VilFormatError ? err.message : String(err));
+    }
+  };
   const mouseSettings = supportedFields(
     MOUSE_KEY_SETTINGS,
     keyboard.qmkSettingIds,
@@ -343,6 +380,45 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
               </button>
             )}
             <button
+              onClick={() => window.print()}
+              className="btn-ghost text-sm flex items-center gap-1.5 flex-shrink-0"
+              title={t("Print one page per layer")}
+            >
+              <IconPrinter size={16} />
+              {t("Print")}
+            </button>
+            <button
+              onClick={handleExport}
+              className="btn-ghost text-sm flex items-center gap-1.5 flex-shrink-0"
+              title={t("Save everything on the keyboard as a Vial .vil file")}
+            >
+              <IconDownload size={16} />
+              {t("Export")}
+            </button>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={keyboard.isSaving}
+              className="btn-ghost text-sm flex items-center gap-1.5 flex-shrink-0"
+              title={t(
+                "Load a Vial .vil file. Nothing is written until you Save.",
+              )}
+            >
+              <IconUpload size={16} />
+              {t("Import")}
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".vil,application/json"
+              className="hidden"
+              data-testid="vil-file-input"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                e.target.value = "";
+                if (file) void handleImport(file);
+              }}
+            />
+            <button
               onClick={handleReload}
               disabled={isReloading || keyboard.isSaving}
               className="btn-ghost text-sm flex items-center gap-1.5 flex-shrink-0"
@@ -377,6 +453,42 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
             </button>
           </div>
         </div>
+
+        {imported && (
+          <div className="glass-card p-4 mb-4 border-[var(--color-electric)]/20 bg-[var(--color-electric)]/5">
+            <div className="flex items-start gap-3">
+              <IconUpload
+                size={20}
+                className="text-[var(--color-electric)] mt-0.5"
+              />
+              <div className="text-sm space-y-1 flex-1">
+                <p className="text-[var(--color-text)]">
+                  {t("Loaded {{file}}. Save to write it to the keyboard.", {
+                    file: imported.fileName,
+                  })}
+                </p>
+                {imported.otherKeyboard && (
+                  <p className="text-[var(--color-warning)]">
+                    {t(
+                      "This file was saved from a different keyboard. Check the keys before saving.",
+                    )}
+                  </p>
+                )}
+                {imported.skipped.length > 0 && (
+                  <p className="text-[var(--color-text-muted)]">
+                    {t("Left out")}: {imported.skipped.join(" / ")}
+                  </p>
+                )}
+              </div>
+              <button
+                className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                onClick={() => setImported(null)}
+              >
+                {t("Dismiss")}
+              </button>
+            </div>
+          </div>
+        )}
 
         {bridgeError && (
           <div className="glass-card p-4 mb-4 border-red-500/20 bg-red-500/10 flex items-center gap-3">
@@ -621,6 +733,15 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
         behaviors={behaviors}
         layers={layers.map((l) => ({ id: l.id, name: l.name }))}
         keyboardLayout={keyboardLayoutContext.layout}
+      />
+
+      {/* Every layer of the OS block on screen, one per page (as on the ZMK side) */}
+      <KeymapPrintSheet
+        layout={physicalLayout}
+        layers={layers}
+        behaviors={behaviors}
+        keyboardLayout={keyboardLayoutContext.layout}
+        deviceName={info.productName}
       />
 
       {/* Mouse key settings: QMK Settings, saved with the keymap */}
