@@ -4,16 +4,14 @@
       "version": "upcoming",
       "date": null,
       "changes": {
-        "major": [
-          {
-            "en": "QMK (Vial) keyboards: a QMK side at /qmk for the Salicylic_acid3 QMK keyboards (GoForty, InSixty, ToSeventy, ClickBoard, AtEighty, EzTenkey and more), using the same screens as the ZMK side. Keymaps are saved to and read from Vial's own .vil files, so they move freely between Vial and Keeb-On! Studio. QMK Settings (Tap-Hold, mouse keys, combo timeout) are on a Settings tab, and the QMK firmware has its own download page.",
-            "ja": "QMK（Vial）キーボード対応：GoForty・InSixty・ToSeventy・ClickBoard・AtEighty・EzTenkeyなど、サリチル酸のQMKキーボード用に /qmk を追加しました。ZMK版と同じ画面で操作できます。キーマップはVialの .vil ファイルで書き出し・読み込みでき、Vialとの間で自由に行き来できます。QMK Settings（タップ/ホールド、マウスキー、コンボの判定時間）は設定タブに、QMKのファームウェアは専用のダウンロードページにあります。",
-            "zh": "QMK（Vial）键盘：为 Salicylic_acid3 的 QMK 键盘（GoForty、InSixty、ToSeventy、ClickBoard、AtEighty、EzTenkey 等）新增 /qmk，界面与 ZMK 端相同。键位可通过 Vial 自己的 .vil 文件导出和导入，在 Vial 与 Keeb-On! Studio 之间自由往来。QMK Settings（Tap-Hold、鼠标键、组合键判定时间）在设置标签页，QMK 固件有单独的下载页面。"
-          }
-        ],
+        "major": [],
         "minor": [],
         "patch": []
-      },
+      }
+    },
+    {
+      "version": "2026.10.05.0",
+      "date": "2026-10-05",
       "summary": {
         "lead": {
           "en": "Keeb-On! Studio now configures QMK (Vial) keyboards too. Switch to QMK at the top right of the start page.",
@@ -32,6 +30,17 @@
             "zh": "自动切换操作系统：Windows、macOS、Linux 各有一组专用层，键盘会自动切换。"
           }
         ]
+      },
+      "changes": {
+        "major": [
+          {
+            "en": "QMK (Vial) keyboards: a QMK side at /qmk for the Salicylic_acid3 QMK keyboards (GoForty, InSixty, ToSeventy, ClickBoard, AtEighty, EzTenkey and more), using the same screens as the ZMK side. Keymaps are saved to and read from Vial's own .vil files, so they move freely between Vial and Keeb-On! Studio. QMK Settings (Tap-Hold, mouse keys, combo timeout) are on a Settings tab, and the QMK firmware has its own download page.",
+            "ja": "QMK（Vial）キーボード対応：GoForty・InSixty・ToSeventy・ClickBoard・AtEighty・EzTenkeyなど、サリチル酸のQMKキーボード用に /qmk を追加しました。ZMK版と同じ画面で操作できます。キーマップはVialの .vil ファイルで書き出し・読み込みでき、Vialとの間で自由に行き来できます。QMK Settings（タップ/ホールド、マウスキー、コンボの判定時間）は設定タブに、QMKのファームウェアは専用のダウンロードページにあります。",
+            "zh": "QMK（Vial）键盘：为 Salicylic_acid3 的 QMK 键盘（GoForty、InSixty、ToSeventy、ClickBoard、AtEighty、EzTenkey 等）新增 /qmk，界面与 ZMK 端相同。键位可通过 Vial 自己的 .vil 文件导出和导入，在 Vial 与 Keeb-On! Studio 之间自由往来。QMK Settings（Tap-Hold、鼠标键、组合键判定时间）在设置标签页，QMK 固件有单独的下载页面。"
+          }
+        ],
+        "minor": [],
+        "patch": []
       }
     },
     {
