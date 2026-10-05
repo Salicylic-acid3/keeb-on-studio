@@ -76,6 +76,8 @@ export class DemoTransport implements VialTransport {
     [20, new Uint8Array([5])],
     [21, new Uint8Array([0, 0, 0, 0])],
   ]);
+  /** Switches held down, for the live-keys view; tests set it. */
+  pressed: Array<[number, number]> = [];
   /** Macro buffer (DYNAMIC_KEYMAP_MACRO_COUNT macros, each 0-ended). */
   private readonly macroCount = 16;
   private readonly macroBuffer = new Uint8Array(1024);
@@ -171,6 +173,15 @@ export class DemoTransport implements VialTransport {
           r[3] = (this.layoutOptions >>> 16) & 0xff;
           r[4] = (this.layoutOptions >>> 8) & 0xff;
           r[5] = this.layoutOptions & 0xff;
+        } else if (d[1] === 0x03) {
+          // Switch matrix: nothing while locked, as via.c does.
+          if (this.unlocked) {
+            const bpr = Math.ceil(this.cols / 8);
+            for (const [row, col] of this.pressed) {
+              const byte = 2 + row * bpr + (bpr - 1 - Math.floor(col / 8));
+              r[byte] |= 1 << (col % 8);
+            }
+          }
         } else if (d[1] === 0x80 && this.os) {
           r.set(
             [

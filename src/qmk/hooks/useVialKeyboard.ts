@@ -87,6 +87,12 @@ export interface UseVialKeyboard {
    */
   unlock: UnlockProgress | null;
   cancelUnlock(): void;
+  /**
+   * Live keys (Vial's matrix tester): while on, the switches held down, as
+   * "row,col". Turning it on asks for the unlock first, as Vial does.
+   */
+  liveKeys: { enabled: boolean; pressed: ReadonlySet<string> };
+  setLiveKeys(on: boolean): Promise<void>;
   /** Everything on the keyboard as shown, as a Vial .vil file. */
   exportVil(): string;
   /** Read a .vil file into the pending edits (nothing written until Save). */
@@ -251,8 +257,14 @@ export function useVialKeyboard(): UseVialKeyboard {
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [liveKeysOn, setLiveKeysOn] = useState(false);
+  const [pressed, setPressed] = useState<ReadonlySet<string>>(new Set());
+
   const clear = useCallback(() => {
     clientRef.current = null;
+    // A new connection starts locked, so live keys start off again.
+    setLiveKeysOn(false);
+    setPressed(new Set());
     setInfo(null);
     setKeymap(null);
     setSaved(null);
@@ -646,6 +658,56 @@ export function useVialKeyboard(): UseVialKeyboard {
     [refreshOs],
   );
 
+  const setLiveKeys = useCallback(
+    async (on: boolean) => {
+      const client = clientRef.current;
+      if (!on || !client) {
+        setLiveKeysOn(false);
+        setPressed(new Set());
+        return;
+      }
+      try {
+        await runUnlock(client);
+      } catch (err) {
+        if (err instanceof UnlockCancelledError) return;
+        throw err;
+      }
+      setLiveKeysOn(true);
+    },
+    [runUnlock],
+  );
+
+  // While on, read the matrix about twenty times a second. Requests are
+  // queued behind one another in the transport, so a slow answer only slows
+  // the next read rather than piling them up.
+  useEffect(() => {
+    if (!liveKeysOn || !info) return;
+    let alive = true;
+    const { rows, cols } = info.definition.matrix;
+    const tick = async () => {
+      const client = clientRef.current;
+      if (!alive || !client) return;
+      try {
+        const next = await client.getSwitchMatrix(rows, cols);
+        if (alive) {
+          setPressed((prev) =>
+            prev.size === next.size && [...next].every((k) => prev.has(k))
+              ? prev
+              : next,
+          );
+        }
+      } catch {
+        // A dropped read is not worth stopping for; the next one will tell.
+      }
+      if (alive) timer = setTimeout(() => void tick(), 50);
+    };
+    let timer = setTimeout(() => void tick(), 0);
+    return () => {
+      alive = false;
+      clearTimeout(timer);
+    };
+  }, [liveKeysOn, info]);
+
   // Poll the detected OS while connected: the firmware switches on its own
   // when the host changes (KVM, replug), and the page should say so.
   useEffect(() => {
@@ -691,6 +753,8 @@ export function useVialKeyboard(): UseVialKeyboard {
     cancelUnlock,
     exportVil,
     importVil,
+    liveKeys: { enabled: liveKeysOn, pressed },
+    setLiveKeys,
     layoutOptions,
     visible,
     os,

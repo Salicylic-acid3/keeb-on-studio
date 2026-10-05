@@ -64,6 +64,8 @@ import type { UseVialKeyboard } from "../hooks/useVialKeyboard";
 import type { VialKey } from "../lib/vial/kle";
 import { QmkSettingsCard } from "../components/QmkSettingsCard";
 import { KeymapPrintSheet } from "../../components/KeymapPrintSheet";
+import { InfoTip } from "../../components/InfoTip";
+import * as Switch from "@radix-ui/react-switch";
 import { type VilImport } from "../lib/vil";
 import { SavedKeymapsMenu } from "../../components/savedKeymaps/SavedKeymapsMenu";
 import { GalleryDialog } from "../../components/gallery/GalleryDialog";
@@ -379,6 +381,16 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
     [assign, selectedKeyPosition],
   );
 
+  // Live keys: the positions on the board whose switch is down.
+  const highlightedKeys = useMemo(() => {
+    const set = new Set<number>();
+    if (!keyboard.liveKeys.enabled) return set;
+    visible.forEach((k, i) => {
+      if (keyboard.liveKeys.pressed.has(`${k.row},${k.col}`)) set.add(i);
+    });
+    return set;
+  }, [visible, keyboard.liveKeys]);
+
   const layoutPositions = useMemo(() => visible.map((_, i) => i), [visible]);
   const handleQuickAssign = useCallback(
     (code: number) => {
@@ -481,6 +493,27 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
                 )}
               </button>
             )}
+            {/* As on the ZMK side; here it is Vial's matrix tester, which
+                needs the keyboard unlocked first. */}
+            <div className="flex items-center gap-2 px-2 py-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] flex-shrink-0">
+              <span className="text-xs text-[var(--color-text-muted)] flex items-center gap-1">
+                {t("Live keys")}
+                <InfoTip
+                  text={t(
+                    "Highlights each key on the board as you press it on the keyboard. Useful for checking a key registers. Vial asks for the keyboard to be unlocked first.",
+                  )}
+                />
+              </span>
+              <Switch.Root
+                checked={keyboard.liveKeys.enabled}
+                onCheckedChange={(on) => void keyboard.setLiveKeys(on)}
+                disabled={keyboard.isSaving || keyboard.unlock !== null}
+                aria-label={t("Live keys")}
+                className="w-10 h-5 rounded-full relative data-[state=checked]:bg-[var(--color-electric)] bg-[var(--color-border)] border border-[var(--color-border)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Switch.Thumb className="block w-4 h-4 rounded-full transition-transform data-[state=checked]:translate-x-5 translate-x-0.5 will-change-transform bg-white border border-[var(--color-border)]" />
+              </Switch.Root>
+            </div>
             <SavedKeymapsMenu
               keymaps={myKeymaps.menuRecords}
               canSave={myKeymaps.canSave}
@@ -865,6 +898,7 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
               isBindingModified={isBindingModified}
               getOriginalBinding={getOriginalBinding}
               keyboardLayout={keyboardLayoutContext.layout}
+              highlightedKeys={highlightedKeys}
               ariaLabel={t("Keyboard layout for {{layer}}", {
                 layer: currentLayer.name,
               })}

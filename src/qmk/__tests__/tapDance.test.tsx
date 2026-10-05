@@ -242,6 +242,42 @@ describe(".vil export and import", () => {
   });
 });
 
+describe("Live keys", () => {
+  test("turning on unlocks first, then shows the switches held down", async () => {
+    const { transport, hook } = setup();
+    await act(async () =>
+      hook.result.current.keyboard.connect(transport, "demo"),
+    );
+    await waitFor(() =>
+      expect(hook.result.current.keyboard.info).not.toBeNull(),
+    );
+    // Locked: the firmware will not say (it would be a keylogger).
+    transport.pressed = [[1, 2]];
+    expect((await new VialClient(transport).getSwitchMatrix(10, 6)).size).toBe(
+      0,
+    );
+
+    await act(async () => hook.result.current.keyboard.setLiveKeys(true));
+    expect(hook.result.current.keyboard.liveKeys.enabled).toBe(true);
+    await waitFor(() =>
+      expect([...hook.result.current.keyboard.liveKeys.pressed]).toEqual([
+        "1,2",
+      ]),
+    );
+    transport.pressed = [
+      [0, 0],
+      [9, 5],
+    ];
+    await waitFor(() =>
+      expect([...hook.result.current.keyboard.liveKeys.pressed].sort()).toEqual(
+        ["0,0", "9,5"],
+      ),
+    );
+    await act(async () => hook.result.current.keyboard.setLiveKeys(false));
+    expect(hook.result.current.keyboard.liveKeys.pressed.size).toBe(0);
+  });
+});
+
 function tapBindingCode(s: Parameters<typeof tapBinding>[0]): number {
   // Read back through the card's own reader to prove it understands us.
   return bindingToKeycode(tapBinding(s)!);

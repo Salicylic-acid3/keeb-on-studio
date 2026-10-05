@@ -31,6 +31,7 @@ const ID_VIAL_PREFIX = 0xfe;
 export const ID_UNHANDLED = 0xff;
 
 const KV_LAYOUT_OPTIONS = 0x02;
+const KV_SWITCH_MATRIX_STATE = 0x03;
 // users/salicylic_acid3/keebon_os.h
 const KV_KEEBON_OS = 0x80;
 const KV_KEEBON_OS_PREVIEW = 0x81;
@@ -510,6 +511,29 @@ export class VialClient {
         ...buffer.slice(offset, offset + n),
       );
     }
+  }
+
+  /**
+   * Which switches are down right now, as "row,col" (via.c
+   * id_switch_matrix_state). Vial answers only while unlocked -- it would
+   * otherwise be a keylogger -- and only for matrices whose state fits one
+   * report. Each row is ceil(cols/8) bytes, most significant first.
+   */
+  async getSwitchMatrix(rows: number, cols: number): Promise<Set<string>> {
+    const r = await this.send(ID_GET_KEYBOARD_VALUE, KV_SWITCH_MATRIX_STATE);
+    const bytesPerRow = Math.ceil(cols / 8);
+    const pressed = new Set<string>();
+    if (bytesPerRow * rows > VIAL_REPORT_SIZE - 2) return pressed;
+    for (let row = 0; row < rows; row++) {
+      let value = 0;
+      for (let b = 0; b < bytesPerRow; b++)
+        value = value * 256 + r[2 + row * bytesPerRow + b];
+      for (let col = 0; col < cols; col++) {
+        if (Math.floor(value / 2 ** col) % 2 === 1)
+          pressed.add(`${row},${col}`);
+      }
+    }
+    return pressed;
   }
 
   /** Null when the firmware has no OS-switch module. */

@@ -10,6 +10,10 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // QMK (Vial) side
+  "Highlights each key on the board as you press it on the keyboard. Useful for checking a key registers. Vial asks for the keyboard to be unlocked first.":
+    "キーボードで押したキーを、画面のキーボード上で光らせます。キーが反応しているかの確認に使えます。Vialでは、最初にキーボードのアンロックが必要です。",
+  "Vial asks for the keyboard to be unlocked before saving macros or showing live keys.":
+    "Vialのキーボードは、マクロの保存やライブキーの表示の前にアンロックが必要です。",
   "That keymap is for a keyboard this app does not support.":
     "このキーマップは、このアプリが対応していないキーボード用です。",
   'Someone shared "{{name}}" with you.': "「{{name}}」が共有されました。",

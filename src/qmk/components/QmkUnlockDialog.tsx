@@ -1,7 +1,7 @@
 /**
  * Vial's unlock, in the ZMK side's unlock prompt look (components/
  * UnlockPrompt.tsx). Shown while Save waits for the keyboard to accept
- * macros: names the keys to hold and fills as the firmware counts down.
+ * macros, or live keys wait to start: names the keys to hold and fills as the firmware counts down.
  */
 import * as Dialog from "@radix-ui/react-dialog";
 import { IconKeyboard, IconLock } from "@tabler/icons-react";
@@ -31,7 +31,9 @@ export function QmkUnlockDialog({ open, keyNames, progress, onCancel }: Props) {
             {t("Keyboard Unlock Required")}
           </Dialog.Title>
           <Dialog.Description className="text-sm text-[var(--color-text-muted)] text-center mb-6">
-            {t("Vial only accepts macros from an unlocked keyboard.")}
+            {t(
+              "Vial asks for the keyboard to be unlocked before saving macros or showing live keys.",
+            )}
           </Dialog.Description>
           <div className="glass-card p-4 mb-6">
             <h4 className="text-sm font-medium text-[var(--color-text)] mb-3 flex items-center gap-2">
