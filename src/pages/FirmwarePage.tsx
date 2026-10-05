@@ -15,6 +15,7 @@ import {
   firmwareReleasesUrl,
   QMK_FIRMWARE,
   QMK_FIRMWARE_REPO,
+  QMK_G0_BOOTLOADER_ASSET,
   type FirmwareBoard,
   type FirmwareExt,
   type FirmwareFile,
@@ -156,35 +157,96 @@ export function FirmwarePage({
         </div>
 
         {firmware === "qmk" ? (
-          <div className="glass-card p-6">
-            <div className="mb-4 flex justify-end">
-              <a
-                href={firmwareReleasesUrl(QMK_FIRMWARE_REPO)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-xs text-[var(--color-electric)] underline transition-colors hover:text-[var(--color-neon)]"
-              >
-                {t("Release notes and older versions")}
-                <IconExternalLink size={13} />
-              </a>
+          <div className="space-y-6">
+            <div className="glass-card p-6">
+              <div className="mb-4 flex justify-end">
+                <a
+                  href={firmwareReleasesUrl(QMK_FIRMWARE_REPO)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs text-[var(--color-electric)] underline transition-colors hover:text-[var(--color-neon)]"
+                >
+                  {t("Release notes and older versions")}
+                  <IconExternalLink size={13} />
+                </a>
+              </div>
+              <ul className="space-y-2">
+                {QMK_FIRMWARE.map((fw) => (
+                  <DownloadRow
+                    key={fw.asset}
+                    repo={QMK_FIRMWARE_REPO}
+                    ext={fw.ext}
+                    file={{
+                      asset: fw.asset,
+                      label: fw.name,
+                      description:
+                        fw.chip === "stm32g0"
+                          ? "Copy onto the KEEBONBOOT drive."
+                          : "Copy onto the RPI-RP2 drive.",
+                    }}
+                  />
+                ))}
+              </ul>
             </div>
-            <ul className="space-y-2">
-              {QMK_FIRMWARE.map((fw) => (
+
+            {/* STM32G0 boards made before TinyUF2: the bootloader, once,
+                over the chip's own DFU -- or the old .bin that way. */}
+            <div className="glass-card p-6">
+              <h2 className="mb-2 text-sm font-medium text-[var(--color-text-secondary)]">
+                {t("STM32G0 keyboards without the KEEBONBOOT bootloader")}
+              </h2>
+              <p className="mb-4 text-sm text-[var(--color-text-muted)]">
+                {t(
+                  "ClickBoard Tenkey, EzTenkey, EzTenkeyMX and WzTwenty STM made before the KEEBONBOOT bootloader show no drive. Install the bootloader once (below), then use the .uf2 above from then on. Or keep writing the .bin for your keyboard the old way.",
+                )}
+              </p>
+              <ol className="mb-4 list-outside list-decimal space-y-2 pl-5 text-sm text-[var(--color-text-muted)]">
+                <li>
+                  {t(
+                    "Hold the BOOT switch while plugging in. The keyboard switches to the chip's firmware update mode (DFU).",
+                  )}
+                </li>
+                <li>
+                  {t(
+                    "Write the bootloader with QMK Toolbox, or with dfu-util:",
+                  )}
+                  <pre className="mt-2 overflow-x-auto rounded-lg bg-[var(--color-bg)] p-3 text-xs text-[var(--color-text-secondary)]">
+                    {`dfu-util -a 0 -d 0483:DF11 -s 0x08000000:mass-erase:force:leave -D ${QMK_G0_BOOTLOADER_ASSET}.bin`}
+                  </pre>
+                </li>
+                <li>
+                  {t(
+                    "The KEEBONBOOT drive appears. Copy the .uf2 for your keyboard onto it.",
+                  )}
+                </li>
+              </ol>
+              <ul className="space-y-2">
                 <DownloadRow
-                  key={fw.asset}
                   repo={QMK_FIRMWARE_REPO}
-                  ext={fw.ext}
+                  ext="bin"
                   file={{
-                    asset: fw.asset,
-                    label: fw.name,
-                    description:
-                      fw.ext === "bin"
-                        ? "Write with QMK Toolbox (DFU)."
-                        : "Copy onto the RPI-RP2 drive.",
+                    asset: QMK_G0_BOOTLOADER_ASSET,
+                    label: "KEEBONBOOT bootloader (STM32G0)",
+                    description: "Write once over DFU; it stays.",
                   }}
                 />
-              ))}
-            </ul>
+                {QMK_FIRMWARE.filter((fw) => fw.chip === "stm32g0").map(
+                  (fw) => (
+                    <DownloadRow
+                      key={`${fw.asset}-dfu`}
+                      repo={QMK_FIRMWARE_REPO}
+                      ext="bin"
+                      file={{
+                        asset: `${fw.asset}-dfu`,
+                        label: `${fw.name} (DFU)`,
+                        description:
+                          "Without the bootloader: write with QMK Toolbox (DFU).",
+                      }}
+                    />
+                  ),
+                )}
+              </ul>
+            </div>
           </div>
         ) : (
           <div className="space-y-6">

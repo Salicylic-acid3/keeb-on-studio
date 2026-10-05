@@ -5,7 +5,13 @@
       "date": null,
       "changes": {
         "major": [],
-        "minor": [],
+        "minor": [
+          {
+            "en": "QMK: \"Update firmware\" on the Settings tab writes the latest firmware from the browser — the keyboard restarts as a USB drive and you only choose that drive. STM32G0 keyboards (ClickBoard Tenkey, EzTenkey, EzTenkeyMX, WzTwenty STM) now have their own drive bootloader, KEEBONBOOT, so no driver or QMK Toolbox is needed; boards made before it install it once from the firmware page.",
+            "ja": "QMK：設定タブの「ファームウェアの更新」で、ブラウザから最新のファームウェアを書き込めるようになりました。キーボードがUSBドライブとして再起動するので、そのドライブを選ぶだけです。STM32G0のキーボード（ClickBoard Tenkey・EzTenkey・EzTenkeyMX・WzTwenty STM）には専用のドライブ型ブートローダー「KEEBONBOOT」を用意し、ドライバーやQMK Toolboxが不要になりました。それより前に作られた基板は、ファームウェアのページから一度だけ入れてください。",
+            "zh": "QMK：设置标签页的“更新固件”可在浏览器中写入最新固件——键盘会重启为一个 USB 驱动器，只需选择该驱动器。STM32G0 键盘（ClickBoard Tenkey、EzTenkey、EzTenkeyMX、WzTwenty STM）现在有自己的驱动器式引导程序 KEEBONBOOT，无需驱动或 QMK Toolbox；更早制造的板子请在固件页面安装一次。"
+          }
+        ],
         "patch": []
       }
     },

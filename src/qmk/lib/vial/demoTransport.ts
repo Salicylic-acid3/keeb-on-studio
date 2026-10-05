@@ -76,6 +76,8 @@ export class DemoTransport implements VialTransport {
     [20, new Uint8Array([5])],
     [21, new Uint8Array([0, 0, 0, 0])],
   ]);
+  /** Set once the keyboard has been sent to its bootloader; tests read it. */
+  jumpedToBootloader = false;
   /** Switches held down, for the live-keys view; tests set it. */
   pressed: Array<[number, number]> = [];
   /** Macro buffer (DYNAMIC_KEYMAP_MACRO_COUNT macros, each 0-ended). */
@@ -255,6 +257,13 @@ export class DemoTransport implements VialTransport {
         }
         break;
       }
+      case 0x0b: // bootloader jump: only once unlocked, as via.c does
+        if (this.unlocked) {
+          this.jumpedToBootloader = true;
+          // The keyboard answers, then drops off the bus.
+          setTimeout(() => void this.close(), 0);
+        }
+        break;
       case 0x11: // layer count
         r[1] = this.layers;
         break;

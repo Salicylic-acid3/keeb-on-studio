@@ -10,6 +10,52 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // QMK (Vial) side
+  "Choose the {{drive}} drive": "{{drive}} ドライブを選ぶ",
+  "ClickBoard Tenkey, EzTenkey, EzTenkeyMX and WzTwenty STM made before the KEEBONBOOT bootloader show no drive. Install the bootloader once (below), then use the .uf2 above from then on. Or keep writing the .bin for your keyboard the old way.":
+    "KEEBONBOOT ブートローダーより前に作られた ClickBoard Tenkey・EzTenkey・EzTenkeyMX・WzTwenty STM は、ドライブとして現れません。下の手順でブートローダーを一度だけ入れれば、それ以降は上の .uf2 が使えます。今までどおり、機種ごとの .bin を書き込む方法も使えます。",
+  "Getting the latest firmware…": "最新のファームウェアを取得しています…",
+  "Hold the BOOT switch while plugging in. The keyboard switches to the chip's firmware update mode (DFU).":
+    "BOOTスイッチを押しながらUSBを挿します。キーボードがチップのファームウェア書き込みモード（DFU）になります。",
+  "Hold the top-left key while plugging in, or press a key set to Bootloader (QK_BOOT).":
+    "左上のキーを押しながらUSBを挿すか、Bootloader（QK_BOOT）を割り当てたキーを押します。",
+  "KEEBONBOOT bootloader (STM32G0)": "KEEBONBOOT ブートローダー（STM32G0）",
+  "No {{drive}} drive? Keyboards made before this bootloader need it installed once:":
+    "{{drive}} ドライブが出てこない場合は、このブートローダーより前に作られた基板です。一度だけ入れる必要があります：",
+  "Or let Keeb-On! Studio do it: connect the keyboard on the QMK side and use Update firmware on the Settings tab.":
+    "Keeb-On! Studio に任せることもできます。QMK側でキーボードをつなぎ、設定タブの「ファームウェアの更新」を使ってください。",
+  "Put the keyboard in its bootloader. It appears as a USB drive: RPI-RP2, or KEEBONBOOT on ClickBoard Tenkey, EzTenkey, EzTenkeyMX and WzTwenty STM.":
+    "キーボードをブートローダーに切り替えます。USBドライブとして現れます（RPI-RP2。ClickBoard Tenkey・EzTenkey・EzTenkeyMX・WzTwenty STM は KEEBONBOOT）。",
+  "RP2040 keyboards: double-tapping the reset switch works too.":
+    "RP2040 のキーボードは、リセットスイッチの2回押しでも切り替えられます。",
+  "STM32G0 keyboards without the KEEBONBOOT bootloader":
+    "KEEBONBOOT ブートローダーが入っていない STM32G0 のキーボード",
+  "The KEEBONBOOT drive appears. Copy the .uf2 for your keyboard onto it.":
+    "KEEBONBOOT ドライブが現れます。自分のキーボードの .uf2 をコピーしてください。",
+  "The downloaded file is not firmware for this keyboard.":
+    "取得したファイルは、このキーボード用のファームウェアではありません。",
+  "The keyboard is now a USB drive named {{drive}}. Choose that drive to write the firmware onto it.":
+    "キーボードが {{drive}} という名前のUSBドライブになりました。そのドライブを選ぶと、ファームウェアを書き込みます。",
+  "Update firmware": "ファームウェアの更新",
+  "Update to the latest firmware": "最新のファームウェアに更新",
+  "Write once over DFU; it stays.":
+    "DFUで一度だけ書き込みます。以降はそのまま残ります。",
+  "Write the bootloader with QMK Toolbox, or with dfu-util:":
+    "QMK Toolbox か、dfu-util でブートローダーを書き込みます：",
+  "Writes the latest {{name}} firmware. The keyboard asks to be unlocked, restarts as a USB drive named {{drive}}, and you choose that drive; the rest is automatic. The keymap stays.":
+    "{{name}} の最新のファームウェアを書き込みます。キーボードのアンロックのあと、キーボードが {{drive}} という名前のUSBドライブとして再起動するので、そのドライブを選ぶだけで、あとは自動で進みます。キーマップはそのまま残ります。",
+  "Writing… Do not unplug the keyboard.":
+    "書き込んでいます… キーボードを抜かないでください。",
+  "Written. The keyboard restarts on its own; connect it again to carry on.":
+    "書き込みました。キーボードは自動で再起動します。続けるには、もう一度接続してください。",
+  "That is not the {{drive}} drive. Nothing was written.":
+    "選んだのは {{drive}} ドライブではありません。何も書き込んでいません。",
+  "The firmware could not be downloaded. Check the connection and try again.":
+    "ファームウェアを取得できませんでした。ネットワークを確認して、もう一度お試しください。",
+  "Writing to the drive failed. Copy the .uf2 file by hand from the firmware page.":
+    "ドライブへの書き込みに失敗しました。ファームウェアのページから .uf2 を手でコピーしてください。",
+  "Copy onto the KEEBONBOOT drive.": "KEEBONBOOT ドライブにコピーします。",
+  "Without the bootloader: write with QMK Toolbox (DFU).":
+    "ブートローダーなし版：QMK Toolbox（DFU）で書き込みます。",
   "Keyboard-wide behaviour (QMK Settings)":
     "キーボード全体の動作（QMK Settings）",
   "Tap-Hold": "タップ/ホールド",

@@ -29,6 +29,8 @@ import { QmkKeymapPage } from "./pages/QmkKeymapPage";
 import { QmkOsPage } from "./pages/QmkOsPage";
 import { QmkMacroComboPage } from "./pages/QmkMacroComboPage";
 import { QmkSettingsPage } from "./pages/QmkSettingsPage";
+import { useQmkFirmwareUpdate } from "./hooks/useQmkFirmwareUpdate";
+import { QmkFirmwareUpdateDialog } from "./components/QmkFirmwareUpdateDialog";
 import { hasQmkSettingsTab } from "./lib/qmkSettings";
 import { QmkUnlockDialog } from "./components/QmkUnlockDialog";
 import { qmkKeyLabel } from "./lib/keyLabel";
@@ -64,6 +66,7 @@ export function QmkApp({
   const { t } = useLanguage();
   const keyboard = useVialKeyboard();
   const { layout: keyboardLayout } = useContext(KeyboardLayoutContext);
+  const firmwareUpdate = useQmkFirmwareUpdate(keyboard);
   const [connectHint, setConnectHint] = useState<string | null>(null);
   const [tab, setTab] = useState<TabId>(() =>
     tabFromPathname(window.location.pathname),
@@ -156,11 +159,16 @@ export function QmkApp({
         id: "settings",
         label: t("Settings"),
         icon: <IconSettings size={18} />,
-        content: <QmkSettingsPage keyboard={keyboard} />,
+        content: (
+          <QmkSettingsPage
+            keyboard={keyboard}
+            firmwareUpdate={firmwareUpdate}
+          />
+        ),
       });
     }
     return items;
-  }, [keyboard, t]);
+  }, [keyboard, t, firmwareUpdate]);
 
   const connected = keyboard.info !== null;
   const activeTab = tabs.some((x) => x.id === tab) ? tab : "keymap";
@@ -191,6 +199,7 @@ export function QmkApp({
           </motion.div>
         )}
       </AnimatePresence>
+      <QmkFirmwareUpdateDialog update={firmwareUpdate} />
       {keyboard.unlock && (
         <QmkUnlockDialog
           open

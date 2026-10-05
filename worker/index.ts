@@ -11,6 +11,10 @@
  * post into a 403.
  */
 import {
+  QMK_FIRMWARE_REPO,
+  qmkReleaseFileNames,
+} from "../src/lib/firmwareDownloads";
+import {
   deletePost,
   getPost,
   listPosts,
@@ -176,9 +180,45 @@ async function handleApi(
   return json({ error: "not-found" }, 404);
 }
 
+/**
+ * QMK firmware for Keeb-On! Studio's "Update firmware": the latest release
+ * file from the vial-qmk fork, passed through. GitHub's release downloads
+ * cannot be read by a page on another origin (no CORS), so the app asks here.
+ * Only the files the release actually publishes are fetched -- this is not
+ * a general-purpose proxy.
+ */
+const FIRMWARE_FILES = new Set(qmkReleaseFileNames());
+const MAX_FIRMWARE_BYTES = 4 * 1024 * 1024;
+
+async function handleFirmware(request: Request, url: URL): Promise<Response> {
+  if (request.method.toUpperCase() !== "GET") {
+    return json({ error: "not-found" }, 404);
+  }
+  const name = decodeURIComponent(url.pathname.slice("/api/firmware/".length));
+  if (!FIRMWARE_FILES.has(name)) return json({ error: "not-found" }, 404);
+  const upstream = await fetch(
+    `https://github.com/${QMK_FIRMWARE_REPO}/releases/latest/download/${name}`,
+    { redirect: "follow", cf: { cacheTtl: 300, cacheEverything: true } },
+  );
+  if (!upstream.ok) return json({ error: "not-found" }, 404);
+  const body = await upstream.arrayBuffer();
+  if (body.byteLength > MAX_FIRMWARE_BYTES) {
+    return json({ error: "too-large" }, 502);
+  }
+  return new Response(body, {
+    headers: {
+      "content-type": "application/octet-stream",
+      "cache-control": "public, max-age=300",
+    },
+  });
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+    if (url.pathname.startsWith("/api/firmware/")) {
+      return handleFirmware(request, url);
+    }
     if (url.pathname.startsWith("/api/gallery")) {
       return handleApi(request, env, url);
     }

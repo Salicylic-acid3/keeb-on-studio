@@ -22,6 +22,7 @@ const ID_SET_KEYBOARD_VALUE = 0x03;
 const ID_DYNAMIC_KEYMAP_GET_KEYCODE = 0x04;
 const ID_DYNAMIC_KEYMAP_SET_KEYCODE = 0x05;
 const ID_DYNAMIC_KEYMAP_GET_LAYER_COUNT = 0x11;
+const ID_BOOTLOADER_JUMP = 0x0b;
 const ID_DYNAMIC_KEYMAP_MACRO_GET_COUNT = 0x0c;
 const ID_DYNAMIC_KEYMAP_MACRO_GET_BUFFER_SIZE = 0x0d;
 const ID_DYNAMIC_KEYMAP_MACRO_GET_BUFFER = 0x0e;
@@ -534,6 +535,19 @@ export class VialClient {
       }
     }
     return pressed;
+  }
+
+  /**
+   * Restart into the bootloader (via.c id_bootloader_jump). Vial takes this
+   * only while unlocked. The keyboard answers and then leaves the bus, so a
+   * missing answer is expected rather than an error.
+   */
+  async bootloaderJump(): Promise<void> {
+    try {
+      await this.send(ID_BOOTLOADER_JUMP);
+    } catch {
+      // gone already
+    }
   }
 
   /** Null when the firmware has no OS-switch module. */

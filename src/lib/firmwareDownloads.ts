@@ -98,12 +98,19 @@ export type FirmwareExt = "uf2" | "bin";
 /**
  * The QMK (Vial) keyboards. All built from one repository, the vial-qmk
  * fork, whose release workflow (.github/workflows/keebon-firmware.yml)
- * publishes each keyboard's multi-os build as `<keyboard folder>.<ext>`:
- * .uf2 for RP2040 boards (drag onto the drive), .bin for STM32G0 boards
- * (written over DFU). The asset names are the folder names, so a renamed
- * folder needs renaming here too.
+ * publishes each keyboard's multi-os build as `<keyboard folder>.uf2`.
+ * The asset names are the folder names, so a renamed folder needs renaming
+ * here too.
+ *
+ * Every board takes a .uf2 copied onto a drive: RP2040 boards show up as
+ * RPI-RP2 (their boot ROM), STM32G0 boards as KEEBONBOOT (the TinyUF2
+ * bootloader, see vial-qmk bootloaders/). STM32G0 boards made before that
+ * bootloader have none yet: they install it once over the chip's own DFU,
+ * or keep taking `<keyboard folder>-dfu.bin` that way.
  */
 export const QMK_FIRMWARE_REPO = "Salicylic-acid3/vial-qmk";
+
+export type QmkChip = "rp2040" | "stm32g0";
 
 export interface QmkFirmware {
   /** Product name, shown as-is. */
@@ -113,49 +120,89 @@ export interface QmkFirmware {
   ext: FirmwareExt;
   /** The product line it belongs to, for the top page's short list. */
   series: string;
+  chip: QmkChip;
 }
 
-const uf2 = (name: string, asset: string, series = name): QmkFirmware => ({
+/** TinyUF2 for the STM32G0 boards, published with every release. */
+export const QMK_G0_BOOTLOADER_ASSET = "tinyuf2-stm32g0b1";
+
+/** UF2 family ids (microsoft/uf2 uf2families): what each bootloader takes. */
+export const UF2_FAMILY: Record<QmkChip, number> = {
+  rp2040: 0xe48bff56,
+  stm32g0: 0x300f5633,
+};
+
+/** The Board-ID line of each bootloader drive's INFO_UF2.TXT. */
+export const UF2_BOARD_ID: Record<QmkChip, string> = {
+  rp2040: "RPI-RP2",
+  stm32g0: "STM32G0B1-Keeb-On",
+};
+
+/** The drive name each bootloader shows. */
+export const UF2_DRIVE_NAME: Record<QmkChip, string> = {
+  rp2040: "RPI-RP2",
+  stm32g0: "KEEBONBOOT",
+};
+
+const rp = (name: string, asset: string, series = name): QmkFirmware => ({
   name,
   asset,
   ext: "uf2",
   series,
+  chip: "rp2040",
 });
-const bin = (name: string, asset: string, series = name): QmkFirmware => ({
+const g0 = (name: string, asset: string, series = name): QmkFirmware => ({
   name,
   asset,
-  ext: "bin",
+  ext: "uf2",
   series,
+  chip: "stm32g0",
 });
 
 export const QMK_FIRMWARE: QmkFirmware[] = [
-  uf2("AtEighty JP", "ateighty_jp", "AtEighty"),
-  uf2("AtEighty US", "ateighty_us", "AtEighty"),
-  uf2("BeThirty Ortho", "bethirty_ortho", "BeThirty"),
-  uf2("BeThirty QAZ", "bethirty_qaz", "BeThirty"),
-  uf2("ClickBoard CyberMini", "clickboard_cybermini"),
-  uf2("ClickBoard ErgoMini", "clickboard_ergomini"),
-  uf2("ClickBoard Ortho", "clickboard_ortho"),
-  bin("ClickBoard Tenkey", "clickboard_tenkey"),
-  bin("EzTenkey", "eztenkey"),
-  bin("EzTenkeyMX", "eztenkey_mx"),
-  uf2("Focus40 JP", "focus40_jp", "Focus40"),
-  uf2("Focus40 Ortho", "focus40_ortho", "Focus40"),
-  uf2("Focus60 EN", "focus60_en", "Focus60"),
-  uf2("GoForty JP", "goforty_jp", "GoForty"),
-  uf2("GoForty Ortho", "goforty_ortho", "GoForty"),
-  uf2("GoForty RS", "goforty_rs", "GoForty"),
-  uf2("GoForty US", "goforty_us", "GoForty"),
-  uf2("InSixty EN", "insixty_en", "InSixty"),
-  uf2("InSixty JP", "insixty_jp", "InSixty"),
-  uf2("InSixty MX JP", "insixty_mxjp", "InSixty"),
-  uf2("Tenkey of Tenkey", "tenkey_of_tenkey"),
-  uf2("ToSeventy JP", "toseventy_jp", "ToSeventy"),
-  uf2("ToSeventy Ortho", "toseventy_ortho", "ToSeventy"),
-  uf2("ToSeventy US", "toseventy_us", "ToSeventy"),
-  uf2("WzTwenty", "wztwenty", "WzTwenty"),
-  bin("WzTwenty STM", "wztwenty_stm", "WzTwenty"),
+  rp("AtEighty JP", "ateighty_jp", "AtEighty"),
+  rp("AtEighty US", "ateighty_us", "AtEighty"),
+  rp("BeThirty Ortho", "bethirty_ortho", "BeThirty"),
+  rp("BeThirty QAZ", "bethirty_qaz", "BeThirty"),
+  rp("ClickBoard CyberMini", "clickboard_cybermini"),
+  rp("ClickBoard ErgoMini", "clickboard_ergomini"),
+  rp("ClickBoard Ortho", "clickboard_ortho"),
+  g0("ClickBoard Tenkey", "clickboard_tenkey"),
+  g0("EzTenkey", "eztenkey"),
+  g0("EzTenkeyMX", "eztenkey_mx"),
+  rp("Focus40 JP", "focus40_jp", "Focus40"),
+  rp("Focus40 Ortho", "focus40_ortho", "Focus40"),
+  rp("Focus60 EN", "focus60_en", "Focus60"),
+  rp("GoForty JP", "goforty_jp", "GoForty"),
+  rp("GoForty Ortho", "goforty_ortho", "GoForty"),
+  rp("GoForty RS", "goforty_rs", "GoForty"),
+  rp("GoForty US", "goforty_us", "GoForty"),
+  rp("InSixty EN", "insixty_en", "InSixty"),
+  rp("InSixty JP", "insixty_jp", "InSixty"),
+  rp("InSixty MX JP", "insixty_mxjp", "InSixty"),
+  rp("Tenkey of Tenkey", "tenkey_of_tenkey"),
+  rp("ToSeventy JP", "toseventy_jp", "ToSeventy"),
+  rp("ToSeventy Ortho", "toseventy_ortho", "ToSeventy"),
+  rp("ToSeventy US", "toseventy_us", "ToSeventy"),
+  rp("WzTwenty", "wztwenty", "WzTwenty"),
+  g0("WzTwenty STM", "wztwenty_stm", "WzTwenty"),
 ];
+
+/** The firmware for a keyboard, by its vial.json name (= folder name). */
+export function qmkFirmwareFor(board: string): QmkFirmware | undefined {
+  return QMK_FIRMWARE.find((f) => f.asset === board);
+}
+
+/** Every file the release has that the app may fetch (see worker /api/firmware). */
+export function qmkReleaseFileNames(): string[] {
+  return [
+    ...QMK_FIRMWARE.map((f) => `${f.asset}.${f.ext}`),
+    ...QMK_FIRMWARE.filter((f) => f.chip === "stm32g0").map(
+      (f) => `${f.asset}-dfu.bin`,
+    ),
+    `${QMK_G0_BOOTLOADER_ASSET}.bin`,
+  ];
+}
 
 /** The repository's releases page, for changelogs and older versions. */
 export function firmwareReleasesUrl(repo: string): string {

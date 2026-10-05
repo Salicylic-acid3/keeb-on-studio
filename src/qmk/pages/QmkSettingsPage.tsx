@@ -22,8 +22,16 @@ import {
   TAP_HOLD_SETTINGS,
 } from "../lib/qmkSettings";
 import type { UseVialKeyboard } from "../hooks/useVialKeyboard";
+import type { QmkFirmwareUpdate } from "../hooks/useQmkFirmwareUpdate";
+import { QmkFirmwareUpdateCard } from "../components/QmkFirmwareUpdateCard";
 
-export function QmkSettingsPage({ keyboard }: { keyboard: UseVialKeyboard }) {
+export function QmkSettingsPage({
+  keyboard,
+  firmwareUpdate,
+}: {
+  keyboard: UseVialKeyboard;
+  firmwareUpdate?: QmkFirmwareUpdate;
+}) {
   const { t } = useLanguage();
   const tapHold = supportedFields(TAP_HOLD_SETTINGS, keyboard.qmkSettingIds);
   const mouse = supportedFields(MOUSE_KEY_SETTINGS, keyboard.qmkSettingIds);
@@ -80,6 +88,7 @@ export function QmkSettingsPage({ keyboard }: { keyboard: UseVialKeyboard }) {
         </div>
 
         <div className="space-y-6">
+          {firmwareUpdate && <QmkFirmwareUpdateCard update={firmwareUpdate} />}
           {tapHold.length > 0 && (
             <QmkSettingsCard
               title="Tap-Hold"

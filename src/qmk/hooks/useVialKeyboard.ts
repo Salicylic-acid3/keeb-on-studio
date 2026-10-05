@@ -92,6 +92,12 @@ export interface UseVialKeyboard {
    * "row,col". Turning it on asks for the unlock first, as Vial does.
    */
   liveKeys: { enabled: boolean; pressed: ReadonlySet<string> };
+  /**
+   * Restart the keyboard into its bootloader (asking for the unlock first).
+   * The keyboard disconnects; resolves once the request is sent, or false
+   * when the unlock was called off.
+   */
+  enterBootloader(): Promise<boolean>;
   setLiveKeys(on: boolean): Promise<void>;
   /** Everything on the keyboard as shown, as a Vial .vil file. */
   exportVil(): string;
@@ -677,6 +683,19 @@ export function useVialKeyboard(): UseVialKeyboard {
     [runUnlock],
   );
 
+  const enterBootloader = useCallback(async () => {
+    const client = clientRef.current;
+    if (!client) return false;
+    try {
+      await runUnlock(client);
+    } catch (err) {
+      if (err instanceof UnlockCancelledError) return false;
+      throw err;
+    }
+    await client.bootloaderJump();
+    return true;
+  }, [runUnlock]);
+
   // While on, read the matrix about twenty times a second. Requests are
   // queued behind one another in the transport, so a slow answer only slows
   // the next read rather than piling them up.
@@ -754,6 +773,7 @@ export function useVialKeyboard(): UseVialKeyboard {
     exportVil,
     importVil,
     liveKeys: { enabled: liveKeysOn, pressed },
+    enterBootloader,
     setLiveKeys,
     layoutOptions,
     visible,
