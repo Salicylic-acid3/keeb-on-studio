@@ -139,6 +139,22 @@ describe("reading a post back", () => {
     ).resolves.toEqual({ ok: false, error: "offline" });
   });
 
+  it("treats a server with no gallery at all (a bare 404) as not set up, not as a missing post", async () => {
+    mockFetch(respond(null, 404));
+    await expect(publishToGallery(KEYMAP, "ergotrack")).resolves.toEqual({
+      ok: false,
+      error: "not-configured",
+    });
+    // A real missing post is named by the Worker, and stays "not-found".
+    mockFetch(respond({ error: "not-found" }, 404));
+    await expect(
+      fetchGalleryKeymap("98210955520838-abcdefgh"),
+    ).resolves.toEqual({
+      ok: false,
+      error: "not-found",
+    });
+  });
+
   it("says so when the gallery is not set up on the server", async () => {
     mockFetch(respond({ error: "gallery-not-configured" }, 503));
     await expect(publishToGallery(KEYMAP, "ergotrack")).resolves.toEqual({

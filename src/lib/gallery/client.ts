@@ -140,7 +140,11 @@ function errorFrom(status: number, body: unknown): GalleryError {
     case "forbidden":
       return named;
     default:
-      return status === 404 ? "not-found" : "unknown";
+      // No gallery answer at all: the Worker always names its errors, so a
+      // bare 404/405 means the request reached a server without the gallery
+      // (the Vite dev server, a static host) -- not a missing post.
+      if (!named && (status === 404 || status === 405)) return "not-configured";
+      return "unknown";
   }
 }
 
