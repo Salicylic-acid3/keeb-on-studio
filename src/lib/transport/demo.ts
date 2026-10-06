@@ -57,6 +57,7 @@ import {
 } from "./demo-default-layer";
 import { createTapDanceSettings, TAP_DANCE_IDENTIFIER } from "./demo-tap-dance";
 import { createBatterySettings, BATTERY_IDENTIFIER } from "./demo-battery";
+import { createStorageSettings } from "./demo-storage";
 import {
   Request as BLERequest,
   Response as BLEResponse,
@@ -284,6 +285,7 @@ class Keyboard {
         ...(isDemoSubsystemEnabled(BATTERY_IDENTIFIER)
           ? createBatterySettings(this.BATTERY_SUBSYSTEM_INDEX)
           : []),
+        ...createStorageSettings(this.CUSTOM_SETTINGS_SUBSYSTEM_INDEX),
       ],
     );
     this.runtimeMacroHandler = new RuntimeMacroHandler(

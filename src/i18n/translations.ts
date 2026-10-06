@@ -612,6 +612,14 @@ const ja: Record<string, string> = {
     "ここでキーを選ぶと設定され、次のキーへ進みます。通常のキー入力以外はキーの設定ダイアログを使ってください。",
   "Key {{position}}": "キー {{position}}",
   Battery: "電池",
+  "Settings storage": "設定の保存領域",
+  "How much of the space for saved settings is used":
+    "設定を保存する領域の使用量",
+  "{{used}} of {{total}} used": "{{total}} 中 {{used}} 使用",
+  "Everything the keyboard remembers lives here: the keymap, Bluetooth pairings, every setting in this app, macros, combos and tap dances. The free figure is the storage's own estimate, which keeps some space aside for housekeeping.":
+    "キーボードが覚えているものは全部ここに入ります: キーマップ、Bluetooth のペアリング、このアプリの設定すべて、マクロ・コンボ・タップダンス。空きは保存領域自身の見積もりで、整理用に一部を確保した上での値です。",
+  "Nearly full: new changes will stop being saved and will come back as they were after the next restart. Remove unused macros, combos or tap dances, or update to firmware with a larger settings area.":
+    "ほぼ一杯です。これ以上の変更は保存されなくなり、次の再起動で元に戻ります。使っていないマクロ・コンボ・タップダンスを消すか、保存領域を広げたファームウェアに更新してください。",
   "How much charge each half has left": "左右それぞれの電池残量",
   "The voltage of each half's cells": "左右それぞれの電池の電圧",
   "This keyboard does not report its battery level.":
@@ -2464,6 +2472,14 @@ const zh: Record<string, string> = {
     "在这里选择按键会直接设置并跳到下一个。普通按键以外的绑定请使用按键设置对话框。",
   "Key {{position}}": "键 {{position}}",
   Battery: "电池",
+  "Settings storage": "设置存储空间",
+  "How much of the space for saved settings is used":
+    "保存设置的空间已使用多少",
+  "{{used}} of {{total}} used": "已使用 {{used}} / {{total}}",
+  "Everything the keyboard remembers lives here: the keymap, Bluetooth pairings, every setting in this app, macros, combos and tap dances. The free figure is the storage's own estimate, which keeps some space aside for housekeeping.":
+    "键盘记住的一切都在这里：键位图、蓝牙配对、此应用的所有设置、宏、组合键和点按舞。剩余空间是存储自身的估算，已预留一部分用于整理。",
+  "Nearly full: new changes will stop being saved and will come back as they were after the next restart. Remove unused macros, combos or tap dances, or update to firmware with a larger settings area.":
+    "几乎已满：新的更改将不再被保存，并会在下次重启后恢复原状。请删除不用的宏、组合键或点按舞，或更新到设置区更大的固件。",
   "How much charge each half has left": "左右两侧各自的剩余电量",
   "The voltage of each half's cells": "左右两侧各自的电池电压",
   "This keyboard does not report its battery level.": "此键盘不报告电池电量。",

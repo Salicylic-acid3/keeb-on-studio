@@ -5,7 +5,13 @@
       "date": null,
       "changes": {
         "major": [],
-        "minor": [],
+        "minor": [
+          {
+            "en": "Troubleshooting: a Settings storage card shows how full the keyboard's settings area is and turns red before saves start failing (firmware with zmk-feature-custom-settings 61f2b6a or later). A full settings area is why a change could take effect and then come back as it was after a restart, with no error anywhere; ClickBoard ErgoTrack and GoFortyMax Ortho firmware now also doubles that area to 64 KB.",
+            "ja": "トラブルシューティング: 「設定の保存領域」カードを追加し、キーボードの設定領域がどれだけ埋まっているかを表示して、保存できなくなる前に赤くします(zmk-feature-custom-settings 61f2b6a 以降のファームウェア)。設定領域が一杯になると、変更がいったん効いたあと再起動で元に戻り、どこにもエラーが出ません。ClickBoard ErgoTrack と GoFortyMax Ortho のファームウェアでは、あわせて設定領域を 64 KB に倍増しました。",
+            "zh": "故障排除：新增“设置存储空间”卡片，显示键盘设置区的占用情况，并在保存开始失败之前变红（需要 zmk-feature-custom-settings 61f2b6a 或更新的固件）。设置区已满时，更改会先生效、重启后又恢复原状，且任何地方都没有报错；ClickBoard ErgoTrack 和 GoFortyMax Ortho 的固件同时把该区域扩大到 64 KB。"
+          }
+        ],
         "patch": [
           {
             "en": "Trackpad: the two-finger swipe description says both pads follow the per-layer switch (ClickBoard ErgoTrack firmware 828af41 or later); until now the left pad swiped whatever the layer said.",

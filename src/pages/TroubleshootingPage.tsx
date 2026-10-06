@@ -15,6 +15,7 @@ import { useKscanDiagnostics } from "../hooks/useKscanDiagnostics";
 import { useElfAnalysis } from "../hooks/useElfAnalysis";
 import { useDevtoolStackUsage } from "../hooks/useDevtoolStackUsage";
 import { DeviceInfoSection } from "../components/troubleshooting/DeviceInfoSection";
+import { StorageSection } from "../components/troubleshooting/StorageSection";
 import { WatchdogSection } from "../components/troubleshooting/WatchdogSection";
 import { KscanDiagnosticsSection } from "../components/troubleshooting/KscanDiagnosticsSection";
 import { DevtoolStackUsageSection } from "../components/troubleshooting/DevtoolStackUsageSection";
@@ -194,6 +195,10 @@ export function TroubleshootingPage() {
               dead one, and then the keyboard stops. A reading that says
               nothing until it is too late is worse than none. It comes
               back when a board can measure the cell itself. */}
+          {/* Right under the device info: a full settings store is the one
+              fault that makes the app look broken (every change comes back
+              after a restart) while the keyboard itself works fine. */}
+          <StorageSection />
           <WatchdogSection watchdog={watchdog} elfAnalysis={elfAnalysis} />
           <KscanDiagnosticsSection kscan={kscan} />
           <DevtoolStackUsageSection stackUsage={stackUsage} />
