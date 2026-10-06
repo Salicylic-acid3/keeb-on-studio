@@ -6,7 +6,13 @@
       "changes": {
         "major": [],
         "minor": [],
-        "patch": []
+        "patch": [
+          {
+            "en": "Trackpad: the two-finger swipe description says both pads follow the per-layer switch (ClickBoard ErgoTrack firmware 828af41 or later); until now the left pad swiped whatever the layer said.",
+            "ja": "トラックパッド: 2本指横スワイプの説明を、左右どちらのパッドもレイヤーごとのスイッチに従う(ClickBoard ErgoTrack ファームウェア 828af41 以降)に改めました。これまで左パッドはレイヤーに関係なくスワイプしていました。",
+            "zh": "触控板：两指横向滑动的说明改为两块触控板都跟随各层的开关（需要 ClickBoard ErgoTrack 固件 828af41 或更新）；此前左触控板不论层如何都会滑动。"
+          }
+        ]
       }
     },
     {

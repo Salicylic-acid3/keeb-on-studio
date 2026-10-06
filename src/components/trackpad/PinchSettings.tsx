@@ -175,7 +175,7 @@ export function PinchSettings({
             </h5>
             <p className="mt-1 text-xs text-[var(--color-text-muted)]">
               {t(
-                "On a layer with the switch on, moving two fingers sideways is a swipe (bound as a key on the trackpad tab), and a scroll that starts there is held to the axis it started on, so it does not drift sideways. With the switch off, two fingers scroll sideways and diagonally as well as up and down. Only the half connected to the computer follows the layer; the other half always swipes.",
+                "On a layer with the switch on, moving two fingers sideways is a swipe (bound as a key on the trackpad tab), and a scroll that starts there is held to the axis it started on, so it does not drift sideways. With the switch off, two fingers scroll sideways and diagonally as well as up and down. Both pads follow the layer (ClickBoard ErgoTrack firmware 828af41 or later; before that, only the half connected to the computer did).",
               )}
             </p>
           </div>

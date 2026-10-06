@@ -534,8 +534,8 @@ const ja: Record<string, string> = {
   "Reverse the pinch direction": "ピンチの向きを逆にする",
   "Three-finger swipe": "3本指スワイプ",
   "Two-finger horizontal swipe": "2本指横スワイプ",
-  "On a layer with the switch on, moving two fingers sideways is a swipe (bound as a key on the trackpad tab), and a scroll that starts there is held to the axis it started on, so it does not drift sideways. With the switch off, two fingers scroll sideways and diagonally as well as up and down. Only the half connected to the computer follows the layer; the other half always swipes.":
-    "スイッチがオンのレイヤーでは、2本の指を横に動かすとスワイプになり(割り当てはトラックパッドタブのジェスチャー)、スクロールは始まった軸に固定されて横に流れません。オフのレイヤーでは、2本指で横にも斜めにもスクロールできます。レイヤーに従うのは PC につながる側だけで、もう片方は常にスワイプです。",
+  "On a layer with the switch on, moving two fingers sideways is a swipe (bound as a key on the trackpad tab), and a scroll that starts there is held to the axis it started on, so it does not drift sideways. With the switch off, two fingers scroll sideways and diagonally as well as up and down. Both pads follow the layer (ClickBoard ErgoTrack firmware 828af41 or later; before that, only the half connected to the computer did).":
+    "スイッチがオンのレイヤーでは、2本の指を横に動かすとスワイプになり(割り当てはトラックパッドタブのジェスチャー)、スクロールは始まった軸に固定されて横に流れません。オフのレイヤーでは、2本指で横にも斜めにもスクロールできます。左右どちらのパッドもレイヤーに従います(ClickBoard ErgoTrack ファームウェア 828af41 以降。それより前は PC につながる側だけでした)。",
   "Swipe on {{layer}}": "{{layer}} で横スワイプ",
   "The half connected over USB is powered by it and cannot measure its battery now; its reading is the last one it took while running on battery. A reading at the very bottom of the scale means it has never run on battery since the firmware was written.":
     "USB でつながっている側は USB から給電されているため、いまは電池を測れません。表示は電池で動いていたときに最後に測った値です。目盛りの一番下の値は、ファームウェアを書いてから一度も電池で動いていないことを示します。",
@@ -2388,8 +2388,8 @@ const zh: Record<string, string> = {
   "Reverse the pinch direction": "反转捏合方向",
   "Three-finger swipe": "三指滑动",
   "Two-finger horizontal swipe": "两指横向滑动",
-  "On a layer with the switch on, moving two fingers sideways is a swipe (bound as a key on the trackpad tab), and a scroll that starts there is held to the axis it started on, so it does not drift sideways. With the switch off, two fingers scroll sideways and diagonally as well as up and down. Only the half connected to the computer follows the layer; the other half always swipes.":
-    "开关打开的层上，两指横向移动是滑动手势（在触控板标签页里绑定按键），且滚动会锁定在开始时的轴上，不会横向漂移。关闭的层上，两指除了上下还可以横向和斜向滚动。只有连接电脑的一半会跟随层；另一半始终是滑动。",
+  "On a layer with the switch on, moving two fingers sideways is a swipe (bound as a key on the trackpad tab), and a scroll that starts there is held to the axis it started on, so it does not drift sideways. With the switch off, two fingers scroll sideways and diagonally as well as up and down. Both pads follow the layer (ClickBoard ErgoTrack firmware 828af41 or later; before that, only the half connected to the computer did).":
+    "开关打开的层上，两指横向移动是滑动手势（在触控板标签页里绑定按键），且滚动会锁定在开始时的轴上，不会横向漂移。关闭的层上，两指除了上下还可以横向和斜向滚动。两块触控板都会跟随层（需要 ClickBoard ErgoTrack 固件 828af41 或更新；此前只有连接电脑的一半会）。",
   "Swipe on {{layer}}": "{{layer}} 上横向滑动",
   "The half connected over USB is powered by it and cannot measure its battery now; its reading is the last one it took while running on battery. A reading at the very bottom of the scale means it has never run on battery since the firmware was written.":
     "通过 USB 连接的一半由 USB 供电，目前无法测量电池；显示的是它上次用电池运行时测得的读数。读数位于刻度最底端表示写入固件后从未用电池运行过。",
