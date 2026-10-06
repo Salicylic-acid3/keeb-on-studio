@@ -5,6 +5,15 @@
       "date": null,
       "changes": {
         "major": [],
+        "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.06.1",
+      "date": "2026-10-06",
+      "changes": {
+        "major": [],
         "minor": [
           {
             "en": "Troubleshooting: a Settings storage card shows how full the keyboard's settings area is and turns red before saves start failing (firmware with zmk-feature-custom-settings 61f2b6a or later). A full settings area is why a change could take effect and then come back as it was after a restart, with no error anywhere; ClickBoard ErgoTrack and GoFortyMax Ortho firmware now also doubles that area to 64 KB.",
