@@ -5,6 +5,15 @@
       "date": null,
       "changes": {
         "major": [],
+        "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.06.0",
+      "date": "2026-10-06",
+      "changes": {
+        "major": [],
         "minor": [
           {
             "en": "QMK: \"Update firmware\" on the Settings tab writes the latest firmware from the browser — the keyboard restarts as a USB drive and you only choose that drive. STM32G0 keyboards (ClickBoard Tenkey, EzTenkey, EzTenkeyMX, WzTwenty STM) now have their own drive bootloader, KEEBONBOOT, so no driver or QMK Toolbox is needed; boards made before it install it once from the firmware page.",
