@@ -24,7 +24,9 @@ export function QmkFirmwareUpdateDialog({
   const { t } = useLanguage();
   const s = update.state;
   if (s.step === "idle") return null;
-  const busy = s.step === "downloading" || s.step === "writing";
+  // Only the write itself cannot be walked away from; everything else,
+  // including the download, can be closed.
+  const busy = s.step === "writing";
   const drive =
     "firmware" in s && s.firmware ? UF2_DRIVE_NAME[s.firmware.chip] : "";
 
@@ -45,7 +47,7 @@ export function QmkFirmwareUpdateDialog({
                   size={32}
                   className="text-[var(--color-warning)]"
                 />
-              ) : busy ? (
+              ) : busy || s.step === "downloading" ? (
                 <IconLoader2
                   size={32}
                   className="animate-spin text-[var(--color-electric)]"

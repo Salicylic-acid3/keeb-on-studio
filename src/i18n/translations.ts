@@ -10,6 +10,12 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // QMK (Vial) side
+  "The keyboard was disconnected before it restarted into its bootloader. Nothing was written; plug it in and try again.":
+    "ブートローダーに切り替わる前にキーボードが外れました。何も書き込んでいません。挿し直してから、もう一度お試しください。",
+  "Something went wrong. Nothing was written; plug the keyboard in and try again.":
+    "うまくいきませんでした。何も書き込んでいません。キーボードを挿し直してから、もう一度お試しください。",
+  "Writing to the drive failed (was the keyboard unplugged?). Put the keyboard back in its bootloader and try again, or copy the .uf2 file by hand from the firmware page.":
+    "ドライブへの書き込みに失敗しました（キーボードが抜けませんでしたか？）。キーボードをもう一度ブートローダーに切り替えてやり直すか、ファームウェアのページから .uf2 を手でコピーしてください。",
   "Choose the {{drive}} drive": "{{drive}} ドライブを選ぶ",
   "ClickBoard Tenkey, EzTenkey, EzTenkeyMX and WzTwenty STM made before the KEEBONBOOT bootloader show no drive. Install the bootloader once (below), then use the .uf2 above from then on. Or keep writing the .bin for your keyboard the old way.":
     "KEEBONBOOT ブートローダーより前に作られた ClickBoard Tenkey・EzTenkey・EzTenkeyMX・WzTwenty STM は、ドライブとして現れません。下の手順でブートローダーを一度だけ入れれば、それ以降は上の .uf2 が使えます。今までどおり、機種ごとの .bin を書き込む方法も使えます。",

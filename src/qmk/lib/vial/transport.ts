@@ -129,6 +129,8 @@ export async function reopenGrantedWebHidTransport(): Promise<WebHidTransport | 
 export class WebHidTransport implements VialTransport {
   private queue: Promise<unknown> = Promise.resolve();
   private pending: ((reply: Uint8Array) => void) | null = null;
+  /** Fails the request in flight; set alongside `pending`. */
+  private failPending: ((err: Error) => void) | null = null;
   private disconnectListeners: Array<() => void> = [];
   private readonly onInput = (e: HidInputReportEventLike) => {
     const reply = new Uint8Array(
@@ -138,10 +140,17 @@ export class WebHidTransport implements VialTransport {
     );
     const resolve = this.pending;
     this.pending = null;
+    this.failPending = null;
     resolve?.(reply.slice(0, VIAL_REPORT_SIZE));
   };
   private readonly onHidDisconnect = (e: { device: HidDeviceLike }) => {
     if (e.device !== this.device) return;
+    // A request waiting on a keyboard that has been unplugged fails now,
+    // rather than after the reply timeout.
+    const fail = this.failPending;
+    this.pending = null;
+    this.failPending = null;
+    fail?.(new VialTransportError("The keyboard was disconnected"));
     this.teardown();
     for (const l of this.disconnectListeners) l();
   };
@@ -175,15 +184,21 @@ export class WebHidTransport implements VialTransport {
     return new Promise<Uint8Array>((resolve, reject) => {
       const timer = setTimeout(() => {
         this.pending = null;
+        this.failPending = null;
         reject(new VialTransportError("The keyboard did not answer in time"));
       }, 2000);
       this.pending = (reply) => {
         clearTimeout(timer);
         resolve(reply);
       };
+      this.failPending = (err) => {
+        clearTimeout(timer);
+        reject(err);
+      };
       this.device.sendReport(0, request as BufferSource).catch((err) => {
         clearTimeout(timer);
         this.pending = null;
+        this.failPending = null;
         reject(err);
       });
     });

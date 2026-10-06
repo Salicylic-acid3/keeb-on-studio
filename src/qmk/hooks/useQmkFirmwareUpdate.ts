@@ -65,38 +65,57 @@ export function useQmkFirmwareUpdate(keyboard: UseVialKeyboard) {
   const start = useCallback(async () => {
     if (!firmware) return;
     setState({ step: "downloading", firmware });
-    let bytes: Uint8Array<ArrayBuffer>;
     try {
-      const res = await fetch(
-        `/api/firmware/${firmware.asset}.${firmware.ext}`,
-      );
-      if (!res.ok) throw new Error(String(res.status));
-      bytes = new Uint8Array(await res.arrayBuffer());
+      let bytes: Uint8Array<ArrayBuffer>;
+      try {
+        const res = await fetch(
+          `/api/firmware/${firmware.asset}.${firmware.ext}`,
+        );
+        if (!res.ok) throw new Error(String(res.status));
+        bytes = new Uint8Array(await res.arrayBuffer());
+      } catch {
+        setState({
+          step: "error",
+          firmware,
+          message:
+            "The firmware could not be downloaded. Check the connection and try again.",
+        });
+        return;
+      }
+      const check = checkUf2(bytes, UF2_FAMILY[firmware.chip]);
+      if (!check.ok) {
+        setState({
+          step: "error",
+          firmware,
+          message: "The downloaded file is not firmware for this keyboard.",
+        });
+        return;
+      }
+      file.current = bytes;
+      const result = await keyboard.enterBootloader();
+      if (result === "cancelled") {
+        setState({ step: "idle" });
+        return;
+      }
+      if (result === "gone") {
+        setState({
+          step: "error",
+          firmware,
+          message:
+            "The keyboard was disconnected before it restarted into its bootloader. Nothing was written; plug it in and try again.",
+        });
+        return;
+      }
+      setState({ step: "pick-drive", firmware });
     } catch {
+      // Whatever went wrong, never leave the dialog spinning with no way out.
       setState({
         step: "error",
         firmware,
         message:
-          "The firmware could not be downloaded. Check the connection and try again.",
+          "Something went wrong. Nothing was written; plug the keyboard in and try again.",
       });
-      return;
     }
-    const check = checkUf2(bytes, UF2_FAMILY[firmware.chip]);
-    if (!check.ok) {
-      setState({
-        step: "error",
-        firmware,
-        message: "The downloaded file is not firmware for this keyboard.",
-      });
-      return;
-    }
-    file.current = bytes;
-    const sent = await keyboard.enterBootloader();
-    if (!sent) {
-      setState({ step: "idle" });
-      return;
-    }
-    setState({ step: "pick-drive", firmware });
   }, [firmware, keyboard]);
 
   /** Must run from a click: the folder dialog needs a user gesture. */
@@ -133,7 +152,14 @@ export function useQmkFirmwareUpdate(keyboard: UseVialKeyboard) {
     try {
       const handle = await dir.getFileHandle("FIRMWARE.UF2", { create: true });
       const writable = await handle.createWritable();
-      await writable.write(file.current);
+      // A drive unplugged mid-write should fail the write; in case it hangs
+      // instead, give up after a minute (a .uf2 takes a few seconds).
+      await Promise.race([
+        writable.write(file.current),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("timeout")), 60_000),
+        ),
+      ]);
       try {
         await writable.close();
       } catch {

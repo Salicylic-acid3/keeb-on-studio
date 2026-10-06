@@ -94,10 +94,10 @@ export interface UseVialKeyboard {
   liveKeys: { enabled: boolean; pressed: ReadonlySet<string> };
   /**
    * Restart the keyboard into its bootloader (asking for the unlock first).
-   * The keyboard disconnects; resolves once the request is sent, or false
-   * when the unlock was called off.
+   * The keyboard disconnects. "sent" once the request is out; "cancelled"
+   * when the unlock was called off; "gone" when the keyboard went away first.
    */
-  enterBootloader(): Promise<boolean>;
+  enterBootloader(): Promise<BootloaderResult>;
   setLiveKeys(on: boolean): Promise<void>;
   /** Everything on the keyboard as shown, as a Vial .vil file. */
   exportVil(): string;
@@ -127,6 +127,8 @@ export interface UseVialKeyboard {
   refreshOs(): Promise<void>;
 }
 
+export type BootloaderResult = "sent" | "cancelled" | "gone";
+
 export interface UnlockProgress {
   keys: Array<{ row: number; col: number }>;
   /** 0..1 */
@@ -137,6 +139,9 @@ export interface UnlockProgress {
 const UNLOCK_COUNTER_MAX = 50;
 
 export class UnlockCancelledError extends Error {}
+
+/** The keyboard went away (unplugged, or restarted) while we waited on it. */
+export class KeyboardGoneError extends Error {}
 
 export function createDemoTransport(): DemoTransport {
   return new DemoTransport({
@@ -446,7 +451,16 @@ export function useVialKeyboard(): UseVialKeyboard {
         await new Promise((r) => setTimeout(r, 150));
         if (unlockCancelled.current)
           throw new UnlockCancelledError("Unlock cancelled");
-        const p = await client.unlockPoll();
+        // Unplugged while the person was holding the keys: stop waiting.
+        if (clientRef.current !== client) {
+          throw new KeyboardGoneError("The keyboard was disconnected");
+        }
+        let p: Awaited<ReturnType<VialClient["unlockPoll"]>>;
+        try {
+          p = await client.unlockPoll();
+        } catch {
+          throw new KeyboardGoneError("The keyboard was disconnected");
+        }
         if (p.unlocked) return;
         setUnlock({
           keys: status.unlockKeys,
@@ -575,7 +589,11 @@ export function useVialKeyboard(): UseVialKeyboard {
         } catch (err) {
           // Called off: the macros stay unsaved (and marked so); the rest
           // above is already on the keyboard.
-          if (err instanceof UnlockCancelledError) return;
+          if (
+            err instanceof UnlockCancelledError ||
+            err instanceof KeyboardGoneError
+          )
+            return;
           throw err;
         }
         await client.setMacroBuffer(buffer);
@@ -675,7 +693,11 @@ export function useVialKeyboard(): UseVialKeyboard {
       try {
         await runUnlock(client);
       } catch (err) {
-        if (err instanceof UnlockCancelledError) return;
+        if (
+          err instanceof UnlockCancelledError ||
+          err instanceof KeyboardGoneError
+        )
+          return;
         throw err;
       }
       setLiveKeysOn(true);
@@ -683,17 +705,17 @@ export function useVialKeyboard(): UseVialKeyboard {
     [runUnlock],
   );
 
-  const enterBootloader = useCallback(async () => {
+  const enterBootloader = useCallback(async (): Promise<BootloaderResult> => {
     const client = clientRef.current;
-    if (!client) return false;
+    if (!client) return "gone";
     try {
       await runUnlock(client);
     } catch (err) {
-      if (err instanceof UnlockCancelledError) return false;
-      throw err;
+      if (err instanceof UnlockCancelledError) return "cancelled";
+      return "gone";
     }
     await client.bootloaderJump();
-    return true;
+    return "sent";
   }, [runUnlock]);
 
   // While on, read the matrix about twenty times a second. Requests are

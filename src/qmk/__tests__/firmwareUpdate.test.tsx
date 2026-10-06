@@ -134,4 +134,37 @@ describe("Update firmware", () => {
     expect(hook.result.current.update.state).toMatchObject({ step: "error" });
     expect(drive.written).toHaveLength(0);
   });
+
+  test("unplugging while it waits for the unlock ends in a message, not a spinner", async () => {
+    const transport = createDemoTransport();
+    globalThis.fetch = jest.fn(async () => ({
+      ok: true,
+      arrayBuffer: async () => uf2(0xe48bff56).buffer,
+    })) as unknown as typeof fetch;
+    const hook = renderHook(() => {
+      const keyboard = useVialKeyboard();
+      return { update: useQmkFirmwareUpdate(keyboard), keyboard };
+    });
+    await act(async () =>
+      hook.result.current.keyboard.connect(transport, "demo"),
+    );
+    await waitFor(() =>
+      expect(hook.result.current.update.firmware).toBeDefined(),
+    );
+
+    let started: Promise<void> | undefined;
+    act(() => {
+      started = hook.result.current.update.start();
+    });
+    // Wait until the unlock prompt is up, then pull the cable.
+    await waitFor(() =>
+      expect(hook.result.current.keyboard.unlock).not.toBeNull(),
+    );
+    await act(async () => transport.close());
+    await act(async () => started);
+
+    expect(hook.result.current.update.state).toMatchObject({ step: "error" });
+    expect(hook.result.current.keyboard.unlock).toBeNull();
+    expect(transport.jumpedToBootloader).toBe(false);
+  });
 });
