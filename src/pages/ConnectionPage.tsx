@@ -390,6 +390,17 @@ export function ConnectionPage() {
                 </button>
               </div>
             </div>
+            {/* Said here, before anyone flips it, because the way back is not
+                obvious: with BLE preferred and a Bluetooth host connected, the
+                app could not reach the keyboard over USB, and the only way out
+                was to switch to a Bluetooth profile with no host paired, which
+                makes the keyboard fall back to USB. A key for it on some layer
+                is the way ZMK expects this to be done. */}
+            <p className="mt-3 text-xs text-[var(--color-warning)]">
+              {t(
+                'Before choosing Bluetooth, put an "Output selection (USB/BLE)" key (OUT_TOG) on some layer. While Bluetooth is preferred and a Bluetooth host is connected, this app may not be able to reach the keyboard over USB to switch back; that key switches it from the keyboard. Without one, switching to a Bluetooth profile with no host paired also returns it to USB.',
+              )}
+            </p>
           </div>
         )}
 

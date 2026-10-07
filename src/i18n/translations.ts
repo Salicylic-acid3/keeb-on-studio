@@ -1115,6 +1115,8 @@ const ja: Record<string, string> = {
     "「OS 検出に従う」を選ぶと、下の「OS ごとのデフォルトレイヤー」の設定が使われます。",
   "Choose whether USB or Bluetooth is used for keystrokes when both are connected.":
     "USB と Bluetooth の両方が接続されているとき、どちらにキー入力を送るかを選びます。",
+  'Before choosing Bluetooth, put an "Output selection (USB/BLE)" key (OUT_TOG) on some layer. While Bluetooth is preferred and a Bluetooth host is connected, this app may not be able to reach the keyboard over USB to switch back; that key switches it from the keyboard. Without one, switching to a Bluetooth profile with no host paired also returns it to USB.':
+    "Bluetooth を選ぶ前に、どこかのレイヤーに「出力先選択(USB/BLE)」のキー(OUT_TOG)を置いておいてください。Bluetooth 優先で Bluetooth のホストにつながっている間は、このアプリが USB 経由でキーボードに届かず、戻せないことがあります。そのキーならキーボード側から切り替えられます。キーが無い場合は、ホストを登録していない Bluetooth プロファイルに切り替えると USB に戻ります。",
   "The OS is detected automatically from how the host communicates (heuristic).":
     "OS はホストとの通信内容から自動判定されます（推定）。",
   "The OS is detected automatically from how the host communicates (heuristic). If detection is wrong, select the correct OS here to override it for this connection.":
@@ -2945,6 +2947,8 @@ const zh: Record<string, string> = {
     "选择“跟随操作系统检测”将应用下方的“按操作系统的默认层”设置。",
   "Choose whether USB or Bluetooth is used for keystrokes when both are connected.":
     "当 USB 和蓝牙都连接时，选择用于按键输入的连接。",
+  'Before choosing Bluetooth, put an "Output selection (USB/BLE)" key (OUT_TOG) on some layer. While Bluetooth is preferred and a Bluetooth host is connected, this app may not be able to reach the keyboard over USB to switch back; that key switches it from the keyboard. Without one, switching to a Bluetooth profile with no host paired also returns it to USB.':
+    "选择蓝牙之前，请先在某一层放一个“输出选择（USB/BLE）”键（OUT_TOG）。在蓝牙优先且已连接蓝牙主机期间，本应用可能无法通过 USB 连到键盘来切回；有了该键就能在键盘上切换。没有该键时，切换到未配对主机的蓝牙配置文件也能回到 USB。",
   "The OS is detected automatically from how the host communicates (heuristic).":
     "操作系统根据主机通信方式自动检测（启发式）。",
   "The OS is detected automatically from how the host communicates (heuristic). If detection is wrong, select the correct OS here to override it for this connection.":

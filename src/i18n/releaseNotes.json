@@ -6,7 +6,13 @@
       "changes": {
         "major": [],
         "minor": [],
-        "patch": []
+        "patch": [
+          {
+            "en": "Connection: the Output Priority card now says, before you choose Bluetooth, to put an \"Output selection (USB/BLE)\" key on some layer. With Bluetooth preferred and a Bluetooth host connected, this app could not reach the keyboard over USB to switch back; the key does it from the keyboard, and switching to a Bluetooth profile with no host paired is the other way out.",
+            "ja": "接続: 出力優先度のカードに、Bluetooth を選ぶ前にどこかのレイヤーへ「出力先選択(USB/BLE)」のキーを置いておくよう注意書きを加えました。Bluetooth 優先で Bluetooth のホストにつながっていると、このアプリは USB 経由でキーボードに届かず戻せませんでした。そのキーならキーボード側から戻せます。ホスト未登録の Bluetooth プロファイルへ切り替えるのがもう一つの戻し方です。",
+            "zh": "连接：输出优先级卡片现在会在你选择蓝牙之前提示先在某一层放一个“输出选择（USB/BLE）”键。蓝牙优先且已连接蓝牙主机时，本应用无法通过 USB 连到键盘来切回；该键可在键盘上切换，切换到未配对主机的蓝牙配置文件是另一条出路。"
+          }
+        ]
       }
     },
     {
