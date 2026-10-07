@@ -917,6 +917,14 @@ const ja: Record<string, string> = {
     "警告: cormoran の ZMK fork は非常に実験的で、DYA キーボード向けに最適化されています。不安定な変更や破壊的変更を含む可能性があります。自己責任で使用してください。まれにキーボードハードウェアの誤動作や損傷につながる場合があります。",
   "Q: Can I get source code of Keeb-On! Studio?":
     "Q: Keeb-On! Studio のソースコードを入手できますか？",
+  "Q: I switched the output priority to Bluetooth and now the app cannot find the keyboard. How do I get back to USB?":
+    "Q: 出力優先度を Bluetooth にしたらアプリがキーボードを見つけなくなりました。USB に戻すには?",
+  'A: While Bluetooth is preferred and a Bluetooth host is connected, this app cannot reach the keyboard over USB. The keyboard falls back to USB as soon as no Bluetooth host is connected, so either turn Bluetooth off on the connected computer for a moment, or switch the keyboard to a Bluetooth profile with no host paired; then connect the app and set the priority back. To avoid this in future, put an "Output selection (USB/BLE)" key (OUT_TOG) on some layer before choosing Bluetooth.':
+    "A: Bluetooth 優先で Bluetooth のホストにつながっている間、このアプリは USB 経由でキーボードに届きません。Bluetooth のホストがつながっていなければキーボードは USB に戻るので、つながっている PC の Bluetooth をいったん切るか、キーボードをホスト未登録の Bluetooth プロファイルに切り替えてください。そのうえでアプリをつなぎ、優先度を戻します。今後のために、Bluetooth を選ぶ前にどこかのレイヤーへ「出力先選択(USB/BLE)」のキー(OUT_TOG)を置いておいてください。",
+  "Q: A setting I changed takes effect, then comes back as it was after the keyboard restarts.":
+    "Q: 変えた設定がいったん効くのに、キーボードを再起動すると元に戻ります。",
+  "A: The keyboard's settings storage is full. When it is, every new save is refused without any error, and only what was saved earlier survives a restart. Check the Settings storage card on the Troubleshooting tab: if it is red, remove unused macros, combos or tap dances, or update to firmware with a larger settings area (ClickBoard ErgoTrack and GoFortyMax Ortho firmware from October 2026 doubles it; flash the settings reset image first, as the storage area moves).":
+    "A: キーボードの設定保存領域が一杯です。一杯になると新しい保存はエラーも出さずに拒否され、以前に保存したものだけが再起動後に残ります。トラブルシューティングタブの「設定の保存領域」カードを見てください。赤ければ、使っていないマクロ・コンボ・タップダンスを消すか、保存領域を広げたファームウェアに更新します(2026 年 10 月以降の ClickBoard ErgoTrack / GoFortyMax Ortho のファームウェアは 2 倍になっています。保存領域の位置が変わるので、先に settings reset のイメージを焼いてください)。",
 
   "Configure key bindings and layers": "キー割り当てとレイヤーを設定します",
   "Unsaved changes": "未保存の変更",
@@ -2763,6 +2771,14 @@ const zh: Record<string, string> = {
     "警告：cormoran 的 ZMK 分支非常实验性，针对 DYA 键盘进行了优化，可能包含不稳定或破坏性更改。使用风险自负。在极少数情况下，可能导致键盘硬件故障或损坏。",
   "Q: Can I get source code of Keeb-On! Studio?":
     "Q: 我可以获取 Keeb-On! Studio 的源代码吗？",
+  "Q: I switched the output priority to Bluetooth and now the app cannot find the keyboard. How do I get back to USB?":
+    "Q: 把输出优先级切到蓝牙后，应用找不到键盘了。怎么切回 USB？",
+  'A: While Bluetooth is preferred and a Bluetooth host is connected, this app cannot reach the keyboard over USB. The keyboard falls back to USB as soon as no Bluetooth host is connected, so either turn Bluetooth off on the connected computer for a moment, or switch the keyboard to a Bluetooth profile with no host paired; then connect the app and set the priority back. To avoid this in future, put an "Output selection (USB/BLE)" key (OUT_TOG) on some layer before choosing Bluetooth.':
+    "A: 蓝牙优先且已连接蓝牙主机期间，本应用无法通过 USB 连到键盘。只要没有蓝牙主机连接，键盘就会回到 USB，所以可以暂时关闭已连接电脑的蓝牙，或把键盘切到未配对主机的蓝牙配置文件；然后连接应用并把优先级改回来。为避免再次发生，请在选择蓝牙之前先在某一层放一个“输出选择（USB/BLE）”键（OUT_TOG）。",
+  "Q: A setting I changed takes effect, then comes back as it was after the keyboard restarts.":
+    "Q: 改过的设置先是生效了，键盘重启后却恢复原状。",
+  "A: The keyboard's settings storage is full. When it is, every new save is refused without any error, and only what was saved earlier survives a restart. Check the Settings storage card on the Troubleshooting tab: if it is red, remove unused macros, combos or tap dances, or update to firmware with a larger settings area (ClickBoard ErgoTrack and GoFortyMax Ortho firmware from October 2026 doubles it; flash the settings reset image first, as the storage area moves).":
+    "A: 键盘的设置存储空间已满。满了之后，所有新的保存都会被无声拒绝，只有之前保存的内容能在重启后保留。请查看故障排除标签页的“设置存储空间”卡片：如果是红色，删除不用的宏、组合键或点按舞，或更新到设置区更大的固件（2026 年 10 月起的 ClickBoard ErgoTrack / GoFortyMax Ortho 固件已将其扩大一倍；由于存储区位置改变，请先刷入 settings reset 镜像）。",
 
   "Configure key bindings and layers": "配置按键绑定和层",
   "Unsaved changes": "有未保存的更改",

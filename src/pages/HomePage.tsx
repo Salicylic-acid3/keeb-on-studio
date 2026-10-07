@@ -347,6 +347,30 @@ export function HomePage() {
                 )}
               </p>
             </div>
+            <div>
+              <p className="font-medium text-[var(--color-text)] mb-1">
+                {t(
+                  "Q: I switched the output priority to Bluetooth and now the app cannot find the keyboard. How do I get back to USB?",
+                )}
+              </p>
+              <p className="text-sm text-[var(--color-text-muted)]">
+                {t(
+                  'A: While Bluetooth is preferred and a Bluetooth host is connected, this app cannot reach the keyboard over USB. The keyboard falls back to USB as soon as no Bluetooth host is connected, so either turn Bluetooth off on the connected computer for a moment, or switch the keyboard to a Bluetooth profile with no host paired; then connect the app and set the priority back. To avoid this in future, put an "Output selection (USB/BLE)" key (OUT_TOG) on some layer before choosing Bluetooth.',
+                )}
+              </p>
+            </div>
+            <div>
+              <p className="font-medium text-[var(--color-text)] mb-1">
+                {t(
+                  "Q: A setting I changed takes effect, then comes back as it was after the keyboard restarts.",
+                )}
+              </p>
+              <p className="text-sm text-[var(--color-text-muted)]">
+                {t(
+                  "A: The keyboard's settings storage is full. When it is, every new save is refused without any error, and only what was saved earlier survives a restart. Check the Settings storage card on the Troubleshooting tab: if it is red, remove unused macros, combos or tap dances, or update to firmware with a larger settings area (ClickBoard ErgoTrack and GoFortyMax Ortho firmware from October 2026 doubles it; flash the settings reset image first, as the storage area moves).",
+                )}
+              </p>
+            </div>
           </div>
         </div>
 
