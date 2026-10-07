@@ -359,18 +359,6 @@ export function HomePage() {
                 )}
               </p>
             </div>
-            <div>
-              <p className="font-medium text-[var(--color-text)] mb-1">
-                {t(
-                  "Q: A setting I changed takes effect, then comes back as it was after the keyboard restarts.",
-                )}
-              </p>
-              <p className="text-sm text-[var(--color-text-muted)]">
-                {t(
-                  "A: The keyboard's settings storage is full. When it is, every new save is refused without any error, and only what was saved earlier survives a restart. Check the Settings storage card on the Troubleshooting tab: if it is red, remove unused macros, combos or tap dances, or update to firmware with a larger settings area (ClickBoard ErgoTrack and GoFortyMax Ortho firmware from October 2026 doubles it; flash the settings reset image first, as the storage area moves).",
-                )}
-              </p>
-            </div>
           </div>
         </div>
 

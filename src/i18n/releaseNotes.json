@@ -6,7 +6,13 @@
       "changes": {
         "major": [],
         "minor": [],
-        "patch": []
+        "patch": [
+          {
+            "en": "Home: the Q&A entry about a setting coming back after a restart is withdrawn; the Settings storage card on the Troubleshooting tab covers it.",
+            "ja": "ホーム: Q&A の「再起動で設定が戻る」の項目を外しました。トラブルシューティングタブの「設定の保存領域」カードがその役目を持ちます。",
+            "zh": "主页：撤下 Q&A 中“重启后设置恢复原状”一条；故障排除标签页的“设置存储空间”卡片已涵盖此内容。"
+          }
+        ]
       }
     },
     {
