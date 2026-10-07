@@ -6,6 +6,15 @@
       "changes": {
         "major": [],
         "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.07.1",
+      "date": "2026-10-07",
+      "changes": {
+        "major": [],
+        "minor": [],
         "patch": [
           {
             "en": "Home: the Q&A entry about a setting coming back after a restart is withdrawn; the Settings storage card on the Troubleshooting tab covers it.",
