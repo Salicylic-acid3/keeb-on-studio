@@ -1296,11 +1296,11 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
         <div
           className={`${BAR} order-4 sm:order-1 border-t sm:border-t-0 sm:border-b overflow-x-auto pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:pb-2`}
         >
-          <h1 className="hidden md:block text-sm font-medium text-[var(--color-text)] mr-2">
+          <h1 className="hidden lg:block whitespace-nowrap text-sm font-medium text-[var(--color-text)] mr-2">
             {t("Layout Editor")}
           </h1>
           <LayerToggle layer={layer} onChange={setLayer} />
-          <span className="hidden sm:inline text-xs text-[var(--color-text-muted)] ml-1">
+          <span className="hidden sm:inline whitespace-nowrap text-xs text-[var(--color-text-muted)] ml-1">
             {t("{{count}} keys", { count: project.keys.length })}
           </span>
           <div className="flex-1" />
@@ -1319,9 +1319,10 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
             }}
             aria-pressed={fitMode}
             aria-label={t("Keycap check")}
+            title={t("Keycap check")}
           >
             <IconKeyboard size={18} />
-            <span className="hidden lg:inline whitespace-nowrap">
+            <span className="hidden xl:inline whitespace-nowrap">
               {t("Keycap check")}
             </span>
           </button>
@@ -1330,9 +1331,12 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
             className={BUTTON}
             onClick={() => setImportOpen(true)}
             aria-label={t("Import")}
+            title={t("Import")}
           >
             <IconFileImport size={18} />
-            <span className="hidden sm:inline">{t("Import")}</span>
+            <span className="hidden xl:inline whitespace-nowrap">
+              {t("Import")}
+            </span>
           </button>
           <button
             type="button"
@@ -1340,27 +1344,36 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
             onClick={() => setExportOpen(true)}
             disabled={empty}
             aria-label={t("Export")}
+            title={t("Export")}
           >
             <IconFileExport size={18} />
-            <span className="hidden sm:inline">{t("Export")}</span>
+            <span className="hidden xl:inline whitespace-nowrap">
+              {t("Export")}
+            </span>
           </button>
           <button
             type="button"
             className={BUTTON}
             onClick={() => setGistOpen(true)}
             aria-label={t("My layouts")}
+            title={t("My layouts")}
           >
             <IconBrandGithub size={18} />
-            <span className="hidden sm:inline">{t("My layouts")}</span>
+            <span className="hidden xl:inline whitespace-nowrap">
+              {t("My layouts")}
+            </span>
           </button>
           <button
             type="button"
             className={BUTTON}
             onClick={() => setGalleryOpen(true)}
             aria-label={t("Gallery")}
+            title={t("Gallery")}
           >
             <IconLayoutGrid size={18} />
-            <span className="hidden sm:inline">{t("Gallery")}</span>
+            <span className="hidden xl:inline whitespace-nowrap">
+              {t("Gallery")}
+            </span>
           </button>
           <button
             type="button"

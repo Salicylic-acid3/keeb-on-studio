@@ -6,7 +6,13 @@
       "changes": {
         "major": [],
         "minor": [],
-        "patch": []
+        "patch": [
+          {
+            "en": "Layout editor: on a tablet held upright, the buttons at the top (Keycap check, Import, Export, My layouts, Gallery) are icons, instead of labels squeezed onto several lines. The labels show on wide screens.",
+            "ja": "レイアウトエディタ: タブレットを縦向きで使うとき、上部のボタン（キーキャップの適合性・インポート・エクスポート・マイレイアウト・ギャラリー）をアイコン表示にしました。これまでは文字が縦に折り返されていました。文字は幅の広い画面で表示されます。",
+            "zh": "布局编辑器：竖持平板时，顶部按钮（键帽适配、导入、导出、我的布局、画廊）改为图标显示，不再把文字挤成多行。宽屏上仍显示文字。"
+          }
+        ]
       }
     },
     {
