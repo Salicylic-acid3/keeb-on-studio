@@ -10,6 +10,7 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // Layout editor
+  "ISO / JIS Enter": "ISO / JIS Enter の形にする",
   "Key actions": "キーの操作",
   "Select a key to change its size, move it, or copy it. Drag on empty space to select several.":
     "キーを選ぶと、サイズの変更、移動、複製ができます。何もない場所をドラッグすると、まとめて選べます。",

@@ -35,6 +35,8 @@ import {
   copyKeys,
   deleteKeys,
   duplicateKeys,
+  keyAfterDelete,
+  makeIsoEnter,
   mirrorKeys,
   moveKeys,
   offsetBelow,
@@ -469,8 +471,10 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
   }, [commitAdded, project, selectedIds]);
   const remove = useCallback(() => {
     if (selectedIds.length === 0) return;
+    // Move on to the key on the left, so Delete can be pressed again.
+    const next = keyAfterDelete(project, selectedIds);
     commit(deleteKeys(project, selectedIds));
-    setSelection(new Set());
+    setSelection(new Set(next ? [next] : []));
   }, [commit, project, selectedIds]);
   const nudge = useCallback(
     (dx: number, dy: number) => {
@@ -560,6 +564,7 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
       step={step}
       onResize={(size) => commit(resizeKeys(project, selectedIds, size))}
       onNudge={nudge}
+      onIsoEnter={() => commit(makeIsoEnter(project, selectedIds))}
       onAddNext={addOne}
       onDuplicate={duplicate}
       onMirror={mirror}

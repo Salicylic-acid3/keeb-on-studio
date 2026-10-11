@@ -17,7 +17,7 @@ import {
 } from "@tabler/icons-react";
 import type { ReactNode } from "react";
 import { useLanguage } from "../../hooks/useLanguage";
-import { SIZE_PRESETS } from "../lib/edit";
+import { isIsoEnter, SIZE_PRESETS } from "../lib/edit";
 import type { LayoutKey } from "../lib/model";
 
 const TILE =
@@ -99,6 +99,7 @@ export interface KeyPanelProps {
   step: number;
   onResize: (size: { w?: number; h?: number }) => void;
   onNudge: (dx: number, dy: number) => void;
+  onIsoEnter: () => void;
   onAddNext: () => void;
   onDuplicate: () => void;
   onMirror: () => void;
@@ -112,6 +113,7 @@ export function KeyPanel({
   step,
   onResize,
   onNudge,
+  onIsoEnter,
   onAddNext,
   onDuplicate,
   onMirror,
@@ -132,6 +134,7 @@ export function KeyPanel({
     keys.every((k) => pick(k) === pick(keys[0])) ? pick(keys[0]) : null;
   const w = same((k) => k.w);
   const h = same((k) => k.h);
+  const allIso = keys.every(isIsoEnter);
 
   return (
     <div>
@@ -149,14 +152,22 @@ export function KeyPanel({
             <button
               key={size}
               type="button"
-              aria-pressed={w === size}
-              className={`${TILE} tabular-nums ${w === size ? TILE_ON : TILE_IDLE}`}
+              aria-pressed={!allIso && w === size}
+              className={`${TILE} tabular-nums ${!allIso && w === size ? TILE_ON : TILE_IDLE}`}
               onClick={() => onResize({ w: size })}
             >
               {size}
             </button>
           ))}
         </div>
+        <button
+          type="button"
+          aria-pressed={allIso}
+          className={`${TILE} w-full mb-2 ${allIso ? TILE_ON : TILE_IDLE}`}
+          onClick={onIsoEnter}
+        >
+          {t("ISO / JIS Enter")}
+        </button>
         <div className="flex flex-col gap-2">
           <Stepper
             label={t("W")}

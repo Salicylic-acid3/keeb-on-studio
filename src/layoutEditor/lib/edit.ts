@@ -163,6 +163,76 @@ export function deleteKeys(
   });
 }
 
+/**
+ * The key to select once these are deleted: the one to their left on the
+ * same row, so pressing Delete again and again eats a row leftwards. With
+ * nothing to the left, the nearest key that remains.
+ */
+export function keyAfterDelete(
+  project: LayoutProject,
+  ids: Iterable<string>,
+): string | null {
+  const gone = new Set(ids);
+  const removed = project.keys.filter((k) => gone.has(k.id));
+  const rest = project.keys.filter((k) => !gone.has(k.id));
+  if (removed.length === 0 || rest.length === 0) return null;
+  // Work from the leftmost deleted key.
+  const from = removed.reduce((a, b) => (b.cx < a.cx ? b : a));
+  const sameRow = rest.filter(
+    (k) => k.cx < from.cx && Math.abs(k.cy - from.cy) < from.h / 2,
+  );
+  const pool = sameRow.length > 0 ? sameRow : rest;
+  const dist = (k: LayoutKey) => Math.hypot(k.cx - from.cx, k.cy - from.cy);
+  return pool.reduce((a, b) => (dist(b) < dist(a) ? b : a)).id;
+}
+
+/** The ISO / JIS Enter: 1.25u x 2u with a 1.5u top row reaching left. */
+const ISO_ENTER = { w: 1.25, h: 2, x2: -0.25, y2: 0, w2: 1.5, h2: 1 };
+
+export function isIsoEnter(key: LayoutKey): boolean {
+  return (
+    key.w === ISO_ENTER.w &&
+    key.h === ISO_ENTER.h &&
+    key.kle?.x2 === ISO_ENTER.x2 &&
+    key.kle?.w2 === ISO_ENTER.w2 &&
+    key.kle?.h2 === ISO_ENTER.h2
+  );
+}
+
+/**
+ * Turn keys into ISO / JIS Enters. The top-right corner stays put: an Enter
+ * sits at the right end of its rows, so that is the corner already in place.
+ */
+export function makeIsoEnter(
+  project: LayoutProject,
+  ids: Iterable<string>,
+): LayoutProject {
+  const target = new Set(ids);
+  const keys = project.keys.map((k) => {
+    if (!target.has(k.id) || isIsoEnter(k)) return k;
+    const sized = resizedKey(k, ISO_ENTER.w, ISO_ENTER.h);
+    // resizedKey keeps the top left; slide so the top right is kept instead.
+    const slide = rotatePoint(
+      { x: k.w - ISO_ENTER.w, y: 0 },
+      { x: 0, y: 0 },
+      k.angle,
+    );
+    return {
+      ...sized,
+      cx: tidy(sized.cx + slide.x),
+      cy: tidy(sized.cy + slide.y),
+      kle: {
+        ...sized.kle,
+        x2: ISO_ENTER.x2,
+        y2: ISO_ENTER.y2,
+        w2: ISO_ENTER.w2,
+        h2: ISO_ENTER.h2,
+      },
+    };
+  });
+  return { ...project, keys };
+}
+
 function blankKey(cx: number, cy: number, w = 1, h = 1): LayoutKey {
   return {
     id: newId("k"),

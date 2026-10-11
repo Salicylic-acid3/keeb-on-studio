@@ -4,6 +4,9 @@ import {
   copyKeys,
   deleteKeys,
   duplicateKeys,
+  isIsoEnter,
+  keyAfterDelete,
+  makeIsoEnter,
   keysInRect,
   mirrorKeys,
   moveKeys,
@@ -177,5 +180,56 @@ describe("templates", () => {
     expect(templateProject("ansi60").keys).toHaveLength(61);
     expect(templateProject("split36").keys).toHaveLength(42);
     expect(templateProject("empty").keys).toHaveLength(0);
+  });
+});
+
+describe("keyAfterDelete", () => {
+  const p = importKle([
+    ["A", "B", "C"],
+    ["D", "E"],
+  ]);
+  const [a, b, c, d] = p.keys;
+
+  it("picks the key to the left on the same row", () => {
+    expect(keyAfterDelete(p, [c.id])).toBe(b.id);
+    expect(keyAfterDelete(p, [b.id, c.id])).toBe(a.id);
+  });
+
+  it("falls back to the nearest key when nothing is to the left", () => {
+    expect(keyAfterDelete(p, [a.id])).toBe(b.id);
+    expect(keyAfterDelete(p, [d.id])).toBe(a.id);
+  });
+
+  it("has nothing to pick once the layout is empty", () => {
+    expect(
+      keyAfterDelete(
+        p,
+        p.keys.map((k) => k.id),
+      ),
+    ).toBeNull();
+  });
+});
+
+describe("makeIsoEnter", () => {
+  it("makes the shape KLE knows, keeping the top-right corner", () => {
+    const p = importKle([["A", { w: 1.5 }, "Enter"]]);
+    const q = makeIsoEnter(p, [p.keys[1].id]);
+    const k = q.keys[1];
+    expect(isIsoEnter(k)).toBe(true);
+    expect(k.cx + k.w / 2).toBe(2.5);
+    expect(k.cy - k.h / 2).toBe(0);
+    expect(exportKle(q, "legend")).toEqual([
+      ["A", { x: 0.25, w: 1.25, h: 2, x2: -0.25, w2: 1.5, h2: 1 }, "Enter"],
+    ]);
+  });
+
+  it("goes back to a plain key when given a width", () => {
+    const p = importKle([["Enter"]]);
+    const q = resizeKeys(makeIsoEnter(p, [p.keys[0].id]), [p.keys[0].id], {
+      w: 2.25,
+      h: 1,
+    });
+    expect(isIsoEnter(q.keys[0])).toBe(false);
+    expect(q.keys[0].kle).toBeUndefined();
   });
 });
