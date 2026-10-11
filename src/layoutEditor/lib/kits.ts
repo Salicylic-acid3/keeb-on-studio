@@ -10,7 +10,8 @@
  *    label standing at the left of the cap's row in the file.
  *  - legend: the texts on the top of the cap. The texts on the front are
  *    the file's own size notes ("1.75", "1.25c") and are not legends; a
- *    trailing "c" marks a convex cap.
+ *    trailing "c" marks a convex cap, which is how every convex cap in
+ *    these files is told from a plain one.
  */
 import clickprofile from "../data/kits/clickprofile.json";
 import goforty from "../data/kits/goforty.json";

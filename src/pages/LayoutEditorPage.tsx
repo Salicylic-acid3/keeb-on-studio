@@ -603,6 +603,7 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
         main: "",
         sub: "",
         offRow: false,
+        convex: false,
         pinned: pins.has(key.id),
       });
     }
@@ -612,6 +613,7 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
         main: p.cap.cap.main,
         sub: p.cap.cap.sub,
         offRow: p.offRow,
+        convex: p.cap.cap.convex,
         pinned: p.pinned,
       });
     }

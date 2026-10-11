@@ -1,9 +1,10 @@
 /**
  * Which caps of the chosen keycap sets go on which keys of a layout.
  *
- * A cap fits a key when it is the same size and shape (a convex cap only
- * goes on a key marked convex, and a plain cap never does) and, on a
- * sculpted set, made for the key's row. Among the caps that fit, keys take one with their own
+ * A cap fits a key when it is the same size and, on a sculpted set, made
+ * for the key's row. Convex caps are a shape of their own: they go on any
+ * key of their length, whatever its row, and a key marked as convex takes
+ * nothing else. Plain keys are given plain caps first. Among the caps that fit, keys take one with their own
  * legend first, a blank one next, and one with some other legend last, so
  * as many keys as possible end up with the right legend and every key that
  * can be covered is.
@@ -96,8 +97,10 @@ interface Form {
   convex: boolean;
 }
 
-const formKey = (f: Form) =>
-  `${f.w}x${f.h}${f.iso ? "iso" : ""}${f.convex ? "c" : ""}`;
+/** What has to be equal for a cap to sit on a key: length, height, outline. */
+const formKey = (f: Form) => `${f.w}x${f.h}${f.iso ? "iso" : ""}`;
+/** The same with the shape, for telling piles and shortages apart. */
+const shapeKey = (f: Form) => `${formKey(f)}${f.convex ? "c" : ""}`;
 const capForm = (cap: Cap): Form => ({
   w: cap.w,
   h: cap.h,
@@ -141,7 +144,14 @@ function statusOf(need: Need, cap: Cap): FitStatus {
 }
 
 function rowFits(need: Need, cap: Cap, kit: Kit | undefined): boolean {
+  // A convex cap is not sculpted to a row.
+  if (cap.convex) return true;
   return !kit?.sculpted || !cap.row || !need.row || cap.row === need.row;
+}
+
+/** A key marked convex takes only convex caps; any other key takes either. */
+function shapeFits(key: LayoutKey, cap: Cap): boolean {
+  return !key.convex || cap.convex;
 }
 
 /** Sculpt rows for a layout's rows, top to bottom, counted up from the bottom. */
@@ -214,15 +224,24 @@ export function fitCaps(
       continue;
     }
     const cap = (free.get(need.size) ?? []).find((c) => c.id === capId);
-    if (cap) take(need, cap, true);
+    if (cap && shapeFits(need.key, cap.cap)) take(need, cap, true);
   }
 
-  /** The best free cap for `need` among those `want` accepts. */
-  const pick = (need: Need, want: (cap: Cap) => boolean) => {
+  /**
+   * The best free cap for `need` among those `want` accepts. A plain key is
+   * offered convex caps only once `lastResort` is set.
+   */
+  const pick = (
+    need: Need,
+    want: (cap: Cap) => boolean,
+    lastResort: boolean,
+  ) => {
     const homing = need.main === "f" || need.main === "j";
     let best: PoolCap | undefined;
     let bestScore = -1;
     for (const c of free.get(need.size) ?? []) {
+      if (!shapeFits(need.key, c.cap)) continue;
+      if (c.cap.convex && !need.key.convex && !lastResort) continue;
       if (!rowFits(need, c.cap, kits.get(c.kitId)) || !want(c.cap)) continue;
       const score = c.cap.nub === homing ? 1 : 0;
       if (score > bestScore) {
@@ -238,27 +257,38 @@ export function fitCaps(
   const pass = (
     who: (need: Need) => boolean,
     want: (need: Need) => (cap: Cap) => boolean,
+    lastResort: boolean,
   ) => {
     for (const need of needs) {
       if (!open(need) || !who(need)) continue;
-      const cap = pick(need, want(need));
+      const cap = pick(need, want(need), lastResort);
       if (cap) take(need, cap, false);
     }
   };
 
   // Their own legend; then a blank cap; keys with no legend take what is
-  // of least use to the others; last, a cap with some other legend.
-  pass(labelled, (need) => (cap) => !cap.blank && sameLegend(need, cap));
-  pass(labelled, () => (cap) => cap.blank);
-  pass(
-    (need) => !labelled(need),
-    () => (cap) => cap.blank,
-  );
-  pass(
-    (need) => !labelled(need),
-    () => () => true,
-  );
-  pass(labelled, () => () => true);
+  // of least use to the others; last, a cap with some other legend. All of
+  // that with caps of the key's own shape first, and only then, for plain
+  // keys still bare, with the convex caps that happen to be their length.
+  for (const lastResort of [false, true]) {
+    pass(
+      labelled,
+      (need) => (cap) => !cap.blank && sameLegend(need, cap),
+      lastResort,
+    );
+    pass(labelled, () => (cap) => cap.blank, lastResort);
+    pass(
+      (need) => !labelled(need),
+      () => (cap) => cap.blank,
+      lastResort,
+    );
+    pass(
+      (need) => !labelled(need),
+      () => () => true,
+      lastResort,
+    );
+    pass(labelled, () => () => true, lastResort);
+  }
 
   const missing = needs.filter((n) => !placed.has(n.key.id)).map((n) => n.key);
   const used = new Set([...placed.values()].map((p) => p.cap.id));
@@ -272,9 +302,12 @@ export function fitCaps(
   };
 }
 
-/** Whether a spare cap can go on a key at all: the same size and shape. */
+/**
+ * Whether a cap can go on a key at all: the same size, and convex if the
+ * key is marked convex.
+ */
 export function capFitsKey(cap: Cap, key: LayoutKey): boolean {
-  return capSize(cap) === needOf(key, undefined).size;
+  return capSize(cap) === needOf(key, undefined).size && shapeFits(key, cap);
 }
 
 export interface ShortOf extends Form {
@@ -286,7 +319,7 @@ export function missingBySize(missing: LayoutKey[]): ShortOf[] {
   const counts = new Map<string, ShortOf>();
   for (const key of missing) {
     const form = keyForm(key);
-    const id = formKey(form);
+    const id = shapeKey(form);
     const entry = counts.get(id) ?? { ...form, count: 0 };
     entry.count += 1;
     counts.set(id, entry);
@@ -311,7 +344,7 @@ export function pileCaps(caps: PoolCap[]): CapPile[] {
   const piles = new Map<string, CapPile>();
   for (const cap of caps) {
     const form = capForm(cap.cap);
-    const id = `${cap.cap.row ?? ""}|${formKey(form)}`;
+    const id = `${cap.cap.row ?? ""}|${shapeKey(form)}`;
     let pile = piles.get(id);
     if (!pile) {
       pile = {

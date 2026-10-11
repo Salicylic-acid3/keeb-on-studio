@@ -6,6 +6,8 @@ export interface FitMark {
   sub: string;
   /** The cap is made for another row. */
   offRow: boolean;
+  /** The cap on the key is a convex one. */
+  convex: boolean;
   /** Put there by hand. */
   pinned: boolean;
 }

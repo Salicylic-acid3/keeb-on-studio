@@ -168,41 +168,60 @@ describe("fitCaps", () => {
 });
 
 describe("convex caps", () => {
-  // Low Profile has convex blanks in 1u and a plain blank 1u is not among
-  // its caps, so the two cannot be told apart by anything but shape.
-  const choice = [{ kitId: "lowprofile", count: 1 }];
+  const low = [{ kitId: "lowprofile", count: 1 }];
+  const standard = [{ kitId: "standard", count: 1 }];
 
-  it("go only on keys marked convex", () => {
+  it("are the only caps a key marked convex takes", () => {
     const p = importKle([["", "a"]]);
-    const plain = fitCaps(p, choice, ["R1"]);
-    expect(plain.placed.get(p.keys[0].id)?.cap.cap.convex ?? false).toBe(false);
     const marked = {
       ...p,
       keys: [{ ...p.keys[0], convex: true }, p.keys[1]],
     };
-    const fit = fitCaps(marked, choice, ["R1"]);
+    const fit = fitCaps(marked, low, ["R1"]);
     expect(fit.placed.get(p.keys[0].id)!.cap.cap.convex).toBe(true);
-    expect(fit.placed.get(p.keys[1].id)!.cap.cap.convex).toBe(false);
+    // The plain key next to it gets its own plain "a".
+    expect(fit.placed.get(p.keys[1].id)!.cap.cap).toMatchObject({
+      main: "a",
+      convex: false,
+    });
+    const plain = poolOf(low).find((c) => !c.cap.convex && c.cap.w === 1)!;
+    expect(capFitsKey(plain.cap, marked.keys[0])).toBe(false);
   });
 
-  it("are never put on a plain key, even by hand", () => {
-    const p = importKle([["a"]]);
-    const convex = poolOf(choice).find((c) => c.cap.convex && c.cap.w === 1)!;
-    const fit = fitCaps(
+  it("go on any key of their length, whatever the row", () => {
+    // Standard's convex 2u is a bottom-row cap in the file; a 2u key on the
+    // top row can still take it, and it is not "off row" there.
+    const p = importKle([[{ w: 2 }, "x"]]);
+    const convex = poolOf(standard).find((c) => c.cap.convex && c.cap.w === 2)!;
+    expect(capFitsKey(convex.cap, p.keys[0])).toBe(true);
+    const byHand = fitCaps(
       p,
-      choice,
-      ["R1"],
+      standard,
+      ["R4"],
       new Map([[p.keys[0].id, convex.id]]),
     );
-    expect(fit.placed.get(p.keys[0].id)!.cap.id).not.toBe(convex.id);
-    expect(capFitsKey(convex.cap, p.keys[0])).toBe(false);
-    expect(capFitsKey(convex.cap, { ...p.keys[0], convex: true })).toBe(true);
+    expect(byHand.placed.get(p.keys[0].id)).toMatchObject({
+      offRow: false,
+      pinned: true,
+    });
+    expect(byHand.placed.get(p.keys[0].id)!.cap.id).toBe(convex.id);
+  });
+
+  it("are left for last on plain keys", () => {
+    // A 2u key on the top row: the plain R4 2u cap goes on before the
+    // convex 2u would.
+    const p = importKle([[{ w: 2 }, ""]]);
+    const fit = fitCaps(p, standard, ["R4"]);
+    expect(fit.placed.get(p.keys[0].id)!.cap.cap.convex).toBe(false);
+    // On the home row there is no plain 2u; the convex one covers it.
+    const home = fitCaps(p, standard, ["R2"]);
+    expect(home.placed.get(p.keys[0].id)!.cap.cap.convex).toBe(true);
   });
 
   it("are counted as their own shape when short", () => {
     const p = importKle([[{ w: 9 }, ""]]);
     const marked = { ...p, keys: [{ ...p.keys[0], convex: true }] };
-    expect(missingBySize(fitCaps(marked, choice, ["R1"]).missing)).toEqual([
+    expect(missingBySize(fitCaps(marked, low, ["R1"]).missing)).toEqual([
       { w: 9, h: 1, iso: false, convex: true, count: 1 },
     ]);
   });

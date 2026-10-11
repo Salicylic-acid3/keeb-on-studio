@@ -204,8 +204,9 @@ const KeyShape = memo(function KeyShape({
             fill={fill}
           />
         ))}
-      {!decal && k.convex && (
-        // A second, rounder outline inside: this key takes a convex cap.
+      {!decal && (mark ? mark.convex : k.convex) && (
+        // A second, rounder outline inside: a convex cap (the one on the
+        // key when the check is on, else what the key is marked to take).
         <rect
           x={-W / 2 + gap + zoom * 0.09}
           y={-H / 2 + gap + zoom * 0.09}
