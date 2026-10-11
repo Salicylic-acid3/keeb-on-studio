@@ -69,6 +69,10 @@ import {
   type KitChoice,
 } from "../layoutEditor/lib/fit";
 import { capArt } from "../layoutEditor/lib/capArt";
+import {
+  keyboardProject,
+  keyboardTemplates,
+} from "../layoutEditor/lib/keyboards";
 import type { FitMark } from "../layoutEditor/lib/fitMark";
 import { kitById, kitsFor, type SwitchType } from "../layoutEditor/lib/kits";
 import {
@@ -470,6 +474,9 @@ function TemplateDialog({
               "Pick what to start from. It replaces the layout on screen; Undo brings the old one back.",
             )}
           </Dialog.Description>
+          <h3 className="text-xs text-[var(--color-text-muted)] mb-1.5">
+            {t("Generic layouts")}
+          </h3>
           <div className="flex flex-col gap-2">
             {templates.map((tpl) => (
               <button
@@ -485,6 +492,24 @@ function TemplateDialog({
                 }
               >
                 {tpl.label}
+              </button>
+            ))}
+          </div>
+          <h3 className="text-xs text-[var(--color-text-muted)] mt-4 mb-1.5">
+            {t("Supported keyboards")}
+          </h3>
+          <div className="grid grid-cols-2 gap-2">
+            {keyboardTemplates().map((board) => (
+              <button
+                key={board.id}
+                type="button"
+                className={`${BUTTON} justify-start text-left`}
+                onClick={() => {
+                  const project = keyboardProject(board.id);
+                  if (project) onPick(project);
+                }}
+              >
+                {board.name}
               </button>
             ))}
           </div>

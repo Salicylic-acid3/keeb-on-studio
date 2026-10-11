@@ -1,0 +1,40 @@
+import { ERGOTRACK } from "../../../lib/layouts";
+import { findOverlaps } from "../geometry";
+import { keyboardProject, keyboardTemplates } from "../keyboards";
+
+describe("keyboard templates", () => {
+  it("lists every keyboard once and opens each without overlapping keys", () => {
+    const all = keyboardTemplates();
+    expect(all.length).toBeGreaterThanOrEqual(28);
+    expect(new Set(all.map((k) => k.id)).size).toBe(all.length);
+    for (const { id, name } of all) {
+      const project = keyboardProject(id);
+      expect(project).not.toBeNull();
+      expect(project!.name).toBe(name);
+      expect(project!.keys.length).toBeGreaterThan(3);
+      // A few real layouts have keys that touch a little (turned thumb keys).
+      expect(findOverlaps(project!.keys).size).toBeLessThanOrEqual(12);
+    }
+  });
+
+  it("carries the matrix positions of a QMK keyboard", () => {
+    const project = keyboardProject("goforty_ortho")!;
+    expect(project.keys.every((k) => k.matrix)).toBe(true);
+  });
+
+  it("places a ZMK keyboard's keys where its physical layout has them", () => {
+    const project = keyboardProject("clickboard_ergotrack")!;
+    expect(project.keys).toHaveLength(ERGOTRACK.keys.length);
+    const first = project.keys[0];
+    expect(first.cx).toBeCloseTo(0.75);
+    expect(first.cy).toBeCloseTo(0.88);
+    // A thumb key turned 15 degrees about its own centre stays there.
+    const turned = project.keys.find((k) => k.angle === 15)!;
+    expect(turned.cx).toBeCloseTo(4.98);
+    expect(turned.cy).toBeCloseTo(4.91);
+  });
+
+  it("knows no keyboard by a wrong id", () => {
+    expect(keyboardProject("nope")).toBeNull();
+  });
+});
