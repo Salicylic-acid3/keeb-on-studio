@@ -10,6 +10,38 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // Layout editor
+  "Key actions": "キーの操作",
+  "Select a key to change its size, move it, or copy it. Drag on empty space to select several.":
+    "キーを選ぶと、サイズの変更、移動、複製ができます。何もない場所をドラッグすると、まとめて選べます。",
+  "1 key selected": "1 キー選択中",
+  "{{count}} keys selected": "{{count}} キー選択中",
+  Width: "幅",
+  W: "幅",
+  H: "高さ",
+  "{{name}}: smaller": "{{name}}を小さく",
+  "{{name}}: larger": "{{name}}を大きく",
+  "Move by {{step}}u": "移動（{{step}}u ずつ）",
+  "Move left": "左へ移動",
+  "Move up": "上へ移動",
+  "Move down": "下へ移動",
+  "Move right": "右へ移動",
+  "Add beside": "隣に追加",
+  Duplicate: "複製",
+  Mirror: "ミラー",
+  Undo: "元に戻す",
+  Redo: "やり直す",
+  "Add a key": "キーを追加",
+  "New layout": "新しいレイアウト",
+  Grid: "グリッド",
+  "Select several": "複数選択",
+  "40% ortholinear (4 x 12)": "40% オーソリニア（4 × 12）",
+  "60% ANSI": "60% ANSI",
+  "Split, 3 x 6 and three thumb keys": "分割（3 × 6 と親指 3 キー）",
+  "Sample with turned thumb keys": "サンプル（回転した親指キーつき）",
+  "Pick what to start from. It replaces the layout on screen; Undo brings the old one back.":
+    "何から始めるかを選んでください。今表示しているレイアウトと入れ替わります。「元に戻す」で前のレイアウトに戻せます。",
+  "No keys yet. Add a key, start from a template, or import Keyboard Layout Editor data.":
+    "まだキーがありません。キーを追加するか、ひな形から始めるか、Keyboard Layout Editor のデータを読み込んでください。",
   "Layout Editor": "レイアウトエディタ",
   Legends: "レジェンド",
   Matrix: "マトリクス",
@@ -36,9 +68,6 @@ const ja: Record<string, string> = {
   Copied: "コピーしました",
   Download: "ダウンロード",
   "{{count}} keys": "{{count}} キー",
-  "No keys yet. Load Keyboard Layout Editor data, or start from the sample.":
-    "まだキーがありません。Keyboard Layout Editor のデータを読み込むか、サンプルから始めてください。",
-  "Start from the sample": "サンプルから始める",
   // QMK (Vial) side
   "The keyboard was disconnected before it restarted into its bootloader. Nothing was written; plug it in and try again.":
     "ブートローダーに切り替わる前にキーボードが外れました。何も書き込んでいません。挿し直してから、もう一度お試しください。",

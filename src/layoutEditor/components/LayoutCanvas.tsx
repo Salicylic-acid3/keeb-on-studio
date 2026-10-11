@@ -1,8 +1,15 @@
 /**
- * The layout drawn on a canvas that pans and zooms.
+ * The layout drawn on a canvas that pans and zooms, where keys are picked,
+ * dragged and stretched directly.
  *
- * Mouse: drag to pan, wheel to zoom. Touch: one finger pans, two fingers pan
- * and pinch. A tap or click without moving selects the key under it.
+ * Mouse: click a key to select it (Shift / Ctrl / Cmd adds), drag a key to
+ * move the selection, drag empty space for a selection box, wheel to zoom,
+ * Space + drag or the middle / right button to pan. Alt while dragging
+ * leaves the grid.
+ *
+ * Touch: tap to select, drag a selected key to move the selection, drag
+ * anywhere else to pan, two fingers to pan and pinch. A long press on a key
+ * asks the page for multi-select, where taps add and remove keys.
  *
  * Everything is laid out in pixels (u x zoom) rather than under an SVG
  * scale(): browsers with a minimum font size (Chrome in Japanese has one by
@@ -12,8 +19,10 @@
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { IconFocusCentered, IconMinus, IconPlus } from "@tabler/icons-react";
 import { useLanguage } from "../../hooks/useLanguage";
+import { keysInRect, resizedKey, snapValue } from "../lib/edit";
 import {
   projectBounds,
+  rotatePoint,
   type LayoutKey,
   type LayoutLayer,
   type LayoutProject,
@@ -26,6 +35,9 @@ const FIT_MAX_ZOOM = 72;
 const FIT_PADDING = 28;
 /** Pointer travel, in px, below which a press is a tap rather than a drag. */
 const TAP_SLOP = 6;
+const LONG_PRESS_MS = 500;
+/** Smallest touch target for a handle, in px, whatever the zoom. */
+const HANDLE_HIT = 44;
 
 interface View {
   tx: number;
@@ -114,7 +126,7 @@ const KeyShape = memo(function KeyShape({
       data-key-id={k.id}
       transform={`translate(${k.cx * zoom} ${k.cy * zoom}) rotate(${k.angle})`}
       opacity={k.kle?.ghost ? 0.4 : 1}
-      style={{ cursor: "pointer" }}
+      style={{ cursor: selected ? "move" : "pointer" }}
     >
       {!decal &&
         rects.map((r, i) => (
@@ -206,30 +218,93 @@ const KeyShape = memo(function KeyShape({
 export interface LayoutCanvasProps {
   project: LayoutProject;
   layer: LayoutLayer;
-  selectedId: string | null;
-  onSelect: (id: string | null) => void;
+  selection: ReadonlySet<string>;
+  onSelectionChange: (ids: Set<string>) => void;
+  /** A drag ended: move these keys by (dx, dy) u. */
+  onMoveKeys: (ids: string[], dx: number, dy: number) => void;
+  /** The width handle was let go at this width, in u. */
+  onResizeKey: (id: string, w: number) => void;
+  /** Grid step in u, or null when snapping is off. */
+  snapStep: number | null;
+  /** Taps add and remove keys instead of replacing the selection. */
+  multiSelect: boolean;
+  onLongPressKey: (id: string) => void;
   /** Change this to bring the whole layout back into view. */
   fitToken: number;
+}
+
+type Mode = "idle" | "pan" | "move" | "marquee" | "resize" | "spent";
+
+interface Gesture {
+  mode: Mode;
+  /** The drag has gone past the tap slop. */
+  moved: boolean;
+  mouse: boolean;
+  additive: boolean;
+  downKey: string | null;
+  startX: number;
+  startY: number;
+  moveIds: string[];
+  resizeId: string | null;
+  resizeStartW: number;
+}
+
+const IDLE: Gesture = {
+  mode: "idle",
+  moved: false,
+  mouse: true,
+  additive: false,
+  downKey: null,
+  startX: 0,
+  startY: 0,
+  moveIds: [],
+  resizeId: null,
+  resizeStartW: 1,
+};
+
+function isTyping(target: EventTarget | null): boolean {
+  const el = target as HTMLElement | null;
+  if (!el || !el.tagName) return false;
+  return (
+    el.tagName === "INPUT" ||
+    el.tagName === "TEXTAREA" ||
+    el.tagName === "SELECT" ||
+    el.isContentEditable
+  );
 }
 
 export function LayoutCanvas({
   project,
   layer,
-  selectedId,
-  onSelect,
+  selection,
+  onSelectionChange,
+  onMoveKeys,
+  onResizeKey,
+  snapStep,
+  multiSelect,
+  onLongPressKey,
   fitToken,
 }: LayoutCanvasProps) {
   const { t } = useLanguage();
   const svgRef = useRef<SVGSVGElement>(null);
   const [view, setView] = useState<View>({ tx: 24, ty: 24, zoom: 54 });
+  const [drag, setDrag] = useState<{
+    ids: string[];
+    dx: number;
+    dy: number;
+  } | null>(null);
+  const [resize, setResize] = useState<{ id: string; w: number } | null>(null);
+  const [marquee, setMarquee] = useState<{
+    x0: number;
+    y0: number;
+    x1: number;
+    y1: number;
+  } | null>(null);
+  const [panning, setPanning] = useState(false);
   const pointers = useRef(new Map<number, { x: number; y: number }>());
-  const gesture = useRef({
-    moved: false,
-    multi: false,
-    downKey: null as string | null,
-    startX: 0,
-    startY: 0,
-  });
+  const gesture = useRef<Gesture>({ ...IDLE });
+  const longPress = useRef<number | null>(null);
+  const spaceHeld = useRef(false);
   const projectRef = useRef(project);
   useEffect(() => {
     projectRef.current = project;
@@ -240,7 +315,11 @@ export function LayoutCanvas({
     if (!el) return;
     const rect = el.getBoundingClientRect();
     const bounds = projectBounds(projectRef.current);
-    if (!bounds || rect.width === 0 || rect.height === 0) return;
+    if (rect.width === 0 || rect.height === 0) return;
+    if (!bounds) {
+      setView({ zoom: 54, tx: rect.width / 2 - 27, ty: rect.height / 2 - 27 });
+      return;
+    }
     const spanX = Math.max(bounds.maxX - bounds.minX, 1);
     const spanY = Math.max(bounds.maxY - bounds.minY, 1);
     const zoom = clampZoom(
@@ -263,6 +342,30 @@ export function LayoutCanvas({
     return () => window.cancelAnimationFrame(id);
   }, [fit, fitToken]);
 
+  // When the canvas changes size (the phone's sheet opening under it, a
+  // window resize), keep the layout where it was relative to the middle,
+  // so a key just tapped does not slide under the sheet.
+  useEffect(() => {
+    const el = svgRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    let last: { w: number; h: number } | null = null;
+    const observer = new ResizeObserver((entries) => {
+      const box = entries[0].contentRect;
+      if (last && box.width > 0 && box.height > 0) {
+        const dw = box.width - last.w;
+        const dh = box.height - last.h;
+        if (dw !== 0 || dh !== 0) {
+          setView((v) => ({ ...v, tx: v.tx + dw / 2, ty: v.ty + dh / 2 }));
+        }
+      }
+      if (box.width > 0 && box.height > 0) {
+        last = { w: box.width, h: box.height };
+      }
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   // React's onWheel is passive; zooming has to stop the page from scrolling.
   useEffect(() => {
     const el = svgRef.current;
@@ -280,20 +383,99 @@ export function LayoutCanvas({
     return () => el.removeEventListener("wheel", onWheel);
   }, []);
 
+  // Space held turns the next mouse drag into a pan.
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.code !== "Space" || isTyping(e.target)) return;
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      if (tag === "BUTTON" || tag === "A") return;
+      spaceHeld.current = true;
+      e.preventDefault();
+    };
+    const up = (e: KeyboardEvent) => {
+      if (e.code === "Space") spaceHeld.current = false;
+    };
+    const blur = () => {
+      spaceHeld.current = false;
+    };
+    window.addEventListener("keydown", down);
+    window.addEventListener("keyup", up);
+    window.addEventListener("blur", blur);
+    return () => {
+      window.removeEventListener("keydown", down);
+      window.removeEventListener("keyup", up);
+      window.removeEventListener("blur", blur);
+    };
+  }, []);
+
+  const clearLongPress = () => {
+    if (longPress.current !== null) {
+      window.clearTimeout(longPress.current);
+      longPress.current = null;
+    }
+  };
+  useEffect(() => clearLongPress, []);
+
+  const cancelPreviews = () => {
+    setDrag(null);
+    setResize(null);
+    setMarquee(null);
+  };
+
   const onPointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
     e.currentTarget.setPointerCapture?.(e.pointerId);
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    if (pointers.current.size === 1) {
-      const keyEl = (e.target as Element).closest?.("[data-key-id]");
-      gesture.current = {
-        moved: false,
-        multi: false,
-        downKey: keyEl?.getAttribute("data-key-id") ?? null,
-        startX: e.clientX,
-        startY: e.clientY,
-      };
+
+    if (pointers.current.size > 1) {
+      // A second finger: whatever the first was doing becomes pan and pinch.
+      clearLongPress();
+      cancelPreviews();
+      gesture.current = { ...gesture.current, mode: "pan", moved: true };
+      return;
+    }
+
+    const target = e.target as Element;
+    const mouse = e.pointerType === "mouse";
+    const downKey =
+      target.closest?.("[data-key-id]")?.getAttribute("data-key-id") ?? null;
+    const handle = target
+      .closest?.("[data-resize-handle]")
+      ?.getAttribute("data-resize-handle");
+    const g: Gesture = {
+      ...IDLE,
+      mouse,
+      additive: e.shiftKey || e.metaKey || e.ctrlKey,
+      downKey,
+      startX: e.clientX,
+      startY: e.clientY,
+    };
+
+    if (handle) {
+      const key = project.keys.find((k) => k.id === handle);
+      if (key) {
+        g.mode = "resize";
+        g.resizeId = key.id;
+        g.resizeStartW = key.w;
+      }
+    } else if (mouse) {
+      if (e.button === 1 || e.button === 2 || spaceHeld.current) g.mode = "pan";
+      else if (downKey) g.mode = "move";
+      else g.mode = "marquee";
+    } else if (downKey && selection.has(downKey) && !multiSelect) {
+      g.mode = "move";
     } else {
-      gesture.current.multi = true;
+      g.mode = "pan";
+    }
+    gesture.current = g;
+
+    if (!mouse && downKey && !handle) {
+      clearLongPress();
+      longPress.current = window.setTimeout(() => {
+        longPress.current = null;
+        if (gesture.current.moved) return;
+        gesture.current = { ...gesture.current, mode: "spent" };
+        onLongPressKey(downKey);
+      }, LONG_PRESS_MS);
     }
   };
 
@@ -303,30 +485,12 @@ export function LayoutCanvas({
     const next = { x: e.clientX, y: e.clientY };
     const g = gesture.current;
 
-    if (pointers.current.size === 1) {
-      if (
-        !g.moved &&
-        Math.hypot(next.x - g.startX, next.y - g.startY) < TAP_SLOP
-      ) {
-        return;
-      }
-      g.moved = true;
-      pointers.current.set(e.pointerId, next);
-      setView((v) => ({
-        ...v,
-        tx: v.tx + next.x - prev.x,
-        ty: v.ty + next.y - prev.y,
-      }));
-      return;
-    }
-
     if (pointers.current.size === 2) {
       let other = next;
       for (const [id, p] of pointers.current) {
         if (id !== e.pointerId) other = p;
       }
       pointers.current.set(e.pointerId, next);
-      g.moved = true;
       const rect = e.currentTarget.getBoundingClientRect();
       const prevDist = Math.hypot(prev.x - other.x, prev.y - other.y);
       const nextDist = Math.hypot(next.x - other.x, next.y - other.y);
@@ -347,16 +511,127 @@ export function LayoutCanvas({
           ty: z.ty + nextMid.y - prevMid.y,
         };
       });
+      return;
+    }
+    if (pointers.current.size !== 1 || g.mode === "spent") return;
+
+    if (
+      !g.moved &&
+      Math.hypot(next.x - g.startX, next.y - g.startY) < TAP_SLOP
+    ) {
+      return;
+    }
+    if (!g.moved) {
+      g.moved = true;
+      clearLongPress();
+      if (g.mode === "pan") setPanning(true);
+      if (g.mode === "move" && g.downKey) {
+        // Dragging a key that is not selected picks it up first.
+        if (selection.has(g.downKey)) {
+          g.moveIds = [...selection];
+        } else {
+          const ids = g.additive
+            ? new Set([...selection, g.downKey])
+            : new Set([g.downKey]);
+          g.moveIds = [...ids];
+          onSelectionChange(ids);
+        }
+      }
+    }
+    pointers.current.set(e.pointerId, next);
+
+    const step = e.altKey ? null : snapStep;
+    const rawX = (next.x - g.startX) / view.zoom;
+    const rawY = (next.y - g.startY) / view.zoom;
+
+    if (g.mode === "pan") {
+      setView((v) => ({
+        ...v,
+        tx: v.tx + next.x - prev.x,
+        ty: v.ty + next.y - prev.y,
+      }));
+    } else if (g.mode === "move") {
+      const anchor = project.keys.find((k) => k.id === g.downKey);
+      let dx = snapValue(rawX, step);
+      let dy = snapValue(rawY, step);
+      if (anchor && anchor.angle === 0) {
+        // Land the grabbed key's corner on the grid, wherever it started.
+        const left = anchor.cx - anchor.w / 2;
+        const top = anchor.cy - anchor.h / 2;
+        dx = snapValue(left + rawX, step) - left;
+        dy = snapValue(top + rawY, step) - top;
+      }
+      setDrag({ ids: g.moveIds, dx, dy });
+    } else if (g.mode === "resize" && g.resizeId) {
+      const key = project.keys.find((k) => k.id === g.resizeId);
+      if (key) {
+        // Only the part of the drag along the key's own width counts.
+        const along = rotatePoint(
+          { x: rawX, y: rawY },
+          { x: 0, y: 0 },
+          -key.angle,
+        ).x;
+        const w = Math.max(0.25, snapValue(g.resizeStartW + along, step));
+        setResize({ id: key.id, w });
+      }
+    } else if (g.mode === "marquee") {
+      const rect = e.currentTarget.getBoundingClientRect();
+      setMarquee({
+        x0: g.startX - rect.left,
+        y0: g.startY - rect.top,
+        x1: next.x - rect.left,
+        y1: next.y - rect.top,
+      });
     }
   };
 
   const endPointer = (e: React.PointerEvent<SVGSVGElement>) => {
     if (!pointers.current.delete(e.pointerId)) return;
     if (pointers.current.size > 0) return;
+    clearLongPress();
+    setPanning(false);
     const g = gesture.current;
-    if (e.type === "pointerup" && !g.moved && !g.multi) {
-      onSelect(g.downKey);
+    gesture.current = { ...IDLE };
+    const finished = e.type === "pointerup";
+
+    if (!g.moved) {
+      cancelPreviews();
+      if (!finished || g.mode === "spent" || g.mode === "resize") return;
+      if (g.mode === "pan" && g.mouse) return;
+      if (g.downKey) {
+        if (g.additive || (multiSelect && !g.mouse)) {
+          const ids = new Set(selection);
+          if (ids.has(g.downKey)) ids.delete(g.downKey);
+          else ids.add(g.downKey);
+          onSelectionChange(ids);
+        } else {
+          onSelectionChange(new Set([g.downKey]));
+        }
+      } else if (!g.additive && !(multiSelect && !g.mouse)) {
+        if (selection.size > 0) onSelectionChange(new Set());
+      }
+      return;
     }
+
+    if (g.mode === "move" && drag && finished) {
+      if (drag.dx !== 0 || drag.dy !== 0) {
+        onMoveKeys(drag.ids, drag.dx, drag.dy);
+      }
+    } else if (g.mode === "resize" && resize && finished) {
+      onResizeKey(resize.id, resize.w);
+    } else if (g.mode === "marquee" && marquee && finished) {
+      const toU = (px: number, offset: number) => (px - offset) / view.zoom;
+      const hit = keysInRect(project, {
+        minX: toU(Math.min(marquee.x0, marquee.x1), view.tx),
+        maxX: toU(Math.max(marquee.x0, marquee.x1), view.tx),
+        minY: toU(Math.min(marquee.y0, marquee.y1), view.ty),
+        maxY: toU(Math.max(marquee.y0, marquee.y1), view.ty),
+      });
+      onSelectionChange(
+        g.additive ? new Set([...selection, ...hit]) : new Set(hit),
+      );
+    }
+    cancelPreviews();
   };
 
   const zoomByButton = (factor: number) => {
@@ -365,6 +640,23 @@ export function LayoutCanvas({
     const rect = el.getBoundingClientRect();
     setView((v) => zoomAt(v, factor, rect.width / 2, rect.height / 2));
   };
+
+  const moving = drag ? new Set(drag.ids) : null;
+  const shown = project.keys.map((k) => {
+    if (resize && resize.id === k.id) return resizedKey(k, resize.w);
+    if (drag && moving?.has(k.id)) {
+      return { ...k, cx: k.cx + drag.dx, cy: k.cy + drag.dy };
+    }
+    return k;
+  });
+  // The width handle belongs to a lone selected key.
+  const only =
+    selection.size === 1 ? shown.find((k) => selection.has(k.id)) : undefined;
+  const handleKey = only && !only.kle?.decal ? only : undefined;
+
+  const handleInset = handleKey
+    ? Math.min(22, (handleKey.w * view.zoom) / 4)
+    : 0;
 
   const gridId = "layout-canvas-grid";
   const buttonClass =
@@ -377,11 +669,22 @@ export function LayoutCanvas({
         role="img"
         aria-label={t("Keyboard layout")}
         className="w-full h-full block select-none"
-        style={{ touchAction: "none", cursor: "grab" }}
+        style={{
+          touchAction: "none",
+          WebkitTouchCallout: "none",
+          cursor: panning ? "grabbing" : "default",
+        }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endPointer}
         onPointerCancel={endPointer}
+        onContextMenu={(e) => e.preventDefault()}
+        // A touch is fully handled by the pointer events above. Without
+        // this the browser follows up with a click at the same spot, which
+        // lands on whatever the tap just made appear there.
+        onTouchEnd={(e) => {
+          if (e.cancelable) e.preventDefault();
+        }}
       >
         <defs>
           <pattern
@@ -401,17 +704,66 @@ export function LayoutCanvas({
         </defs>
         <rect width="100%" height="100%" fill={`url(#${gridId})`} />
         <g transform={`translate(${view.tx} ${view.ty})`}>
-          {project.keys.map((k) => (
+          {shown.map((k) => (
             <KeyShape
               key={k.id}
               keyData={k}
               zoom={view.zoom}
               layer={layer}
-              selected={k.id === selectedId}
+              selected={selection.has(k.id)}
             />
           ))}
+          {handleKey && (
+            <g
+              transform={`translate(${handleKey.cx * view.zoom} ${
+                handleKey.cy * view.zoom
+              }) rotate(${handleKey.angle})`}
+            >
+              <rect
+                x={(handleKey.w * view.zoom) / 2 - 4}
+                y={-Math.min(14, (handleKey.h * view.zoom) / 4)}
+                width={8}
+                height={Math.min(28, (handleKey.h * view.zoom) / 2)}
+                rx={4}
+                fill="var(--color-electric)"
+                stroke="var(--color-surface)"
+                strokeWidth={1.5}
+                style={{ pointerEvents: "none" }}
+              />
+              <rect
+                data-resize-handle={handleKey.id}
+                // Reaches into the key (a quarter of it at most, so the rest
+                // still drags the key) more than out of it, so the next
+                // key's left edge stays its own.
+                x={(handleKey.w * view.zoom) / 2 - handleInset}
+                y={-HANDLE_HIT / 2}
+                width={handleInset + Math.min(18, view.zoom * 0.3)}
+                height={HANDLE_HIT}
+                fill="transparent"
+                style={{ cursor: "ew-resize" }}
+              />
+            </g>
+          )}
         </g>
+        {marquee && (
+          <rect
+            x={Math.min(marquee.x0, marquee.x1)}
+            y={Math.min(marquee.y0, marquee.y1)}
+            width={Math.abs(marquee.x1 - marquee.x0)}
+            height={Math.abs(marquee.y1 - marquee.y0)}
+            fill="color-mix(in srgb, var(--color-cyber) 15%, transparent)"
+            stroke="var(--color-cyber)"
+            strokeWidth={1}
+            style={{ pointerEvents: "none" }}
+          />
+        )}
       </svg>
+
+      {resize && (
+        <div className="absolute left-3 top-3 px-2 py-1 rounded-md bg-[var(--color-surface)]/90 border border-[var(--color-border)] text-xs text-[var(--color-text)] tabular-nums pointer-events-none">
+          {resize.w}u
+        </div>
+      )}
 
       <div className="absolute right-3 bottom-3 flex flex-col gap-2">
         <button
