@@ -142,17 +142,28 @@ function drawKey(
       const y0 = Math.min(...rects.map((r) => r.y)) + gap;
       const x1 = Math.max(...rects.map((r) => r.x + r.w)) - gap;
       const y1 = Math.max(...rects.map((r) => r.y + r.h)) - gap;
-      ctx.drawImage(
-        sheet,
-        art.x,
-        art.y,
-        art.w,
-        art.h,
-        x0,
-        y0,
-        x1 - x0,
-        y1 - y0,
-      );
+      if (mark?.turned) {
+        // Drawn lying down, then stood on end.
+        const w = x1 - x0;
+        const h = y1 - y0;
+        ctx.save();
+        ctx.translate((x0 + x1) / 2, (y0 + y1) / 2);
+        ctx.rotate(Math.PI / 2);
+        ctx.drawImage(sheet, art.x, art.y, art.w, art.h, -h / 2, -w / 2, h, w);
+        ctx.restore();
+      } else {
+        ctx.drawImage(
+          sheet,
+          art.x,
+          art.y,
+          art.w,
+          art.h,
+          x0,
+          y0,
+          x1 - x0,
+          y1 - y0,
+        );
+      }
     } else {
       const bare = mark?.status === "missing";
       // Outlines first, fills after, so a stepped key reads as one shape.

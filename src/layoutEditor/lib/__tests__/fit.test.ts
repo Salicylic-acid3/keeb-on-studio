@@ -11,6 +11,7 @@ import {
 } from "../fit";
 import { allKits, capsFromKle, kitById, kitsFor } from "../kits";
 import { importKle } from "../kle";
+import type { LayoutProject } from "../model";
 import { readingRows } from "../order";
 import { sampleProject } from "../sample";
 
@@ -273,5 +274,50 @@ describe("switches and comparison", () => {
       const { ok, blank, sub, missing } = row.counts;
       expect(ok + blank + sub + missing).toBe(38);
     }
+  });
+});
+
+describe("upright keys", () => {
+  const upright = (): LayoutProject => ({
+    name: "",
+    groups: [],
+    keys: [
+      {
+        id: "tall",
+        cx: 0.5,
+        cy: 0.625,
+        w: 1,
+        h: 1.25,
+        angle: 0,
+        legends: Array(12).fill(""),
+      },
+    ],
+  });
+
+  it("take the wide cap of their size turned round, from a set with uniform rows", () => {
+    const fit = fitCaps(
+      upright(),
+      [{ kitId: "clickprofile", count: 1 }],
+      ["R1"],
+    );
+    const placed = fit.placed.get("tall")!;
+    expect(placed.cap.cap.w).toBe(1.25);
+    expect(placed.cap.cap.h).toBe(1);
+    expect(placed.turned).toBe(true);
+    expect(capFitsKey(placed.cap.cap, upright().keys[0])).toBe(true);
+  });
+
+  it("are not given a turned cap from a set sculpted by row", () => {
+    const fit = fitCaps(upright(), [{ kitId: "premium", count: 1 }], ["R1"]);
+    expect(fit.placed.has("tall")).toBe(false);
+  });
+
+  it("leave ordinary keys untouched: nothing is turned", () => {
+    const fit = fitCaps(
+      sampleProject(),
+      [{ kitId: "lowprofile", count: 1 }],
+      ["R4", "R3", "R2", "R1"],
+    );
+    expect([...fit.placed.values()].some((p) => p.turned)).toBe(false);
   });
 });

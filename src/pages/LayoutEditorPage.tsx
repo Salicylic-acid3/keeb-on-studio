@@ -34,7 +34,11 @@ import {
 } from "@tabler/icons-react";
 import { StandaloneFrame } from "../components/StandaloneFrame";
 import { useLanguage } from "../hooks/useLanguage";
-import { CapTray } from "../layoutEditor/components/CapTray";
+import {
+  CapTray,
+  TRAY_SIZES,
+  type TraySize,
+} from "../layoutEditor/components/CapTray";
 import { EntryPanel } from "../layoutEditor/components/EntryPanel";
 import { HelpDialog } from "../layoutEditor/components/HelpDialog";
 import { GalleryDialog } from "../layoutEditor/components/GalleryDialog";
@@ -129,6 +133,7 @@ export const LAYOUT_PATH = "/layout";
 const DIALOG_OVERLAY = "fixed inset-0 bg-black/50 backdrop-blur-sm z-50";
 /** Where the editor lives, for the line under a picture and for posts. */
 const SHARE_URL = "https://keeb-on.studio/layout";
+const TRAY_SIZE_KEY = "keebon-layout-editor-tray-size";
 const DIALOG_CONTENT =
   "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[92vw] max-w-xl max-h-[88dvh] overflow-auto bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] shadow-2xl z-50 p-5";
 const TEXTAREA =
@@ -690,6 +695,22 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
     () => new Map(storedCaps.pins),
   );
   const [trayOpen, setTrayOpen] = useState(true);
+  const [traySize, setTraySize] = useState<TraySize>(() => {
+    try {
+      const kept = window.localStorage.getItem(TRAY_SIZE_KEY);
+      return kept && kept in TRAY_SIZES ? (kept as TraySize) : "medium";
+    } catch {
+      return "medium";
+    }
+  });
+  const chooseTraySize = (size: TraySize) => {
+    setTraySize(size);
+    try {
+      window.localStorage.setItem(TRAY_SIZE_KEY, size);
+    } catch {
+      // Not kept: the size still changes for now.
+    }
+  };
   // A pivot put somewhere by hand, for the selection it was set on.
   const [pivotOverride, setPivotOverride] = useState<{
     key: string;
@@ -781,6 +802,7 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
         offRow: p.offRow,
         convex: p.cap.cap.convex,
         pinned: p.pinned,
+        turned: p.turned,
         art:
           capArt(p.cap.kitId, kitColours[p.cap.kitId], p.cap.cap.index) ??
           undefined,
@@ -1449,27 +1471,59 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
             </div>
             {fit && kitChoices.length > 0 && (
               <div className="flex-shrink-0 border-t border-[var(--color-border)] bg-[var(--color-surface)]/80">
-                <button
-                  type="button"
-                  className="w-full min-h-9 px-3 flex items-center justify-between text-xs text-[var(--color-text-secondary)]"
-                  onClick={() => setTrayOpen((o) => !o)}
-                  aria-expanded={trayOpen}
-                >
-                  <span>
-                    {t("Caps left over: {{count}}", {
-                      count: fit.spare.length,
-                    })}
-                  </span>
-                  {trayOpen ? (
-                    <IconChevronDown size={16} />
-                  ) : (
-                    <IconChevronUp size={16} />
+                <div className="flex items-center">
+                  <button
+                    type="button"
+                    className="flex-1 min-w-0 min-h-9 px-3 flex items-center gap-2 text-xs text-[var(--color-text-secondary)]"
+                    onClick={() => setTrayOpen((o) => !o)}
+                    aria-expanded={trayOpen}
+                  >
+                    {trayOpen ? (
+                      <IconChevronDown size={16} />
+                    ) : (
+                      <IconChevronUp size={16} />
+                    )}
+                    <span>
+                      {t("Caps left over: {{count}}", {
+                        count: fit.spare.length,
+                      })}
+                    </span>
+                  </button>
+                  {trayOpen && (
+                    <div
+                      className="flex items-center gap-1 pr-3"
+                      role="group"
+                      aria-label={t("Size of the spare caps")}
+                    >
+                      {(
+                        [
+                          ["small", t("S")],
+                          ["medium", t("M")],
+                          ["large", t("L")],
+                        ] as Array<[TraySize, string]>
+                      ).map(([size, label]) => (
+                        <button
+                          key={size}
+                          type="button"
+                          aria-pressed={traySize === size}
+                          onClick={() => chooseTraySize(size)}
+                          className={`min-w-8 min-h-8 rounded-md border text-xs ${
+                            traySize === size
+                              ? "border-[var(--color-electric)] text-[var(--color-text)] bg-[var(--color-electric)]/10"
+                              : "border-[var(--color-border)] text-[var(--color-text-secondary)]"
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
                   )}
-                </button>
+                </div>
                 {trayOpen && (
                   <CapTray
                     spare={fit.spare}
                     target={target}
+                    size={traySize}
                     artOf={(cap) =>
                       capArt(cap.kitId, kitColours[cap.kitId], cap.cap.index)
                     }

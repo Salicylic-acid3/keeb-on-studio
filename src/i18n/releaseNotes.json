@@ -6,7 +6,18 @@
       "changes": {
         "major": [],
         "minor": [],
-        "patch": []
+        "patch": [
+          {
+            "en": "Layout editor: the spare caps under the layout are drawn larger, in a size you choose (small, medium or large).",
+            "ja": "レイアウトエディタ: レイアウトの下に並ぶ余ったキャップを大きく表示するようにしました。表示サイズは大・中・小から選べます。",
+            "zh": "布局编辑器：布局下方的多余键帽显示得更大，并可选择显示尺寸（小、中、大）。"
+          },
+          {
+            "en": "Layout editor: an upright key, such as the 1u by 1.25u keys of the ClickBoard Tenkey, takes a 1.25u cap turned on end. The keycap check used to report those keys as having no cap.",
+            "ja": "レイアウトエディタ: ClickBoard Tenkey の縦 1.25u のような縦長のキーに、横 1.25u のキャップを縦向きにして割り当てるようにしました。これまでは「キャップが足りない」と表示されていました。",
+            "zh": "布局编辑器：竖向按键（例如 ClickBoard Tenkey 的 1u × 1.25u 按键）现在会分配到竖放的 1.25u 键帽。此前键帽适配检查会显示这些按键没有键帽。"
+          }
+        ]
       }
     },
     {

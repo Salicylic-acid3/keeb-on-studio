@@ -10,6 +10,10 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // Layout editor
+  "Size of the spare caps": "余ったキャップの表示サイズ",
+  S: "小",
+  M: "中",
+  L: "大",
   "How to use": "使い方",
   "How to use the layout editor": "レイアウトエディタの使い方",
   "Making a layout": "レイアウトを作る",

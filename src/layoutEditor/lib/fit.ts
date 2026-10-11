@@ -38,6 +38,8 @@ export interface Placement {
   offRow: boolean;
   /** Put here by hand; recalculating leaves it alone. */
   pinned: boolean;
+  /** The cap sits a quarter turn round: a wide cap on an upright key. */
+  turned: boolean;
 }
 
 export interface FitResult {
@@ -84,6 +86,12 @@ export function normalLabel(text: string): string {
 interface Need {
   key: LayoutKey;
   size: string;
+  /**
+   * For an upright key (taller than wide, like the 1u x 1.25u keys of a
+   * numpad): the size of the wide cap that goes on it turned a quarter
+   * round. Such keys are usually just a 1.25u cap stood on end.
+   */
+  turnedSize?: string;
   main: string;
   sub: string;
   row?: string;
@@ -121,9 +129,13 @@ function keyForm(key: LayoutKey): Form {
 
 function needOf(key: LayoutKey, row: string | undefined): Need {
   const { main, sub } = mainAndSub(key);
+  const form = keyForm(key);
   return {
     key,
-    size: formKey(keyForm(key)),
+    size: formKey(form),
+    ...(!form.iso && form.h > form.w
+      ? { turnedSize: formKey({ ...form, w: form.h, h: form.w }) }
+      : {}),
     main: normalLabel(main),
     sub: normalLabel(sub),
     row,
@@ -212,8 +224,14 @@ export function fitCaps(
       status: statusOf(need, cap.cap),
       offRow: !rowFits(need, cap.cap, kits.get(cap.kitId)),
       pinned,
+      turned: capSize(cap.cap) !== need.size,
     });
   };
+  /** Free caps of the key's size, then the wide ones that go on turned. */
+  const candidates = (need: Need): PoolCap[] => [
+    ...(free.get(need.size) ?? []),
+    ...(need.turnedSize ? (free.get(need.turnedSize) ?? []) : []),
+  ];
 
   // What was decided by hand comes first and is not touched again.
   for (const need of needs) {
@@ -223,7 +241,7 @@ export function fitCaps(
       bare.add(need.key.id);
       continue;
     }
-    const cap = (free.get(need.size) ?? []).find((c) => c.id === capId);
+    const cap = candidates(need).find((c) => c.id === capId);
     if (cap && shapeFits(need.key, cap.cap)) take(need, cap, true);
   }
 
@@ -239,11 +257,16 @@ export function fitCaps(
     const homing = need.main === "f" || need.main === "j";
     let best: PoolCap | undefined;
     let bestScore = -1;
-    for (const c of free.get(need.size) ?? []) {
+    for (const c of candidates(need)) {
       if (!shapeFits(need.key, c.cap)) continue;
+      const turned = capSize(c.cap) !== need.size;
+      // Only caps shaped the same on every row are turned on their own
+      // accord; a sculpted one would lean sideways.
+      if (turned && kits.get(c.kitId)?.sculpted) continue;
       if (c.cap.convex && !need.key.convex && !lastResort) continue;
       if (!rowFits(need, c.cap, kits.get(c.kitId)) || !want(c.cap)) continue;
-      const score = c.cap.nub === homing ? 1 : 0;
+      // A cap made upright comes before one turned round.
+      const score = (turned ? 0 : 2) + (c.cap.nub === homing ? 1 : 0);
       if (score > bestScore) {
         best = c;
         bestScore = score;
@@ -303,11 +326,16 @@ export function fitCaps(
 }
 
 /**
- * Whether a cap can go on a key at all: the same size, and convex if the
- * key is marked convex.
+ * Whether a cap can go on a key at all: the same size (for an upright key,
+ * also the wide cap of its size turned round), and convex if the key is
+ * marked convex.
  */
 export function capFitsKey(cap: Cap, key: LayoutKey): boolean {
-  return capSize(cap) === needOf(key, undefined).size && shapeFits(key, cap);
+  const need = needOf(key, undefined);
+  const size = capSize(cap);
+  return (
+    (size === need.size || size === need.turnedSize) && shapeFits(key, cap)
+  );
 }
 
 export interface ShortOf extends Form {

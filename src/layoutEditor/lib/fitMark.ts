@@ -12,6 +12,8 @@ export interface FitMark {
   convex: boolean;
   /** Put there by hand. */
   pinned: boolean;
+  /** The cap sits a quarter turn round (a wide cap on an upright key). */
+  turned?: boolean;
   /** The cap's printed design, when its colourway has one. */
   art?: CapArt;
 }

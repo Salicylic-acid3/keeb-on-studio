@@ -188,23 +188,33 @@ const KeyShape = memo(function KeyShape({
           const y0 = Math.min(...rects.map((r) => r.y));
           const x1 = Math.max(...rects.map((r) => r.x + r.w));
           const y1 = Math.max(...rects.map((r) => r.y + r.h));
+          const w = Math.max(0, x1 - x0 - gap * 2);
+          const h = Math.max(0, y1 - y0 - gap * 2);
+          const cx = (x0 + x1) / 2;
+          const cy = (y0 + y1) / 2;
+          // A turned cap is drawn lying down, then stood on end.
+          const [bw, bh] = mark?.turned ? [h, w] : [w, h];
           return (
-            <svg
-              x={x0 + gap}
-              y={y0 + gap}
-              width={Math.max(0, x1 - x0 - gap * 2)}
-              height={Math.max(0, y1 - y0 - gap * 2)}
-              viewBox={`${art.x} ${art.y} ${art.w} ${art.h}`}
-              preserveAspectRatio="none"
+            <g
+              transform={mark?.turned ? `rotate(90 ${cx} ${cy})` : undefined}
               style={{ pointerEvents: "none" }}
             >
-              <image
-                href={art.href}
-                width={art.sheetW}
-                height={art.sheetH}
+              <svg
+                x={cx - bw / 2}
+                y={cy - bh / 2}
+                width={bw}
+                height={bh}
+                viewBox={`${art.x} ${art.y} ${art.w} ${art.h}`}
                 preserveAspectRatio="none"
-              />
-            </svg>
+              >
+                <image
+                  href={art.href}
+                  width={art.sheetW}
+                  height={art.sheetH}
+                  preserveAspectRatio="none"
+                />
+              </svg>
+            </g>
           );
         })()}
       {!decal &&

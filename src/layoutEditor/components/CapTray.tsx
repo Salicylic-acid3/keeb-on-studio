@@ -12,22 +12,31 @@ import { capFitsKey, pileCaps, type CapPile, type PoolCap } from "../lib/fit";
 import { kitById } from "../lib/kits";
 import type { LayoutKey } from "../lib/model";
 
-const UNIT = 34;
+/** How big the spare caps are drawn: pixels per u, and their legend size. */
+export const TRAY_SIZES = {
+  small: { unit: 34, font: 10 },
+  medium: { unit: 48, font: 12 },
+  large: { unit: 64, font: 14 },
+} as const;
+export type TraySize = keyof typeof TRAY_SIZES;
 
 export function CapTray({
   spare,
   target,
+  size,
   artOf,
   onPick,
 }: {
   spare: PoolCap[];
   /** The selected key, if one is. */
   target: LayoutKey | null;
+  size: TraySize;
   /** A cap's printed design, when its colourway has one. */
   artOf: (cap: PoolCap) => CapArt | null;
   onPick: (capId: string) => void;
 }) {
   const { t } = useLanguage();
+  const { unit: UNIT, font } = TRAY_SIZES[size];
   // By set; within a set, a pile per row, length and shape.
   const groups = useMemo(() => {
     const byKit = new Map<string, PoolCap[]>();
@@ -65,7 +74,7 @@ export function CapTray({
 
   return (
     <div
-      className="max-h-[32dvh] overflow-y-auto px-3 py-2"
+      className="max-h-[36dvh] overflow-y-auto px-3 py-2"
       aria-label={t("Caps left over")}
     >
       {groups.map((group) => (
@@ -137,6 +146,7 @@ export function CapTray({
                           style={{
                             width,
                             height,
+                            fontSize: font,
                             borderRadius: pile.convex ? 12 : 6,
                             ...(art
                               ? {
@@ -146,7 +156,7 @@ export function CapTray({
                                 }
                               : {}),
                           }}
-                          className={`flex-shrink-0 border text-[10px] leading-tight px-1 overflow-hidden text-left ${
+                          className={`flex-shrink-0 border leading-tight px-1 overflow-hidden text-left ${
                             target && fits
                               ? "border-[var(--color-electric)] bg-[var(--color-electric)]/10 text-[var(--color-text)]"
                               : "border-[var(--color-border-hover)] bg-[var(--color-surface-elevated)] text-[var(--color-text-secondary)]"
