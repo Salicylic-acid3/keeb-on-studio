@@ -10,6 +10,55 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // Layout editor
+  "How to use": "使い方",
+  "How to use the layout editor": "レイアウトエディタの使い方",
+  "Making a layout": "レイアウトを作る",
+  "Turning keys": "キーを回転する",
+  "Legends and matrix numbers": "レジェンドとマトリクス番号",
+  "Checking keycaps": "キーキャップを確かめる",
+  "Saving and sharing": "保存と共有",
+  "Start from New layout: an empty one, a common shape, or one of the supported keyboards with its legends and matrix numbers filled in.":
+    "「新しいレイアウト」から始めます。空のレイアウト、よくある形、対応キーボード（レジェンドとマトリクス番号入り）から選べます。",
+  "Tap a key to select it; drag it to move it. Keys snap to the grid (0.25u, 0.125u or 0.0625u) and to the corners of their neighbours.":
+    "キーをタップすると選択、ドラッグすると移動です。グリッド（0.25u・0.125u・0.0625u）と、隣のキーの角に吸着します。",
+  "Drag on an empty spot to select every key in the box, or turn on Select several to add keys one tap at a time.":
+    "何もない場所をドラッグすると、囲んだキーをまとめて選べます。「複数選択」をオンにすると、タップで1つずつ追加できます。",
+  "The panel changes the selected keys: width and height, ISO / JIS Enter, add beside, duplicate, mirror, delete.":
+    "パネルで選択中のキーを変更できます。幅と高さ、ISO / JIS Enter の形、隣に追加、複製、ミラー、削除です。",
+  "Keys that overlap turn red. Stop at keys keeps a key you drag from going into another.":
+    "重なったキーは赤くなります。「ぶつかったら止まる」をオンにすると、ドラッグ中のキーがほかのキーにめり込みません。",
+  "With Pivot and handle on, the selection shows its pivot and a handle. Drag the handle to turn; drag the pivot to put it where the keys should turn around.":
+    "「回転軸とハンドル」をオンにすると、回転軸とハンドルが出ます。ハンドルをドラッグすると回転し、回転軸をドラッグすると回す中心を動かせます。",
+  "The pivot snaps to key corners and centres, so a thumb cluster can swing around the corner where it meets the next key.":
+    "回転軸はキーの角や中心に吸着します。親指キーを、隣のキーと接する角を中心に振る、といった操作ができます。",
+  "Pivot to touching corner moves the pivot to where the selection meets a neighbour. Move clear of overlap pushes the selection out of the keys it overlaps.":
+    "「接している角を軸に」は、隣のキーと接している角へ回転軸を移します。「重なりを解消」は、重なっているキーから選択中のキーを押し出します。",
+  "Legend, Matrix and Both at the top switch what the keys show. An export carries what is on screen.":
+    "上部の「レジェンド」「マトリクス」「両方」で、キーに表示する内容を切り替えます。エクスポートには、表示中の内容が入ります。",
+  "Double-click a key to type its legend. Enter moves on to the next key, so a row can be filled without leaving the keyboard.":
+    "キーをダブルクリックするとレジェンドを入力できます。Enter で次のキーに進むので、キーボードから手を離さずに1行ぶん入力できます。",
+  "With Type what you press on, pressing a key on your own keyboard writes that key's legend (US or JIS) and moves on.":
+    "「押したキーをそのまま入れる」をオンにすると、手元のキーボードで押したキーのレジェンド（US または JIS）が入り、次のキーに進みます。",
+  "On the Matrix layer, keys without a number show a faint suggestion. Take them all at once, or renumber everything from the layout.":
+    "マトリクス表示では、番号のないキーに候補が薄く表示されます。まとめて採用することも、レイアウトから全体を振り直すこともできます。",
+  "Keycap check tells whether a keycap set covers the layout. Choose the switches first; only the sets that go on them are offered.":
+    "「キーキャップの適合性」で、キーキャップセットがレイアウトに足りるかを確かめられます。最初にスイッチを選ぶと、そのスイッチに付けられるセットだけが出ます。",
+  "Add a set and the caps go onto the keys. The outline shows the result: green for the right legend, blue for a blank cap, orange for another legend, red for no cap.":
+    "セットを追加すると、キャップがキーに割り当てられます。枠の色が結果です。緑はレジェンドが合う、青は無刻印、オレンジは別のレジェンドで代用、赤はキャップが足りない、です。",
+  "Where a design is on file, pick the colourway under the set to see the caps as they are printed.":
+    "デザインが登録されているセットは、セットの下でカラーを選ぶと、実際の印刷どおりの見た目になります。",
+  "Caps left over line up under the layout by row, length and shape. Select a key and tap a cap to put it on; the selection moves to the next key.":
+    "余ったキャップは、段・長さ・形状ごとにレイアウトの下に並びます。キーを選んでキャップをタップすると付け替わり、選択が次のキーへ移ります。",
+  "Sets whose rows have different shapes list the layout's rows on the panel; change a row there if it was counted wrongly.":
+    "段ごとに形が違うセットでは、パネルにレイアウトの各行の段が出ます。数え方が合っていなければ、そこで変更できます。",
+  "The layout and the keycap choices are kept in this browser. A Project file carries everything to another device.":
+    "レイアウトとキーキャップの選択は、このブラウザに保存されます。「プロジェクトファイル」を書き出すと、別の端末にすべて持っていけます。",
+  "Export gives Keyboard Layout Editor data and the layouts.keymap rows for VIA and Vial. Import reads the same, and vial.json files.":
+    "エクスポートでは、Keyboard Layout Editor のデータと、VIA / Vial 用の layouts.keymap の行を書き出せます。インポートは同じ形式と vial.json を読み込めます。",
+  "Save picture makes a PNG of the layout as on screen, keycaps included when the keycap check is on.":
+    "「画像を保存」で、今の表示どおりの PNG 画像を作れます。キーキャップの適合性を表示中なら、キャップも入ります。",
+  "Gallery publishes the layout for anyone to open and gives a link to it. This browser can delete what it published.":
+    "「ギャラリー」でレイアウトを公開すると、誰でも開けるリンクができます。公開したレイアウトは、このブラウザから削除できます。",
   Gallery: "ギャラリー",
   "Layout gallery": "レイアウトギャラリー",
   "Layouts people have published. Opening one replaces the layout on screen; Undo brings yours back.":

@@ -24,6 +24,7 @@ import {
   IconFile,
   IconFileImport,
   IconFileExport,
+  IconHelp,
   IconLayoutGrid,
   IconKeyboard,
   IconSquarePlus,
@@ -35,6 +36,7 @@ import { StandaloneFrame } from "../components/StandaloneFrame";
 import { useLanguage } from "../hooks/useLanguage";
 import { CapTray } from "../layoutEditor/components/CapTray";
 import { EntryPanel } from "../layoutEditor/components/EntryPanel";
+import { HelpDialog } from "../layoutEditor/components/HelpDialog";
 import { GalleryDialog } from "../layoutEditor/components/GalleryDialog";
 import { FitPanel } from "../layoutEditor/components/FitPanel";
 import { KeyPanel } from "../layoutEditor/components/KeyPanel";
@@ -700,6 +702,7 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
   const [exportOpen, setExportOpen] = useState(false);
   const [templateOpen, setTemplateOpen] = useState(false);
   const [galleryOpen, setGalleryOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const clipboard = useRef<{ clip: Clip; pastes: number } | null>(null);
 
   useEffect(() => {
@@ -967,7 +970,8 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
     );
   }, [commitAdded, project]);
 
-  const dialogOpen = importOpen || exportOpen || templateOpen || galleryOpen;
+  const dialogOpen =
+    importOpen || exportOpen || templateOpen || galleryOpen || helpOpen;
   useEffect(() => {
     if (dialogOpen || fitMode) return;
     const onKeyDown = (e: KeyboardEvent) => {
@@ -1272,6 +1276,15 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
             <IconLayoutGrid size={18} />
             <span className="hidden sm:inline">{t("Gallery")}</span>
           </button>
+          <button
+            type="button"
+            className={BUTTON}
+            onClick={() => setHelpOpen(true)}
+            aria-label={t("How to use")}
+            title={t("How to use")}
+          >
+            <IconHelp size={18} />
+          </button>
         </div>
 
         <div
@@ -1529,6 +1542,7 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
           setImportOpen(false);
         }}
       />
+      <HelpDialog open={helpOpen} onClose={() => setHelpOpen(false)} />
       <GalleryDialog
         open={galleryOpen}
         onClose={() => setGalleryOpen(false)}

@@ -4,8 +4,30 @@
       "version": "upcoming",
       "date": null,
       "changes": {
-        "major": [],
-        "minor": [],
+        "major": [
+          {
+            "en": "Layout editor: a new page at keeb-on.studio/layout for drawing a keyboard layout on a PC or a phone. Keys snap to a grid and to each other, turn around a pivot you place, and show up in red when they overlap. It reads and writes Keyboard Layout Editor data and the layouts.keymap rows for VIA and Vial, and can start from any of the 28 supported keyboards with their legends and matrix numbers filled in.",
+            "ja": "レイアウトエディタ: キーボードのレイアウトを PC でもスマホでも描ける新しいページを keeb-on.studio/layout に追加しました。キーはグリッドや隣のキーに吸着し、好きな位置に置いた回転軸を中心に回せて、重なると赤く表示されます。Keyboard Layout Editor のデータと、VIA / Vial 用の layouts.keymap の行を読み書きできます。対応キーボード28機種のレイアウトを、レジェンドとマトリクス番号入りで呼び出して始めることもできます。",
+            "zh": "布局编辑器：在 keeb-on.studio/layout 新增了一个页面，可以在电脑或手机上绘制键盘布局。按键会吸附到网格和相邻按键，可以围绕自己放置的旋转轴转动，重叠时显示为红色。它可以读写 Keyboard Layout Editor 数据以及 VIA / Vial 用的 layouts.keymap 行，也可以从 28 款支持的键盘开始，图例和矩阵编号都已填好。"
+          }
+        ],
+        "minor": [
+          {
+            "en": "Layout editor: legends and matrix numbers are two layers of the same layout, switched at the top. Legends are typed key after key, or written by pressing the keys of your own keyboard; matrix numbers are suggested for the keys that have none.",
+            "ja": "レイアウトエディタ: レジェンドとマトリクス番号は同じレイアウトの2つの表示で、上部で切り替えられます。レジェンドはキーからキーへ続けて入力でき、手元のキーボードを押してそのまま入れることもできます。マトリクス番号は、番号のないキーに候補が出ます。",
+            "zh": "布局编辑器：图例和矩阵编号是同一布局的两个图层，可在顶部切换。图例可以逐键连续输入，也可以直接按下自己键盘上的按键来填写；没有编号的按键会给出矩阵编号建议。"
+          },
+          {
+            "en": "Layout editor: a keycap check shows whether Acid Caps and GoForty Caps sets cover the layout. Choose the switches, add sets, and each key shows the cap it gets, in the printed design of the colourway you pick. Spare caps wait under the layout to be swapped in.",
+            "ja": "レイアウトエディタ: Acid Caps と GoForty Caps のセットがレイアウトに足りるかを確かめる「キーキャップの適合性」を追加しました。スイッチを選んでセットを追加すると、各キーに割り当てられたキャップが、選んだカラーの印刷デザインで表示されます。余ったキャップはレイアウトの下に並び、自由に付け替えられます。",
+            "zh": "布局编辑器：新增键帽适配检查，可查看 Acid Caps 和 GoForty Caps 套装是否能覆盖布局。选择轴体并添加套装后，每个按键会以所选配色的印刷图案显示分到的键帽。多余的键帽排列在布局下方，可随意替换。"
+          },
+          {
+            "en": "Layout editor: a layout saves as a picture (PNG) for posting, and can be published to a gallery where anyone can open it from a link.",
+            "ja": "レイアウトエディタ: レイアウトを投稿用の画像（PNG）として保存できます。ギャラリーに公開すると、リンクから誰でも開けるようになります。",
+            "zh": "布局编辑器：布局可保存为用于发帖的图片（PNG），也可发布到画廊，任何人都能通过链接打开。"
+          }
+        ],
         "patch": []
       }
     },
