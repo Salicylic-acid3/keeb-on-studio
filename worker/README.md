@@ -88,3 +88,24 @@ are the size cap, the same keymap validator a file goes through, and reports.
 
 If that ever stops being enough, the next lever is a Cloudflare rate-limiting
 rule on `/api/gallery` in the dashboard, which needs no code change.
+
+## Layouts from the layout editor
+
+The layout editor (`/layout`) has its own shelf in the same namespace, under
+`/api/gallery/layouts`: the same routes, the same reports and the same ten
+posts per author, counted apart from keymaps. Its keys start with `layout:`
+and `layoutauthor:`, so a page of keymaps lists no layouts and the other way
+round. A layout is not tied to a keyboard; what is checked is that it is a
+layout-editor project with a name and between 1 and 400 keys.
+
+Taking one down is the same command with `layouts/` in the path:
+
+```
+curl -s https://keeb-on.studio/api/gallery/layouts | python3 -m json.tool
+curl -X DELETE https://keeb-on.studio/api/gallery/layouts/<id> \
+  -H "authorization: Bearer <GALLERY_MAINTAINER_TOKEN>" \
+  -H "content-type: application/json" -d '{}'
+```
+
+A card in the editor draws the layout itself, which costs one read per card
+on top of the list. Reads are not what the free tier runs out of.

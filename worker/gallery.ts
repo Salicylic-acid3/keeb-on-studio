@@ -32,6 +32,10 @@ import {
   qmkBoardName,
   type QmkKeymapPayload,
 } from "../src/qmk/lib/savedQmkKeymap";
+import {
+  PROJECT_FORMAT,
+  isProject,
+} from "../src/layoutEditor/lib/projectShape";
 
 /** Posts one author may have at a time. */
 export const POSTS_PER_AUTHOR = 10;
@@ -54,6 +58,21 @@ export const PAGE_SIZE = 24;
 const POST_PREFIX = "post:";
 const AUTHOR_PREFIX = "author:";
 const REPORT_PREFIX = "report:";
+
+/**
+ * Which shelf of the gallery: keymaps, or layouts from the layout editor.
+ *
+ * The two never mix -- a page of one lists none of the other, and each has
+ * its own ten posts per author -- because each has its own key prefixes.
+ * Reports share one prefix: they are keyed by the post's id, which is
+ * unique across both.
+ */
+export type Shelf = "keymaps" | "layouts";
+
+const SHELVES: Record<Shelf, { post: string; author: string }> = {
+  keymaps: { post: POST_PREFIX, author: AUTHOR_PREFIX },
+  layouts: { post: "layout:", author: "layoutauthor:" },
+};
 
 /**
  * Width of the inverted timestamp in an id. Milliseconds since the epoch fit
@@ -304,9 +323,10 @@ async function publishQmk(
 async function listAuthorPosts(
   store: GalleryStore,
   author: string,
+  shelf: Shelf = "keymaps",
 ): Promise<string[]> {
   const listed = await store.kv.list({
-    prefix: `${AUTHOR_PREFIX}${author}:`,
+    prefix: `${SHELVES[shelf].author}${author}:`,
     limit: POSTS_PER_AUTHOR + 1,
   });
   return listed.keys.map((key) => key.name.split(":")[2]);
@@ -321,7 +341,9 @@ export interface Page {
 export async function listPosts(
   store: GalleryStore,
   cursor?: string,
+  shelf: Shelf = "keymaps",
 ): Promise<Page> {
+  const POST_PREFIX = SHELVES[shelf].post;
   const listed = await store.kv.list<PostCard>({
     prefix: POST_PREFIX,
     limit: PAGE_SIZE,
@@ -349,7 +371,9 @@ export async function listPosts(
 export async function getPost(
   store: GalleryStore,
   id: string,
+  shelf: Shelf = "keymaps",
 ): Promise<{ file: unknown; card: PostCard } | null> {
+  const POST_PREFIX = SHELVES[shelf].post;
   if (!idLooksValid(id)) return null;
   const found = await store.kv.getWithMetadata<PostCard>(POST_PREFIX + id, {
     type: "json",
@@ -373,7 +397,9 @@ export async function reportPost(
   store: GalleryStore,
   id: string,
   token: unknown,
+  shelf: Shelf = "keymaps",
 ): Promise<ReportOutcome> {
+  const POST_PREFIX = SHELVES[shelf].post;
   if (!idLooksValid(id)) return "invalid";
   if (!authorTokenLooksValid(token)) return "invalid";
 
@@ -414,7 +440,10 @@ export async function deletePost(
   id: string,
   token: unknown,
   isMaintainer: boolean,
+  shelf: Shelf = "keymaps",
 ): Promise<DeleteOutcome> {
+  const POST_PREFIX = SHELVES[shelf].post;
+  const AUTHOR_PREFIX = SHELVES[shelf].author;
   if (!idLooksValid(id)) return "invalid";
 
   const body = (await store.kv.get(
@@ -434,4 +463,105 @@ export async function deletePost(
   // costs a write each and KV expires nothing on its own -- so they are left,
   // and a re-used id is impossible because the id carries its creation time.
   return "deleted";
+}
+
+/** Keys a posted layout may have: far past any keyboard, short of abuse. */
+export const MAX_LAYOUT_KEYS = 400;
+const LAYOUT_NAME_LENGTH = 60;
+const LAYOUT_DESCRIPTION_LENGTH = 300;
+
+/**
+ * Publish a layout from the layout editor.
+ *
+ * The same gates as a keymap -- size, a well-formed author token, the
+ * reader an opened file goes through, ten posts per author -- on the
+ * layouts shelf. There is no keyboard to check it against: a layout is
+ * anyone's own design. The card reuses the keymap card's fields so one
+ * list reader serves both: `layout` holds the keycap sets on it, `board`
+ * and `layers` say that it is a layout.
+ */
+export async function publishLayout(
+  store: GalleryStore,
+  input: { text: string; author: unknown; description: unknown },
+): Promise<PublishResult> {
+  if (input.text.length > MAX_POST_BYTES)
+    return { ok: false, reason: "too-large" };
+  if (!authorTokenLooksValid(input.author))
+    return { ok: false, reason: "invalid-author" };
+
+  let file: unknown;
+  try {
+    file = JSON.parse(input.text);
+  } catch {
+    return { ok: false, reason: "not-a-keymap" };
+  }
+  const wrapper = file as {
+    format?: unknown;
+    project?: unknown;
+    caps?: unknown;
+  };
+  if (!file || typeof file !== "object" || wrapper.format !== PROJECT_FORMAT)
+    return { ok: false, reason: "not-a-keymap" };
+  const project = wrapper.project;
+  if (!isProject(project)) return { ok: false, reason: "not-a-keymap" };
+  const name = project.name.trim();
+  if (!name || name.length > LAYOUT_NAME_LENGTH)
+    return { ok: false, reason: "not-a-keymap" };
+  if (project.keys.length === 0 || project.keys.length > MAX_LAYOUT_KEYS)
+    return { ok: false, reason: "not-a-keymap" };
+  const description =
+    typeof input.description === "string"
+      ? input.description.trim().slice(0, LAYOUT_DESCRIPTION_LENGTH)
+      : "";
+
+  const author = await hashAuthor(input.author);
+  const owned = await listAuthorPosts(store, author, "layouts");
+  if (owned.length >= POSTS_PER_AUTHOR) return { ok: false, reason: "quota" };
+
+  // The sets on it, by the ids the editor gave them; shown on the card.
+  const caps = wrapper.caps as { sets?: unknown } | undefined;
+  const sets = Array.isArray(caps?.sets)
+    ? caps.sets
+        .map((s) => (s as { kitId?: unknown } | null)?.kitId)
+        .filter((id): id is string => typeof id === "string")
+        .slice(0, 5)
+        .join(",")
+        .slice(0, 80)
+    : "";
+
+  const at = store.now();
+  const id = makeId(at, store.randomId());
+  const card: PostCard = {
+    name,
+    blurb: description.slice(0, BLURB_LENGTH),
+    layout: sets,
+    board: "layout",
+    layers: 0,
+    keys: project.keys.length,
+    at,
+  };
+  const body: PostBody & { description: string } = {
+    file,
+    author,
+    board: "layout",
+    at,
+    description,
+  };
+  await store.kv.put(SHELVES.layouts.post + id, JSON.stringify(body), {
+    metadata: card,
+  });
+  await store.kv.put(`${SHELVES.layouts.author}${author}:${id}`, "");
+  return { ok: true, id, card };
+}
+
+/** A posted layout's description, which the card only carries the start of. */
+export async function getLayoutDescription(
+  store: GalleryStore,
+  id: string,
+): Promise<string> {
+  if (!idLooksValid(id)) return "";
+  const body = (await store.kv.get(SHELVES.layouts.post + id, "json")) as {
+    description?: unknown;
+  } | null;
+  return typeof body?.description === "string" ? body.description : "";
 }

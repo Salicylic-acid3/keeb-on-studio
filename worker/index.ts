@@ -18,11 +18,14 @@ import {
   deletePost,
   getPost,
   listPosts,
+  getLayoutDescription,
   publish,
+  publishLayout,
   reportPost,
   MAX_POST_BYTES,
   POSTS_PER_AUTHOR,
   type GalleryStore,
+  type Shelf,
 } from "./gallery";
 
 export interface Env {
@@ -99,18 +102,28 @@ async function handleApi(
   }
 
   const store = storeFor(env);
-  const path = url.pathname.replace(/^\/api\/gallery\/?/, "");
+  // /api/gallery/layouts/... is the layout editor's shelf; the rest of the
+  // routes are the same on both.
+  const full = url.pathname.replace(/^\/api\/gallery\/?/, "");
+  const shelf: Shelf = /^layouts(\/|$)/.test(full) ? "layouts" : "keymaps";
+  const path = shelf === "layouts" ? full.replace(/^layouts\/?/, "") : full;
   const method = request.method.toUpperCase();
 
   if (method === "GET" && path === "") {
     const cursor = url.searchParams.get("cursor") ?? undefined;
-    const page = await listPosts(store, cursor);
+    const page = await listPosts(store, cursor, shelf);
     return json(page);
   }
 
   if (method === "GET" && path) {
-    const post = await getPost(store, path);
+    const post = await getPost(store, path, shelf);
     if (!post) return json({ error: "not-found" }, 404);
+    if (shelf === "layouts") {
+      return json({
+        ...post,
+        description: await getLayoutDescription(store, path),
+      });
+    }
     return json(post);
   }
 
@@ -122,6 +135,8 @@ async function handleApi(
       return json({ error: "too-large" }, 413);
     }
     let envelope: {
+      layout?: unknown;
+      description?: unknown;
       keymap?: unknown;
       author?: unknown;
       board?: unknown;
@@ -132,14 +147,21 @@ async function handleApi(
     } catch {
       return json({ error: "not-a-keymap" }, 400);
     }
-    const result = await publish(store, {
-      // The keymap travels as text so it reaches the reader byte for byte --
-      // the same bytes a file would have, checked the same way.
-      text: JSON.stringify(envelope.keymap ?? null),
-      author: envelope.author,
-      board: envelope.board,
-      firmware: envelope.firmware,
-    });
+    // The keymap (or layout) travels as text so it reaches the reader byte
+    // for byte -- the same bytes a file would have, checked the same way.
+    const result =
+      shelf === "layouts"
+        ? await publishLayout(store, {
+            text: JSON.stringify(envelope.layout ?? null),
+            author: envelope.author,
+            description: envelope.description,
+          })
+        : await publish(store, {
+            text: JSON.stringify(envelope.keymap ?? null),
+            author: envelope.author,
+            board: envelope.board,
+            firmware: envelope.firmware,
+          });
     if (!result.ok) {
       // The quota is the one refusal where the number is the explanation, so
       // it is the only one that carries it.
@@ -155,7 +177,7 @@ async function handleApi(
     const body = (await request.json().catch(() => ({}))) as {
       author?: unknown;
     };
-    const outcome = await reportPost(store, id, body.author);
+    const outcome = await reportPost(store, id, body.author, shelf);
     if (outcome === "invalid") return json({ error: "invalid" }, 400);
     if (outcome === "unknown") return json({ error: "not-found" }, 404);
     return json({ outcome });
@@ -170,6 +192,7 @@ async function handleApi(
       path,
       body.author,
       isMaintainer(request, env),
+      shelf,
     );
     if (outcome === "invalid") return json({ error: "invalid" }, 400);
     if (outcome === "unknown") return json({ error: "not-found" }, 404);

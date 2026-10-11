@@ -5,14 +5,17 @@
  * shows the oldest keymaps first and nobody notices for a month.
  */
 import {
+  MAX_LAYOUT_KEYS,
   MAX_POST_BYTES,
   POSTS_PER_AUTHOR,
   REPORTS_TO_HIDE,
   deletePost,
+  getLayoutDescription,
   getPost,
   listPosts,
   makeId,
   publish,
+  publishLayout,
   reportPost,
   type GalleryStore,
 } from "../gallery";
@@ -360,5 +363,134 @@ describe("QMK (Vial) keymaps", () => {
         board: "goforty_jp",
       }),
     ).toMatchObject({ ok: false });
+  });
+});
+
+describe("the layouts shelf", () => {
+  const layout = (overrides: Record<string, unknown> = {}, keys = 2): string =>
+    JSON.stringify({
+      format: "keebon-layout",
+      version: 1,
+      project: {
+        name: "温泉街40",
+        groups: [],
+        keys: Array.from({ length: keys }, (_, i) => ({
+          id: `k${i}`,
+          cx: i + 0.5,
+          cy: 0.5,
+          w: 1,
+          h: 1,
+          angle: 0,
+          legends: ["A"],
+        })),
+        ...overrides,
+      },
+      caps: { switchType: "mx", sets: [{ kitId: "goforty", count: 1 }] },
+    });
+
+  it("takes a layout and lists it apart from the keymaps", async () => {
+    const { store } = makeStore();
+    const result = await publishLayout(store, {
+      text: layout(),
+      author: AUTHOR,
+      description: "親指を詰めた40%",
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.card).toMatchObject({
+      name: "温泉街40",
+      blurb: "親指を詰めた40%",
+      layout: "goforty",
+      board: "layout",
+      keys: 2,
+    });
+    expect((await listPosts(store, undefined, "layouts")).posts).toHaveLength(
+      1,
+    );
+    expect((await listPosts(store)).posts).toHaveLength(0);
+    expect(await getPost(store, result.id)).toBeNull();
+    const post = await getPost(store, result.id, "layouts");
+    expect((post!.file as { format: string }).format).toBe("keebon-layout");
+    expect(await getLayoutDescription(store, result.id)).toBe(
+      "親指を詰めた40%",
+    );
+  });
+
+  it("refuses what is not a layout, has no name, no keys or too many", async () => {
+    const { store } = makeStore();
+    const post = (text: string) =>
+      publishLayout(store, { text, author: AUTHOR, description: "" });
+    expect(await post("{}")).toMatchObject({ reason: "not-a-keymap" });
+    expect(await post(keymap())).toMatchObject({ reason: "not-a-keymap" });
+    expect(await post(layout({ name: "  " }))).toMatchObject({
+      reason: "not-a-keymap",
+    });
+    expect(await post(layout({ keys: [] }))).toMatchObject({
+      reason: "not-a-keymap",
+    });
+    expect(await post(layout({}, MAX_LAYOUT_KEYS + 1))).toMatchObject({
+      reason: "not-a-keymap",
+    });
+    expect(
+      await publishLayout(store, {
+        text: layout(),
+        author: "short",
+        description: "",
+      }),
+    ).toMatchObject({ reason: "invalid-author" });
+  });
+
+  it("counts ten layouts per author without touching the keymap count", async () => {
+    const { store } = makeStore();
+    for (let i = 0; i < POSTS_PER_AUTHOR; i++) {
+      const r = await publishLayout(store, {
+        text: layout(),
+        author: AUTHOR,
+        description: "",
+      });
+      expect(r.ok).toBe(true);
+    }
+    expect(
+      await publishLayout(store, {
+        text: layout(),
+        author: AUTHOR,
+        description: "",
+      }),
+    ).toMatchObject({ reason: "quota" });
+    const asKeymap = await publish(store, {
+      text: keymap(),
+      author: AUTHOR,
+      board: "ergotrack",
+    });
+    expect(asKeymap.ok).toBe(true);
+  });
+
+  it("lets its author delete it and enough reports hide it", async () => {
+    const { store } = makeStore();
+    const a = await publishLayout(store, {
+      text: layout(),
+      author: AUTHOR,
+      description: "",
+    });
+    const b = await publishLayout(store, {
+      text: layout(),
+      author: AUTHOR,
+      description: "",
+    });
+    if (!a.ok || !b.ok) throw new Error("publish failed");
+    expect(await deletePost(store, a.id, OTHER_AUTHOR, false, "layouts")).toBe(
+      "not-yours",
+    );
+    expect(await deletePost(store, a.id, AUTHOR, false, "layouts")).toBe(
+      "deleted",
+    );
+    for (let i = 0; i < REPORTS_TO_HIDE; i++) {
+      await reportPost(store, b.id, `reporter-number-${i}-abcdef`, "layouts");
+    }
+    expect((await listPosts(store, undefined, "layouts")).posts).toHaveLength(
+      0,
+    );
+    // Still reachable by its own link.
+    expect(await getPost(store, b.id, "layouts")).not.toBeNull();
   });
 });

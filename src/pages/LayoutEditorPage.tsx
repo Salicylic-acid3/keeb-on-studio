@@ -24,6 +24,7 @@ import {
   IconFile,
   IconFileImport,
   IconFileExport,
+  IconLayoutGrid,
   IconKeyboard,
   IconSquarePlus,
   IconSquaresSelected,
@@ -34,6 +35,7 @@ import { StandaloneFrame } from "../components/StandaloneFrame";
 import { useLanguage } from "../hooks/useLanguage";
 import { CapTray } from "../layoutEditor/components/CapTray";
 import { EntryPanel } from "../layoutEditor/components/EntryPanel";
+import { GalleryDialog } from "../layoutEditor/components/GalleryDialog";
 import { FitPanel } from "../layoutEditor/components/FitPanel";
 import { KeyPanel } from "../layoutEditor/components/KeyPanel";
 import { LayoutCanvas } from "../layoutEditor/components/LayoutCanvas";
@@ -73,6 +75,7 @@ import {
 } from "../layoutEditor/lib/fit";
 import { capArt } from "../layoutEditor/lib/capArt";
 import { EMPTY_CAP_SETUP, type CapSetup } from "../layoutEditor/lib/capSetup";
+import { fetchLayout, linkedLayoutId } from "../layoutEditor/lib/galleryClient";
 import { layoutPng } from "../layoutEditor/lib/picture";
 import {
   keyboardProject,
@@ -696,6 +699,7 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
   const [importOpen, setImportOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
   const [templateOpen, setTemplateOpen] = useState(false);
+  const [galleryOpen, setGalleryOpen] = useState(false);
   const clipboard = useRef<{ clip: Clip; pastes: number } | null>(null);
 
   useEffect(() => {
@@ -895,6 +899,22 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
     if (hasLegends && !hasMatrix) setLayer("legend");
   };
 
+  // A shared link (/layout?g=<id>) opens that layout from the gallery. The
+  // layout that was here stays one Undo away.
+  const replaceRef = useRef(replaceProject);
+  useEffect(() => {
+    replaceRef.current = replaceProject;
+  });
+  useEffect(() => {
+    const id = linkedLayoutId(window.location.search);
+    if (!id) return;
+    window.history.replaceState(null, "", LAYOUT_PATH);
+    void fetchLayout(id).then((result) => {
+      if (result.ok)
+        replaceRef.current(result.value.project, result.value.caps);
+    });
+  }, []);
+
   const addOne = useCallback(() => {
     commitAdded(
       addKey(project, selectedIds.length === 1 ? selectedIds[0] : null),
@@ -947,7 +967,7 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
     );
   }, [commitAdded, project]);
 
-  const dialogOpen = importOpen || exportOpen || templateOpen;
+  const dialogOpen = importOpen || exportOpen || templateOpen || galleryOpen;
   useEffect(() => {
     if (dialogOpen || fitMode) return;
     const onKeyDown = (e: KeyboardEvent) => {
@@ -1243,6 +1263,15 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
             <IconFileExport size={18} />
             <span className="hidden sm:inline">{t("Export")}</span>
           </button>
+          <button
+            type="button"
+            className={BUTTON}
+            onClick={() => setGalleryOpen(true)}
+            aria-label={t("Gallery")}
+          >
+            <IconLayoutGrid size={18} />
+            <span className="hidden sm:inline">{t("Gallery")}</span>
+          </button>
         </div>
 
         <div
@@ -1498,6 +1527,19 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
         onImport={(next, caps) => {
           replaceProject(next, caps);
           setImportOpen(false);
+        }}
+      />
+      <GalleryDialog
+        open={galleryOpen}
+        onClose={() => setGalleryOpen(false)}
+        project={project}
+        caps={capSetup}
+        onRename={(name) => {
+          if (name !== project.name) commit({ ...project, name });
+        }}
+        onOpen={(layout) => {
+          replaceProject(layout.project, layout.caps);
+          setGalleryOpen(false);
         }}
       />
       <ExportDialog

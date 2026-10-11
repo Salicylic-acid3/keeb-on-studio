@@ -10,6 +10,29 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // Layout editor
+  Gallery: "ギャラリー",
+  "Layout gallery": "レイアウトギャラリー",
+  "Layouts people have published. Opening one replaces the layout on screen; Undo brings yours back.":
+    "公開されたレイアウトの一覧です。開くと今表示しているレイアウトと入れ替わります。「元に戻す」で前のレイアウトに戻せます。",
+  "Publish the layout on screen": "今のレイアウトを公開する",
+  "A few words about it (optional)": "ひとこと説明（任意）",
+  "Anyone can see and open a published layout, with its legends, matrix numbers and keycaps. No account is needed; this browser can delete what it published. Up to 10 layouts.":
+    "公開したレイアウトは、レジェンド・マトリクス番号・キーキャップも含めて誰でも見て開けます。アカウントは不要で、公開したブラウザから削除できます。公開できるのは10件までです。",
+  Publish: "公開する",
+  "Give it a name first.": "先に名前を付けてください。",
+  "Published. This link opens it:": "公開しました。このリンクで開けます：",
+  "Copy link": "リンクをコピー",
+  "No layouts have been published yet.":
+    "まだ公開されたレイアウトはありません。",
+  "You already have {{count}} layouts in the gallery.":
+    "すでに {{count}} 件のレイアウトを公開しています。",
+  "That layout is too big to publish.":
+    "このレイアウトは大きすぎて公開できません。",
+  "That layout could not be read.": "このレイアウトを読み込めませんでした。",
+  "That layout was published from another browser.":
+    "このレイアウトは別のブラウザから公開されたものです。",
+  "That layout is no longer in the gallery.":
+    "このレイアウトはもうギャラリーにありません。",
   Picture: "画像",
   "A PNG of the layout with the keycaps on it, as on screen now.":
     "今の画面どおり、キーキャップをのせたレイアウトの PNG 画像です。",
