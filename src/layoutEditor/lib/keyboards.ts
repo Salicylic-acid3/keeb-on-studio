@@ -9,7 +9,8 @@
 import { ERGOTRACK, GOFORTY_MAX } from "../../lib/layouts";
 import qmk from "../data/keyboards.json";
 import { importKle, type KleDocument } from "./kle";
-import type { LayoutProject } from "./model";
+import { makeIsoEnter } from "./edit";
+import type { LayoutKey, LayoutProject } from "./model";
 
 export interface KeyboardTemplate {
   id: string;
@@ -102,6 +103,20 @@ function zmkToKle(layout: ZmkLayout): KleDocument {
   });
 }
 
+/**
+ * The InSixty JP's vial.json draws its Enter (matrix 7,7) as a 1.25u key
+ * on the home row, overlapping the key beside it. On the board it is an
+ * ISO Enter spanning the two rows at the right edge, so it is drawn as
+ * one here.
+ */
+function insixtyJpEnter(keys: LayoutKey[]): LayoutKey[] {
+  const enter = keys.find((k) => k.matrix?.row === 7 && k.matrix.col === 7);
+  if (!enter) return keys;
+  const made = makeIsoEnter({ name: "", keys, groups: [] }, [enter.id]).keys;
+  // Its body takes the last 1.25u of the two rows (x 15.75 to 17, y 1 to 3).
+  return made.map((k) => (k.id === enter.id ? { ...k, cx: 16.375, cy: 2 } : k));
+}
+
 export function keyboardProject(id: string): LayoutProject | null {
   const zmk = ZMK[id];
   if (zmk) return { ...importKle(zmkToKle(zmk)), name: zmk.name };
@@ -110,7 +125,8 @@ export function keyboardProject(id: string): LayoutProject | null {
   const project = importKle(board.keymap);
   // Only the first choice of each layout option; the others are drawn
   // elsewhere in the file as alternatives.
-  const keys = project.keys.filter((k) => !k.option || k.option.choice === 0);
+  const shown = project.keys.filter((k) => !k.option || k.option.choice === 0);
+  const keys = board.id === "insixty_jp" ? insixtyJpEnter(shown) : shown;
   const used = new Set(keys.map((k) => k.groupId));
   return {
     name: board.name,

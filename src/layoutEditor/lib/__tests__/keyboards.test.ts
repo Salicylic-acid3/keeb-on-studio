@@ -1,4 +1,5 @@
 import { ERGOTRACK } from "../../../lib/layouts";
+import { isIsoEnter } from "../edit";
 import { findOverlaps } from "../geometry";
 import { keyboardProject, keyboardTemplates } from "../keyboards";
 
@@ -36,6 +37,17 @@ describe("keyboard templates", () => {
 
   it("opens the ErgoTrack with no keys clashing", () => {
     const project = keyboardProject("clickboard_ergotrack")!;
+    expect(findOverlaps(project.keys).size).toBe(0);
+  });
+
+  it("draws the InSixty JP's Enter as an ISO Enter at the right edge", () => {
+    const project = keyboardProject("insixty_jp")!;
+    const enter = project.keys.find(
+      (k) => k.matrix?.row === 7 && k.matrix.col === 7,
+    )!;
+    expect(isIsoEnter(enter)).toBe(true);
+    expect(enter.cx + enter.w / 2).toBeCloseTo(17);
+    expect(enter.cy - enter.h / 2).toBeCloseTo(1);
     expect(findOverlaps(project.keys).size).toBe(0);
   });
 
