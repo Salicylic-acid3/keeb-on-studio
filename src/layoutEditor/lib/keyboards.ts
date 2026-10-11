@@ -4,12 +4,15 @@
  * The QMK (Vial) ones come from each keyboard's vial.json, collected by
  * scripts/fetchLayoutTemplates.py, and carry their matrix positions. Where
  * a keyboard has layout options, the first choice of each is shown. The
- * ZMK ones are the physical layouts the demo mode draws.
+ * ZMK ones are the physical layouts the demo mode draws. Each opens with
+ * the legends of its default keymap's base layer.
  */
 import { ERGOTRACK, GOFORTY_MAX } from "../../lib/layouts";
-import qmk from "../data/keyboards.json";
+import data from "../data/keyboards.json";
 import { importKle, type KleDocument } from "./kle";
-import { makeIsoEnter } from "./edit";
+import { makeIsoEnter, setMainAndSub } from "./edit";
+import { qmkLegend, zmkLegend } from "./firmwareLabels";
+import type { KeyLabel, LabelLayout } from "./keyLabels";
 import type { LayoutKey, LayoutProject } from "./model";
 
 export interface KeyboardTemplate {
@@ -30,7 +33,35 @@ interface ZmkLayout {
   }>;
 }
 
-const QMK = qmk as Array<{ id: string; name: string; keymap: KleDocument }>;
+const DATA = data as unknown as {
+  qmk: Array<{
+    id: string;
+    name: string;
+    keymap: KleDocument;
+    /** Layer 0 of the default keymap: keycode names by "row,col". */
+    keycodes: Record<string, string>;
+  }>;
+  /** The base layer's bindings of each ZMK keyboard, in key order. */
+  zmk: Record<string, string[] | undefined>;
+};
+const QMK = DATA.qmk;
+
+/** Legends of a JIS board are the JIS ones (2 is under ", not @). */
+function layoutOf(id: string): LabelLayout {
+  return /jp$/.test(id) ? "jis" : "us";
+}
+
+function withLegends(
+  project: LayoutProject,
+  legendOf: (key: LayoutKey, index: number) => KeyLabel | undefined,
+): LayoutProject {
+  return project.keys.reduce((next, key, index) => {
+    const legend = legendOf(key, index);
+    return legend?.main
+      ? setMainAndSub(next, key.id, legend.main, legend.sub ?? "")
+      : next;
+  }, project);
+}
 
 /**
  * The ErgoTrack's physical layout is rounded to 1/100 u, which leaves a few
@@ -113,13 +144,20 @@ function insixtyJpEnter(keys: LayoutKey[]): LayoutKey[] {
   const enter = keys.find((k) => k.matrix?.row === 7 && k.matrix.col === 7);
   if (!enter) return keys;
   const made = makeIsoEnter({ name: "", keys, groups: [] }, [enter.id]).keys;
-  // Its body takes the last 1.25u of the two rows (x 15.75 to 17, y 1 to 3).
-  return made.map((k) => (k.id === enter.id ? { ...k, cx: 16.375, cy: 2 } : k));
+  // Its body takes the last 1.25u of the two rows (x 14.75 to 16, y 1 to 3).
+  return made.map((k) => (k.id === enter.id ? { ...k, cx: 15.375, cy: 2 } : k));
 }
 
 export function keyboardProject(id: string): LayoutProject | null {
   const zmk = ZMK[id];
-  if (zmk) return { ...importKle(zmkToKle(zmk)), name: zmk.name };
+  if (zmk) {
+    const bindings = DATA.zmk[id] ?? [];
+    return withLegends(
+      { ...importKle(zmkToKle(zmk)), name: zmk.name },
+      (_key, index) =>
+        bindings[index] ? zmkLegend(bindings[index], "us") : undefined,
+    );
+  }
   const board = QMK.find((b) => b.id === id);
   if (!board) return null;
   const project = importKle(board.keymap);
@@ -128,9 +166,17 @@ export function keyboardProject(id: string): LayoutProject | null {
   const shown = project.keys.filter((k) => !k.option || k.option.choice === 0);
   const keys = board.id === "insixty_jp" ? insixtyJpEnter(shown) : shown;
   const used = new Set(keys.map((k) => k.groupId));
-  return {
-    name: board.name,
-    keys,
-    groups: project.groups.filter((g) => used.has(g.id)),
-  };
+  const layout = layoutOf(board.id);
+  return withLegends(
+    {
+      name: board.name,
+      keys,
+      groups: project.groups.filter((g) => used.has(g.id)),
+    },
+    (key) => {
+      const code =
+        key.matrix && board.keycodes[`${key.matrix.row},${key.matrix.col}`];
+      return code ? qmkLegend(code, layout) : undefined;
+    },
+  );
 }

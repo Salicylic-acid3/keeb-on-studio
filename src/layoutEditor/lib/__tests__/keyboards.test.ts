@@ -1,5 +1,5 @@
 import { ERGOTRACK } from "../../../lib/layouts";
-import { isIsoEnter } from "../edit";
+import { isIsoEnter, mainAndSub } from "../edit";
 import { findOverlaps } from "../geometry";
 import { keyboardProject, keyboardTemplates } from "../keyboards";
 
@@ -46,9 +46,29 @@ describe("keyboard templates", () => {
       (k) => k.matrix?.row === 7 && k.matrix.col === 7,
     )!;
     expect(isIsoEnter(enter)).toBe(true);
-    expect(enter.cx + enter.w / 2).toBeCloseTo(17);
+    expect(enter.cx + enter.w / 2).toBeCloseTo(16);
     expect(enter.cy - enter.h / 2).toBeCloseTo(1);
     expect(findOverlaps(project.keys).size).toBe(0);
+  });
+
+  it("fills in the legends of the default keymap", () => {
+    const legend = (id: string, row: number, col: number) => {
+      const key = keyboardProject(id)!.keys.find(
+        (k) => k.matrix?.row === row && k.matrix.col === col,
+      )!;
+      return mainAndSub(key);
+    };
+    expect(legend("goforty_jp", 0, 1)).toEqual({ main: "Q", sub: "" });
+    expect(legend("goforty_jp", 0, 0)).toEqual({ main: "Tab", sub: "" });
+    // Every keyboard opens with most of its keys named.
+    for (const { id } of keyboardTemplates()) {
+      const keys = keyboardProject(id)!.keys;
+      const named = keys.filter((k) => mainAndSub(k).main).length;
+      expect([id, named / keys.length > 0.6]).toEqual([id, true]);
+    }
+    const ergotrack = keyboardProject("clickboard_ergotrack")!;
+    expect(mainAndSub(ergotrack.keys[0])).toEqual({ main: "Esc", sub: "" });
+    expect(mainAndSub(ergotrack.keys[1])).toEqual({ main: "1", sub: "!" });
   });
 
   it("knows no keyboard by a wrong id", () => {
