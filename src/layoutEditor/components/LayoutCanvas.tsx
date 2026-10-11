@@ -24,6 +24,7 @@
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { IconFocusCentered, IconMinus, IconPlus } from "@tabler/icons-react";
 import { useLanguage } from "../../hooks/useLanguage";
+import { FIT_COLORS, type FitMark } from "../lib/fitMark";
 import { keysInRect, resizedKey, snapValue } from "../lib/edit";
 import {
   findOverlaps,
@@ -105,6 +106,7 @@ const KeyShape = memo(function KeyShape({
   clash,
   ghost,
   flagged,
+  mark,
 }: {
   keyData: LayoutKey;
   zoom: number;
@@ -116,6 +118,8 @@ const KeyShape = memo(function KeyShape({
   ghost?: string;
   /** Shares its matrix position with another key. */
   flagged: boolean;
+  /** The keycap check is on: draw its verdict and the cap's legend. */
+  mark?: FitMark;
 }) {
   const W = k.w * zoom;
   const H = k.h * zoom;
@@ -134,14 +138,21 @@ const KeyShape = memo(function KeyShape({
   const rects = [{ x: -W / 2, y: -H / 2, w: W, h: H }];
   if (second) rects.push(second);
 
-  const stroke = clash
-    ? CLASH
-    : selected
-      ? "var(--color-electric)"
-      : "var(--color-border-hover)";
-  const fill = clash
-    ? `color-mix(in srgb, ${CLASH} 22%, var(--color-surface-elevated))`
+  const tint = mark ? FIT_COLORS[mark.status] : clash ? CLASH : null;
+  const stroke = selected
+    ? "var(--color-electric)"
+    : (tint ?? "var(--color-border-hover)");
+  const fill = tint
+    ? `color-mix(in srgb, ${tint} ${mark?.status === "missing" ? 30 : 20}%, var(--color-surface-elevated))`
     : "var(--color-surface-elevated)";
+  // With the check on, the key shows the cap that is on it.
+  const legends = mark
+    ? mark.status === "missing"
+      ? []
+      : mark.sub
+        ? [mark.sub, "", "", "", "", "", mark.main]
+        : [mark.main]
+    : k.legends;
   const fontSize = zoom * 0.21;
   const showText = fontSize >= 5;
   const padX = zoom * 0.14;
@@ -154,7 +165,8 @@ const KeyShape = memo(function KeyShape({
 
   const ownMatrix =
     !decal && k.matrix ? `${k.matrix.row},${k.matrix.col}` : null;
-  const matrixText = layer === "matrix" ? (ownMatrix ?? ghost ?? null) : null;
+  const matrixText =
+    layer === "matrix" && !mark ? (ownMatrix ?? ghost ?? null) : null;
   const isGhost = layer === "matrix" && !ownMatrix && Boolean(ghost);
 
   return (
@@ -175,7 +187,8 @@ const KeyShape = memo(function KeyShape({
             rx={radius}
             fill={fill}
             stroke={stroke}
-            strokeWidth={selected || clash ? 2 : 1}
+            strokeWidth={selected || tint ? 2 : 1}
+            strokeDasharray={mark?.offRow ? "5 3" : undefined}
           />
         ))}
       {!decal &&
@@ -206,9 +219,9 @@ const KeyShape = memo(function KeyShape({
         />
       )}
       {showText &&
-        (layer !== "matrix" || decal) &&
+        (layer !== "matrix" || decal || mark) &&
         TOP_SLOTS.map(([col, row], slot) => {
-          const text = k.legends[slot];
+          const text = legends[slot];
           if (!text) return null;
           return (
             <text
@@ -267,7 +280,16 @@ const KeyShape = memo(function KeyShape({
           style={{ pointerEvents: "none" }}
         />
       )}
-      {layer === "matrix" && !decal && !k.matrix && !ghost && (
+      {mark?.pinned && (
+        <circle
+          cx={-W / 2 + gap + zoom * 0.13}
+          cy={H / 2 - gap - zoom * 0.13}
+          r={Math.max(2.5, zoom * 0.06)}
+          fill="var(--color-text-secondary)"
+          style={{ pointerEvents: "none" }}
+        />
+      )}
+      {layer === "matrix" && !mark && !decal && !k.matrix && !ghost && (
         <circle
           r={Math.max(2, zoom * 0.06)}
           fill="var(--color-text-muted)"
@@ -298,6 +320,15 @@ export interface LayoutCanvasProps {
   flagged: ReadonlySet<string>;
   /** A key was double-clicked or double-tapped: start typing into it. */
   onEditKey: (id: string) => void;
+  /**
+   * The keycap check is on: keys show what it found, and instead of being
+   * edited they trade caps. Dragging a key onto another, or (by touch)
+   * tapping one and then another, asks for a swap.
+   */
+  capMarks: ReadonlyMap<string, FitMark> | null;
+  onFitSwap: (fromId: string, toId: string) => void;
+  /** A spare cap was dragged from the tray onto a key. */
+  onCapDrop: (capId: string, keyId: string) => void;
   /** Show the pivot and the turning arm for the selection. */
   rotateMode: boolean;
   /** Where the selection turns around, in u; null with nothing selected. */
@@ -315,6 +346,7 @@ export interface LayoutCanvasProps {
 
 type Mode =
   | "idle"
+  | "capdrag"
   | "pan"
   | "move"
   | "marquee"
@@ -377,6 +409,9 @@ export function LayoutCanvas({
   ghosts,
   flagged,
   onEditKey,
+  capMarks,
+  onFitSwap,
+  onCapDrop,
   rotateMode,
   pivot,
   onPivotChange,
@@ -579,6 +614,9 @@ export function LayoutCanvas({
         g.resizeId = key.id;
         g.resizeStartW = key.w;
       }
+    } else if (capMarks) {
+      // Checking caps: nothing moves; a key dragged by mouse carries its cap.
+      g.mode = mouse && downKey && e.button === 0 ? "capdrag" : "pan";
     } else if (mouse) {
       if (e.button === 1 || e.button === 2 || spaceHeld.current) g.mode = "pan";
       else if (downKey) g.mode = "move";
@@ -590,7 +628,14 @@ export function LayoutCanvas({
     }
     gesture.current = g;
 
-    if (!mouse && downKey && g.mode !== "resize" && !onPivot && !onArm) {
+    if (
+      !mouse &&
+      downKey &&
+      !capMarks &&
+      g.mode !== "resize" &&
+      !onPivot &&
+      !onArm
+    ) {
       clearLongPress();
       longPress.current = window.setTimeout(() => {
         longPress.current = null;
@@ -646,7 +691,7 @@ export function LayoutCanvas({
     if (!g.moved) {
       g.moved = true;
       clearLongPress();
-      if (g.mode === "pan") setPanning(true);
+      if (g.mode === "pan" || g.mode === "capdrag") setPanning(true);
       if (g.mode === "move" && g.downKey) {
         // Dragging a key that is not selected picks it up first.
         if (selection.has(g.downKey)) {
@@ -790,7 +835,18 @@ export function LayoutCanvas({
       ) {
         return;
       }
-      if (g.mode === "pan" && g.mouse) return;
+      if (g.mode === "pan" && g.mouse && !capMarks) return;
+      if (capMarks) {
+        // One key at a time; by touch, a second key trades caps with the first.
+        const first = selection.size === 1 ? [...selection][0] : null;
+        if (!g.mouse && first && g.downKey && g.downKey !== first) {
+          onFitSwap(first, g.downKey);
+          onSelectionChange(new Set());
+        } else {
+          onSelectionChange(new Set(g.downKey ? [g.downKey] : []));
+        }
+        return;
+      }
       if (g.downKey) {
         if (g.additive || (multiSelect && !g.mouse)) {
           const ids = new Set(selection);
@@ -814,7 +870,13 @@ export function LayoutCanvas({
       return;
     }
 
-    if (g.mode === "move" && drag && finished) {
+    if (g.mode === "capdrag" && finished && g.downKey) {
+      const under = document
+        .elementFromPoint(e.clientX, e.clientY)
+        ?.closest("[data-key-id]")
+        ?.getAttribute("data-key-id");
+      if (under && under !== g.downKey) onFitSwap(g.downKey, under);
+    } else if (g.mode === "move" && drag && finished) {
       if (drag.dx !== 0 || drag.dy !== 0) {
         onMoveKeys(drag.ids, drag.dx, drag.dy);
       }
@@ -862,7 +924,7 @@ export function LayoutCanvas({
   // The width handle belongs to a lone selected key.
   const only =
     selection.size === 1 ? shown.find((k) => selection.has(k.id)) : undefined;
-  const handleKey = only && !only.kle?.decal ? only : undefined;
+  const handleKey = only && !only.kle?.decal && !capMarks ? only : undefined;
 
   // Selected keys are painted last, so one dragged over others stays in
   // sight instead of sliding underneath.
@@ -871,12 +933,12 @@ export function LayoutCanvas({
     ...shown.filter((k) => selection.has(k.id)),
   ];
   // Recomputed while dragging, so the red follows the keys.
-  const clashes = findOverlaps(shown);
+  const clashes = capMarks ? new Set<string>() : findOverlaps(shown);
 
   // The turning arm: from the pivot, a little past the furthest selected
   // corner, pointing up until it is dragged round.
   let arm: { px: number; py: number; hx: number; hy: number } | null = null;
-  if (rotateMode && shownPivot && selection.size > 0) {
+  if (rotateMode && !capMarks && shownPivot && selection.size > 0) {
     let reach = 0;
     for (const k of project.keys) {
       if (!selection.has(k.id)) continue;
@@ -924,6 +986,19 @@ export function LayoutCanvas({
         onPointerUp={endPointer}
         onPointerCancel={endPointer}
         onContextMenu={(e) => e.preventDefault()}
+        onDragOver={(e) => {
+          if (capMarks) e.preventDefault();
+        }}
+        onDrop={(e) => {
+          const capId = e.dataTransfer.getData("text/x-keebon-cap");
+          const keyId = (e.target as Element)
+            .closest?.("[data-key-id]")
+            ?.getAttribute("data-key-id");
+          if (capMarks && capId && keyId) {
+            e.preventDefault();
+            onCapDrop(capId, keyId);
+          }
+        }}
         // A touch is fully handled by the pointer events above. Without
         // this the browser follows up with a click at the same spot, which
         // lands on whatever the tap just made appear there.
@@ -959,6 +1034,7 @@ export function LayoutCanvas({
               clash={clashes.has(k.id)}
               ghost={ghosts.get(k.id)}
               flagged={flagged.has(k.id)}
+              mark={capMarks ? (capMarks.get(k.id) ?? undefined) : undefined}
             />
           ))}
           {handleKey && (

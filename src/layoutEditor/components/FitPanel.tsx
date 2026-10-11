@@ -1,0 +1,364 @@
+/**
+ * The keycap check: choose sets, see how much of the layout they cover,
+ * what is short, what buying more would fix, and put caps right by hand.
+ */
+import { IconMinus, IconPlus } from "@tabler/icons-react";
+import type { ReactNode } from "react";
+import { useLanguage } from "../../hooks/useLanguage";
+import {
+  missingBySize,
+  type FitResult,
+  type KitChoice,
+  type Placement,
+  type Suggestion,
+} from "../lib/fit";
+import { FIT_COLORS } from "../lib/fitMark";
+import { allKits, kitById, type Kit } from "../lib/kits";
+import type { LayoutKey } from "../lib/model";
+
+const TILE =
+  "min-h-11 min-w-11 px-2 flex items-center justify-center gap-1.5 rounded-lg border text-sm transition-colors disabled:opacity-40";
+const TILE_IDLE =
+  "border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:border-[var(--color-border-hover)]";
+
+const ROWS = ["R4", "R3", "R2", "R1"];
+
+function Section({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="mb-4 last:mb-0">
+      <h3 className="text-xs font-medium text-[var(--color-text-muted)] mb-2">
+        {title}
+      </h3>
+      {children}
+    </section>
+  );
+}
+
+function Dot({ status }: { status: keyof typeof FIT_COLORS }) {
+  return (
+    <span
+      className="inline-block w-2.5 h-2.5 rounded-sm mr-1.5 align-middle"
+      style={{ background: FIT_COLORS[status] }}
+    />
+  );
+}
+
+function choicesText(choices: KitChoice[]): string {
+  return choices
+    .map((c) => `${kitById(c.kitId)?.name ?? c.kitId} ×${c.count}`)
+    .join(" + ");
+}
+
+export interface FitPanelProps {
+  totalKeys: number;
+  choices: KitChoice[];
+  onCount: (kitId: string, count: number) => void;
+  fit: FitResult;
+  suggestions: Suggestion[];
+  onApply: (choices: KitChoice[]) => void;
+  comparison: Array<{ kit: Kit; counts: FitResult["counts"] }>;
+  /** The layout's rows, top to bottom: a few legends to tell them by, and their sculpt row. */
+  rows: Array<{ hint: string; row: string }>;
+  onRow: (index: number, row: string) => void;
+  /** Any chosen set has rows of different shapes. */
+  sculpted: boolean;
+  target: LayoutKey | null;
+  targetPlacement: Placement | null;
+  onBare: () => void;
+  onAuto: () => void;
+  pinned: number;
+  onAutoAll: () => void;
+}
+
+export function FitPanel({
+  totalKeys,
+  choices,
+  onCount,
+  fit,
+  suggestions,
+  onApply,
+  comparison,
+  rows,
+  onRow,
+  sculpted,
+  target,
+  targetPlacement,
+  onBare,
+  onAuto,
+  pinned,
+  onAutoAll,
+}: FitPanelProps) {
+  const { t } = useLanguage();
+  const countOf = (kitId: string) =>
+    choices.find((c) => c.kitId === kitId)?.count ?? 0;
+  const chosen = choices.some((c) => c.count > 0);
+  const short = missingBySize(fit.missing);
+  const covered = totalKeys - fit.counts.missing;
+
+  return (
+    <div>
+      <Section title={t("Keycap sets")}>
+        <div className="flex flex-col gap-1.5">
+          {allKits().map((kit) => {
+            const count = countOf(kit.id);
+            return (
+              <div key={kit.id} className="flex items-center gap-1.5">
+                <span
+                  className={`flex-1 min-w-0 text-sm truncate ${
+                    count > 0
+                      ? "text-[var(--color-text)]"
+                      : "text-[var(--color-text-secondary)]"
+                  }`}
+                >
+                  {kit.name}
+                </span>
+                <button
+                  type="button"
+                  className={`${TILE} ${TILE_IDLE}`}
+                  onClick={() => onCount(kit.id, Math.max(0, count - 1))}
+                  disabled={count === 0}
+                  aria-label={t("{{name}}: one fewer", { name: kit.name })}
+                >
+                  <IconMinus size={16} />
+                </button>
+                <span
+                  className="w-6 text-center text-sm tabular-nums text-[var(--color-text)]"
+                  aria-label={t("{{name}}: {{count}} sets", {
+                    name: kit.name,
+                    count,
+                  })}
+                >
+                  {count}
+                </span>
+                <button
+                  type="button"
+                  className={`${TILE} ${TILE_IDLE}`}
+                  onClick={() => onCount(kit.id, Math.min(9, count + 1))}
+                  aria-label={t("{{name}}: one more", { name: kit.name })}
+                >
+                  <IconPlus size={16} />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </Section>
+
+      {chosen && (
+        <Section title={t("Result")}>
+          <p className="text-sm text-[var(--color-text)] mb-2">
+            {t("{{covered}} of {{total}} keys covered", {
+              covered,
+              total: totalKeys,
+            })}
+          </p>
+          <ul className="text-sm text-[var(--color-text-secondary)] space-y-1 tabular-nums">
+            <li>
+              <Dot status="ok" />
+              {t("Right legend: {{count}}", { count: fit.counts.ok })}
+            </li>
+            <li>
+              <Dot status="blank" />
+              {t("Blank cap: {{count}}", { count: fit.counts.blank })}
+            </li>
+            <li>
+              <Dot status="sub" />
+              {t("Another legend: {{count}}", { count: fit.counts.sub })}
+            </li>
+            <li>
+              <Dot status="missing" />
+              {t("No cap: {{count}}", { count: fit.counts.missing })}
+              {short.length > 0 &&
+                ` (${short.map((s) => `${s.size} ×${s.count}`).join(", ")})`}
+            </li>
+          </ul>
+          <p className="text-xs text-[var(--color-text-muted)] mt-2">
+            {t("{{count}} caps left over, shown under the layout.", {
+              count: fit.spare.length,
+            })}
+          </p>
+        </Section>
+      )}
+
+      {chosen && target && (
+        <Section title={t("Selected key")}>
+          <p className="text-sm text-[var(--color-text-secondary)] mb-2 leading-relaxed">
+            {targetPlacement
+              ? `${kitById(targetPlacement.cap.kitId)?.name ?? ""}: ${
+                  targetPlacement.cap.cap.blank
+                    ? t("blank cap")
+                    : [
+                        targetPlacement.cap.cap.sub,
+                        targetPlacement.cap.cap.main,
+                      ]
+                        .filter(Boolean)
+                        .join(" ")
+                }${
+                  targetPlacement.cap.cap.row
+                    ? ` · ${targetPlacement.cap.cap.row}`
+                    : ""
+                }${targetPlacement.offRow ? ` · ${t("made for another row")}` : ""}`
+              : t("No cap on this key.")}
+          </p>
+          <p className="text-xs text-[var(--color-text-muted)] mb-2 leading-relaxed">
+            {t(
+              "Tap a lit cap under the layout to put it here, or drag this key onto another to trade caps.",
+            )}
+          </p>
+          <div className="grid grid-cols-2 gap-1.5">
+            <button
+              type="button"
+              className={`${TILE} ${TILE_IDLE}`}
+              onClick={onBare}
+              disabled={!targetPlacement}
+            >
+              {t("Take the cap off")}
+            </button>
+            <button
+              type="button"
+              className={`${TILE} ${TILE_IDLE}`}
+              onClick={onAuto}
+            >
+              {t("Back to automatic")}
+            </button>
+          </div>
+        </Section>
+      )}
+
+      {chosen && pinned > 0 && (
+        <Section title={t("Placed by hand")}>
+          <button
+            type="button"
+            className={`${TILE} w-full ${TILE_IDLE}`}
+            onClick={onAutoAll}
+          >
+            {t("All {{count}} keys back to automatic", { count: pinned })}
+          </button>
+        </Section>
+      )}
+
+      {chosen && suggestions.length > 0 && (
+        <Section
+          title={
+            fit.counts.missing > 0 || fit.counts.sub > 0 || fit.counts.blank > 0
+              ? t("Buying more")
+              : t("Other combinations")
+          }
+        >
+          <div className="flex flex-col gap-1.5">
+            {suggestions.map((s) => (
+              <button
+                key={choicesText(s.choices)}
+                type="button"
+                className={`${TILE} ${TILE_IDLE} !justify-start text-left flex-col !items-start !gap-0.5 py-2`}
+                onClick={() => onApply(s.choices)}
+              >
+                <span className="text-[var(--color-text)]">
+                  {choicesText(s.choices)}
+                </span>
+                <span className="text-xs tabular-nums">
+                  {s.counts.missing === 0
+                    ? t("covers every key")
+                    : t("{{count}} keys still without a cap", {
+                        count: s.counts.missing,
+                      })}
+                  {s.counts.blank > 0 &&
+                    ` · ${t("{{count}} blank", { count: s.counts.blank })}`}
+                  {s.counts.sub > 0 &&
+                    ` · ${t("{{count}} with another legend", { count: s.counts.sub })}`}
+                </span>
+              </button>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {chosen && sculpted && rows.length > 0 && (
+        <Section title={t("Which row each line is")}>
+          <p className="text-xs text-[var(--color-text-muted)] mb-2 leading-relaxed">
+            {t(
+              "These sets have a different shape per row. Rows are counted up from the bottom; change one if your layout differs.",
+            )}
+          </p>
+          <div className="flex flex-col gap-1">
+            {rows.map((row, i) => (
+              <label key={i} className="flex items-center gap-2 text-sm">
+                <span className="flex-1 min-w-0 truncate text-[var(--color-text-secondary)]">
+                  {row.hint || t("Row {{n}}", { n: i + 1 })}
+                </span>
+                <select
+                  value={row.row}
+                  onChange={(e) => onRow(i, e.target.value)}
+                  className="min-h-10 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text)] text-sm px-2"
+                >
+                  {ROWS.map((r) => (
+                    <option key={r} value={r}>
+                      {r}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      <Section title={t("One of each set against this layout")}>
+        <table className="w-full text-xs tabular-nums">
+          <thead>
+            <tr className="text-[var(--color-text-muted)]">
+              <th className="text-left font-normal pb-1">{t("Keycap set")}</th>
+              <th className="font-normal pb-1" title={t("Right legend")}>
+                <Dot status="ok" />
+              </th>
+              <th className="font-normal pb-1" title={t("Blank cap")}>
+                <Dot status="blank" />
+              </th>
+              <th className="font-normal pb-1" title={t("Another legend")}>
+                <Dot status="sub" />
+              </th>
+              <th className="font-normal pb-1" title={t("No cap")}>
+                <Dot status="missing" />
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {comparison.map(({ kit, counts }) => (
+              <tr key={kit.id} className="text-[var(--color-text-secondary)]">
+                <td className="py-1 pr-2">
+                  <button
+                    type="button"
+                    className="text-left text-[var(--color-cyber)] hover:underline"
+                    onClick={() => onApply([{ kitId: kit.id, count: 1 }])}
+                  >
+                    {kit.name}
+                  </button>
+                </td>
+                <td className="text-center">{counts.ok}</td>
+                <td className="text-center">{counts.blank}</td>
+                <td className="text-center">{counts.sub}</td>
+                <td
+                  className="text-center"
+                  style={
+                    counts.missing > 0
+                      ? { color: FIT_COLORS.missing }
+                      : undefined
+                  }
+                >
+                  {counts.missing}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {!chosen && (
+          <p className="text-xs text-[var(--color-text-muted)] mt-2 leading-relaxed">
+            {t(
+              "Pick a set above, or tap a name here, to see it on the layout.",
+            )}
+          </p>
+        )}
+      </Section>
+    </div>
+  );
+}

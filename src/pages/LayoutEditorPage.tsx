@@ -21,6 +21,7 @@ import {
   IconFile,
   IconFileImport,
   IconFileExport,
+  IconKeyboard,
   IconSquarePlus,
   IconSquaresSelected,
   IconWall,
@@ -28,7 +29,9 @@ import {
 } from "@tabler/icons-react";
 import { StandaloneFrame } from "../components/StandaloneFrame";
 import { useLanguage } from "../hooks/useLanguage";
+import { CapTray } from "../layoutEditor/components/CapTray";
 import { EntryPanel } from "../layoutEditor/components/EntryPanel";
+import { FitPanel } from "../layoutEditor/components/FitPanel";
 import { KeyPanel } from "../layoutEditor/components/KeyPanel";
 import { LayoutCanvas } from "../layoutEditor/components/LayoutCanvas";
 import { useHistory } from "../layoutEditor/hooks/useHistory";
@@ -56,6 +59,17 @@ import {
   type Clip,
   type TemplateId,
 } from "../layoutEditor/lib/edit";
+import {
+  capFitsKey,
+  compareSets,
+  defaultRows,
+  fitCaps,
+  poolOf,
+  suggestSets,
+  type KitChoice,
+} from "../layoutEditor/lib/fit";
+import type { FitMark } from "../layoutEditor/lib/fitMark";
+import { kitById } from "../layoutEditor/lib/kits";
 import {
   findOverlaps,
   limitRotation,
@@ -116,7 +130,7 @@ function LayerToggle({
     <div
       role="group"
       aria-label={t("Which text the keys show")}
-      className="flex rounded-lg border border-[var(--color-border)] overflow-hidden"
+      className="flex flex-shrink-0 rounded-lg border border-[var(--color-border)] overflow-hidden"
     >
       {options.map((o) => {
         const active = o.id === layer;
@@ -126,7 +140,7 @@ function LayerToggle({
             type="button"
             aria-pressed={active}
             onClick={() => onChange(o.id)}
-            className={`px-3 sm:px-4 min-h-11 text-sm whitespace-nowrap transition-colors ${
+            className={`px-2.5 sm:px-4 min-h-11 text-sm whitespace-nowrap transition-colors ${
               active
                 ? "bg-[var(--color-electric)] text-white"
                 : "text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
@@ -518,6 +532,13 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
   const [labelLayout, setLabelLayout] = useState<LabelLayout>("us");
   const [numbering, setNumbering] = useState<SplitNumbering>("across");
   const [focusToken, setFocusToken] = useState(0);
+  // The keycap check: which sets, which sculpt row each line of the layout
+  // is, and the caps put somewhere by hand (null: the key kept bare).
+  const [fitMode, setFitMode] = useState(false);
+  const [kitChoices, setKitChoices] = useState<KitChoice[]>([]);
+  const [rowOverrides, setRowOverrides] = useState<Record<number, string>>({});
+  const [pins, setPins] = useState<Map<string, string | null>>(() => new Map());
+  const [trayOpen, setTrayOpen] = useState(true);
   // A pivot put somewhere by hand, for the selection it was set on.
   const [pivotOverride, setPivotOverride] = useState<{
     key: string;
@@ -562,6 +583,89 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
     const clashes = findOverlaps(project.keys);
     return selectedIds.some((id) => clashes.has(id));
   }, [project, selectedIds]);
+  const layoutRows = useMemo(() => readingRows(project.keys), [project]);
+  const rowNames = useMemo(
+    () =>
+      defaultRows(layoutRows.length).map((row, i) => rowOverrides[i] ?? row),
+    [layoutRows, rowOverrides],
+  );
+  const fit = useMemo(
+    () => (fitMode ? fitCaps(project, kitChoices, rowNames, pins) : null),
+    [fitMode, project, kitChoices, rowNames, pins],
+  );
+  const fitMarks = useMemo(() => {
+    if (!fit || kitChoices.length === 0) return null;
+    const marks = new Map<string, FitMark>();
+    for (const key of fit.missing) {
+      marks.set(key.id, {
+        status: "missing",
+        main: "",
+        sub: "",
+        offRow: false,
+        pinned: pins.has(key.id),
+      });
+    }
+    for (const [id, p] of fit.placed) {
+      marks.set(id, {
+        status: p.status,
+        main: p.cap.cap.main,
+        sub: p.cap.cap.sub,
+        offRow: p.offRow,
+        pinned: p.pinned,
+      });
+    }
+    return marks;
+  }, [fit, kitChoices, pins]);
+  const kitSuggestions = useMemo(
+    () => (fitMode ? suggestSets(project, rowNames, kitChoices) : []),
+    [fitMode, project, rowNames, kitChoices],
+  );
+  const comparison = useMemo(
+    () => (fitMode ? compareSets(project, rowNames) : []),
+    [fitMode, project, rowNames],
+  );
+  /** Put a cap (by id; null for none) on a key by hand, if it is its size. */
+  const pinCap = useCallback(
+    (keyId: string, capId: string | null) => {
+      const key = project.keys.find((k) => k.id === keyId);
+      if (!key) return;
+      if (capId) {
+        const cap = poolOf(kitChoices).find((c) => c.id === capId);
+        if (!cap || !capFitsKey(cap.cap, key)) return;
+      }
+      setPins((old) => {
+        const next = new Map(old);
+        // A cap is in one place: it leaves the key it was pinned to.
+        if (capId) {
+          for (const [k, v] of next) if (v === capId) next.delete(k);
+        }
+        next.set(keyId, capId);
+        return next;
+      });
+    },
+    [project, kitChoices],
+  );
+  const swapCaps = useCallback(
+    (a: string, b: string) => {
+      if (!fit) return;
+      const keyA = project.keys.find((k) => k.id === a);
+      const keyB = project.keys.find((k) => k.id === b);
+      if (!keyA || !keyB) return;
+      const capA = fit.placed.get(a)?.cap ?? null;
+      const capB = fit.placed.get(b)?.cap ?? null;
+      // Only caps that fit where they are going.
+      if (capA && !capFitsKey(capA.cap, keyB)) return;
+      if (capB && !capFitsKey(capB.cap, keyA)) return;
+      setPins((old) => {
+        const next = new Map(old);
+        next.set(a, capB?.id ?? null);
+        next.set(b, capA?.id ?? null);
+        return next;
+      });
+    },
+    [fit, project],
+  );
+
   // The order Enter walks the keys in: the matrix's own on that layer.
   const entryRows = useMemo(
     () =>
@@ -671,7 +775,7 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
 
   const dialogOpen = importOpen || exportOpen || templateOpen;
   useEffect(() => {
-    if (dialogOpen) return;
+    if (dialogOpen || fitMode) return;
     const onKeyDown = (e: KeyboardEvent) => {
       if (isTyping(e.target)) return;
       const mod = e.metaKey || e.ctrlKey;
@@ -730,6 +834,7 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [
     dialogOpen,
+    fitMode,
     undo,
     redo,
     copy,
@@ -806,6 +911,47 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
       }}
     />
   );
+  const fitPanel = fit ? (
+    <FitPanel
+      totalKeys={layoutRows.flat().length}
+      choices={kitChoices}
+      onCount={(kitId, count) =>
+        setKitChoices((old) => {
+          const rest = old.filter((c) => c.kitId !== kitId);
+          return count > 0 ? [...rest, { kitId, count }] : rest;
+        })
+      }
+      fit={fit}
+      suggestions={kitSuggestions}
+      onApply={setKitChoices}
+      comparison={comparison}
+      rows={layoutRows.map((keys, i) => ({
+        hint: keys
+          .map((k) => k.legends[6] || k.legends.find(Boolean) || "")
+          .filter(Boolean)
+          .slice(0, 5)
+          .join(" "),
+        row: rowNames[i],
+      }))}
+      onRow={(index, row) =>
+        setRowOverrides((old) => ({ ...old, [index]: row }))
+      }
+      sculpted={kitChoices.some((c) => kitById(c.kitId)?.sculpted)}
+      target={target}
+      targetPlacement={target ? (fit.placed.get(target.id) ?? null) : null}
+      onBare={() => target && pinCap(target.id, null)}
+      onAuto={() => {
+        if (!target) return;
+        setPins((old) => {
+          const next = new Map(old);
+          next.delete(target.id);
+          return next;
+        });
+      }}
+      pinned={pins.size}
+      onAutoAll={() => setPins(new Map())}
+    />
+  ) : null;
   const renderPanel = (hideCount: boolean) => (
     <KeyPanel
       hideCount={hideCount}
@@ -856,7 +1002,7 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
     <StandaloneFrame onBack={onBack} fill>
       <div className="h-full flex flex-col">
         <div
-          className={`${BAR} order-4 sm:order-1 border-t sm:border-t-0 sm:border-b pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:pb-2`}
+          className={`${BAR} order-4 sm:order-1 border-t sm:border-t-0 sm:border-b overflow-x-auto pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:pb-2`}
         >
           <h1 className="hidden md:block text-sm font-medium text-[var(--color-text)] mr-2">
             {t("Layout Editor")}
@@ -866,6 +1012,27 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
             {t("{{count}} keys", { count: project.keys.length })}
           </span>
           <div className="flex-1" />
+          <button
+            type="button"
+            className={`${BUTTON} ${
+              fitMode
+                ? "!border-[var(--color-electric)] !text-[var(--color-text)] bg-[var(--color-electric)]/10"
+                : ""
+            }`}
+            onClick={() => {
+              setFitMode((on) => !on);
+              setSelection(new Set());
+              setMultiSelect(false);
+              setSheetOpen(true);
+            }}
+            aria-pressed={fitMode}
+            aria-label={t("Keycap check")}
+          >
+            <IconKeyboard size={18} />
+            <span className="hidden lg:inline whitespace-nowrap">
+              {t("Keycap check")}
+            </span>
+          </button>
           <button
             type="button"
             className={BUTTON}
@@ -888,7 +1055,9 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
         </div>
 
         <div
-          className={`${BAR} order-3 sm:order-2 border-t sm:border-t-0 sm:border-b overflow-x-auto`}
+          className={`${BAR} order-3 sm:order-2 border-t sm:border-t-0 sm:border-b overflow-x-auto ${
+            fitMode ? "!hidden" : ""
+          }`}
         >
           <button
             type="button"
@@ -988,64 +1157,103 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
         </div>
 
         <div className="order-1 sm:order-3 flex-1 min-h-0 flex">
-          <div className="relative flex-1 min-w-0">
-            <LayoutCanvas
-              project={project}
-              layer={layer}
-              selection={selection}
-              onSelectionChange={setSelection}
-              onMoveKeys={(ids, dx, dy) =>
-                commit(moveKeys(project, ids, dx, dy))
-              }
-              onResizeKey={(id, w) => commit(resizeKeys(project, [id], { w }))}
-              snapStep={snap}
-              multiSelect={multiSelect}
-              ghosts={ghosts}
-              flagged={stats.duplicates}
-              onEditKey={() => {
-                setSheetOpen(true);
-                setFocusToken((n) => n + 1);
-              }}
-              rotateMode={rotateMode}
-              pivot={pivot}
-              onPivotChange={(at) =>
-                setPivotOverride({ key: selectionKey, at, touchIndex: -1 })
-              }
-              onRotateKeys={(ids, at, delta) =>
-                commit(rotateKeys(project, ids, at, delta))
-              }
-              fineRotate={fineRotate}
-              stopAtKeys={stopAtKeys}
-              onLongPressKey={(id) => {
-                setMultiSelect(true);
-                setSelection((cur) => new Set([...cur, id]));
-              }}
-              fitToken={fitToken}
-            />
-            {empty && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center pointer-events-none">
-                <p className="text-sm text-[var(--color-text-secondary)] max-w-sm">
-                  {t(
-                    "No keys yet. Add a key, start from a template, or import Keyboard Layout Editor data.",
-                  )}
-                </p>
+          <div className="flex-1 min-w-0 flex flex-col">
+            <div className="relative flex-1 min-h-0">
+              <LayoutCanvas
+                project={project}
+                layer={layer}
+                selection={selection}
+                onSelectionChange={setSelection}
+                onMoveKeys={(ids, dx, dy) =>
+                  commit(moveKeys(project, ids, dx, dy))
+                }
+                onResizeKey={(id, w) =>
+                  commit(resizeKeys(project, [id], { w }))
+                }
+                snapStep={snap}
+                multiSelect={multiSelect}
+                ghosts={ghosts}
+                flagged={stats.duplicates}
+                onEditKey={() => {
+                  setSheetOpen(true);
+                  setFocusToken((n) => n + 1);
+                }}
+                capMarks={fitMode ? (fitMarks ?? new Map()) : null}
+                onFitSwap={swapCaps}
+                onCapDrop={(capId, keyId) => pinCap(keyId, capId)}
+                rotateMode={rotateMode}
+                pivot={pivot}
+                onPivotChange={(at) =>
+                  setPivotOverride({ key: selectionKey, at, touchIndex: -1 })
+                }
+                onRotateKeys={(ids, at, delta) =>
+                  commit(rotateKeys(project, ids, at, delta))
+                }
+                fineRotate={fineRotate}
+                stopAtKeys={stopAtKeys}
+                onLongPressKey={(id) => {
+                  setMultiSelect(true);
+                  setSelection((cur) => new Set([...cur, id]));
+                }}
+                fitToken={fitToken}
+              />
+              {empty && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center pointer-events-none">
+                  <p className="text-sm text-[var(--color-text-secondary)] max-w-sm">
+                    {t(
+                      "No keys yet. Add a key, start from a template, or import Keyboard Layout Editor data.",
+                    )}
+                  </p>
+                  <button
+                    type="button"
+                    className={`${BUTTON} pointer-events-auto`}
+                    onClick={() => setTemplateOpen(true)}
+                  >
+                    {t("New layout")}
+                  </button>
+                </div>
+              )}
+            </div>
+            {fit && kitChoices.length > 0 && (
+              <div className="flex-shrink-0 border-t border-[var(--color-border)] bg-[var(--color-surface)]/80">
                 <button
                   type="button"
-                  className={`${BUTTON} pointer-events-auto`}
-                  onClick={() => setTemplateOpen(true)}
+                  className="w-full min-h-9 px-3 flex items-center justify-between text-xs text-[var(--color-text-secondary)]"
+                  onClick={() => setTrayOpen((o) => !o)}
+                  aria-expanded={trayOpen}
                 >
-                  {t("New layout")}
+                  <span>
+                    {t("Caps left over: {{count}}", {
+                      count: fit.spare.length,
+                    })}
+                  </span>
+                  {trayOpen ? (
+                    <IconChevronDown size={16} />
+                  ) : (
+                    <IconChevronUp size={16} />
+                  )}
                 </button>
+                {trayOpen && (
+                  <CapTray
+                    spare={fit.spare}
+                    target={target}
+                    onPick={(capId) => target && pinCap(target.id, capId)}
+                  />
+                )}
               </div>
             )}
           </div>
           <aside className="hidden lg:block w-80 flex-shrink-0 border-l border-[var(--color-border)] bg-[var(--color-surface)]/60 p-4 overflow-y-auto">
-            {entry}
-            {renderPanel(false)}
+            {fitPanel ?? (
+              <>
+                {entry}
+                {renderPanel(false)}
+              </>
+            )}
           </aside>
         </div>
 
-        {(selectedKeys.length > 0 || layer === "matrix") && (
+        {(selectedKeys.length > 0 || layer === "matrix" || fitMode) && (
           <div className="order-2 sm:order-4 lg:hidden flex-shrink-0 border-t border-[var(--color-border)] bg-[var(--color-surface)]">
             <button
               type="button"
@@ -1054,11 +1262,15 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
               aria-expanded={sheetOpen}
             >
               <span>
-                {selectedKeys.length === 1
-                  ? t("1 key selected")
-                  : t("{{count}} keys selected", {
-                      count: selectedKeys.length,
-                    })}
+                {fitMode
+                  ? t("Keycap check")
+                  : selectedKeys.length === 0
+                    ? t("Matrix")
+                    : selectedKeys.length === 1
+                      ? t("1 key selected")
+                      : t("{{count}} keys selected", {
+                          count: selectedKeys.length,
+                        })}
               </span>
               {sheetOpen ? (
                 <IconChevronDown size={18} />
@@ -1068,8 +1280,12 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
             </button>
             {sheetOpen && (
               <div className="max-h-[38dvh] overflow-y-auto px-3 pb-3">
-                {entry}
-                {renderPanel(true)}
+                {fitPanel ?? (
+                  <>
+                    {entry}
+                    {renderPanel(true)}
+                  </>
+                )}
               </div>
             )}
           </div>

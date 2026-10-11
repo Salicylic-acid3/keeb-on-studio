@@ -10,6 +10,52 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // Layout editor
+  "Keycap set": "セット",
+  "Keycap check": "キーキャップの適合性",
+  "Caps left over: {{count}}": "余ったキャップ：{{count}} 個",
+  "No caps are left over.": "余ったキャップはありません。",
+  "Caps left over": "余ったキャップ",
+  convex: "凸型",
+  "Keycap sets": "キーキャップのセット",
+  "{{name}}: one fewer": "{{name}}を1つ減らす",
+  "{{name}}: one more": "{{name}}を1つ増やす",
+  "{{name}}: {{count}} sets": "{{name}}：{{count}} セット",
+  Result: "結果",
+  "{{covered}} of {{total}} keys covered":
+    "{{total}} キー中 {{covered}} キーにキャップがあります",
+  "Right legend: {{count}}": "レジェンドが合う：{{count}}",
+  "Blank cap: {{count}}": "無刻印のキャップ：{{count}}",
+  "Another legend: {{count}}": "別のレジェンドで代用：{{count}}",
+  "No cap: {{count}}": "キャップが足りない：{{count}}",
+  "{{count}} caps left over, shown under the layout.":
+    "余ったキャップは {{count}} 個です。レイアウトの下に並んでいます。",
+  "Selected key": "選択中のキー",
+  "blank cap": "無刻印のキャップ",
+  "made for another row": "別の段のキャップ",
+  "No cap on this key.": "このキーにはキャップがありません。",
+  "Tap a lit cap under the layout to put it here, or drag this key onto another to trade caps.":
+    "レイアウトの下で強調されているキャップを押すと、このキーに付け替えます。このキーを別のキーへドラッグすると、キャップを入れ替えます。",
+  "Take the cap off": "キャップを外す",
+  "Back to automatic": "自動に戻す",
+  "Placed by hand": "手で決めたキー",
+  "All {{count}} keys back to automatic": "{{count}} キーすべてを自動に戻す",
+  "Buying more": "買い足すなら",
+  "Other combinations": "ほかの組み合わせ",
+  "covers every key": "すべてのキーにキャップがあります",
+  "{{count}} keys still without a cap": "まだ {{count}} キーが足りません",
+  "{{count}} blank": "無刻印 {{count}}",
+  "{{count}} with another legend": "代用 {{count}}",
+  "Which row each line is": "行ごとの段",
+  "These sets have a different shape per row. Rows are counted up from the bottom; change one if your layout differs.":
+    "このセットは段ごとに形が違います。段は下の行から数えて割り当てています。レイアウトと合わない行は変更してください。",
+  "Row {{n}}": "{{n}} 行目",
+  "One of each set against this layout": "各セット1つずつでの比較",
+  "Right legend": "レジェンドが合う",
+  "Blank cap": "無刻印のキャップ",
+  "Another legend": "別のレジェンドで代用",
+  "No cap": "キャップが足りない",
+  "Pick a set above, or tap a name here, to see it on the layout.":
+    "上でセットを選ぶか、ここでセット名を押すと、レイアウトに当てはめて表示します。",
   "Paste Keyboard Layout Editor data (the downloaded JSON or the Raw data box), a VIA definition, a vial.json, or a project file saved here. It replaces the layout on screen.":
     "Keyboard Layout Editor のデータ（ダウンロードした JSON、または Raw data 欄の内容）、VIA の定義ファイル、vial.json、ここで保存したプロジェクトファイルを貼り付けてください。今表示しているレイアウトと入れ替わります。",
   "This could not be read as layout data.":
