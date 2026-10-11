@@ -4,6 +4,15 @@
       "version": "upcoming",
       "date": null,
       "changes": {
+        "major": [],
+        "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.11.0",
+      "date": "2026-10-11",
+      "changes": {
         "major": [
           {
             "en": "Layout editor: a new page at keeb-on.studio/layout for drawing a keyboard layout on a PC or a phone. Keys snap to a grid and to each other, turn around a pivot you place, and show up in red when they overlap. It reads and writes Keyboard Layout Editor data and the layouts.keymap rows for VIA and Vial, and can start from any of the 28 supported keyboards with their legends and matrix numbers filled in.",
