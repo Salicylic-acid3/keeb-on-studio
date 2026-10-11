@@ -10,6 +10,13 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // Layout editor
+  Switches: "スイッチ",
+  "Cherry MX compatible": "Cherry MX 互換スイッチ",
+  "Low profile": "ロープロファイルスイッチ",
+  "Mouse micro switch": "マウス用マイクロスイッチ",
+  "ClickBoard compatible": "ClickBoard 互換",
+  "Choose the switches your keyboard uses first. The keycap sets that go on them are offered next.":
+    "まず、キーボードに使うスイッチを選んでください。そのスイッチに付けられるキーキャップのセットが選べるようになります。",
   "Keycap set": "セット",
   "Keycap check": "キーキャップの適合性",
   "Caps left over: {{count}}": "余ったキャップ：{{count}} 個",
@@ -39,12 +46,6 @@ const ja: Record<string, string> = {
   "Back to automatic": "自動に戻す",
   "Placed by hand": "手で決めたキー",
   "All {{count}} keys back to automatic": "{{count}} キーすべてを自動に戻す",
-  "Buying more": "買い足すなら",
-  "Other combinations": "ほかの組み合わせ",
-  "covers every key": "すべてのキーにキャップがあります",
-  "{{count}} keys still without a cap": "まだ {{count}} キーが足りません",
-  "{{count}} blank": "無刻印 {{count}}",
-  "{{count}} with another legend": "代用 {{count}}",
   "Which row each line is": "行ごとの段",
   "These sets have a different shape per row. Rows are counted up from the bottom; change one if your layout differs.":
     "このセットは段ごとに形が違います。段は下の行から数えて割り当てています。レイアウトと合わない行は変更してください。",

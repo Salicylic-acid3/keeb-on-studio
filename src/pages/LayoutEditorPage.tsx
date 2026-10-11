@@ -65,11 +65,10 @@ import {
   defaultRows,
   fitCaps,
   poolOf,
-  suggestSets,
   type KitChoice,
 } from "../layoutEditor/lib/fit";
 import type { FitMark } from "../layoutEditor/lib/fitMark";
-import { kitById } from "../layoutEditor/lib/kits";
+import { kitById, kitsFor, type SwitchType } from "../layoutEditor/lib/kits";
 import {
   findOverlaps,
   limitRotation,
@@ -535,6 +534,7 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
   // The keycap check: which sets, which sculpt row each line of the layout
   // is, and the caps put somewhere by hand (null: the key kept bare).
   const [fitMode, setFitMode] = useState(false);
+  const [switchType, setSwitchType] = useState<SwitchType | null>(null);
   const [kitChoices, setKitChoices] = useState<KitChoice[]>([]);
   const [rowOverrides, setRowOverrides] = useState<Record<number, string>>({});
   const [pins, setPins] = useState<Map<string, string | null>>(() => new Map());
@@ -616,13 +616,13 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
     }
     return marks;
   }, [fit, kitChoices, pins]);
-  const kitSuggestions = useMemo(
-    () => (fitMode ? suggestSets(project, rowNames, kitChoices) : []),
-    [fitMode, project, rowNames, kitChoices],
+  const offeredKits = useMemo(
+    () => (switchType ? kitsFor(switchType) : []),
+    [switchType],
   );
   const comparison = useMemo(
-    () => (fitMode ? compareSets(project, rowNames) : []),
-    [fitMode, project, rowNames],
+    () => (fitMode ? compareSets(project, rowNames, offeredKits) : []),
+    [fitMode, project, rowNames, offeredKits],
   );
   /** Put a cap (by id; null for none) on a key by hand, if it is its size. */
   const pinCap = useCallback(
@@ -914,6 +914,16 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
   const fitPanel = fit ? (
     <FitPanel
       totalKeys={layoutRows.flat().length}
+      switchType={switchType}
+      onSwitch={(type) => {
+        setSwitchType(type);
+        // Sets that do not go on these switches are put away, and with
+        // them whatever was placed by hand.
+        const fits = new Set(kitsFor(type).map((k) => k.id));
+        setKitChoices((old) => old.filter((c) => fits.has(c.kitId)));
+        setPins(new Map());
+      }}
+      kits={offeredKits}
       choices={kitChoices}
       onCount={(kitId, count) =>
         setKitChoices((old) => {
@@ -922,7 +932,6 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
         })
       }
       fit={fit}
-      suggestions={kitSuggestions}
       onApply={setKitChoices}
       comparison={comparison}
       rows={layoutRows.map((keys, i) => ({

@@ -10,10 +10,9 @@ import {
   type FitResult,
   type KitChoice,
   type Placement,
-  type Suggestion,
 } from "../lib/fit";
 import { FIT_COLORS } from "../lib/fitMark";
-import { allKits, kitById, type Kit } from "../lib/kits";
+import { kitById, SWITCH_TYPES, type Kit, type SwitchType } from "../lib/kits";
 import type { LayoutKey } from "../lib/model";
 
 const TILE =
@@ -43,18 +42,16 @@ function Dot({ status }: { status: keyof typeof FIT_COLORS }) {
   );
 }
 
-function choicesText(choices: KitChoice[]): string {
-  return choices
-    .map((c) => `${kitById(c.kitId)?.name ?? c.kitId} ×${c.count}`)
-    .join(" + ");
-}
-
 export interface FitPanelProps {
   totalKeys: number;
+  /** The switches the keyboard uses; nothing else is offered until chosen. */
+  switchType: SwitchType | null;
+  onSwitch: (switchType: SwitchType) => void;
+  /** The sets that go on those switches. */
+  kits: Kit[];
   choices: KitChoice[];
   onCount: (kitId: string, count: number) => void;
   fit: FitResult;
-  suggestions: Suggestion[];
   onApply: (choices: KitChoice[]) => void;
   comparison: Array<{ kit: Kit; counts: FitResult["counts"] }>;
   /** The layout's rows, top to bottom: a few legends to tell them by, and their sculpt row. */
@@ -72,10 +69,12 @@ export interface FitPanelProps {
 
 export function FitPanel({
   totalKeys,
+  switchType,
+  onSwitch,
+  kits,
   choices,
   onCount,
   fit,
-  suggestions,
   onApply,
   comparison,
   rows,
@@ -95,11 +94,65 @@ export function FitPanel({
   const short = missingBySize(fit.missing);
   const covered = totalKeys - fit.counts.missing;
 
+  const switchNames: Record<SwitchType, { name: string; note: string }> = {
+    mx: { name: t("Cherry MX compatible"), note: "" },
+    lowprofile: {
+      name: t("Low profile"),
+      note: "Kailh Choc v2, Gateron LP",
+    },
+    click: {
+      name: t("Mouse micro switch"),
+      note: t("ClickBoard compatible"),
+    },
+  };
+  const switchPicker = (
+    <Section title={t("Switches")}>
+      <div className="flex flex-col gap-1.5">
+        {SWITCH_TYPES.map((type) => {
+          const on = type === switchType;
+          return (
+            <button
+              key={type}
+              type="button"
+              aria-pressed={on}
+              onClick={() => onSwitch(type)}
+              className={`${TILE} !justify-start text-left flex-col !items-start !gap-0 py-2 ${
+                on
+                  ? "border-[var(--color-electric)] text-[var(--color-text)] bg-[var(--color-electric)]/10"
+                  : TILE_IDLE
+              }`}
+            >
+              <span>{switchNames[type].name}</span>
+              {switchNames[type].note && (
+                <span className="text-xs text-[var(--color-text-muted)]">
+                  {switchNames[type].note}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </Section>
+  );
+  if (!switchType) {
+    return (
+      <div>
+        {switchPicker}
+        <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">
+          {t(
+            "Choose the switches your keyboard uses first. The keycap sets that go on them are offered next.",
+          )}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div>
+      {switchPicker}
       <Section title={t("Keycap sets")}>
         <div className="flex flex-col gap-1.5">
-          {allKits().map((kit) => {
+          {kits.map((kit) => {
             const count = countOf(kit.id);
             return (
               <div key={kit.id} className="flex items-center gap-1.5">
@@ -234,42 +287,6 @@ export function FitPanel({
           >
             {t("All {{count}} keys back to automatic", { count: pinned })}
           </button>
-        </Section>
-      )}
-
-      {chosen && suggestions.length > 0 && (
-        <Section
-          title={
-            fit.counts.missing > 0 || fit.counts.sub > 0 || fit.counts.blank > 0
-              ? t("Buying more")
-              : t("Other combinations")
-          }
-        >
-          <div className="flex flex-col gap-1.5">
-            {suggestions.map((s) => (
-              <button
-                key={choicesText(s.choices)}
-                type="button"
-                className={`${TILE} ${TILE_IDLE} !justify-start text-left flex-col !items-start !gap-0.5 py-2`}
-                onClick={() => onApply(s.choices)}
-              >
-                <span className="text-[var(--color-text)]">
-                  {choicesText(s.choices)}
-                </span>
-                <span className="text-xs tabular-nums">
-                  {s.counts.missing === 0
-                    ? t("covers every key")
-                    : t("{{count}} keys still without a cap", {
-                        count: s.counts.missing,
-                      })}
-                  {s.counts.blank > 0 &&
-                    ` · ${t("{{count}} blank", { count: s.counts.blank })}`}
-                  {s.counts.sub > 0 &&
-                    ` · ${t("{{count}} with another legend", { count: s.counts.sub })}`}
-                </span>
-              </button>
-            ))}
-          </div>
         </Section>
       )}
 

@@ -41,11 +41,16 @@ export interface Cap {
   textColor?: string;
 }
 
+/** The switches a keyboard is built with, which decide the caps that go on. */
+export type SwitchType = "mx" | "lowprofile" | "click";
+
+export const SWITCH_TYPES: SwitchType[] = ["mx", "lowprofile", "click"];
+
 export interface Kit {
   id: string;
   name: string;
-  /** Sets of one family share a profile and can be combined. */
-  family: "cherry" | "acl" | "click";
+  /** The switches this set's caps go on. */
+  switches: SwitchType[];
   /** Rows are sculpted differently, so a cap only fits its own row. */
   sculpted: boolean;
   caps: Cap[];
@@ -149,11 +154,11 @@ function inheritRows(caps: Cap[], keys: LayoutKey[]): void {
 function kit(
   id: string,
   name: string,
-  family: Kit["family"],
+  switches: SwitchType[],
   sculpted: boolean,
   doc: unknown,
 ): Kit {
-  return { id, name, family, sculpted, caps: capsFromKle(doc, sculpted) };
+  return { id, name, switches, sculpted, caps: capsFromKle(doc, sculpted) };
 }
 
 let cache: Kit[] | null = null;
@@ -161,13 +166,30 @@ let cache: Kit[] | null = null;
 /** Every set the editor knows, parsed once. */
 export function allKits(): Kit[] {
   cache ??= [
-    kit("standard", "Acid Caps Standard", "cherry", true, standard),
-    kit("premium", "Acid Caps Premium", "cherry", true, premium),
-    kit("lowprofile", "Acid Caps LowProfile", "acl", false, lowprofile),
-    kit("goforty", "GoForty Caps", "acl", false, goforty),
-    kit("clickprofile", "Acid Caps ClickProfile", "click", false, clickprofile),
+    kit("standard", "Acid Caps Standard", ["mx"], true, standard),
+    kit("premium", "Acid Caps Premium", ["mx"], true, premium),
+    kit(
+      "lowprofile",
+      "Acid Caps LowProfile",
+      ["mx", "lowprofile"],
+      false,
+      lowprofile,
+    ),
+    kit("goforty", "GoForty Caps", ["mx", "lowprofile"], false, goforty),
+    kit(
+      "clickprofile",
+      "Acid Caps ClickProfile",
+      ["click"],
+      false,
+      clickprofile,
+    ),
   ];
   return cache;
+}
+
+/** The sets whose caps go on the given switches. */
+export function kitsFor(switchType: SwitchType): Kit[] {
+  return allKits().filter((k) => k.switches.includes(switchType));
 }
 
 export function kitById(id: string): Kit | undefined {

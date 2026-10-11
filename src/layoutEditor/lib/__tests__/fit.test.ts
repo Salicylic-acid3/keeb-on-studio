@@ -6,9 +6,8 @@ import {
   missingBySize,
   normalLabel,
   poolOf,
-  suggestSets,
 } from "../fit";
-import { allKits, capsFromKle, kitById } from "../kits";
+import { allKits, capsFromKle, kitById, kitsFor } from "../kits";
 import { importKle } from "../kle";
 import { readingRows } from "../order";
 import { sampleProject } from "../sample";
@@ -164,28 +163,19 @@ describe("fitCaps", () => {
   });
 });
 
-describe("suggestions", () => {
-  it("finds how many sets cover a layout one set cannot", () => {
-    // Two full alphabets: one GoForty Caps has each letter once.
-    const p = importKle(["QWERTYUIOP".split(""), "QWERTYUIOP".split("")]);
-    const rows = rowsFor(p);
-    const now = [{ kitId: "goforty", count: 1 }];
-    expect(fitCaps(p, now, rows).counts.ok).toBe(10);
-    const [best] = suggestSets(p, rows, now);
-    expect(best.counts.missing).toBe(0);
-    expect(best.counts.sub).toBe(0);
+describe("switches and comparison", () => {
+  it("offers only the sets that go on the chosen switches", () => {
+    const ids = (type: Parameters<typeof kitsFor>[0]) =>
+      kitsFor(type).map((k) => k.id);
+    expect(ids("mx")).toEqual(["standard", "premium", "lowprofile", "goforty"]);
+    expect(ids("lowprofile")).toEqual(["lowprofile", "goforty"]);
+    expect(ids("click")).toEqual(["clickprofile"]);
   });
 
-  it("compares one of each set", () => {
+  it("compares one of each set given", () => {
     const p = sampleProject();
-    const table = compareSets(p, rowsFor(p));
-    expect(table.map((r) => r.kit.id)).toEqual([
-      "standard",
-      "premium",
-      "lowprofile",
-      "goforty",
-      "clickprofile",
-    ]);
+    const table = compareSets(p, rowsFor(p), kitsFor("lowprofile"));
+    expect(table.map((r) => r.kit.id)).toEqual(["lowprofile", "goforty"]);
     for (const row of table) {
       const { ok, blank, sub, missing } = row.counts;
       expect(ok + blank + sub + missing).toBe(38);

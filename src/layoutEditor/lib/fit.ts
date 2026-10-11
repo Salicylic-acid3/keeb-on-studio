@@ -275,64 +275,13 @@ export function missingBySize(
   return [...counts].map(([size, count]) => ({ size, count }));
 }
 
-export interface Suggestion {
-  choices: KitChoice[];
-  counts: FitResult["counts"];
-}
-
-/**
- * Combinations of sets (of the families already chosen, up to three of
- * each) that cover the layout, fewest sets first; when none covers it, the
- * ones that come closest.
- */
-export function suggestSets(
-  project: LayoutProject,
-  rowNames: string[],
-  current: KitChoice[],
-): Suggestion[] {
-  const families = new Set(
-    current.map((c) => kitById(c.kitId)?.family).filter(Boolean),
-  );
-  const kits = allKits().filter((k) => families.has(k.family));
-  if (kits.length === 0) return [];
-  const all: Suggestion[] = [];
-  const walk = (i: number, chosen: KitChoice[]) => {
-    if (i === kits.length) {
-      if (chosen.length === 0) return;
-      const { counts } = fitCaps(project, chosen, rowNames);
-      all.push({ choices: chosen, counts });
-      return;
-    }
-    for (let count = 0; count <= 3; count++) {
-      walk(
-        i + 1,
-        count === 0 ? chosen : [...chosen, { kitId: kits[i].id, count }],
-      );
-    }
-  };
-  walk(0, []);
-  const sets = (s: Suggestion) => s.choices.reduce((n, c) => n + c.count, 0);
-  const same = (s: Suggestion) =>
-    s.choices.length === current.filter((c) => c.count > 0).length &&
-    s.choices.every((c) =>
-      current.some((d) => d.kitId === c.kitId && d.count === c.count),
-    );
-  all.sort(
-    (a, b) =>
-      a.counts.missing - b.counts.missing ||
-      sets(a) - sets(b) ||
-      a.counts.sub - b.counts.sub ||
-      a.counts.blank - b.counts.blank,
-  );
-  return all.filter((s) => !same(s)).slice(0, 3);
-}
-
-/** One of each set against the layout, for a side-by-side look. */
+/** One of each of the given sets against the layout, for a side-by-side look. */
 export function compareSets(
   project: LayoutProject,
   rowNames: string[],
+  kits: Kit[],
 ): Array<{ kit: Kit; counts: FitResult["counts"] }> {
-  return allKits().map((kit) => ({
+  return kits.map((kit) => ({
     kit,
     counts: fitCaps(project, [{ kitId: kit.id, count: 1 }], rowNames).counts,
   }));
