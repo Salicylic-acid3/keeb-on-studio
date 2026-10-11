@@ -15,6 +15,7 @@ import {
 import { SplashScreen } from "./components/SplashScreen";
 import { ReleaseNotesPage, RELEASE_NOTES_PATH } from "./pages/ReleaseNotesPage";
 import { AboutPage, ABOUT_PATH } from "./pages/AboutPage";
+import { LayoutEditorPage, LAYOUT_PATH } from "./pages/LayoutEditorPage";
 import {
   DownloadsPage,
   DOWNLOADS_PATH,
@@ -201,6 +202,7 @@ function AppContent() {
   );
   const onReleaseNotes = pathname === RELEASE_NOTES_PATH;
   const onAbout = pathname === ABOUT_PATH;
+  const onLayout = pathname === LAYOUT_PATH;
   const onDownloads = pathname === DOWNLOADS_PATH;
   const onQmkDownloads = pathname === QMK_DOWNLOADS_PATH;
   const onOauthCallback = pathname === OAUTH_CALLBACK_PATH;
@@ -214,6 +216,7 @@ function AppContent() {
       !onQmk &&
       !onReleaseNotes &&
       !onAbout &&
+      !onLayout &&
       !onDownloads &&
       !onOauthCallback &&
       urlTab !== activeTab &&
@@ -227,6 +230,7 @@ function AppContent() {
     onQmk,
     onReleaseNotes,
     onAbout,
+    onLayout,
     onDownloads,
     onOauthCallback,
   ]);
@@ -258,6 +262,12 @@ function AppContent() {
 
   if (onAbout) {
     return <AboutPage onBack={() => navigatePath("/")} />;
+  }
+
+  // The layout editor needs no keyboard: it draws layouts, it does not talk
+  // to one.
+  if (onLayout) {
+    return <LayoutEditorPage onBack={() => navigatePath("/")} />;
   }
 
   // ZMK and QMK firmware on separate pages, switched the same way as the

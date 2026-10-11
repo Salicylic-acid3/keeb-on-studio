@@ -9,6 +9,36 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  // Layout editor
+  "Layout Editor": "レイアウトエディタ",
+  Legends: "レジェンド",
+  Matrix: "マトリクス",
+  "Which text the keys show": "キーに表示する内容",
+  "Keyboard layout": "キーボードのレイアウト",
+  "Zoom in": "拡大",
+  "Zoom out": "縮小",
+  "Show the whole layout": "全体を表示",
+  "Import a layout": "レイアウトを読み込む",
+  "Paste Keyboard Layout Editor data (the downloaded JSON or the Raw data box), a VIA definition or a vial.json. It replaces the layout on screen.":
+    "Keyboard Layout Editor のデータ（ダウンロードした JSON、または Raw data 欄の内容）、VIA の定義ファイル、vial.json を貼り付けてください。今表示しているレイアウトと入れ替わります。",
+  "Layout data": "レイアウトのデータ",
+  "This could not be read as Keyboard Layout Editor data.":
+    "Keyboard Layout Editor のデータとして読み取れませんでした。",
+  "Choose a file": "ファイルを選ぶ",
+  Load: "読み込む",
+  "Export the layout": "レイアウトを書き出す",
+  "The keys carry their matrix positions, as on screen now. This is what goes into layouts.keymap of a VIA definition or a vial.json.":
+    "今の表示どおり、キーにマトリクス番号が入ります。VIA の定義ファイルや vial.json の layouts.keymap に入れる内容です。",
+  "The keys carry their legends, as on screen now.":
+    "今の表示どおり、キーにレジェンドが入ります。",
+  "KLE JSON": "KLE の JSON",
+  "KLE Raw data": "KLE の Raw data",
+  Copied: "コピーしました",
+  Download: "ダウンロード",
+  "{{count}} keys": "{{count}} キー",
+  "No keys yet. Load Keyboard Layout Editor data, or start from the sample.":
+    "まだキーがありません。Keyboard Layout Editor のデータを読み込むか、サンプルから始めてください。",
+  "Start from the sample": "サンプルから始める",
   // QMK (Vial) side
   "The keyboard was disconnected before it restarted into its bootloader. Nothing was written; plug it in and try again.":
     "ブートローダーに切り替わる前にキーボードが外れました。何も書き込んでいません。挿し直してから、もう一度お試しください。",
