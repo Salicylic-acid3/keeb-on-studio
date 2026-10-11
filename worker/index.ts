@@ -27,6 +27,7 @@ import {
   type GalleryStore,
   type Shelf,
 } from "./gallery";
+import { exchangeCode } from "./github";
 
 export interface Env {
   ASSETS: Fetcher;
@@ -37,6 +38,12 @@ export interface Env {
    * no request is ever treated as the maintainer.
    */
   GALLERY_MAINTAINER_TOKEN?: string;
+  /**
+   * The GitHub OAuth App the layout editor signs in with (worker/github.ts).
+   * The id is public; the secret is set with `wrangler secret put`.
+   */
+  GITHUB_CLIENT_ID?: string;
+  GITHUB_CLIENT_SECRET?: string;
 }
 
 function json(body: unknown, status = 200): Response {
@@ -210,6 +217,38 @@ async function handleApi(
  * Only the files the release actually publishes are fetched -- this is not
  * a general-purpose proxy.
  */
+/** /api/github/config and /api/github/token: see worker/github.ts. */
+async function handleGithub(
+  request: Request,
+  env: Env,
+  url: URL,
+): Promise<Response> {
+  const method = request.method.toUpperCase();
+  const configured = Boolean(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET);
+  if (method === "GET" && url.pathname === "/api/github/config") {
+    return configured
+      ? json({ clientId: env.GITHUB_CLIENT_ID })
+      : json({ error: "not-configured" }, 503);
+  }
+  if (method === "POST" && url.pathname === "/api/github/token") {
+    if (!isSameOrigin(request)) return json({ error: "forbidden" }, 403);
+    const body = (await request.json().catch(() => ({}))) as { code?: unknown };
+    const result = await exchangeCode(env, body.code, (input, init) =>
+      fetch(input, init),
+    );
+    if (result.ok) return json({ token: result.token });
+    return json(
+      { error: result.error },
+      result.error === "not-configured"
+        ? 503
+        : result.error === "unreachable"
+          ? 502
+          : 400,
+    );
+  }
+  return json({ error: "not-found" }, 404);
+}
+
 const FIRMWARE_FILES = new Set(qmkReleaseFileNames());
 const MAX_FIRMWARE_BYTES = 4 * 1024 * 1024;
 
@@ -241,6 +280,9 @@ export default {
     const url = new URL(request.url);
     if (url.pathname.startsWith("/api/firmware/")) {
       return handleFirmware(request, url);
+    }
+    if (url.pathname.startsWith("/api/github/")) {
+      return handleGithub(request, env, url);
     }
     if (url.pathname.startsWith("/api/gallery")) {
       return handleApi(request, env, url);

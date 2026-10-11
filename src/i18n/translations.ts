@@ -10,6 +10,55 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // Layout editor
+  "My layouts": "マイレイアウト",
+  "My layouts saves the layout to your own GitHub Gists and opens the ones saved there, including those saved from Keyboard Layout Editor.":
+    "「マイレイアウト」で、レイアウトを自分の GitHub Gist に保存し、保存済みのものを開けます。Keyboard Layout Editor で保存したレイアウトも開けます。",
+  "Layouts are kept in your own GitHub Gists, the same place Keyboard Layout Editor keeps them: what you saved there opens here, and what you save here opens there.":
+    "レイアウトは自分の GitHub Gist に保存します。Keyboard Layout Editor と同じ保存先なので、あちらで保存したものをここで開け、ここで保存したものをあちらで開けます。",
+  "Could not reach GitHub.": "GitHub に接続できませんでした。",
+  "Saving to Gists is not set up on this server yet.":
+    "このサーバーでは、Gist への保存がまだ設定されていません。",
+  "You are signed out of GitHub. Sign in again.":
+    "GitHub からサインアウトしています。もう一度サインインしてください。",
+  "GitHub is refusing requests for now. Try again in a while.":
+    "GitHub が一時的にリクエストを受け付けていません。しばらくしてから試してください。",
+  "That Gist is no longer there.": "その Gist はもうありません。",
+  "That Gist has no layout this editor can read.":
+    "その Gist には、このエディタで読めるレイアウトがありません。",
+  "GitHub refused that.": "GitHub に拒否されました。",
+  "Checking…": "確認中…",
+  "Until it is, Export has a Project file that carries everything.":
+    "設定されるまでは、エクスポートの「プロジェクトファイル」ですべてを持ち出せます。",
+  "Sign in with GitHub": "GitHub でサインイン",
+  "The editor asks GitHub for your Gists only, nothing else of your account. The sign-in is kept in this browser; signing out here forgets it.":
+    "エディタが GitHub に求めるのは Gist へのアクセスだけで、アカウントのほかの部分には触れません。サインイン情報はこのブラウザに保存され、ここでサインアウトすると消えます。",
+  "Save the layout on screen": "今のレイアウトを保存する",
+  "Save over it": "上書き保存",
+  "Save as a new Gist": "新しい Gist として保存",
+  "Save to a Gist": "Gist に保存",
+  "Make a new Gist public": "新しい Gist を公開にする",
+  "This layout came from one of your Gists; Save over it updates that one.":
+    "このレイアウトはあなたの Gist から開いたものです。「上書き保存」でその Gist を更新します。",
+  "A Gist that is not public is seen only by those you give its link to.":
+    "公開にしない Gist は、リンクを教えた相手にしか見えません。",
+  "Besides the file Keyboard Layout Editor reads, the Gist gets a second file that keeps the matrix numbers and keycaps for this editor.":
+    "Gist には、Keyboard Layout Editor が読むファイルに加えて、マトリクス番号とキーキャップを保持するこのエディタ用のファイルも入ります。",
+  "Saved.": "保存しました。",
+  "Saved layouts": "保存済みのレイアウト",
+  "Search by name": "名前で検索",
+  "No saved layout has that in its name.":
+    "その名前を含むレイアウトはありません。",
+  "No layouts are saved in your Gists yet.":
+    "Gist に保存されたレイアウトはまだありません。",
+  "on screen": "表示中",
+  "with matrix and keycaps": "マトリクス・キーキャップ付き",
+  public: "公開",
+  "See the Gist on GitHub": "GitHub で Gist を見る",
+  "Previous page": "前のページ",
+  "Next page": "次のページ",
+  "Page {{page}}": "{{page}} ページ目",
+  "Page {{page}} of {{count}}": "{{page}} / {{count}} ページ",
+  "Reading your Gists…": "Gist を読み込み中…",
   "Size of the spare caps": "余ったキャップの表示サイズ",
   S: "小",
   M: "中",

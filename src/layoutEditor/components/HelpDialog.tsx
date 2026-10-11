@@ -48,6 +48,7 @@ const HELP: Array<{ title: string; lines: string[] }> = [
     title: "Saving and sharing",
     lines: [
       "The layout and the keycap choices are kept in this browser. A Project file carries everything to another device.",
+      "My layouts saves the layout to your own GitHub Gists and opens the ones saved there, including those saved from Keyboard Layout Editor.",
       "Export gives Keyboard Layout Editor data and the layouts.keymap rows for VIA and Vial. Import reads the same, and vial.json files.",
       "Save picture makes a PNG of the layout as on screen, keycaps included when the keycap check is on.",
       "Gallery publishes the layout for anyone to open and gives a link to it. This browser can delete what it published.",

@@ -109,3 +109,25 @@ curl -X DELETE https://keeb-on.studio/api/gallery/layouts/<id> \
 
 A card in the editor draws the layout itself, which costs one read per card
 on top of the list. Reads are not what the free tier runs out of.
+
+## Signing in with GitHub (the layout editor's My layouts)
+
+The layout editor saves layouts to the user's own Gists. Reading and writing
+them goes straight from the browser to GitHub; the Worker only does the one
+step a page cannot, trading GitHub's one-time code for a token
+(`/api/github/token`, see `github.ts`). It needs a GitHub OAuth App:
+
+1. On GitHub: Settings → Developer settings → OAuth Apps → New OAuth App.
+   Homepage URL `https://keeb-on.studio`, Authorization callback URL
+   `https://keeb-on.studio/layout`.
+2. Give the Worker the app's Client ID and a client secret generated there:
+
+```
+npx wrangler secret put GITHUB_CLIENT_ID --env release
+npx wrangler secret put GITHUB_CLIENT_SECRET --env release
+```
+
+Until both are set, `/api/github/config` answers `503 not-configured` and the
+editor says saving to Gists is not set up; nothing else is affected. The dev
+environment has another address, so it needs an OAuth App of its own (with
+that address as the callback) to try signing in there.

@@ -23,6 +23,7 @@ import {
   IconShare,
   IconFile,
   IconFileImport,
+  IconBrandGithub,
   IconFileExport,
   IconHelp,
   IconLayoutGrid,
@@ -40,6 +41,7 @@ import {
   type TraySize,
 } from "../layoutEditor/components/CapTray";
 import { EntryPanel } from "../layoutEditor/components/EntryPanel";
+import { GistDialog } from "../layoutEditor/components/GistDialog";
 import { HelpDialog } from "../layoutEditor/components/HelpDialog";
 import { GalleryDialog } from "../layoutEditor/components/GalleryDialog";
 import { FitPanel } from "../layoutEditor/components/FitPanel";
@@ -82,6 +84,13 @@ import {
 import { capArt } from "../layoutEditor/lib/capArt";
 import { EMPTY_CAP_SETUP, type CapSetup } from "../layoutEditor/lib/capSetup";
 import { fetchLayout, linkedLayoutId } from "../layoutEditor/lib/galleryClient";
+import {
+  finishSignIn,
+  storeGistLink,
+  storedGistLink,
+  type GistError,
+  type GistLink,
+} from "../layoutEditor/lib/gists";
 import { layoutPng } from "../layoutEditor/lib/picture";
 import {
   keyboardProject,
@@ -724,6 +733,17 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
   const [templateOpen, setTemplateOpen] = useState(false);
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
+  // The user's own Gists: the dialog, and the Gist the layout on screen
+  // was opened from or saved to (what "Save over it" writes to).
+  const [gistOpen, setGistOpen] = useState(false);
+  const [signInNotice, setSignInNotice] = useState<GistError | null>(null);
+  const [gistLink, setGistLinkState] = useState<GistLink | null>(() =>
+    storedGistLink(),
+  );
+  const setGistLink = (link: GistLink | null) => {
+    setGistLinkState(link);
+    storeGistLink(link);
+  };
   const clipboard = useRef<{ clip: Clip; pastes: number } | null>(null);
 
   useEffect(() => {
@@ -902,8 +922,14 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
     [commit],
   );
 
-  const replaceProject = (next: LayoutProject, caps?: CapSetup | null) => {
+  const replaceProject = (
+    next: LayoutProject,
+    caps?: CapSetup | null,
+    link: GistLink | null = null,
+  ) => {
     commit(next);
+    // Another layout is no longer the one that Gist holds.
+    setGistLink(link);
     // Caps put on by hand belong to the keys of the old layout. A project
     // file brings its own choices; anything else keeps the sets chosen.
     setPins(new Map(caps?.pins ?? []));
@@ -930,6 +956,15 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
   useEffect(() => {
     replaceRef.current = replaceProject;
   });
+  // Back from GitHub's sign-in page: finish signing in and show the Gists.
+  useEffect(() => {
+    void finishSignIn(window.location.search).then((result) => {
+      if (!result) return;
+      window.history.replaceState(null, "", LAYOUT_PATH);
+      setSignInNotice(result.ok ? null : result.error);
+      setGistOpen(true);
+    });
+  }, []);
   useEffect(() => {
     const id = linkedLayoutId(window.location.search);
     if (!id) return;
@@ -993,7 +1028,12 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
   }, [commitAdded, project]);
 
   const dialogOpen =
-    importOpen || exportOpen || templateOpen || galleryOpen || helpOpen;
+    importOpen ||
+    exportOpen ||
+    templateOpen ||
+    galleryOpen ||
+    helpOpen ||
+    gistOpen;
   // In the keycap check, Backspace and Delete take the cap off the selected
   // key, as the panel's button does.
   useEffect(() => {
@@ -1307,6 +1347,15 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
           <button
             type="button"
             className={BUTTON}
+            onClick={() => setGistOpen(true)}
+            aria-label={t("My layouts")}
+          >
+            <IconBrandGithub size={18} />
+            <span className="hidden sm:inline">{t("My layouts")}</span>
+          </button>
+          <button
+            type="button"
+            className={BUTTON}
             onClick={() => setGalleryOpen(true)}
             aria-label={t("Gallery")}
           >
@@ -1612,6 +1661,25 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
         }}
       />
       <HelpDialog open={helpOpen} onClose={() => setHelpOpen(false)} />
+      <GistDialog
+        open={gistOpen}
+        onClose={() => {
+          setGistOpen(false);
+          setSignInNotice(null);
+        }}
+        project={project}
+        caps={capSetup}
+        link={gistLink}
+        onLink={setGistLink}
+        onRename={(name) => {
+          if (name !== project.name) commit({ ...project, name });
+        }}
+        onOpen={(opened) => {
+          replaceProject(opened.project, opened.caps, opened.link);
+          setGistOpen(false);
+        }}
+        signInNotice={signInNotice}
+      />
       <GalleryDialog
         open={galleryOpen}
         onClose={() => setGalleryOpen(false)}

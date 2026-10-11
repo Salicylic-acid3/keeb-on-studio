@@ -5,7 +5,13 @@
       "date": null,
       "changes": {
         "major": [],
-        "minor": [],
+        "minor": [
+          {
+            "en": "Layout editor: My layouts saves a layout to your own GitHub Gists and opens the ones saved there, including those saved from Keyboard Layout Editor. Every saved layout is listed, a page at a time, with a search by name.",
+            "ja": "レイアウトエディタ: 「マイレイアウト」を追加しました。レイアウトを自分の GitHub Gist に保存し、保存済みのものを開けます。Keyboard Layout Editor で保存したレイアウトも開けます。保存済みのレイアウトはすべて一覧に出て、ページ送りと名前での検索ができます。",
+            "zh": "布局编辑器：新增“我的布局”，可将布局保存到自己的 GitHub Gist 并打开已保存的布局，包括用 Keyboard Layout Editor 保存的布局。所有已保存的布局都会分页列出，并可按名称搜索。"
+          }
+        ],
         "patch": []
       }
     },
