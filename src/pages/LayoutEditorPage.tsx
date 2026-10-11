@@ -994,6 +994,21 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
 
   const dialogOpen =
     importOpen || exportOpen || templateOpen || galleryOpen || helpOpen;
+  // In the keycap check, Backspace and Delete take the cap off the selected
+  // key, as the panel's button does.
+  useEffect(() => {
+    if (dialogOpen || !fitMode || !target) return;
+    const keyId = target.id;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Delete" && e.key !== "Backspace") return;
+      if (isTyping(e.target) || e.metaKey || e.ctrlKey || e.altKey) return;
+      e.preventDefault();
+      pinCap(keyId, null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [dialogOpen, fitMode, target, pinCap]);
+
   useEffect(() => {
     if (dialogOpen || fitMode) return;
     const onKeyDown = (e: KeyboardEvent) => {

@@ -6,7 +6,13 @@
       "changes": {
         "major": [],
         "minor": [],
-        "patch": []
+        "patch": [
+          {
+            "en": "Layout editor: in the keycap check, Backspace and Delete take the cap off the selected key.",
+            "ja": "レイアウトエディタ: キーキャップの適合性で、Backspace キーと Delete キーでも選択中のキーのキャップを外せるようにしました。",
+            "zh": "布局编辑器：在键帽适配检查中，按 Backspace 或 Delete 也可以取下所选按键的键帽。"
+          }
+        ]
       }
     },
     {
