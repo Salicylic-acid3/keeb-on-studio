@@ -42,6 +42,12 @@ export interface LayoutKey {
   /** Legends by KLE position (0 = top left ... 8 = bottom right, 9-11 front). */
   legends: string[];
   matrix?: { row: number; col: number };
+  /**
+   * The key takes a convex cap (thumb keys, mostly). A convex cap is a
+   * different shape from a plain one of the same size, so the keycap check
+   * only ever puts convex caps here, and nowhere else.
+   */
+  convex?: boolean;
   /** VIA / Vial layout option this key belongs to; kept, not edited yet. */
   option?: { index: number; choice: number };
   kle?: KleExtras;

@@ -10,6 +10,8 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // Layout editor
+  "This key takes a convex cap": "このキーはコンベックスのキャップを使う",
+  "Convex cap": "コンベックスのキャップを使う",
   Switches: "スイッチ",
   "Cherry MX compatible": "Cherry MX 互換スイッチ",
   "Low profile": "ロープロファイルスイッチ",
@@ -22,7 +24,7 @@ const ja: Record<string, string> = {
   "Caps left over: {{count}}": "余ったキャップ：{{count}} 個",
   "No caps are left over.": "余ったキャップはありません。",
   "Caps left over": "余ったキャップ",
-  convex: "凸型",
+  convex: "コンベックス",
   "Keycap sets": "キーキャップのセット",
   "{{name}}: one fewer": "{{name}}を1つ減らす",
   "{{name}}: one more": "{{name}}を1つ増やす",

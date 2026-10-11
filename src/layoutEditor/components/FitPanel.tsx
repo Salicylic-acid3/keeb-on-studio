@@ -62,6 +62,8 @@ export interface FitPanelProps {
   target: LayoutKey | null;
   targetPlacement: Placement | null;
   onBare: () => void;
+  /** Mark the selected key as taking a convex cap, or a plain one. */
+  onConvex: (convex: boolean) => void;
   onAuto: () => void;
   pinned: number;
   onAutoAll: () => void;
@@ -83,6 +85,7 @@ export function FitPanel({
   target,
   targetPlacement,
   onBare,
+  onConvex,
   onAuto,
   pinned,
   onAutoAll,
@@ -222,7 +225,18 @@ export function FitPanel({
               <Dot status="missing" />
               {t("No cap: {{count}}", { count: fit.counts.missing })}
               {short.length > 0 &&
-                ` (${short.map((s) => `${s.size} ×${s.count}`).join(", ")})`}
+                ` (${short
+                  .map(
+                    (s) =>
+                      `${
+                        s.iso
+                          ? "ISO Enter"
+                          : s.h === 1
+                            ? `${s.w}u`
+                            : `${s.w}u × ${s.h}u`
+                      }${s.convex ? ` ${t("convex")}` : ""} ×${s.count}`,
+                  )
+                  .join(", ")})`}
             </li>
           </ul>
           <p className="text-xs text-[var(--color-text-muted)] mt-2">
@@ -258,6 +272,18 @@ export function FitPanel({
               "Tap a lit cap under the layout to put it here, or drag this key onto another to trade caps.",
             )}
           </p>
+          <button
+            type="button"
+            aria-pressed={Boolean(target.convex)}
+            className={`${TILE} w-full mb-1.5 ${
+              target.convex
+                ? "border-[var(--color-electric)] text-[var(--color-text)] bg-[var(--color-electric)]/10"
+                : TILE_IDLE
+            }`}
+            onClick={() => onConvex(!target.convex)}
+          >
+            {t("This key takes a convex cap")}
+          </button>
           <div className="grid grid-cols-2 gap-1.5">
             <button
               type="button"

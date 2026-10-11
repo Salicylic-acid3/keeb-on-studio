@@ -352,6 +352,24 @@ export function keyAfterDelete(
   return pool.reduce((a, b) => (dist(b) < dist(a) ? b : a)).id;
 }
 
+/** Mark keys as taking convex caps, or as plain again. */
+export function setConvex(
+  project: LayoutProject,
+  ids: Iterable<string>,
+  convex: boolean,
+): LayoutProject {
+  const target = new Set(ids);
+  let changed = false;
+  const keys = project.keys.map((k) => {
+    if (!target.has(k.id) || Boolean(k.convex) === convex) return k;
+    changed = true;
+    const { convex: _was, ...rest } = k;
+    void _was;
+    return convex ? { ...rest, convex: true } : rest;
+  });
+  return changed ? { ...project, keys } : project;
+}
+
 /** The ISO / JIS Enter: 1.25u x 2u with a 1.5u top row reaching left. */
 const ISO_ENTER = { w: 1.25, h: 2, x2: -0.25, y2: 0, w2: 1.5, h2: 1 };
 

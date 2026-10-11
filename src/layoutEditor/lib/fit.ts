@@ -1,8 +1,9 @@
 /**
  * Which caps of the chosen keycap sets go on which keys of a layout.
  *
- * A cap fits a key when it is the same size and, on a sculpted set, made
- * for the key's row. Among the caps that fit, keys take one with their own
+ * A cap fits a key when it is the same size and shape (a convex cap only
+ * goes on a key marked convex, and a plain cap never does) and, on a
+ * sculpted set, made for the key's row. Among the caps that fit, keys take one with their own
  * legend first, a blank one next, and one with some other legend last, so
  * as many keys as possible end up with the right legend and every key that
  * can be covered is.
@@ -87,21 +88,39 @@ interface Need {
   row?: string;
 }
 
-const sizeOf = (w: number, h: number, iso: boolean) =>
-  `${w}x${h}${iso ? "iso" : ""}`;
-const capSize = (cap: Cap) => sizeOf(cap.w, cap.h, cap.shape === "iso");
+/** Size and shape together: what has to match for a cap to go on a key. */
+interface Form {
+  w: number;
+  h: number;
+  iso: boolean;
+  convex: boolean;
+}
 
-function needOf(key: LayoutKey, row: string | undefined): Need {
+const formKey = (f: Form) =>
+  `${f.w}x${f.h}${f.iso ? "iso" : ""}${f.convex ? "c" : ""}`;
+const capForm = (cap: Cap): Form => ({
+  w: cap.w,
+  h: cap.h,
+  iso: cap.shape === "iso",
+  convex: cap.convex,
+});
+const capSize = (cap: Cap) => formKey(capForm(cap));
+
+function keyForm(key: LayoutKey): Form {
   const kle = key.kle ?? {};
   const iso = isIsoEnter(key) || (key.h === 2 && (kle.x2 ?? 0) < 0);
   const w =
     !iso && kle.w2 !== undefined && kle.h2 === key.h
       ? Math.max(key.w, kle.w2)
       : key.w;
+  return { w, h: key.h, iso, convex: Boolean(key.convex) };
+}
+
+function needOf(key: LayoutKey, row: string | undefined): Need {
   const { main, sub } = mainAndSub(key);
   return {
     key,
-    size: sizeOf(w, key.h, iso),
+    size: formKey(keyForm(key)),
     main: normalLabel(main),
     sub: normalLabel(sub),
     row,
@@ -205,7 +224,7 @@ export function fitCaps(
     let bestScore = -1;
     for (const c of free.get(need.size) ?? []) {
       if (!rowFits(need, c.cap, kits.get(c.kitId)) || !want(c.cap)) continue;
-      const score = (c.cap.nub === homing ? 2 : 0) + (c.cap.convex ? 0 : 1);
+      const score = c.cap.nub === homing ? 1 : 0;
       if (score > bestScore) {
         best = c;
         bestScore = score;
@@ -253,26 +272,78 @@ export function fitCaps(
   };
 }
 
-/** Whether a spare cap can go on a key at all: the same size. */
+/** Whether a spare cap can go on a key at all: the same size and shape. */
 export function capFitsKey(cap: Cap, key: LayoutKey): boolean {
   return capSize(cap) === needOf(key, undefined).size;
 }
 
-/** The keys nothing was left for, counted by size: "1.75u x 1". */
-export function missingBySize(
-  missing: LayoutKey[],
-): Array<{ size: string; count: number }> {
-  const counts = new Map<string, number>();
+export interface ShortOf extends Form {
+  count: number;
+}
+
+/** The keys nothing was left for, counted by size and shape. */
+export function missingBySize(missing: LayoutKey[]): ShortOf[] {
+  const counts = new Map<string, ShortOf>();
   for (const key of missing) {
-    const need = needOf(key, undefined);
-    const label = need.size.endsWith("iso")
-      ? "ISO Enter"
-      : need.size.endsWith("x1")
-        ? `${need.size.slice(0, -2)}u`
-        : `${need.size.replace("x", "u x ")}u`;
-    counts.set(label, (counts.get(label) ?? 0) + 1);
+    const form = keyForm(key);
+    const id = formKey(form);
+    const entry = counts.get(id) ?? { ...form, count: 0 };
+    entry.count += 1;
+    counts.set(id, entry);
   }
-  return [...counts].map(([size, count]) => ({ size, count }));
+  return [...counts.values()];
+}
+
+/**
+ * Caps sorted into the piles a person would sort them into: by row, then
+ * by length, then by shape.
+ */
+export interface CapPile {
+  row?: string;
+  w: number;
+  h: number;
+  iso: boolean;
+  convex: boolean;
+  caps: PoolCap[];
+}
+
+export function pileCaps(caps: PoolCap[]): CapPile[] {
+  const piles = new Map<string, CapPile>();
+  for (const cap of caps) {
+    const form = capForm(cap.cap);
+    const id = `${cap.cap.row ?? ""}|${formKey(form)}`;
+    let pile = piles.get(id);
+    if (!pile) {
+      pile = {
+        ...form,
+        ...(cap.cap.row ? { row: cap.cap.row } : {}),
+        caps: [],
+      };
+      piles.set(id, pile);
+    }
+    pile.caps.push(cap);
+  }
+  // R4 (the top row) first, caps of no particular row last.
+  const rowRank = (row?: string) => (row ? -Number(row.slice(1)) : 1);
+  const shapeRank = (p: CapPile) => (p.iso ? 2 : p.convex ? 1 : 0);
+  return [...piles.values()]
+    .map((p) => ({
+      ...p,
+      caps: p.caps
+        .slice()
+        .sort(
+          (a, b) =>
+            Number(a.cap.blank) - Number(b.cap.blank) ||
+            a.cap.main.localeCompare(b.cap.main),
+        ),
+    }))
+    .sort(
+      (a, b) =>
+        rowRank(a.row) - rowRank(b.row) ||
+        a.w - b.w ||
+        a.h - b.h ||
+        shapeRank(a) - shapeRank(b),
+    );
 }
 
 /** One of each of the given sets against the layout, for a side-by-side look. */

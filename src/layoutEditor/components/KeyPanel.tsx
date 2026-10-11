@@ -101,6 +101,7 @@ export interface KeyPanelProps {
   onResize: (size: { w?: number; h?: number }) => void;
   onNudge: (dx: number, dy: number) => void;
   onIsoEnter: () => void;
+  onConvex: (convex: boolean) => void;
   onAddNext: () => void;
   onDuplicate: () => void;
   onMirror: () => void;
@@ -132,6 +133,7 @@ export function KeyPanel({
   onResize,
   onNudge,
   onIsoEnter,
+  onConvex,
   onAddNext,
   onDuplicate,
   onMirror,
@@ -154,6 +156,7 @@ export function KeyPanel({
   const w = same((k) => k.w);
   const h = same((k) => k.h);
   const allIso = keys.every(isIsoEnter);
+  const allConvex = keys.every((k) => k.convex);
   const angle = same((k) => k.angle);
 
   return (
@@ -187,6 +190,14 @@ export function KeyPanel({
           onClick={onIsoEnter}
         >
           {t("ISO / JIS Enter")}
+        </button>
+        <button
+          type="button"
+          aria-pressed={allConvex}
+          className={`${TILE} w-full mb-2 ${allConvex ? TILE_ON : TILE_IDLE}`}
+          onClick={() => onConvex(!allConvex)}
+        >
+          {t("Convex cap")}
         </button>
         <div className="flex flex-col gap-2">
           <Stepper

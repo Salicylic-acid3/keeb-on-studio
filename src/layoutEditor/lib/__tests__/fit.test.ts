@@ -1,10 +1,12 @@
 import { templateProject } from "../edit";
 import {
+  capFitsKey,
   compareSets,
   defaultRows,
   fitCaps,
   missingBySize,
   normalLabel,
+  pileCaps,
   poolOf,
 } from "../fit";
 import { allKits, capsFromKle, kitById, kitsFor } from "../kits";
@@ -110,18 +112,20 @@ describe("fitCaps", () => {
       ["", ""],
       [{ w: 9 }, "x"],
     ]);
-    const fit = fitCaps(p, [{ kitId: "goforty", count: 1 }], ["R2", "R1"]);
+    const fit = fitCaps(p, [{ kitId: "standard", count: 1 }], ["R1", "R1"]);
     expect(fit.counts).toMatchObject({ ok: 2, missing: 1 });
-    expect(missingBySize(fit.missing)).toEqual([{ size: "9u", count: 1 }]);
+    expect(missingBySize(fit.missing)).toEqual([
+      { w: 9, h: 1, iso: false, convex: false, count: 1 },
+    ]);
     for (const k of p.keys.slice(0, 2)) {
       expect(fit.placed.get(k.id)!.cap.cap.blank).toBe(true);
     }
   });
 
   it("falls back to a blank cap, then to another legend", () => {
-    // GoForty Caps has no "Fn2"; it has blank 1u caps.
+    // Standard has no "Fn2"; it has plain blank 1u caps for the bottom row.
     const p = importKle([["Fn2"]]);
-    const one = fitCaps(p, [{ kitId: "goforty", count: 1 }], ["R1"]);
+    const one = fitCaps(p, [{ kitId: "standard", count: 1 }], ["R1"]);
     expect(one.counts).toMatchObject({ blank: 1 });
   });
 
@@ -160,6 +164,76 @@ describe("fitCaps", () => {
       new Map([[p.keys[0].id, null]]),
     );
     expect(bare.counts).toMatchObject({ ok: 1, missing: 1 });
+  });
+});
+
+describe("convex caps", () => {
+  // Low Profile has convex blanks in 1u and a plain blank 1u is not among
+  // its caps, so the two cannot be told apart by anything but shape.
+  const choice = [{ kitId: "lowprofile", count: 1 }];
+
+  it("go only on keys marked convex", () => {
+    const p = importKle([["", "a"]]);
+    const plain = fitCaps(p, choice, ["R1"]);
+    expect(plain.placed.get(p.keys[0].id)?.cap.cap.convex ?? false).toBe(false);
+    const marked = {
+      ...p,
+      keys: [{ ...p.keys[0], convex: true }, p.keys[1]],
+    };
+    const fit = fitCaps(marked, choice, ["R1"]);
+    expect(fit.placed.get(p.keys[0].id)!.cap.cap.convex).toBe(true);
+    expect(fit.placed.get(p.keys[1].id)!.cap.cap.convex).toBe(false);
+  });
+
+  it("are never put on a plain key, even by hand", () => {
+    const p = importKle([["a"]]);
+    const convex = poolOf(choice).find((c) => c.cap.convex && c.cap.w === 1)!;
+    const fit = fitCaps(
+      p,
+      choice,
+      ["R1"],
+      new Map([[p.keys[0].id, convex.id]]),
+    );
+    expect(fit.placed.get(p.keys[0].id)!.cap.id).not.toBe(convex.id);
+    expect(capFitsKey(convex.cap, p.keys[0])).toBe(false);
+    expect(capFitsKey(convex.cap, { ...p.keys[0], convex: true })).toBe(true);
+  });
+
+  it("are counted as their own shape when short", () => {
+    const p = importKle([[{ w: 9 }, ""]]);
+    const marked = { ...p, keys: [{ ...p.keys[0], convex: true }] };
+    expect(missingBySize(fitCaps(marked, choice, ["R1"]).missing)).toEqual([
+      { w: 9, h: 1, iso: false, convex: true, count: 1 },
+    ]);
+  });
+});
+
+describe("pileCaps", () => {
+  it("sorts spare caps by row, then length, then shape", () => {
+    const piles = pileCaps(poolOf([{ kitId: "standard", count: 1 }]));
+    const names = piles.map(
+      (p) => `${p.row ?? "-"} ${p.w}x${p.h}${p.iso ? " iso" : ""}`,
+    );
+    expect(names.slice(0, 3)).toEqual(["R4 1x1", "R4 2x1", "R3 1x1"]);
+    expect(names[names.length - 1].startsWith("-")).toBe(true);
+    expect(piles.reduce((n, p) => n + p.caps.length, 0)).toBe(185);
+    // Each pile is one row, one size, one shape.
+    for (const pile of piles) {
+      for (const { cap } of pile.caps) {
+        expect([cap.row, cap.w, cap.h, cap.convex]).toEqual([
+          pile.row,
+          pile.w,
+          pile.h,
+          pile.convex,
+        ]);
+      }
+    }
+  });
+
+  it("keeps convex caps in a pile of their own", () => {
+    const piles = pileCaps(poolOf([{ kitId: "lowprofile", count: 1 }]));
+    const oneU = piles.filter((p) => p.w === 1 && p.h === 1);
+    expect(oneU.map((p) => p.convex)).toEqual([false, true]);
   });
 });
 

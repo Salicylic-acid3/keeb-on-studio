@@ -50,6 +50,7 @@ import {
   pasteClip,
   resizeKeys,
   rotateKeys,
+  setConvex,
   setLegendSlot,
   setMainAndSub,
   setMatrix,
@@ -949,6 +950,9 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
       target={target}
       targetPlacement={target ? (fit.placed.get(target.id) ?? null) : null}
       onBare={() => target && pinCap(target.id, null)}
+      onConvex={(convex) => {
+        if (target) commit(setConvex(project, [target.id], convex));
+      }}
       onAuto={() => {
         if (!target) return;
         setPins((old) => {
@@ -969,6 +973,7 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
       onResize={(size) => commit(resizeKeys(project, selectedIds, size))}
       onNudge={nudge}
       onIsoEnter={() => commit(makeIsoEnter(project, selectedIds))}
+      onConvex={(convex) => commit(setConvex(project, selectedIds, convex))}
       onAddNext={addOne}
       onDuplicate={duplicate}
       onMirror={mirror}

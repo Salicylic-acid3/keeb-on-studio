@@ -204,6 +204,21 @@ const KeyShape = memo(function KeyShape({
             fill={fill}
           />
         ))}
+      {!decal && k.convex && (
+        // A second, rounder outline inside: this key takes a convex cap.
+        <rect
+          x={-W / 2 + gap + zoom * 0.09}
+          y={-H / 2 + gap + zoom * 0.09}
+          width={Math.max(0, W - gap * 2 - zoom * 0.18)}
+          height={Math.max(0, H - gap * 2 - zoom * 0.18)}
+          rx={zoom * 0.22}
+          fill="none"
+          stroke={stroke}
+          strokeWidth={1}
+          opacity={0.7}
+          style={{ pointerEvents: "none" }}
+        />
+      )}
       {decal && (
         // Something to hit and to outline when selected; a decal has no cap.
         <rect
