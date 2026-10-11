@@ -29,12 +29,50 @@ interface ZmkLayout {
   }>;
 }
 
-const ZMK: Record<string, ZmkLayout> = {
-  clickboard_ergotrack: ERGOTRACK,
-  goforty_max_ortho: GOFORTY_MAX,
+const QMK = qmk as Array<{ id: string; name: string; keymap: KleDocument }>;
+
+/**
+ * The ErgoTrack's physical layout is rounded to 1/100 u, which leaves a few
+ * neighbours overlapping by a hair (the fourth row on the left, and the
+ * turned thumb keys against the keys beside them). As a layout to edit
+ * that would show them as clashing, so those keys are moved apart by a few
+ * hundredths here; the firmware's own layout is left as it is. Keyed by
+ * the key's "x,y" in that layout: [dx, dy].
+ */
+const ERGOTRACK_TIDY: Record<string, [number, number]> = {
+  "0,337": [0, 1],
+  "125,337": [0, 1],
+  "338,425": [-4, 0],
+  "448,441": [-3, 0],
+  "551,484": [-2, 0],
+  "1275,484": [4, 0],
+  "1379,442": [4, 0],
+  "1488,425": [6, 0],
 };
 
-const QMK = qmk as Array<{ id: string; name: string; keymap: KleDocument }>;
+function tidied(layout: ZmkLayout, moves: typeof ERGOTRACK_TIDY): ZmkLayout {
+  return {
+    ...layout,
+    keys: layout.keys.map((k) => {
+      const move = moves[`${k.x},${k.y}`];
+      if (!move) return k;
+      const [dx, dy] = move;
+      return {
+        ...k,
+        x: k.x + dx,
+        y: k.y + dy,
+        // A turned key keeps turning about its own centre.
+        ...(k.rx !== undefined ? { rx: k.rx + dx } : {}),
+        ...(k.ry !== undefined ? { ry: k.ry + dy } : {}),
+      };
+    }),
+  };
+}
+
+const ZMK: Record<string, ZmkLayout> = {
+  clickboard_ergotrack: tidied(ERGOTRACK, ERGOTRACK_TIDY),
+  goforty_max_ortho: GOFORTY_MAX,
+};
 
 /** Every keyboard, by name. */
 export function keyboardTemplates(): KeyboardTemplate[] {

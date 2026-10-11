@@ -30,8 +30,13 @@ describe("keyboard templates", () => {
     expect(first.cy).toBeCloseTo(0.88);
     // A thumb key turned 15 degrees about its own centre stays there.
     const turned = project.keys.find((k) => k.angle === 15)!;
-    expect(turned.cx).toBeCloseTo(4.98);
+    expect(turned.cx).toBeCloseTo(4.95);
     expect(turned.cy).toBeCloseTo(4.91);
+  });
+
+  it("opens the ErgoTrack with no keys clashing", () => {
+    const project = keyboardProject("clickboard_ergotrack")!;
+    expect(findOverlaps(project.keys).size).toBe(0);
   });
 
   it("knows no keyboard by a wrong id", () => {
