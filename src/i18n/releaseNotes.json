@@ -5,6 +5,15 @@
       "date": null,
       "changes": {
         "major": [],
+        "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.11.3",
+      "date": "2026-10-11",
+      "changes": {
+        "major": [],
         "minor": [
           {
             "en": "Layout editor: My layouts saves a layout to your own GitHub Gists and opens the ones saved there, including those saved from Keyboard Layout Editor. Every saved layout is listed, a page at a time, with a search by name.",
