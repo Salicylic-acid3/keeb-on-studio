@@ -1291,7 +1291,13 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
                     artOf={(cap) =>
                       capArt(cap.kitId, kitColours[cap.kitId], cap.cap.index)
                     }
-                    onPick={(capId) => target && pinCap(target.id, capId)}
+                    onPick={(capId) => {
+                      if (!target) return;
+                      pinCap(target.id, capId);
+                      // On to the next key, so a row can be capped tap by tap.
+                      const next = stepInRows(layoutRows, target.id, 1);
+                      if (next) setSelection(new Set([next]));
+                    }}
                   />
                 )}
               </div>
