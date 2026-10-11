@@ -6,3 +6,5 @@ coverage
 pnpm-lock.yaml
 package-lock.json
 src/proto
+# Written by scripts/fetchLayoutTemplates.py
+src/layoutEditor/data/keyboards.json
