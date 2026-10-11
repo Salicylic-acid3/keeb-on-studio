@@ -57,12 +57,6 @@ import {
   type TemplateId,
 } from "../layoutEditor/lib/edit";
 import {
-  exportKle,
-  importKle,
-  kleToRawData,
-  parseKleText,
-} from "../layoutEditor/lib/kle";
-import {
   findOverlaps,
   limitRotation,
   separationFor,
@@ -87,6 +81,11 @@ import type {
   LayoutProject,
   Point,
 } from "../layoutEditor/lib/model";
+import {
+  exportText,
+  readLayoutText,
+  type ExportFormat,
+} from "../layoutEditor/lib/project";
 import { sampleProject } from "../layoutEditor/lib/sample";
 import { loadStoredProject, storeProject } from "../layoutEditor/lib/storage";
 
@@ -157,7 +156,7 @@ function ImportDialog({
 
   const load = (source: string) => {
     try {
-      const project = importKle(parseKleText(source));
+      const project = readLayoutText(source);
       if (project.keys.length === 0) throw new Error("no keys");
       setText("");
       setFailed(false);
@@ -185,7 +184,7 @@ function ImportDialog({
           </Dialog.Title>
           <Dialog.Description className="text-sm text-[var(--color-text-muted)] mb-3">
             {t(
-              "Paste Keyboard Layout Editor data (the downloaded JSON or the Raw data box), a VIA definition or a vial.json. It replaces the layout on screen.",
+              "Paste Keyboard Layout Editor data (the downloaded JSON or the Raw data box), a VIA definition, a vial.json, or a project file saved here. It replaces the layout on screen.",
             )}
           </Dialog.Description>
           <textarea
@@ -205,7 +204,7 @@ function ImportDialog({
               role="alert"
               className="text-sm text-[var(--color-warning)] mt-2"
             >
-              {t("This could not be read as Keyboard Layout Editor data.")}
+              {t("This could not be read as layout data.")}
             </p>
           )}
           <input
@@ -250,28 +249,30 @@ function ImportDialog({
   );
 }
 
-type ExportFormat = "json" | "raw";
-
 function ExportDialog({
   open,
   onClose,
   project,
   layer,
+  stats,
+  onRename,
 }: {
   open: boolean;
   onClose: () => void;
   project: LayoutProject;
   layer: LayoutLayer;
+  stats: { rows: number; cols: number; missing: number; duplicates: number };
+  onRename: (name: string) => void;
 }) {
   const { t } = useLanguage();
-  const [format, setFormat] = useState<ExportFormat>("json");
+  const [format, setFormat] = useState<ExportFormat>("kle-json");
   const [copied, setCopied] = useState(false);
 
-  const text = useMemo(() => {
-    if (!open) return "";
-    const doc = exportKle(project, layer);
-    return format === "raw" ? kleToRawData(doc) : JSON.stringify(doc);
-  }, [open, project, layer, format]);
+  const out = useMemo(
+    () => (open ? exportText(project, format, layer) : null),
+    [open, project, format, layer],
+  );
+  const text = out?.text ?? "";
 
   const copy = async () => {
     try {
@@ -284,43 +285,83 @@ function ExportDialog({
   };
 
   const download = () => {
-    const name = (project.name || "layout").replace(/[^\w.-]+/g, "_");
-    const blob = new Blob([text], {
-      type: format === "raw" ? "text/plain" : "application/json",
-    });
+    if (!out) return;
+    const blob = new Blob([out.text], { type: out.mime });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${name}-${layer}.${format === "raw" ? "txt" : "json"}`;
+    a.download = out.fileName;
+    // In the page while it is clicked, and the URL kept a moment longer:
+    // some browsers drop the file name or the download otherwise.
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    a.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   const formats: Array<{ id: ExportFormat; label: string }> = [
-    { id: "json", label: t("KLE JSON") },
-    { id: "raw", label: t("KLE Raw data") },
+    { id: "kle-json", label: t("KLE JSON") },
+    { id: "kle-raw", label: t("KLE Raw data") },
+    { id: "via", label: "VIA" },
+    { id: "vial", label: "Vial" },
+    { id: "project", label: t("Project file") },
   ];
+  const forFirmware = format === "via" || format === "vial";
+  const carriesMatrix =
+    forFirmware || (format !== "project" && layer !== "legend");
+
+  let about: string;
+  if (format === "project") {
+    about = t(
+      "Everything in this layout: legends, matrix positions and rotation pivots. Import it here to carry on later or on another device.",
+    );
+  } else if (format === "via") {
+    about = t(
+      "The rows for layouts.keymap of a VIA definition, with every key's matrix position. The matrix is {{rows}} rows by {{cols}} columns.",
+      { rows: stats.rows, cols: stats.cols },
+    );
+  } else if (format === "vial") {
+    about = t(
+      "The rows for layouts.keymap of a vial.json, with every key's matrix position. The matrix is {{rows}} rows by {{cols}} columns.",
+      { rows: stats.rows, cols: stats.cols },
+    );
+  } else if (layer === "matrix") {
+    about = t(
+      "Keyboard Layout Editor data with the matrix positions on the keys, as on screen now.",
+    );
+  } else if (layer === "both") {
+    about = t(
+      "The keys carry their legends with the matrix position at the bottom right, as on screen now.",
+    );
+  } else {
+    about = t(
+      "Keyboard Layout Editor data with the legends, as on screen now.",
+    );
+  }
 
   return (
     <Dialog.Root open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <Dialog.Portal>
         <Dialog.Overlay className={DIALOG_OVERLAY} />
         <Dialog.Content className={DIALOG_CONTENT}>
-          <Dialog.Title className="text-lg font-medium text-[var(--color-text)] mb-2">
+          <Dialog.Title className="text-lg font-medium text-[var(--color-text)] mb-3">
             {t("Export the layout")}
           </Dialog.Title>
-          <Dialog.Description className="text-sm text-[var(--color-text-muted)] mb-3">
-            {layer === "matrix"
-              ? t(
-                  "The keys carry their matrix positions, as on screen now. This is what goes into layouts.keymap of a VIA definition or a vial.json.",
-                )
-              : layer === "both"
-                ? t(
-                    "The keys carry their legends with the matrix position at the bottom right, as on screen now.",
-                  )
-                : t("The keys carry their legends, as on screen now.")}
-          </Dialog.Description>
-          <div className="flex gap-2 mb-3">
+          <label className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)] mb-3">
+            <span className="whitespace-nowrap">{t("Name")}</span>
+            <input
+              // Remount when the name changes elsewhere (undo, import).
+              key={project.name}
+              defaultValue={project.name}
+              onBlur={(e) => onRename(e.target.value.trim())}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") e.currentTarget.blur();
+              }}
+              placeholder="layout"
+              className="flex-1 min-w-0 min-h-11 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text)] text-sm px-3 focus:outline-none focus:border-[var(--color-electric)]"
+            />
+          </label>
+          <div className="flex flex-wrap gap-2 mb-3">
             {formats.map((f) => (
               <button
                 key={f.id}
@@ -329,7 +370,7 @@ function ExportDialog({
                 onClick={() => setFormat(f.id)}
                 className={`px-3 min-h-11 rounded-lg border text-sm ${
                   f.id === format
-                    ? "border-[var(--color-electric)] text-[var(--color-text)]"
+                    ? "border-[var(--color-electric)] text-[var(--color-text)] bg-[var(--color-electric)]/10"
                     : "border-[var(--color-border)] text-[var(--color-text-secondary)]"
                 }`}
               >
@@ -337,10 +378,29 @@ function ExportDialog({
               </button>
             ))}
           </div>
+          <Dialog.Description className="text-sm text-[var(--color-text-muted)] mb-3 leading-relaxed">
+            {about}
+          </Dialog.Description>
+          {carriesMatrix && (stats.missing > 0 || stats.duplicates > 0) && (
+            <p
+              role="alert"
+              className="text-sm text-[var(--color-warning)] mb-3 leading-relaxed"
+            >
+              {stats.missing > 0 &&
+                t("{{count}} keys have no matrix position yet.", {
+                  count: stats.missing,
+                })}{" "}
+              {stats.duplicates > 0 &&
+                t("{{count}} keys share a position with another key.", {
+                  count: stats.duplicates,
+                })}
+            </p>
+          )}
           <textarea
             className={TEXTAREA}
             value={text}
             readOnly
+            wrap="off"
             aria-label={t("Layout data")}
             onFocus={(e) => e.target.select()}
           />
@@ -1029,6 +1089,15 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
         onClose={() => setExportOpen(false)}
         project={project}
         layer={layer}
+        stats={{
+          rows: stats.rows,
+          cols: stats.cols,
+          missing: stats.missing,
+          duplicates: stats.duplicates.size,
+        }}
+        onRename={(name) => {
+          if (name !== project.name) commit({ ...project, name });
+        }}
       />
       <TemplateDialog
         open={templateOpen}
