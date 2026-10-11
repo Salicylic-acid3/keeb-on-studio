@@ -103,6 +103,8 @@ const KeyShape = memo(function KeyShape({
   layer,
   selected,
   clash,
+  ghost,
+  flagged,
 }: {
   keyData: LayoutKey;
   zoom: number;
@@ -110,6 +112,10 @@ const KeyShape = memo(function KeyShape({
   selected: boolean;
   /** Overlaps another key. */
   clash: boolean;
+  /** A suggested matrix position, drawn faintly until it is taken up. */
+  ghost?: string;
+  /** Shares its matrix position with another key. */
+  flagged: boolean;
 }) {
   const W = k.w * zoom;
   const H = k.h * zoom;
@@ -146,10 +152,10 @@ const KeyShape = memo(function KeyShape({
     H / 2 - zoom * 0.16,
   ];
 
-  const matrixText =
-    layer === "matrix" && !decal && k.matrix
-      ? `${k.matrix.row},${k.matrix.col}`
-      : null;
+  const ownMatrix =
+    !decal && k.matrix ? `${k.matrix.row},${k.matrix.col}` : null;
+  const matrixText = layer === "matrix" ? (ownMatrix ?? ghost ?? null) : null;
+  const isGhost = layer === "matrix" && !ownMatrix && Boolean(ghost);
 
   return (
     <g
@@ -200,7 +206,7 @@ const KeyShape = memo(function KeyShape({
         />
       )}
       {showText &&
-        (layer === "legend" || decal) &&
+        (layer !== "matrix" || decal) &&
         TOP_SLOTS.map(([col, row], slot) => {
           const text = k.legends[slot];
           if (!text) return null;
@@ -224,7 +230,9 @@ const KeyShape = memo(function KeyShape({
           y={fontSize * 0.42}
           textAnchor="middle"
           fontSize={fontSize * 1.15}
-          fill="var(--color-text)"
+          fill={flagged ? CLASH : "var(--color-text)"}
+          fontWeight={flagged ? 700 : undefined}
+          opacity={isGhost ? 0.38 : 1}
           style={{
             pointerEvents: "none",
             userSelect: "none",
@@ -234,7 +242,32 @@ const KeyShape = memo(function KeyShape({
           {matrixText}
         </text>
       )}
-      {layer === "matrix" && !decal && !k.matrix && (
+      {showText && layer === "both" && ownMatrix && (
+        <text
+          x={W / 2 - padX * 0.7}
+          y={H / 2 - zoom * 0.12}
+          textAnchor="end"
+          fontSize={fontSize * 0.78}
+          fill={flagged ? CLASH : "var(--color-cyber)"}
+          style={{
+            pointerEvents: "none",
+            userSelect: "none",
+            fontVariantNumeric: "tabular-nums",
+          }}
+        >
+          {ownMatrix}
+        </text>
+      )}
+      {flagged && layer !== "legend" && (
+        <circle
+          cx={W / 2 - gap - zoom * 0.13}
+          cy={-H / 2 + gap + zoom * 0.13}
+          r={Math.max(2.5, zoom * 0.07)}
+          fill={CLASH}
+          style={{ pointerEvents: "none" }}
+        />
+      )}
+      {layer === "matrix" && !decal && !k.matrix && !ghost && (
         <circle
           r={Math.max(2, zoom * 0.06)}
           fill="var(--color-text-muted)"
@@ -259,6 +292,12 @@ export interface LayoutCanvasProps {
   /** Taps add and remove keys instead of replacing the selection. */
   multiSelect: boolean;
   onLongPressKey: (id: string) => void;
+  /** Suggested matrix positions, by key id, for keys that have none. */
+  ghosts: ReadonlyMap<string, string>;
+  /** Keys whose matrix position is also another key's. */
+  flagged: ReadonlySet<string>;
+  /** A key was double-clicked or double-tapped: start typing into it. */
+  onEditKey: (id: string) => void;
   /** Show the pivot and the turning arm for the selection. */
   rotateMode: boolean;
   /** Where the selection turns around, in u; null with nothing selected. */
@@ -335,6 +374,9 @@ export function LayoutCanvas({
   snapStep,
   multiSelect,
   onLongPressKey,
+  ghosts,
+  flagged,
+  onEditKey,
   rotateMode,
   pivot,
   onPivotChange,
@@ -367,6 +409,7 @@ export function LayoutCanvas({
   const gesture = useRef<Gesture>({ ...IDLE });
   const longPress = useRef<number | null>(null);
   const spaceHeld = useRef(false);
+  const lastTap = useRef<{ id: string; at: number } | null>(null);
   const projectRef = useRef(project);
   useEffect(() => {
     projectRef.current = project;
@@ -756,6 +799,14 @@ export function LayoutCanvas({
           onSelectionChange(ids);
         } else {
           onSelectionChange(new Set([g.downKey]));
+          const before = lastTap.current;
+          const at = e.timeStamp;
+          if (before && before.id === g.downKey && at - before.at < 400) {
+            lastTap.current = null;
+            onEditKey(g.downKey);
+          } else {
+            lastTap.current = { id: g.downKey, at };
+          }
         }
       } else if (!g.additive && !(multiSelect && !g.mouse)) {
         if (selection.size > 0) onSelectionChange(new Set());
@@ -906,6 +957,8 @@ export function LayoutCanvas({
               layer={layer}
               selected={selection.has(k.id)}
               clash={clashes.has(k.id)}
+              ghost={ghosts.get(k.id)}
+              flagged={flagged.has(k.id)}
             />
           ))}
           {handleKey && (

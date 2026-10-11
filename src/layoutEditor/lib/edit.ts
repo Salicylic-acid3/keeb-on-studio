@@ -220,6 +220,116 @@ export function deleteKeys(
 }
 
 /**
+ * A key's two everyday legends. KLE prints a lone legend top left; with a
+ * shifted legend too, the shifted one goes on top and the main one moves to
+ * the bottom left ("!" over "1").
+ */
+export function mainAndSub(key: LayoutKey): { main: string; sub: string } {
+  return key.legends[6]
+    ? { main: key.legends[6], sub: key.legends[0] ?? "" }
+    : { main: key.legends[0] ?? "", sub: "" };
+}
+
+function withMainAndSub(key: LayoutKey, main: string, sub: string): LayoutKey {
+  const legends = key.legends.slice();
+  while (legends.length < 12) legends.push("");
+  if (sub) {
+    legends[0] = sub;
+    legends[6] = main;
+  } else {
+    legends[0] = main;
+    legends[6] = "";
+  }
+  return { ...key, legends };
+}
+
+function mapKey(
+  project: LayoutProject,
+  id: string,
+  change: (key: LayoutKey) => LayoutKey,
+): LayoutProject {
+  let changed = false;
+  const keys = project.keys.map((k) => {
+    if (k.id !== id) return k;
+    const next = change(k);
+    if (next !== k) changed = true;
+    return next;
+  });
+  return changed ? { ...project, keys } : project;
+}
+
+export function setMainAndSub(
+  project: LayoutProject,
+  id: string,
+  main: string,
+  sub: string,
+): LayoutProject {
+  return mapKey(project, id, (k) => {
+    const now = mainAndSub(k);
+    return now.main === main && now.sub === sub
+      ? k
+      : withMainAndSub(k, main, sub);
+  });
+}
+
+/** One of the twelve KLE legend positions, set directly. */
+export function setLegendSlot(
+  project: LayoutProject,
+  id: string,
+  slot: number,
+  text: string,
+): LayoutProject {
+  return mapKey(project, id, (k) => {
+    if ((k.legends[slot] ?? "") === text) return k;
+    const legends = k.legends.slice();
+    while (legends.length < 12) legends.push("");
+    legends[slot] = text;
+    return { ...k, legends };
+  });
+}
+
+/** Pour legends into keys, one each in the order given. */
+export function fillLegends(
+  project: LayoutProject,
+  ids: string[],
+  labels: Array<{ main: string; sub?: string }>,
+): LayoutProject {
+  const byId = new Map(ids.map((id, i) => [id, labels[i]]));
+  return {
+    ...project,
+    keys: project.keys.map((k) => {
+      const label = byId.get(k.id);
+      return label ? withMainAndSub(k, label.main, label.sub ?? "") : k;
+    }),
+  };
+}
+
+/** Give keys matrix positions; null takes a key's position away. */
+export function setMatrix(
+  project: LayoutProject,
+  positions: Map<string, { row: number; col: number } | null>,
+): LayoutProject {
+  let changed = false;
+  const keys = project.keys.map((k) => {
+    if (!positions.has(k.id)) return k;
+    const next = positions.get(k.id) ?? null;
+    if (!next) {
+      if (!k.matrix) return k;
+      changed = true;
+      const { matrix: _gone, ...rest } = k;
+      void _gone;
+      return rest;
+    }
+    if (k.matrix && k.matrix.row === next.row && k.matrix.col === next.col) {
+      return k;
+    }
+    changed = true;
+    return { ...k, matrix: { row: next.row, col: next.col } };
+  });
+  return changed ? { ...project, keys } : project;
+}
+
+/**
  * The key to select once these are deleted: the one to their left on the
  * same row, so pressing Delete again and again eats a row leftwards. With
  * nothing to the left, the nearest key that remains.

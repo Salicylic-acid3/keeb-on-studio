@@ -28,6 +28,7 @@ import {
 } from "@tabler/icons-react";
 import { StandaloneFrame } from "../components/StandaloneFrame";
 import { useLanguage } from "../hooks/useLanguage";
+import { EntryPanel } from "../layoutEditor/components/EntryPanel";
 import { KeyPanel } from "../layoutEditor/components/KeyPanel";
 import { LayoutCanvas } from "../layoutEditor/components/LayoutCanvas";
 import { useHistory } from "../layoutEditor/hooks/useHistory";
@@ -37,6 +38,7 @@ import {
   defaultPivot,
   deleteKeys,
   duplicateKeys,
+  fillLegends,
   keyAfterDelete,
   makeIsoEnter,
   mirrorKeys,
@@ -45,6 +47,9 @@ import {
   pasteClip,
   resizeKeys,
   rotateKeys,
+  setLegendSlot,
+  setMainAndSub,
+  setMatrix,
   SNAP_STEPS,
   templateProject,
   type Added,
@@ -63,6 +68,20 @@ import {
   separationFor,
   touchingCorners,
 } from "../layoutEditor/lib/geometry";
+import {
+  labelForCode,
+  rowPreset,
+  type LabelLayout,
+} from "../layoutEditor/lib/keyLabels";
+import {
+  matrixRows,
+  matrixStats,
+  readingRows,
+  splitAt,
+  stepInRows,
+  suggestMatrix,
+  type SplitNumbering,
+} from "../layoutEditor/lib/order";
 import type {
   LayoutLayer,
   LayoutProject,
@@ -92,6 +111,7 @@ function LayerToggle({
   const options: Array<{ id: LayoutLayer; label: string }> = [
     { id: "legend", label: t("Legends") },
     { id: "matrix", label: t("Matrix") },
+    { id: "both", label: t("Both") },
   ];
   return (
     <div
@@ -294,7 +314,11 @@ function ExportDialog({
               ? t(
                   "The keys carry their matrix positions, as on screen now. This is what goes into layouts.keymap of a VIA definition or a vial.json.",
                 )
-              : t("The keys carry their legends, as on screen now.")}
+              : layer === "both"
+                ? t(
+                    "The keys carry their legends with the matrix position at the bottom right, as on screen now.",
+                  )
+                : t("The keys carry their legends, as on screen now.")}
           </Dialog.Description>
           <div className="flex gap-2 mb-3">
             {formats.map((f) => (
@@ -430,6 +454,10 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
   const [rotateMode, setRotateMode] = useState(false);
   const [fineRotate, setFineRotate] = useState(false);
   const [stopAtKeys, setStopAtKeys] = useState(false);
+  const [capture, setCapture] = useState(false);
+  const [labelLayout, setLabelLayout] = useState<LabelLayout>("us");
+  const [numbering, setNumbering] = useState<SplitNumbering>("across");
+  const [focusToken, setFocusToken] = useState(0);
   // A pivot put somewhere by hand, for the selection it was set on.
   const [pivotOverride, setPivotOverride] = useState<{
     key: string;
@@ -474,6 +502,36 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
     const clashes = findOverlaps(project.keys);
     return selectedIds.some((id) => clashes.has(id));
   }, [project, selectedIds]);
+  // The order Enter walks the keys in: the matrix's own on that layer.
+  const entryRows = useMemo(
+    () =>
+      layer === "matrix"
+        ? matrixRows(project, numbering)
+        : readingRows(project.keys),
+    [layer, project, numbering],
+  );
+  const stats = useMemo(() => matrixStats(project), [project]);
+  const suggestions = useMemo(
+    () => suggestMatrix(project, numbering),
+    [project, numbering],
+  );
+  const ghosts = useMemo(() => {
+    const out = new Map<string, string>();
+    if (layer === "matrix") {
+      for (const [id, m] of suggestions) out.set(id, `${m.row},${m.col}`);
+    }
+    return out;
+  }, [layer, suggestions]);
+  const isSplit = useMemo(() => splitAt(project.keys) !== null, [project]);
+  const target = selectedKeys.length === 1 ? selectedKeys[0] : null;
+  const stepEntry = useCallback(
+    (by: 1 | -1) => {
+      if (!target) return;
+      const next = stepInRows(entryRows, target.id, by);
+      if (next) setSelection(new Set([next]));
+    },
+    [entryRows, target],
+  );
   // Buttons move by the grid step; with the grid off, by its finest step.
   const step = snap ?? SNAP_STEPS[SNAP_STEPS.length - 1];
 
@@ -558,6 +616,23 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
       if (isTyping(e.target)) return;
       const mod = e.metaKey || e.ctrlKey;
       const key = e.key.toLowerCase();
+      if (capture && layer !== "matrix" && target && !mod) {
+        // The key pressed names itself on the selected key.
+        const label = labelForCode(e.code, labelLayout);
+        e.preventDefault();
+        if (label) {
+          commit(
+            setMainAndSub(project, target.id, label.main, label.sub ?? ""),
+          );
+          stepEntry(1);
+        }
+        return;
+      }
+      if ((e.key === "Enter" || e.key === "F2") && target && !mod) {
+        e.preventDefault();
+        setFocusToken((n) => n + 1);
+        return;
+      }
       if (mod && key === "z") {
         e.preventDefault();
         if (e.shiftKey) redo();
@@ -605,9 +680,72 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
     project,
     selectedIds,
     step,
+    capture,
+    layer,
+    target,
+    labelLayout,
+    commit,
+    stepEntry,
   ]);
 
   const empty = project.keys.length === 0;
+  const entry = (
+    <EntryPanel
+      layer={layer}
+      legend={{
+        target,
+        selectedCount: selectedKeys.length,
+        onCommit: (main, sub) => {
+          if (target) commit(setMainAndSub(project, target.id, main, sub));
+        },
+        onSlot: (slot, text) => {
+          if (target) commit(setLegendSlot(project, target.id, slot, text));
+        },
+        onStep: stepEntry,
+        labelLayout,
+        onLabelLayout: setLabelLayout,
+        capture,
+        onToggleCapture: () => setCapture((on) => !on),
+        onFillRow: (row) => {
+          // Left to right, top to bottom, among the selected keys.
+          const ids = readingRows(selectedKeys)
+            .flat()
+            .map((k) => k.id);
+          commit(fillLegends(project, ids, rowPreset(row, labelLayout)));
+        },
+        focusToken,
+      }}
+      matrix={{
+        target,
+        suggestion: target ? (suggestions.get(target.id) ?? null) : null,
+        onCommit: (position) => {
+          if (target) {
+            commit(setMatrix(project, new Map([[target.id, position]])));
+          }
+        },
+        onStep: stepEntry,
+        stats,
+        suggested: suggestions.size,
+        onAdoptAll: () => commit(setMatrix(project, suggestions)),
+        onRenumber: () => {
+          const cleared = setMatrix(
+            project,
+            new Map(project.keys.map((k) => [k.id, null])),
+          );
+          commit(setMatrix(cleared, suggestMatrix(cleared, numbering)));
+        },
+        split: isSplit,
+        numbering,
+        onNumbering: setNumbering,
+        onPickCell: (row, col) => {
+          if (target) {
+            commit(setMatrix(project, new Map([[target.id, { row, col }]])));
+          }
+        },
+        focusToken,
+      }}
+    />
+  );
   const renderPanel = (hideCount: boolean) => (
     <KeyPanel
       hideCount={hideCount}
@@ -802,6 +940,12 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
               onResizeKey={(id, w) => commit(resizeKeys(project, [id], { w }))}
               snapStep={snap}
               multiSelect={multiSelect}
+              ghosts={ghosts}
+              flagged={stats.duplicates}
+              onEditKey={() => {
+                setSheetOpen(true);
+                setFocusToken((n) => n + 1);
+              }}
               rotateMode={rotateMode}
               pivot={pivot}
               onPivotChange={(at) =>
@@ -836,11 +980,12 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
             )}
           </div>
           <aside className="hidden lg:block w-80 flex-shrink-0 border-l border-[var(--color-border)] bg-[var(--color-surface)]/60 p-4 overflow-y-auto">
+            {entry}
             {renderPanel(false)}
           </aside>
         </div>
 
-        {selectedKeys.length > 0 && (
+        {(selectedKeys.length > 0 || layer === "matrix") && (
           <div className="order-2 sm:order-4 lg:hidden flex-shrink-0 border-t border-[var(--color-border)] bg-[var(--color-surface)]">
             <button
               type="button"
@@ -863,6 +1008,7 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
             </button>
             {sheetOpen && (
               <div className="max-h-[38dvh] overflow-y-auto px-3 pb-3">
+                {entry}
                 {renderPanel(true)}
               </div>
             )}

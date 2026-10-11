@@ -10,6 +10,48 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // Layout editor
+  "Key legend": "レジェンド",
+  Both: "両方",
+  "The keys carry their legends with the matrix position at the bottom right, as on screen now.":
+    "今の表示どおり、キーにレジェンドが入り、右下にマトリクス番号が入ります。",
+  "Previous key": "前のキーへ",
+  "Next key": "次のキーへ",
+  Shifted: "Shift側",
+  "Shifted legend": "Shift側のレジェンド",
+  "Enter or Tab moves to the next key.":
+    "Enter か Tab で確定して、次のキーへ進みます。",
+  "Hide the 12 positions": "12か所の入力欄を閉じる",
+  "All 12 positions": "12か所すべてに入力する",
+  "Position {{n}}": "位置 {{n}}",
+  "Several keys are selected: pour a row into them, left to right.":
+    "複数のキーを選択中です。行のレジェンドを、左から順にまとめて入れられます。",
+  "Select a key to type its legend. A double click starts typing.":
+    "キーを選ぶとレジェンドを入力できます。ダブルクリックで、すぐに入力を始められます。",
+  "Type with key presses": "押したキーをそのまま入れる",
+  "Legend set": "レジェンドの配列",
+  "Each key you press on your own keyboard becomes the selected key's legend, and the selection moves on. Turn this off to use shortcuts again.":
+    "手元のキーボードで押したキーの名前が、選択中のキーのレジェンドになり、次のキーへ進みます。ショートカットを使うときは、オフに戻してください。",
+  "Matrix position (row, column)": "マトリクス番号（行,列）",
+  "Type the row and the column, like 2,5.":
+    "「2,5」のように、行と列を入力してください。",
+  "Enter takes the faint number and moves on. Typing replaces it.":
+    "Enter で薄い番号を採用して、次へ進みます。数字を打てば上書きできます。",
+  "Select a key to give it a matrix position.":
+    "キーを選ぶと、マトリクス番号を入力できます。",
+  "{{rows}} rows x {{cols}} columns, {{free}} free":
+    "{{rows}} 行 × {{cols}} 列、空き {{free}}",
+  "No positions yet": "まだ番号がありません",
+  "{{count}} keys without one": "未入力 {{count}} キー",
+  "{{count}} keys share a position with another key.":
+    "{{count}} キーの番号が、ほかのキーと重複しています。",
+  "Two halves": "左右分割",
+  "Columns run on across both": "左右で列を続ける",
+  "Right half gets its own rows": "右手側は行をずらす",
+  "Take all faint numbers": "薄い番号をすべて採用",
+  "Renumber everything": "すべて振り直す",
+  "Matrix table": "マトリクス表",
+  "Filled squares are in use. Tap a square to give the selected key that position.":
+    "塗られたマスは使用済みです。マスをタップすると、選択中のキーにその番号が入ります。",
   Rotation: "回転",
   Angle: "角度",
   "Pivot and handle": "回転軸とハンドル",

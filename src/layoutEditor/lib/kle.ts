@@ -344,6 +344,13 @@ function clustersOf(project: LayoutProject): Cluster[] {
 
 function labelsFor(key: LayoutKey, layer: LayoutLayer): string[] {
   if (layer === "legend") return key.legends;
+  if (layer === "both") {
+    if (!key.matrix || key.kle?.decal) return key.legends;
+    // Beside the legends: bottom right when that is free, else front right.
+    const labels = key.legends.slice();
+    labels[labels[8] ? 11 : 8] = `${key.matrix.row},${key.matrix.col}`;
+    return labels;
+  }
   const labels = new Array<string>(LEGEND_SLOTS).fill("");
   if (key.kle?.decal) return key.legends;
   if (key.matrix) labels[0] = `${key.matrix.row},${key.matrix.col}`;

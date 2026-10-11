@@ -59,8 +59,11 @@ export interface LayoutProject {
   groups: RotationGroup[];
 }
 
-/** Which of a key's two sets of text the canvas shows and an export carries. */
-export type LayoutLayer = "legend" | "matrix";
+/**
+ * Which of a key's two sets of text the canvas shows and an export carries;
+ * "both" is the legends with the matrix position small beside them.
+ */
+export type LayoutLayer = "legend" | "matrix" | "both";
 
 export interface Point {
   x: number;
