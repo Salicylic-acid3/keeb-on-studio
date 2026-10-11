@@ -1,3 +1,5 @@
+import type { CapArt } from "./capArt";
+
 /** What the keycap check says about a key, as the canvas draws it. */
 export interface FitMark {
   status: "ok" | "blank" | "sub" | "missing";
@@ -10,6 +12,8 @@ export interface FitMark {
   convex: boolean;
   /** Put there by hand. */
   pinned: boolean;
+  /** The cap's printed design, when its colourway has one. */
+  art?: CapArt;
 }
 
 export const FIT_COLORS: Record<FitMark["status"], string> = {

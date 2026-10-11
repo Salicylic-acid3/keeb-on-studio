@@ -4,6 +4,7 @@
  */
 import { IconMinus, IconPlus } from "@tabler/icons-react";
 import type { ReactNode } from "react";
+import { coloursOf, shownColour } from "../lib/capArt";
 import { useLanguage } from "../../hooks/useLanguage";
 import {
   missingBySize,
@@ -51,6 +52,9 @@ export interface FitPanelProps {
   kits: Kit[];
   choices: KitChoice[];
   onCount: (kitId: string, count: number) => void;
+  /** The colourway shown per set ("" = the plain drawing). */
+  colours: Record<string, string>;
+  onColour: (kitId: string, colour: string) => void;
   fit: FitResult;
   onApply: (choices: KitChoice[]) => void;
   comparison: Array<{ kit: Kit; counts: FitResult["counts"] }>;
@@ -76,6 +80,8 @@ export function FitPanel({
   kits,
   choices,
   onCount,
+  colours,
+  onColour,
   fit,
   onApply,
   comparison,
@@ -157,43 +163,61 @@ export function FitPanel({
         <div className="flex flex-col gap-1.5">
           {kits.map((kit) => {
             const count = countOf(kit.id);
+            const kitColours = coloursOf(kit.id);
             return (
-              <div key={kit.id} className="flex items-center gap-1.5">
-                <span
-                  className={`flex-1 min-w-0 text-sm truncate ${
-                    count > 0
-                      ? "text-[var(--color-text)]"
-                      : "text-[var(--color-text-secondary)]"
-                  }`}
-                >
-                  {kit.name}
-                </span>
-                <button
-                  type="button"
-                  className={`${TILE} ${TILE_IDLE}`}
-                  onClick={() => onCount(kit.id, Math.max(0, count - 1))}
-                  disabled={count === 0}
-                  aria-label={t("{{name}}: one fewer", { name: kit.name })}
-                >
-                  <IconMinus size={16} />
-                </button>
-                <span
-                  className="w-6 text-center text-sm tabular-nums text-[var(--color-text)]"
-                  aria-label={t("{{name}}: {{count}} sets", {
-                    name: kit.name,
-                    count,
-                  })}
-                >
-                  {count}
-                </span>
-                <button
-                  type="button"
-                  className={`${TILE} ${TILE_IDLE}`}
-                  onClick={() => onCount(kit.id, Math.min(9, count + 1))}
-                  aria-label={t("{{name}}: one more", { name: kit.name })}
-                >
-                  <IconPlus size={16} />
-                </button>
+              <div key={kit.id}>
+                <div className="flex items-center gap-1.5">
+                  <span
+                    className={`flex-1 min-w-0 text-sm truncate ${
+                      count > 0
+                        ? "text-[var(--color-text)]"
+                        : "text-[var(--color-text-secondary)]"
+                    }`}
+                  >
+                    {kit.name}
+                  </span>
+                  <button
+                    type="button"
+                    className={`${TILE} ${TILE_IDLE}`}
+                    onClick={() => onCount(kit.id, Math.max(0, count - 1))}
+                    disabled={count === 0}
+                    aria-label={t("{{name}}: one fewer", { name: kit.name })}
+                  >
+                    <IconMinus size={16} />
+                  </button>
+                  <span
+                    className="w-6 text-center text-sm tabular-nums text-[var(--color-text)]"
+                    aria-label={t("{{name}}: {{count}} sets", {
+                      name: kit.name,
+                      count,
+                    })}
+                  >
+                    {count}
+                  </span>
+                  <button
+                    type="button"
+                    className={`${TILE} ${TILE_IDLE}`}
+                    onClick={() => onCount(kit.id, Math.min(9, count + 1))}
+                    aria-label={t("{{name}}: one more", { name: kit.name })}
+                  >
+                    <IconPlus size={16} />
+                  </button>
+                </div>
+                {count > 0 && kitColours.length > 0 && (
+                  <select
+                    className="mt-1 w-full min-h-9 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm text-[var(--color-text)]"
+                    aria-label={t("{{name}}: colourway", { name: kit.name })}
+                    value={shownColour(kit.id, colours[kit.id])?.id ?? ""}
+                    onChange={(e) => onColour(kit.id, e.target.value)}
+                  >
+                    {kitColours.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                    <option value="">{t("Plain drawing")}</option>
+                  </select>
+                )}
               </div>
             );
           })}

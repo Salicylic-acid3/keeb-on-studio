@@ -68,6 +68,7 @@ import {
   poolOf,
   type KitChoice,
 } from "../layoutEditor/lib/fit";
+import { capArt } from "../layoutEditor/lib/capArt";
 import type { FitMark } from "../layoutEditor/lib/fitMark";
 import { kitById, kitsFor, type SwitchType } from "../layoutEditor/lib/kits";
 import {
@@ -537,6 +538,8 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
   const [fitMode, setFitMode] = useState(false);
   const [switchType, setSwitchType] = useState<SwitchType | null>(null);
   const [kitChoices, setKitChoices] = useState<KitChoice[]>([]);
+  // The colourway shown per set ("" = the plain drawing; unset = the first).
+  const [kitColours, setKitColours] = useState<Record<string, string>>({});
   const [rowOverrides, setRowOverrides] = useState<Record<number, string>>({});
   const [pins, setPins] = useState<Map<string, string | null>>(() => new Map());
   const [trayOpen, setTrayOpen] = useState(true);
@@ -615,10 +618,13 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
         offRow: p.offRow,
         convex: p.cap.cap.convex,
         pinned: p.pinned,
+        art:
+          capArt(p.cap.kitId, kitColours[p.cap.kitId], p.cap.cap.index) ??
+          undefined,
       });
     }
     return marks;
-  }, [fit, kitChoices, pins]);
+  }, [fit, kitChoices, pins, kitColours]);
   const offeredKits = useMemo(
     () => (switchType ? kitsFor(switchType) : []),
     [switchType],
@@ -933,6 +939,10 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
           const rest = old.filter((c) => c.kitId !== kitId);
           return count > 0 ? [...rest, { kitId, count }] : rest;
         })
+      }
+      colours={kitColours}
+      onColour={(kitId, colour) =>
+        setKitColours((old) => ({ ...old, [kitId]: colour }))
       }
       fit={fit}
       onApply={setKitChoices}
@@ -1253,6 +1263,9 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
                   <CapTray
                     spare={fit.spare}
                     target={target}
+                    artOf={(cap) =>
+                      capArt(cap.kitId, kitColours[cap.kitId], cap.cap.index)
+                    }
                     onPick={(capId) => target && pinCap(target.id, capId)}
                   />
                 )}

@@ -142,17 +142,22 @@ const KeyShape = memo(function KeyShape({
   const stroke = selected
     ? "var(--color-electric)"
     : (tint ?? "var(--color-border-hover)");
-  const fill = tint
-    ? `color-mix(in srgb, ${tint} ${mark?.status === "missing" ? 30 : 20}%, var(--color-surface-elevated))`
-    : "var(--color-surface-elevated)";
+  const art = mark?.art;
+  const fill = art
+    ? "transparent"
+    : tint
+      ? `color-mix(in srgb, ${tint} ${mark?.status === "missing" ? 30 : 20}%, var(--color-surface-elevated))`
+      : "var(--color-surface-elevated)";
   // With the check on, the key shows the cap that is on it.
-  const legends = mark
-    ? mark.status === "missing"
-      ? []
-      : mark.sub
-        ? [mark.sub, "", "", "", "", "", mark.main]
-        : [mark.main]
-    : k.legends;
+  const legends = art
+    ? []
+    : mark
+      ? mark.status === "missing"
+        ? []
+        : mark.sub
+          ? [mark.sub, "", "", "", "", "", mark.main]
+          : [mark.main]
+      : k.legends;
   const fontSize = zoom * 0.21;
   const showText = fontSize >= 5;
   const padX = zoom * 0.14;
@@ -176,6 +181,32 @@ const KeyShape = memo(function KeyShape({
       opacity={k.kle?.ghost ? 0.4 : 1}
       style={{ cursor: selected ? "move" : "pointer" }}
     >
+      {art &&
+        (() => {
+          // The cap's picture, stretched over the whole footprint of the key.
+          const x0 = Math.min(...rects.map((r) => r.x));
+          const y0 = Math.min(...rects.map((r) => r.y));
+          const x1 = Math.max(...rects.map((r) => r.x + r.w));
+          const y1 = Math.max(...rects.map((r) => r.y + r.h));
+          return (
+            <svg
+              x={x0 + gap}
+              y={y0 + gap}
+              width={Math.max(0, x1 - x0 - gap * 2)}
+              height={Math.max(0, y1 - y0 - gap * 2)}
+              viewBox={`${art.x} ${art.y} ${art.w} ${art.h}`}
+              preserveAspectRatio="none"
+              style={{ pointerEvents: "none" }}
+            >
+              <image
+                href={art.href}
+                width={art.sheetW}
+                height={art.sheetH}
+                preserveAspectRatio="none"
+              />
+            </svg>
+          );
+        })()}
       {!decal &&
         rects.map((r, i) => (
           <rect
@@ -192,6 +223,7 @@ const KeyShape = memo(function KeyShape({
           />
         ))}
       {!decal &&
+        !art &&
         rects.map((r, i) => (
           // Painted after both outlines so a stepped key reads as one shape.
           <rect
@@ -204,7 +236,7 @@ const KeyShape = memo(function KeyShape({
             fill={fill}
           />
         ))}
-      {!decal && (mark ? mark.convex : k.convex) && (
+      {!decal && !art && (mark ? mark.convex : k.convex) && (
         // A second, rounder outline inside: a convex cap (the one on the
         // key when the check is on, else what the key is marked to take).
         <rect

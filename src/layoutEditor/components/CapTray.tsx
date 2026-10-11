@@ -7,6 +7,7 @@
  */
 import { useMemo } from "react";
 import { useLanguage } from "../../hooks/useLanguage";
+import type { CapArt } from "../lib/capArt";
 import { capFitsKey, pileCaps, type CapPile, type PoolCap } from "../lib/fit";
 import { kitById } from "../lib/kits";
 import type { LayoutKey } from "../lib/model";
@@ -16,11 +17,14 @@ const UNIT = 34;
 export function CapTray({
   spare,
   target,
+  artOf,
   onPick,
 }: {
   spare: PoolCap[];
   /** The selected key, if one is. */
   target: LayoutKey | null;
+  /** A cap's printed design, when its colourway has one. */
+  artOf: (cap: PoolCap) => CapArt | null;
   onPick: (capId: string) => void;
 }) {
   const { t } = useLanguage();
@@ -103,42 +107,59 @@ export function CapTray({
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-1">
-                    {pile.caps.map(({ id, cap }) => (
-                      <button
-                        key={id}
-                        type="button"
-                        draggable
-                        onDragStart={(e) => {
-                          e.dataTransfer.setData("text/x-keebon-cap", id);
-                          e.dataTransfer.effectAllowed = "move";
-                        }}
-                        onClick={() => onPick(id)}
-                        disabled={!target || !fits}
-                        title={[
-                          cap.blank
-                            ? t("blank cap")
-                            : cap.sub
-                              ? `${cap.sub} ${cap.main}`
-                              : cap.main,
-                          name,
-                        ].join(" · ")}
-                        style={{
-                          width: Math.min(pile.w, 3) * UNIT,
-                          height:
-                            (pile.iso ? 1.4 : Math.min(pile.h, 1.4)) * UNIT,
-                          borderRadius: pile.convex ? 12 : 6,
-                        }}
-                        className={`flex-shrink-0 border text-[10px] leading-tight px-1 overflow-hidden text-left ${
-                          target && fits
-                            ? "border-[var(--color-electric)] bg-[var(--color-electric)]/10 text-[var(--color-text)]"
-                            : "border-[var(--color-border-hover)] bg-[var(--color-surface-elevated)] text-[var(--color-text-secondary)]"
-                        }`}
-                      >
-                        <span className="block truncate">
-                          {cap.sub ? `${cap.sub} ${cap.main}` : cap.main}
-                        </span>
-                      </button>
-                    ))}
+                    {pile.caps.map((pooled) => {
+                      const { id, cap } = pooled;
+                      const width = Math.min(pile.w, 3) * UNIT;
+                      const height =
+                        (pile.iso ? 1.4 : Math.min(pile.h, 1.4)) * UNIT;
+                      const art = artOf(pooled);
+                      const sx = art ? width / art.w : 1;
+                      const sy = art ? height / art.h : 1;
+                      return (
+                        <button
+                          key={id}
+                          type="button"
+                          draggable
+                          onDragStart={(e) => {
+                            e.dataTransfer.setData("text/x-keebon-cap", id);
+                            e.dataTransfer.effectAllowed = "move";
+                          }}
+                          onClick={() => onPick(id)}
+                          disabled={!target || !fits}
+                          title={[
+                            cap.blank
+                              ? t("blank cap")
+                              : cap.sub
+                                ? `${cap.sub} ${cap.main}`
+                                : cap.main,
+                            name,
+                          ].join(" · ")}
+                          style={{
+                            width,
+                            height,
+                            borderRadius: pile.convex ? 12 : 6,
+                            ...(art
+                              ? {
+                                  backgroundImage: `url(${art.href})`,
+                                  backgroundSize: `${art.sheetW * sx}px ${art.sheetH * sy}px`,
+                                  backgroundPosition: `${-art.x * sx}px ${-art.y * sy}px`,
+                                }
+                              : {}),
+                          }}
+                          className={`flex-shrink-0 border text-[10px] leading-tight px-1 overflow-hidden text-left ${
+                            target && fits
+                              ? "border-[var(--color-electric)] bg-[var(--color-electric)]/10 text-[var(--color-text)]"
+                              : "border-[var(--color-border-hover)] bg-[var(--color-surface-elevated)] text-[var(--color-text-secondary)]"
+                          }`}
+                        >
+                          {!art && (
+                            <span className="block truncate">
+                              {cap.sub ? `${cap.sub} ${cap.main}` : cap.main}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               );

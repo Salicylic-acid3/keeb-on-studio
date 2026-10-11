@@ -10,6 +10,8 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // Layout editor
+  "{{name}}: colourway": "{{name}}：カラー",
+  "Plain drawing": "デザインなし（簡易表示）",
   "This key takes a convex cap": "このキーはコンベックスのキャップを使う",
   "Convex cap": "コンベックスのキャップを使う",
   Switches: "スイッチ",
