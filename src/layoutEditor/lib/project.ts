@@ -9,6 +9,7 @@ import {
   parseKleText,
   type KleDocument,
 } from "./kle";
+import { isEmptySetup, readCapSetup, type CapSetup } from "./capSetup";
 import type { LayoutLayer, LayoutProject } from "./model";
 
 export const PROJECT_FORMAT = "keebon-layout";
@@ -49,9 +50,18 @@ export function isProject(value: unknown): value is LayoutProject {
   );
 }
 
-export function projectFileText(project: LayoutProject): string {
+export function projectFileText(
+  project: LayoutProject,
+  caps?: CapSetup | null,
+): string {
   return JSON.stringify(
-    { format: PROJECT_FORMAT, version: PROJECT_VERSION, project },
+    {
+      format: PROJECT_FORMAT,
+      version: PROJECT_VERSION,
+      project,
+      // What was chosen in the keycap check, when anything was.
+      ...(caps && !isEmptySetup(caps) ? { caps } : {}),
+    },
     null,
     1,
   );
@@ -79,6 +89,19 @@ export function readLayoutText(text: string): LayoutProject {
   return importKle(parseKleText(text));
 }
 
+/** The keycap setup a project file carries, or null (any other text too). */
+export function readCapSetupText(text: string): CapSetup | null {
+  try {
+    const value: unknown = JSON.parse(text);
+    if (!value || typeof value !== "object" || Array.isArray(value))
+      return null;
+    const file = value as { format?: unknown; caps?: unknown };
+    return file.format === PROJECT_FORMAT ? readCapSetup(file.caps) : null;
+  } catch {
+    return null;
+  }
+}
+
 /** KLE rows as JSON with a row to a line, the way KLE's own files read. */
 export function rowsToJson(doc: KleDocument): string {
   if (doc.length === 0) return "[]";
@@ -103,6 +126,7 @@ export function exportText(
   project: LayoutProject,
   format: ExportFormat,
   layer: LayoutLayer,
+  caps?: CapSetup | null,
 ): ExportText {
   const name = safeName(project.name);
   switch (format) {
@@ -128,7 +152,7 @@ export function exportText(
       };
     case "project":
       return {
-        text: projectFileText(project),
+        text: projectFileText(project, caps),
         fileName: `${name}.keebon-layout.json`,
         mime: "application/json",
       };

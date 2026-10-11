@@ -167,6 +167,16 @@ export function keyboardProject(id: string): LayoutProject | null {
   const keys = board.id === "insixty_jp" ? insixtyJpEnter(shown) : shown;
   const used = new Set(keys.map((k) => k.groupId));
   const layout = layoutOf(board.id);
+  // One key the drawing and the keymap place differently (the GoForty JP's
+  // Enter is 1,11 in vial.json and 0,11 in keyboard.json): when a single
+  // key has no keycode and a single keycode has no key, they are the pair.
+  const positions = new Set(
+    keys.flatMap((k) => (k.matrix ? [`${k.matrix.row},${k.matrix.col}`] : [])),
+  );
+  const unnamed = [...positions].filter((at) => !(at in board.keycodes));
+  const unused = Object.keys(board.keycodes).filter((at) => !positions.has(at));
+  const stray = unnamed.length === 1 && unused.length === 1 ? unnamed[0] : null;
+  const spare = stray ? board.keycodes[unused[0]] : undefined;
   return withLegends(
     {
       name: board.name,
@@ -174,8 +184,9 @@ export function keyboardProject(id: string): LayoutProject | null {
       groups: project.groups.filter((g) => used.has(g.id)),
     },
     (key) => {
-      const code =
-        key.matrix && board.keycodes[`${key.matrix.row},${key.matrix.col}`];
+      if (!key.matrix) return undefined;
+      const at = `${key.matrix.row},${key.matrix.col}`;
+      const code = board.keycodes[at] ?? (at === stray ? spare : undefined);
       return code ? qmkLegend(code, layout) : undefined;
     },
   );

@@ -17,7 +17,10 @@ import {
   IconChevronDown,
   IconChevronUp,
   IconCopy,
+  IconBrandX,
   IconDownload,
+  IconPhoto,
+  IconShare,
   IconFile,
   IconFileImport,
   IconFileExport,
@@ -69,6 +72,8 @@ import {
   type KitChoice,
 } from "../layoutEditor/lib/fit";
 import { capArt } from "../layoutEditor/lib/capArt";
+import { EMPTY_CAP_SETUP, type CapSetup } from "../layoutEditor/lib/capSetup";
+import { layoutPng } from "../layoutEditor/lib/picture";
 import {
   keyboardProject,
   keyboardTemplates,
@@ -102,15 +107,23 @@ import type {
 } from "../layoutEditor/lib/model";
 import {
   exportText,
+  readCapSetupText,
   readLayoutText,
   type ExportFormat,
 } from "../layoutEditor/lib/project";
 import { sampleProject } from "../layoutEditor/lib/sample";
-import { loadStoredProject, storeProject } from "../layoutEditor/lib/storage";
+import {
+  loadStoredCaps,
+  loadStoredProject,
+  storeCaps,
+  storeProject,
+} from "../layoutEditor/lib/storage";
 
 export const LAYOUT_PATH = "/layout";
 
 const DIALOG_OVERLAY = "fixed inset-0 bg-black/50 backdrop-blur-sm z-50";
+/** Where the editor lives, for the line under a picture and for posts. */
+const SHARE_URL = "https://keeb-on.studio/layout";
 const DIALOG_CONTENT =
   "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[92vw] max-w-xl max-h-[88dvh] overflow-auto bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] shadow-2xl z-50 p-5";
 const TEXTAREA =
@@ -166,7 +179,7 @@ function ImportDialog({
 }: {
   open: boolean;
   onClose: () => void;
-  onImport: (project: LayoutProject) => void;
+  onImport: (project: LayoutProject, caps: CapSetup | null) => void;
 }) {
   const { t } = useLanguage();
   const [text, setText] = useState("");
@@ -179,7 +192,7 @@ function ImportDialog({
       if (project.keys.length === 0) throw new Error("no keys");
       setText("");
       setFailed(false);
-      onImport(project);
+      onImport(project, readCapSetupText(source));
     } catch {
       setFailed(true);
     }
@@ -273,6 +286,8 @@ function ExportDialog({
   onClose,
   project,
   layer,
+  caps,
+  marks,
   stats,
   onRename,
 }: {
@@ -280,6 +295,10 @@ function ExportDialog({
   onClose: () => void;
   project: LayoutProject;
   layer: LayoutLayer;
+  /** What was chosen in the keycap check; goes into the project file. */
+  caps: CapSetup;
+  /** The keycap check's verdicts when it is on: the picture shows the caps. */
+  marks: ReadonlyMap<string, FitMark> | null;
   stats: { rows: number; cols: number; missing: number; duplicates: number };
   onRename: (name: string) => void;
 }) {
@@ -288,8 +307,8 @@ function ExportDialog({
   const [copied, setCopied] = useState(false);
 
   const out = useMemo(
-    () => (open ? exportText(project, format, layer) : null),
-    [open, project, format, layer],
+    () => (open ? exportText(project, format, layer, caps) : null),
+    [open, project, format, layer, caps],
   );
   const text = out?.text ?? "";
 
@@ -303,19 +322,69 @@ function ExportDialog({
     }
   };
 
-  const download = () => {
-    if (!out) return;
-    const blob = new Blob([out.text], { type: out.mime });
+  const saveBlob = (blob: Blob, fileName: string) => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = out.fileName;
+    a.download = fileName;
     // In the page while it is clicked, and the URL kept a moment longer:
     // some browsers drop the file name or the download otherwise.
     document.body.appendChild(a);
     a.click();
     a.remove();
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+  const download = () => {
+    if (out) saveBlob(new Blob([out.text], { type: out.mime }), out.fileName);
+  };
+
+  // The picture: what is on screen now, to save or to post.
+  const [pictureFailed, setPictureFailed] = useState(false);
+  const pictureName = `${(project.name.trim() || "layout").replace(/[^\p{L}\p{N}._-]+/gu, "_")}.png`;
+  const makePicture = async () => {
+    setPictureFailed(false);
+    const blob = await layoutPng(project, {
+      layer,
+      marks,
+      credit: `Keeb-On! Studio  ${SHARE_URL.replace("https://", "")}`,
+    }).catch(() => null);
+    if (!blob) setPictureFailed(true);
+    return blob;
+  };
+  const savePicture = async () => {
+    const blob = await makePicture();
+    if (blob) saveBlob(blob, pictureName);
+  };
+  const shareText = project.name.trim()
+    ? `${project.name.trim()} #KeebOnStudio`
+    : "#KeebOnStudio";
+  const canShareFiles =
+    typeof navigator !== "undefined" &&
+    typeof navigator.share === "function" &&
+    typeof navigator.canShare === "function";
+  const sharePicture = async () => {
+    const blob = await makePicture();
+    if (!blob) return;
+    const file = new File([blob], pictureName, { type: "image/png" });
+    try {
+      if (navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], text: shareText });
+        return;
+      }
+    } catch {
+      // Dismissed, or sharing a file is not allowed here: save it instead.
+      return;
+    }
+    saveBlob(blob, pictureName);
+  };
+  const postOnX = async () => {
+    // X takes no picture through a link: save it, then open the post box.
+    window.open(
+      `https://x.com/intent/post?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(SHARE_URL)}`,
+      "_blank",
+      "noopener",
+    );
+    await savePicture();
   };
 
   const formats: Array<{ id: ExportFormat; label: string }> = [
@@ -437,6 +506,45 @@ function ExportDialog({
                 {t("Close")}
               </button>
             </Dialog.Close>
+          </div>
+          <div className="mt-5 pt-4 border-t border-[var(--color-border)]">
+            <h3 className="text-sm font-medium text-[var(--color-text)] mb-1">
+              {t("Picture")}
+            </h3>
+            <p className="text-sm text-[var(--color-text-muted)] mb-3 leading-relaxed">
+              {marks
+                ? t(
+                    "A PNG of the layout with the keycaps on it, as on screen now.",
+                  )
+                : t("A PNG of the layout, as on screen now.")}{" "}
+              {t(
+                "X cannot take a picture from a link: the picture is saved, and you attach it in the post box that opens.",
+              )}
+            </p>
+            {pictureFailed && (
+              <p
+                role="alert"
+                className="text-sm text-[var(--color-warning)] mb-3"
+              >
+                {t("The picture could not be made.")}
+              </p>
+            )}
+            <div className="flex flex-wrap gap-2">
+              <button type="button" className={BUTTON} onClick={savePicture}>
+                <IconPhoto size={18} />
+                {t("Save picture")}
+              </button>
+              {canShareFiles && (
+                <button type="button" className={BUTTON} onClick={sharePicture}>
+                  <IconShare size={18} />
+                  {t("Share")}
+                </button>
+              )}
+              <button type="button" className={BUTTON} onClick={postOnX}>
+                <IconBrandX size={18} />
+                {t("Post on X")}
+              </button>
+            </div>
           </div>
         </Dialog.Content>
       </Dialog.Portal>
@@ -561,12 +669,21 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
   // The keycap check: which sets, which sculpt row each line of the layout
   // is, and the caps put somewhere by hand (null: the key kept bare).
   const [fitMode, setFitMode] = useState(false);
-  const [switchType, setSwitchType] = useState<SwitchType | null>(null);
-  const [kitChoices, setKitChoices] = useState<KitChoice[]>([]);
+  const [storedCaps] = useState(() => loadStoredCaps() ?? EMPTY_CAP_SETUP);
+  const [switchType, setSwitchType] = useState<SwitchType | null>(
+    storedCaps.switchType,
+  );
+  const [kitChoices, setKitChoices] = useState<KitChoice[]>(storedCaps.sets);
   // The colourway shown per set ("" = the plain drawing; unset = the first).
-  const [kitColours, setKitColours] = useState<Record<string, string>>({});
-  const [rowOverrides, setRowOverrides] = useState<Record<number, string>>({});
-  const [pins, setPins] = useState<Map<string, string | null>>(() => new Map());
+  const [kitColours, setKitColours] = useState<Record<string, string>>(
+    storedCaps.colours,
+  );
+  const [rowOverrides, setRowOverrides] = useState<Record<number, string>>(
+    storedCaps.rows,
+  );
+  const [pins, setPins] = useState<Map<string, string | null>>(
+    () => new Map(storedCaps.pins),
+  );
   const [trayOpen, setTrayOpen] = useState(true);
   // A pivot put somewhere by hand, for the selection it was set on.
   const [pivotOverride, setPivotOverride] = useState<{
@@ -584,6 +701,20 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
   useEffect(() => {
     storeProject(project);
   }, [project]);
+  // What was chosen in the keycap check, as it is saved and exported.
+  const capSetup = useMemo<CapSetup>(
+    () => ({
+      switchType,
+      sets: kitChoices,
+      colours: kitColours,
+      rows: rowOverrides,
+      pins: [...pins],
+    }),
+    [switchType, kitChoices, kitColours, rowOverrides, pins],
+  );
+  useEffect(() => {
+    storeCaps(capSetup);
+  }, [capSetup]);
 
   const selectedKeys = useMemo(
     () => project.keys.filter((k) => selection.has(k.id)),
@@ -742,8 +873,17 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
     [commit],
   );
 
-  const replaceProject = (next: LayoutProject) => {
+  const replaceProject = (next: LayoutProject, caps?: CapSetup | null) => {
     commit(next);
+    // Caps put on by hand belong to the keys of the old layout. A project
+    // file brings its own choices; anything else keeps the sets chosen.
+    setPins(new Map(caps?.pins ?? []));
+    setRowOverrides(caps?.rows ?? {});
+    if (caps) {
+      setSwitchType(caps.switchType);
+      setKitChoices(caps.sets);
+      setKitColours(caps.colours);
+    }
     setSelection(new Set());
     setMultiSelect(false);
     setFitToken((n) => n + 1);
@@ -1355,8 +1495,8 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
       <ImportDialog
         open={importOpen}
         onClose={() => setImportOpen(false)}
-        onImport={(next) => {
-          replaceProject(next);
+        onImport={(next, caps) => {
+          replaceProject(next, caps);
           setImportOpen(false);
         }}
       />
@@ -1365,6 +1505,8 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
         onClose={() => setExportOpen(false)}
         project={project}
         layer={layer}
+        caps={capSetup}
+        marks={fitMode ? fitMarks : null}
         stats={{
           rows: stats.rows,
           cols: stats.cols,

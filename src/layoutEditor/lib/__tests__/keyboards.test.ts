@@ -60,6 +60,8 @@ describe("keyboard templates", () => {
     };
     expect(legend("goforty_jp", 0, 1)).toEqual({ main: "Q", sub: "" });
     expect(legend("goforty_jp", 0, 0)).toEqual({ main: "Tab", sub: "" });
+    // Its Enter sits at another matrix position in the drawing.
+    expect(legend("goforty_jp", 1, 11)).toEqual({ main: "Enter", sub: "" });
     // Every keyboard opens with most of its keys named.
     for (const { id } of keyboardTemplates()) {
       const keys = keyboardProject(id)!.keys;

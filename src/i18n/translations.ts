@@ -10,6 +10,17 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // Layout editor
+  Picture: "画像",
+  "A PNG of the layout with the keycaps on it, as on screen now.":
+    "今の画面どおり、キーキャップをのせたレイアウトの PNG 画像です。",
+  "A PNG of the layout, as on screen now.":
+    "今の画面どおりのレイアウトの PNG 画像です。",
+  "X cannot take a picture from a link: the picture is saved, and you attach it in the post box that opens.":
+    "X はリンクから画像を受け取れないため、画像を保存してから投稿画面を開きます。保存された画像を投稿に添付してください。",
+  "The picture could not be made.": "画像を作れませんでした。",
+  "Save picture": "画像を保存",
+  Share: "共有",
+  "Post on X": "X に投稿",
   "Generic layouts": "汎用レイアウト",
   "{{name}}: colourway": "{{name}}：カラー",
   "Plain drawing": "デザインなし（簡易表示）",
