@@ -6,6 +6,15 @@
       "changes": {
         "major": [],
         "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.11.2",
+      "date": "2026-10-11",
+      "changes": {
+        "major": [],
+        "minor": [],
         "patch": [
           {
             "en": "Layout editor: in the keycap check, Backspace and Delete take the cap off the selected key.",
