@@ -10,6 +10,14 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // Layout editor
+  Rotation: "回転",
+  Angle: "角度",
+  "Pivot and handle": "回転軸とハンドル",
+  "1° steps": "1° 刻み",
+  "Pivot to touching corner": "接している角を軸に",
+  "Pivot back": "軸を元に戻す",
+  "Move clear of overlap": "重なりを解消",
+  "Stop at other keys": "ぶつかったら止まる",
   "ISO / JIS Enter": "ISO / JIS Enter の形にする",
   "Key actions": "キーの操作",
   "Select a key to change its size, move it, or copy it. Drag on empty space to select several.":

@@ -23,6 +23,7 @@ import {
   IconFileExport,
   IconSquarePlus,
   IconSquaresSelected,
+  IconWall,
   IconUpload,
 } from "@tabler/icons-react";
 import { StandaloneFrame } from "../components/StandaloneFrame";
@@ -33,6 +34,7 @@ import { useHistory } from "../layoutEditor/hooks/useHistory";
 import {
   addKey,
   copyKeys,
+  defaultPivot,
   deleteKeys,
   duplicateKeys,
   keyAfterDelete,
@@ -42,6 +44,7 @@ import {
   offsetBelow,
   pasteClip,
   resizeKeys,
+  rotateKeys,
   SNAP_STEPS,
   templateProject,
   type Added,
@@ -54,7 +57,17 @@ import {
   kleToRawData,
   parseKleText,
 } from "../layoutEditor/lib/kle";
-import type { LayoutLayer, LayoutProject } from "../layoutEditor/lib/model";
+import {
+  findOverlaps,
+  limitRotation,
+  separationFor,
+  touchingCorners,
+} from "../layoutEditor/lib/geometry";
+import type {
+  LayoutLayer,
+  LayoutProject,
+  Point,
+} from "../layoutEditor/lib/model";
 import { sampleProject } from "../layoutEditor/lib/sample";
 import { loadStoredProject, storeProject } from "../layoutEditor/lib/storage";
 
@@ -414,6 +427,15 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
   const [selection, setSelection] = useState<Set<string>>(() => new Set());
   const [snap, setSnap] = useState<number | null>(SNAP_STEPS[0]);
   const [multiSelect, setMultiSelect] = useState(false);
+  const [rotateMode, setRotateMode] = useState(false);
+  const [fineRotate, setFineRotate] = useState(false);
+  const [stopAtKeys, setStopAtKeys] = useState(false);
+  // A pivot put somewhere by hand, for the selection it was set on.
+  const [pivotOverride, setPivotOverride] = useState<{
+    key: string;
+    at: Point;
+    touchIndex: number;
+  } | null>(null);
   const [sheetOpen, setSheetOpen] = useState(true);
   const [fitToken, setFitToken] = useState(0);
   const [importOpen, setImportOpen] = useState(false);
@@ -433,6 +455,25 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
     () => selectedKeys.map((k) => k.id),
     [selectedKeys],
   );
+  const selectionKey = selectedIds.join(",");
+  const pivot = useMemo(
+    () =>
+      pivotOverride && pivotOverride.key === selectionKey
+        ? pivotOverride.at
+        : defaultPivot(project, selectedKeys),
+    [pivotOverride, selectionKey, project, selectedKeys],
+  );
+  const pivotMoved = Boolean(
+    pivotOverride && pivotOverride.key === selectionKey,
+  );
+  const touching = useMemo(
+    () => touchingCorners(project, selectedIds),
+    [project, selectedIds],
+  );
+  const overlapping = useMemo(() => {
+    const clashes = findOverlaps(project.keys);
+    return selectedIds.some((id) => clashes.has(id));
+  }, [project, selectedIds]);
   // Buttons move by the grid step; with the grid off, by its finest step.
   const step = snap ?? SNAP_STEPS[SNAP_STEPS.length - 1];
 
@@ -481,6 +522,16 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
       commit(moveKeys(project, selectedIds, dx, dy));
     },
     [commit, project, selectedIds],
+  );
+  const rotateBy = useCallback(
+    (delta: number) => {
+      if (!pivot || delta === 0) return;
+      const allowed = stopAtKeys
+        ? limitRotation(project, selectedIds, pivot, delta)
+        : delta;
+      commit(rotateKeys(project, selectedIds, pivot, allowed));
+    },
+    [commit, pivot, project, selectedIds, stopAtKeys],
   );
   const copy = useCallback(() => {
     if (selectedIds.length === 0) return;
@@ -569,6 +620,35 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
       onDuplicate={duplicate}
       onMirror={mirror}
       onDelete={remove}
+      rotation={{
+        shown: rotateMode,
+        onToggleShown: () => setRotateMode((on) => !on),
+        fine: fineRotate,
+        onToggleFine: () => setFineRotate((on) => !on),
+        onRotateBy: rotateBy,
+        touching: touching.length,
+        onPivotToTouching: () => {
+          if (touching.length === 0) return;
+          // Each press moves on to the next shared corner.
+          const index =
+            pivotMoved && pivotOverride
+              ? (pivotOverride.touchIndex + 1) % touching.length
+              : 0;
+          setPivotOverride({
+            key: selectionKey,
+            at: touching[index],
+            touchIndex: index,
+          });
+          setRotateMode(true);
+        },
+        pivotMoved,
+        onPivotReset: () => setPivotOverride(null),
+        overlapping,
+        onSeparate: () => {
+          const v = separationFor(project, selectedIds);
+          commit(moveKeys(project, selectedIds, v.x, v.y));
+        },
+      }}
     />
   );
   const BAR =
@@ -678,6 +758,23 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
           </label>
           <button
             type="button"
+            className={`${ICON_BUTTON} ${
+              stopAtKeys
+                ? "!border-[var(--color-electric)] !text-[var(--color-text)]"
+                : ""
+            }`}
+            onClick={() => setStopAtKeys((on) => !on)}
+            aria-pressed={stopAtKeys}
+            aria-label={t("Stop at other keys")}
+            title={t("Stop at other keys")}
+          >
+            <IconWall size={18} />
+            <span className="hidden sm:inline whitespace-nowrap">
+              {t("Stop at other keys")}
+            </span>
+          </button>
+          <button
+            type="button"
             className={`${ICON_BUTTON} pointer-fine:hidden ${
               multiSelect
                 ? "!border-[var(--color-electric)] !text-[var(--color-text)]"
@@ -705,6 +802,16 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
               onResizeKey={(id, w) => commit(resizeKeys(project, [id], { w }))}
               snapStep={snap}
               multiSelect={multiSelect}
+              rotateMode={rotateMode}
+              pivot={pivot}
+              onPivotChange={(at) =>
+                setPivotOverride({ key: selectionKey, at, touchIndex: -1 })
+              }
+              onRotateKeys={(ids, at, delta) =>
+                commit(rotateKeys(project, ids, at, delta))
+              }
+              fineRotate={fineRotate}
+              stopAtKeys={stopAtKeys}
               onLongPressKey={(id) => {
                 setMultiSelect(true);
                 setSelection((cur) => new Set([...cur, id]));

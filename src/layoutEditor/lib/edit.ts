@@ -2,6 +2,7 @@
  * Every change the editor makes to a layout, as plain functions from one
  * layout to the next, so undo is just "the layout before".
  */
+import { rotatedKey } from "./geometry";
 import { importKle, newId } from "./kle";
 import {
   keyCorners,
@@ -9,6 +10,7 @@ import {
   type Bounds,
   type LayoutKey,
   type LayoutProject,
+  type Point,
   type RotationGroup,
 } from "./model";
 
@@ -100,6 +102,60 @@ export function moveKeys(
       : g;
   });
   return { ...project, keys, groups };
+}
+
+/**
+ * Turn keys by `delta` degrees around `pivot`. The turned keys become a
+ * rotation group of their own around that pivot (one per resulting angle,
+ * which is what a KLE cluster is); keys left at 0 degrees belong to none.
+ */
+export function rotateKeys(
+  project: LayoutProject,
+  ids: Iterable<string>,
+  pivot: Point,
+  delta: number,
+): LayoutProject {
+  const target = new Set(ids);
+  if (target.size === 0 || delta === 0) return project;
+  const origin = { x: tidy(pivot.x), y: tidy(pivot.y) };
+  const groups: RotationGroup[] = [];
+  const byAngle = new Map<number, string>();
+  const keys = project.keys.map((k) => {
+    if (!target.has(k.id)) return k;
+    const { groupId: _old, ...turned } = rotatedKey(k, origin, delta);
+    void _old;
+    if (turned.angle === 0) return turned;
+    let groupId = byAngle.get(turned.angle);
+    if (!groupId) {
+      groupId = newId("g");
+      byAngle.set(turned.angle, groupId);
+      groups.push({ id: groupId, pivot: origin });
+    }
+    return { ...turned, groupId };
+  });
+  return pruneGroups({
+    ...project,
+    keys,
+    groups: [...project.groups, ...groups],
+  });
+}
+
+/**
+ * Where the keys turn around until someone says otherwise: their group's
+ * pivot when they are one whole-angle group, else the middle of their box.
+ */
+export function defaultPivot(
+  project: LayoutProject,
+  keys: LayoutKey[],
+): Point | null {
+  if (keys.length === 0) return null;
+  const groupId = keys[0].groupId;
+  if (groupId && keys.every((k) => k.groupId === groupId)) {
+    const group = project.groups.find((g) => g.id === groupId);
+    if (group) return group.pivot;
+  }
+  const b = keysBounds(keys)!;
+  return { x: tidy((b.minX + b.maxX) / 2), y: tidy((b.minY + b.maxY) / 2) };
 }
 
 /**

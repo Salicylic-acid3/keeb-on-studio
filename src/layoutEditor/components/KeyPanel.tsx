@@ -12,6 +12,7 @@ import {
   IconFlipVertical,
   IconMinus,
   IconPlus,
+  IconRotate,
   IconSquarePlus,
   IconTrash,
 } from "@tabler/icons-react";
@@ -104,6 +105,23 @@ export interface KeyPanelProps {
   onDuplicate: () => void;
   onMirror: () => void;
   onDelete: () => void;
+  rotation: {
+    /** Pivot and arm are shown on the canvas. */
+    shown: boolean;
+    onToggleShown: () => void;
+    fine: boolean;
+    onToggleFine: () => void;
+    onRotateBy: (delta: number) => void;
+    /** How many corners the selection shares with a neighbour. */
+    touching: number;
+    onPivotToTouching: () => void;
+    /** The pivot was moved by hand and can go back. */
+    pivotMoved: boolean;
+    onPivotReset: () => void;
+    /** The selection overlaps another key. */
+    overlapping: boolean;
+    onSeparate: () => void;
+  };
   /** Leave out the "n keys selected" line (the phone's sheet has its own). */
   hideCount?: boolean;
 }
@@ -118,6 +136,7 @@ export function KeyPanel({
   onDuplicate,
   onMirror,
   onDelete,
+  rotation,
   hideCount = false,
 }: KeyPanelProps) {
   const { t } = useLanguage();
@@ -135,6 +154,7 @@ export function KeyPanel({
   const w = same((k) => k.w);
   const h = same((k) => k.h);
   const allIso = keys.every(isIsoEnter);
+  const angle = same((k) => k.angle);
 
   return (
     <div>
@@ -219,6 +239,94 @@ export function KeyPanel({
             <IconArrowRight size={18} />
           </button>
         </div>
+      </Section>
+
+      <Section title={t("Rotation")}>
+        <div className="flex items-center gap-1.5 mb-2">
+          {[-5, -1].map((d) => (
+            <button
+              key={d}
+              type="button"
+              className={`${TILE} tabular-nums ${TILE_IDLE}`}
+              onClick={() => rotation.onRotateBy(d)}
+            >
+              {d}°
+            </button>
+          ))}
+          <input
+            type="number"
+            inputMode="decimal"
+            step={1}
+            value={angle ?? ""}
+            placeholder="–"
+            aria-label={t("Angle")}
+            onChange={(e) => {
+              const v = Number(e.target.value);
+              if (
+                e.target.value !== "" &&
+                Number.isFinite(v) &&
+                angle !== null
+              ) {
+                rotation.onRotateBy(v - angle);
+              }
+            }}
+            className="w-16 min-h-11 flex-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text)] text-sm text-center tabular-nums focus:outline-none focus:border-[var(--color-electric)]"
+          />
+          {[1, 5].map((d) => (
+            <button
+              key={d}
+              type="button"
+              className={`${TILE} tabular-nums ${TILE_IDLE}`}
+              onClick={() => rotation.onRotateBy(d)}
+            >
+              +{d}°
+            </button>
+          ))}
+        </div>
+        <div className="grid grid-cols-2 gap-1.5">
+          <button
+            type="button"
+            aria-pressed={rotation.shown}
+            className={`${TILE} ${rotation.shown ? TILE_ON : TILE_IDLE}`}
+            onClick={rotation.onToggleShown}
+          >
+            <IconRotate size={18} />
+            {t("Pivot and handle")}
+          </button>
+          <button
+            type="button"
+            aria-pressed={rotation.fine}
+            className={`${TILE} ${rotation.fine ? TILE_ON : TILE_IDLE}`}
+            onClick={rotation.onToggleFine}
+          >
+            {t("1° steps")}
+          </button>
+          <button
+            type="button"
+            className={`${TILE} ${TILE_IDLE}`}
+            onClick={rotation.onPivotToTouching}
+            disabled={rotation.touching === 0}
+          >
+            {t("Pivot to touching corner")}
+          </button>
+          <button
+            type="button"
+            className={`${TILE} ${TILE_IDLE}`}
+            onClick={rotation.onPivotReset}
+            disabled={!rotation.pivotMoved}
+          >
+            {t("Pivot back")}
+          </button>
+        </div>
+        {rotation.overlapping && (
+          <button
+            type="button"
+            className={`${TILE} w-full mt-1.5 border-[#e5484d] text-[var(--color-text)]`}
+            onClick={rotation.onSeparate}
+          >
+            {t("Move clear of overlap")}
+          </button>
+        )}
       </Section>
 
       <Section title={t("Key actions")}>

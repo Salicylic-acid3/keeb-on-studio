@@ -11,6 +11,11 @@
  * anywhere else to pan, two fingers to pan and pinch. A long press on a key
  * asks the page for multi-select, where taps add and remove keys.
  *
+ * With rotation shown, the pivot is a marker that can be dragged (it snaps
+ * to corners, centres and edge midpoints) and an arm from it ends in a
+ * handle that turns the selection: 5 degrees at a time, 1 with Shift or the
+ * fine switch. Keys that overlap are drawn in red while it happens.
+ *
  * Everything is laid out in pixels (u x zoom) rather than under an SVG
  * scale(): browsers with a minimum font size (Chrome in Japanese has one by
  * default) clamp a sub-pixel font size before scaling it, which would blow
@@ -21,11 +26,23 @@ import { IconFocusCentered, IconMinus, IconPlus } from "@tabler/icons-react";
 import { useLanguage } from "../../hooks/useLanguage";
 import { keysInRect, resizedKey, snapValue } from "../lib/edit";
 import {
+  findOverlaps,
+  limitMove,
+  limitRotation,
+  nearestPoint,
+  normalizeAngle,
+  pivotTargets,
+  rotatedKey,
+  snapMoveToCorners,
+} from "../lib/geometry";
+import {
+  keyCorners,
   projectBounds,
   rotatePoint,
   type LayoutKey,
   type LayoutLayer,
   type LayoutProject,
+  type Point,
 } from "../lib/model";
 
 const MIN_ZOOM = 10;
@@ -38,6 +55,11 @@ const TAP_SLOP = 6;
 const LONG_PRESS_MS = 500;
 /** Smallest touch target for a handle, in px, whatever the zoom. */
 const HANDLE_HIT = 44;
+/** How close, in px, a dragged corner or pivot has to be to snap. */
+const SNAP_PX = 10;
+/** Turning snaps to a neighbour's angle within this many degrees. */
+const ANGLE_SNAP = 2.5;
+const CLASH = "#e5484d";
 
 interface View {
   tx: number;
@@ -80,11 +102,14 @@ const KeyShape = memo(function KeyShape({
   zoom,
   layer,
   selected,
+  clash,
 }: {
   keyData: LayoutKey;
   zoom: number;
   layer: LayoutLayer;
   selected: boolean;
+  /** Overlaps another key. */
+  clash: boolean;
 }) {
   const W = k.w * zoom;
   const H = k.h * zoom;
@@ -103,9 +128,14 @@ const KeyShape = memo(function KeyShape({
   const rects = [{ x: -W / 2, y: -H / 2, w: W, h: H }];
   if (second) rects.push(second);
 
-  const stroke = selected
-    ? "var(--color-electric)"
-    : "var(--color-border-hover)";
+  const stroke = clash
+    ? CLASH
+    : selected
+      ? "var(--color-electric)"
+      : "var(--color-border-hover)";
+  const fill = clash
+    ? `color-mix(in srgb, ${CLASH} 22%, var(--color-surface-elevated))`
+    : "var(--color-surface-elevated)";
   const fontSize = zoom * 0.21;
   const showText = fontSize >= 5;
   const padX = zoom * 0.14;
@@ -137,9 +167,9 @@ const KeyShape = memo(function KeyShape({
             width={Math.max(0, r.w - gap * 2)}
             height={Math.max(0, r.h - gap * 2)}
             rx={radius}
-            fill="var(--color-surface-elevated)"
+            fill={fill}
             stroke={stroke}
-            strokeWidth={selected ? 2 : 1}
+            strokeWidth={selected || clash ? 2 : 1}
           />
         ))}
       {!decal &&
@@ -152,7 +182,7 @@ const KeyShape = memo(function KeyShape({
             width={Math.max(0, r.w - gap * 2 - 2)}
             height={Math.max(0, r.h - gap * 2 - 2)}
             rx={Math.max(0, radius - 1)}
-            fill="var(--color-surface-elevated)"
+            fill={fill}
           />
         ))}
       {decal && (
@@ -229,11 +259,30 @@ export interface LayoutCanvasProps {
   /** Taps add and remove keys instead of replacing the selection. */
   multiSelect: boolean;
   onLongPressKey: (id: string) => void;
+  /** Show the pivot and the turning arm for the selection. */
+  rotateMode: boolean;
+  /** Where the selection turns around, in u; null with nothing selected. */
+  pivot: Point | null;
+  onPivotChange: (pivot: Point) => void;
+  /** The arm was let go: turn these keys by `delta` degrees. */
+  onRotateKeys: (ids: string[], pivot: Point, delta: number) => void;
+  /** Turn 1 degree at a time instead of 5. */
+  fineRotate: boolean;
+  /** Dragging and turning stop when the keys meet another key. */
+  stopAtKeys: boolean;
   /** Change this to bring the whole layout back into view. */
   fitToken: number;
 }
 
-type Mode = "idle" | "pan" | "move" | "marquee" | "resize" | "spent";
+type Mode =
+  | "idle"
+  | "pan"
+  | "move"
+  | "marquee"
+  | "resize"
+  | "pivot"
+  | "rotate"
+  | "spent";
 
 interface Gesture {
   mode: Mode;
@@ -247,6 +296,8 @@ interface Gesture {
   moveIds: string[];
   resizeId: string | null;
   resizeStartW: number;
+  /** Pointer angle around the pivot when the arm was grabbed, in degrees. */
+  rotateStart: number;
 }
 
 const IDLE: Gesture = {
@@ -260,6 +311,7 @@ const IDLE: Gesture = {
   moveIds: [],
   resizeId: null,
   resizeStartW: 1,
+  rotateStart: 0,
 };
 
 function isTyping(target: EventTarget | null): boolean {
@@ -283,6 +335,12 @@ export function LayoutCanvas({
   snapStep,
   multiSelect,
   onLongPressKey,
+  rotateMode,
+  pivot,
+  onPivotChange,
+  onRotateKeys,
+  fineRotate,
+  stopAtKeys,
   fitToken,
 }: LayoutCanvasProps) {
   const { t } = useLanguage();
@@ -300,6 +358,10 @@ export function LayoutCanvas({
     x1: number;
     y1: number;
   } | null>(null);
+  const [turn, setTurn] = useState<{ ids: string[]; delta: number } | null>(
+    null,
+  );
+  const [pivotDrag, setPivotDrag] = useState<Point | null>(null);
   const [panning, setPanning] = useState(false);
   const pointers = useRef(new Map<number, { x: number; y: number }>());
   const gesture = useRef<Gesture>({ ...IDLE });
@@ -420,6 +482,8 @@ export function LayoutCanvas({
     setDrag(null);
     setResize(null);
     setMarquee(null);
+    setTurn(null);
+    setPivotDrag(null);
   };
 
   const onPointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
@@ -441,6 +505,9 @@ export function LayoutCanvas({
     const handle = target
       .closest?.("[data-resize-handle]")
       ?.getAttribute("data-resize-handle");
+    const onPivot = Boolean(target.closest?.("[data-pivot]"));
+    const onArm = Boolean(target.closest?.("[data-rotate-handle]"));
+    const svgRect = e.currentTarget.getBoundingClientRect();
     const g: Gesture = {
       ...IDLE,
       mouse,
@@ -450,7 +517,19 @@ export function LayoutCanvas({
       startY: e.clientY,
     };
 
-    if (handle) {
+    if (onArm && pivot) {
+      g.mode = "rotate";
+      g.moveIds = [...selection];
+      g.rotateStart =
+        (Math.atan2(
+          e.clientY - svgRect.top - (view.ty + pivot.y * view.zoom),
+          e.clientX - svgRect.left - (view.tx + pivot.x * view.zoom),
+        ) *
+          180) /
+        Math.PI;
+    } else if (onPivot && pivot) {
+      g.mode = "pivot";
+    } else if (handle) {
       const key = project.keys.find((k) => k.id === handle);
       if (key) {
         g.mode = "resize";
@@ -468,7 +547,7 @@ export function LayoutCanvas({
     }
     gesture.current = g;
 
-    if (!mouse && downKey && !handle) {
+    if (!mouse && downKey && g.mode !== "resize" && !onPivot && !onArm) {
       clearLongPress();
       longPress.current = window.setTimeout(() => {
         longPress.current = null;
@@ -541,6 +620,9 @@ export function LayoutCanvas({
     pointers.current.set(e.pointerId, next);
 
     const step = e.altKey ? null : snapStep;
+    // Zoomed far out, ten pixels is a third of a key: cap the reach in u
+    // so snapping to corners does not swallow the grid.
+    const snapReach = Math.min(SNAP_PX / view.zoom, 0.2);
     const rawX = (next.x - g.startX) / view.zoom;
     const rawY = (next.y - g.startY) / view.zoom;
 
@@ -561,6 +643,25 @@ export function LayoutCanvas({
         dx = snapValue(left + rawX, step) - left;
         dy = snapValue(top + rawY, step) - top;
       }
+      if (!e.altKey) {
+        // A corner about to meet a neighbour's corner goes all the way.
+        const near = snapMoveToCorners(
+          project,
+          g.moveIds,
+          rawX,
+          rawY,
+          snapReach,
+        );
+        if (near.x !== rawX || near.y !== rawY) {
+          dx = near.x;
+          dy = near.y;
+        }
+      }
+      if (stopAtKeys) {
+        const allowed = limitMove(project, g.moveIds, dx, dy);
+        dx = allowed.x;
+        dy = allowed.y;
+      }
       setDrag({ ids: g.moveIds, dx, dy });
     } else if (g.mode === "resize" && g.resizeId) {
       const key = project.keys.find((k) => k.id === g.resizeId);
@@ -574,6 +675,47 @@ export function LayoutCanvas({
         const w = Math.max(0.25, snapValue(g.resizeStartW + along, step));
         setResize({ id: key.id, w });
       }
+    } else if (g.mode === "pivot") {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const at = {
+        x: (next.x - rect.left - view.tx) / view.zoom,
+        y: (next.y - rect.top - view.ty) / view.zoom,
+      };
+      const near = e.altKey
+        ? null
+        : nearestPoint(at, pivotTargets(project, selection), snapReach);
+      setPivotDrag(
+        near ?? { x: snapValue(at.x, step), y: snapValue(at.y, step) },
+      );
+    } else if (g.mode === "rotate" && pivot) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const now =
+        (Math.atan2(
+          next.y - rect.top - (view.ty + pivot.y * view.zoom),
+          next.x - rect.left - (view.tx + pivot.x * view.zoom),
+        ) *
+          180) /
+        Math.PI;
+      const raw = normalizeAngle(now - g.rotateStart);
+      const unit = e.shiftKey || fineRotate ? 1 : 5;
+      let delta = e.altKey ? raw : Math.round(raw / unit) * unit;
+      const lead = project.keys.find((k) => k.id === g.moveIds[0]);
+      if (lead && !e.altKey && unit !== 1) {
+        // Line up with a neighbour that is nearly at the same angle.
+        const moving = new Set(g.moveIds);
+        for (const k of project.keys) {
+          if (moving.has(k.id)) continue;
+          const off = normalizeAngle(k.angle - (lead.angle + raw));
+          if (Math.abs(off) <= ANGLE_SNAP) {
+            delta = normalizeAngle(k.angle - lead.angle);
+            break;
+          }
+        }
+      }
+      if (stopAtKeys) {
+        delta = limitRotation(project, g.moveIds, pivot, delta);
+      }
+      setTurn({ ids: g.moveIds, delta });
     } else if (g.mode === "marquee") {
       const rect = e.currentTarget.getBoundingClientRect();
       setMarquee({
@@ -596,7 +738,15 @@ export function LayoutCanvas({
 
     if (!g.moved) {
       cancelPreviews();
-      if (!finished || g.mode === "spent" || g.mode === "resize") return;
+      if (
+        !finished ||
+        g.mode === "spent" ||
+        g.mode === "resize" ||
+        g.mode === "pivot" ||
+        g.mode === "rotate"
+      ) {
+        return;
+      }
       if (g.mode === "pan" && g.mouse) return;
       if (g.downKey) {
         if (g.additive || (multiSelect && !g.mouse)) {
@@ -619,6 +769,10 @@ export function LayoutCanvas({
       }
     } else if (g.mode === "resize" && resize && finished) {
       onResizeKey(resize.id, resize.w);
+    } else if (g.mode === "pivot" && pivotDrag && finished) {
+      onPivotChange(pivotDrag);
+    } else if (g.mode === "rotate" && turn && pivot && finished) {
+      if (turn.delta !== 0) onRotateKeys(turn.ids, pivot, turn.delta);
     } else if (g.mode === "marquee" && marquee && finished) {
       const toU = (px: number, offset: number) => (px - offset) / view.zoom;
       const hit = keysInRect(project, {
@@ -642,8 +796,13 @@ export function LayoutCanvas({
   };
 
   const moving = drag ? new Set(drag.ids) : null;
+  const turning = turn ? new Set(turn.ids) : null;
+  const shownPivot = pivotDrag ?? pivot;
   const shown = project.keys.map((k) => {
     if (resize && resize.id === k.id) return resizedKey(k, resize.w);
+    if (turn && pivot && turning?.has(k.id)) {
+      return rotatedKey(k, pivot, turn.delta);
+    }
     if (drag && moving?.has(k.id)) {
       return { ...k, cx: k.cx + drag.dx, cy: k.cy + drag.dy };
     }
@@ -653,6 +812,41 @@ export function LayoutCanvas({
   const only =
     selection.size === 1 ? shown.find((k) => selection.has(k.id)) : undefined;
   const handleKey = only && !only.kle?.decal ? only : undefined;
+
+  // Selected keys are painted last, so one dragged over others stays in
+  // sight instead of sliding underneath.
+  const drawOrder = [
+    ...shown.filter((k) => !selection.has(k.id)),
+    ...shown.filter((k) => selection.has(k.id)),
+  ];
+  // Recomputed while dragging, so the red follows the keys.
+  const clashes = findOverlaps(shown);
+
+  // The turning arm: from the pivot, a little past the furthest selected
+  // corner, pointing up until it is dragged round.
+  let arm: { px: number; py: number; hx: number; hy: number } | null = null;
+  if (rotateMode && shownPivot && selection.size > 0) {
+    let reach = 0;
+    for (const k of project.keys) {
+      if (!selection.has(k.id)) continue;
+      for (const c of keyCorners(k)) {
+        reach = Math.max(
+          reach,
+          Math.hypot(c.x - shownPivot.x, c.y - shownPivot.y),
+        );
+      }
+    }
+    const length = Math.min(260, Math.max(72, reach * view.zoom + 34));
+    const dir = ((-90 + (turn?.delta ?? 0)) * Math.PI) / 180;
+    const px = shownPivot.x * view.zoom;
+    const py = shownPivot.y * view.zoom;
+    arm = {
+      px,
+      py,
+      hx: px + Math.cos(dir) * length,
+      hy: py + Math.sin(dir) * length,
+    };
+  }
 
   const handleInset = handleKey
     ? Math.min(22, (handleKey.w * view.zoom) / 4)
@@ -704,13 +898,14 @@ export function LayoutCanvas({
         </defs>
         <rect width="100%" height="100%" fill={`url(#${gridId})`} />
         <g transform={`translate(${view.tx} ${view.ty})`}>
-          {shown.map((k) => (
+          {drawOrder.map((k) => (
             <KeyShape
               key={k.id}
               keyData={k}
               zoom={view.zoom}
               layer={layer}
               selected={selection.has(k.id)}
+              clash={clashes.has(k.id)}
             />
           ))}
           {handleKey && (
@@ -744,6 +939,59 @@ export function LayoutCanvas({
               />
             </g>
           )}
+          {arm && (
+            <g>
+              <line
+                x1={arm.px}
+                y1={arm.py}
+                x2={arm.hx}
+                y2={arm.hy}
+                stroke="var(--color-cyber)"
+                strokeWidth={1.5}
+                strokeDasharray="5 4"
+                style={{ pointerEvents: "none" }}
+              />
+              <g data-rotate-handle="" style={{ cursor: "grab" }}>
+                <circle
+                  cx={arm.hx}
+                  cy={arm.hy}
+                  r={HANDLE_HIT / 2}
+                  fill="transparent"
+                />
+                <circle
+                  cx={arm.hx}
+                  cy={arm.hy}
+                  r={9}
+                  fill="var(--color-cyber)"
+                  stroke="var(--color-surface)"
+                  strokeWidth={2}
+                />
+              </g>
+              <g data-pivot="" style={{ cursor: "move" }}>
+                <circle
+                  cx={arm.px}
+                  cy={arm.py}
+                  r={HANDLE_HIT / 2 - 6}
+                  fill="transparent"
+                />
+                <circle
+                  cx={arm.px}
+                  cy={arm.py}
+                  r={7}
+                  fill="var(--color-surface)"
+                  stroke="var(--color-cyber)"
+                  strokeWidth={2}
+                />
+                <path
+                  d={`M ${arm.px - 12} ${arm.py} H ${arm.px + 12} M ${arm.px} ${
+                    arm.py - 12
+                  } V ${arm.py + 12}`}
+                  stroke="var(--color-cyber)"
+                  strokeWidth={1.5}
+                />
+              </g>
+            </g>
+          )}
         </g>
         {marquee && (
           <rect
@@ -759,9 +1007,11 @@ export function LayoutCanvas({
         )}
       </svg>
 
-      {resize && (
+      {(resize || turn) && (
         <div className="absolute left-3 top-3 px-2 py-1 rounded-md bg-[var(--color-surface)]/90 border border-[var(--color-border)] text-xs text-[var(--color-text)] tabular-nums pointer-events-none">
-          {resize.w}u
+          {resize
+            ? `${resize.w}u`
+            : `${turn!.delta > 0 ? "+" : ""}${turn!.delta}°`}
         </div>
       )}
 
