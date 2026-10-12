@@ -614,3 +614,62 @@ export function templateProject(id: TemplateId): LayoutProject {
   if (id === "empty") return { name: "", keys: [], groups: [] };
   return importKle(TEMPLATES[id]);
 }
+
+/**
+ * Where the layout's top left corner is: the least x and y any key
+ * reaches, stepped and ISO keys' second rectangle included. Keyboard
+ * Layout Editor data, and the VIA and Vial definitions made from it, are
+ * drawn from (0, 0), so a layout is best kept with this at the origin: on
+ * an ordinary row-staggered board, the top left key at 0, 0.
+ */
+export function layoutOrigin(project: LayoutProject): Point | null {
+  if (project.keys.length === 0) return null;
+  let minX = Infinity;
+  let minY = Infinity;
+  for (const key of project.keys) {
+    const rects = [{ x: -key.w / 2, y: -key.h / 2, w: key.w, h: key.h }];
+    if (key.kle?.w2 !== undefined && key.kle.h2 !== undefined) {
+      rects.push({
+        x: -key.w / 2 + (key.kle.x2 ?? 0),
+        y: -key.h / 2 + (key.kle.y2 ?? 0),
+        w: key.kle.w2,
+        h: key.kle.h2,
+      });
+    }
+    for (const r of rects) {
+      for (const [dx, dy] of [
+        [r.x, r.y],
+        [r.x + r.w, r.y],
+        [r.x + r.w, r.y + r.h],
+        [r.x, r.y + r.h],
+      ]) {
+        const p = rotatePoint(
+          { x: key.cx + dx, y: key.cy + dy },
+          { x: key.cx, y: key.cy },
+          key.angle,
+        );
+        minX = Math.min(minX, p.x);
+        minY = Math.min(minY, p.y);
+      }
+    }
+  }
+  return { x: tidy(minX), y: tidy(minY) };
+}
+
+/** Whether the layout starts at the origin (to a thousandth of a unit). */
+export function isAtOrigin(project: LayoutProject): boolean {
+  const o = layoutOrigin(project);
+  return !o || (Math.abs(o.x) < 0.001 && Math.abs(o.y) < 0.001);
+}
+
+/** The whole layout moved so that its top left corner is at 0, 0. */
+export function alignToOrigin(project: LayoutProject): LayoutProject {
+  const o = layoutOrigin(project);
+  if (!o || isAtOrigin(project)) return project;
+  return moveKeys(
+    project,
+    project.keys.map((k) => k.id),
+    -o.x,
+    -o.y,
+  );
+}

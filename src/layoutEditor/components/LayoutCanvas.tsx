@@ -1081,6 +1081,55 @@ export function LayoutCanvas({
           </pattern>
         </defs>
         <rect width="100%" height="100%" fill={`url(#${gridId})`} />
+        {/* The origin: Keyboard Layout Editor data (and VIA / Vial layouts)
+            are drawn from 0, 0, so what lies above or left of it is shaded
+            and the two edges are drawn. */}
+        <g style={{ pointerEvents: "none" }}>
+          <rect
+            x={0}
+            y={0}
+            width={Math.max(0, view.tx)}
+            height="100%"
+            fill="var(--color-text)"
+            opacity={0.06}
+          />
+          <rect
+            x={Math.max(0, view.tx)}
+            y={0}
+            width="100%"
+            height={Math.max(0, view.ty)}
+            fill="var(--color-text)"
+            opacity={0.06}
+          />
+          <line
+            x1={view.tx}
+            y1={Math.max(0, view.ty)}
+            x2={view.tx}
+            y2="100%"
+            stroke="var(--color-electric)"
+            strokeWidth={1.5}
+            opacity={0.55}
+          />
+          <line
+            x1={Math.max(0, view.tx)}
+            y1={view.ty}
+            x2="100%"
+            y2={view.ty}
+            stroke="var(--color-electric)"
+            strokeWidth={1.5}
+            opacity={0.55}
+          />
+          <text
+            x={view.tx - 5}
+            y={view.ty - 5}
+            textAnchor="end"
+            fontSize={11}
+            fill="var(--color-electric)"
+            style={{ userSelect: "none", fontVariantNumeric: "tabular-nums" }}
+          >
+            0, 0
+          </text>
+        </g>
         <g transform={`translate(${view.tx} ${view.ty})`}>
           {drawOrder.map((k) => (
             <KeyShape

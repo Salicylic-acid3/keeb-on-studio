@@ -10,6 +10,14 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // Layout editor
+  "Move the layout to the origin": "レイアウトを原点に合わせる",
+  "To origin": "原点に合わせる",
+  "The top left of the layout is at {{x}}, {{y}}. Move the whole layout so that it starts at 0, 0.":
+    "レイアウトの左上が {{x}}, {{y}} にあります。レイアウト全体を動かして、0, 0 から始まるようにします。",
+  "The layout does not start at 0, 0 (its top left is at {{x}}, {{y}}). Keyboard Layout Editor, VIA and Vial draw from the origin, so it is best moved there first.":
+    "レイアウトが 0, 0 から始まっていません（左上が {{x}}, {{y}}）。Keyboard Layout Editor・VIA・Vial は原点から描くので、先に原点に合わせるのがおすすめです。",
+  "The blue lines mark the origin (0, 0), where Keyboard Layout Editor, VIA and Vial start drawing; the shaded side is outside it. A layout is best kept starting at 0, 0: To origin moves the whole layout there when it is not.":
+    "色付きの線は原点（0, 0）です。Keyboard Layout Editor・VIA・Vial はここから描き始めます。影になっている側は原点の外です。レイアウトは 0, 0 から始めるのがおすすめで、ずれているときは「原点に合わせる」で全体を移せます。",
   "My layouts": "マイレイアウト",
   "My layouts saves the layout to your own GitHub Gists and opens the ones saved there, including those saved from Keyboard Layout Editor.":
     "「マイレイアウト」で、レイアウトを自分の GitHub Gist に保存し、保存済みのものを開けます。Keyboard Layout Editor で保存したレイアウトも開けます。",

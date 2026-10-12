@@ -14,6 +14,7 @@ const HELP: Array<{ title: string; lines: string[] }> = [
       "Tap a key to select it; drag it to move it. Keys snap to the grid (0.25u, 0.125u or 0.0625u) and to the corners of their neighbours.",
       "Drag on an empty spot to select every key in the box, or turn on Select several to add keys one tap at a time.",
       "The panel changes the selected keys: width and height, ISO / JIS Enter, add beside, duplicate, mirror, delete.",
+      "The blue lines mark the origin (0, 0), where Keyboard Layout Editor, VIA and Vial start drawing; the shaded side is outside it. A layout is best kept starting at 0, 0: To origin moves the whole layout there when it is not.",
       "Keys that overlap turn red. Stop at keys keeps a key you drag from going into another.",
     ],
   },

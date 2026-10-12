@@ -1,6 +1,9 @@
 import {
   addKey,
   addRow,
+  alignToOrigin,
+  isAtOrigin,
+  layoutOrigin,
   copyKeys,
   deleteKeys,
   duplicateKeys,
@@ -17,6 +20,7 @@ import {
   templateProject,
 } from "../edit";
 import { exportKle, importKle } from "../kle";
+import { sampleProject } from "../sample";
 
 const at = (p: ReturnType<typeof importKle>) =>
   p.keys.map((k) => [k.cx, k.cy, k.w, k.angle]);
@@ -231,5 +235,44 @@ describe("makeIsoEnter", () => {
     });
     expect(isIsoEnter(q.keys[0])).toBe(false);
     expect(q.keys[0].kle).toBeUndefined();
+  });
+});
+
+describe("the origin", () => {
+  it("is where the templates and the sample start", () => {
+    for (const id of ["ortho40", "ansi60", "split36"] as const) {
+      expect(layoutOrigin(templateProject(id))).toEqual({ x: 0, y: 0 });
+    }
+    expect(layoutOrigin(templateProject("empty"))).toBeNull();
+    expect(isAtOrigin(templateProject("empty"))).toBe(true);
+  });
+
+  it("brings a layout that has drifted back, turned keys and pivots with it", () => {
+    const sample = sampleProject();
+    const ids = sample.keys.map((k) => k.id);
+    const moved = moveKeys(sample, ids, 2.5, -1.25);
+    expect(isAtOrigin(moved)).toBe(false);
+    const back = alignToOrigin(moved);
+    expect(isAtOrigin(back)).toBe(true);
+    const was = layoutOrigin(sample)!;
+    back.keys.forEach((k, i) => {
+      expect(k.cx - sample.keys[i].cx).toBeCloseTo(-was.x, 3);
+      expect(k.cy - sample.keys[i].cy).toBeCloseTo(-was.y, 3);
+      expect(k.angle).toBe(sample.keys[i].angle);
+    });
+    back.groups.forEach((g, i) => {
+      expect(g.pivot.x - sample.groups[i].pivot.x).toBeCloseTo(-was.x, 3);
+    });
+    // Already there: the same object comes back.
+    expect(alignToOrigin(back)).toBe(back);
+  });
+
+  it("counts the part of an ISO Enter that sticks out to the left", () => {
+    const one = templateProject("ortho40");
+    const first = one.keys[0];
+    const iso = makeIsoEnter({ ...one, keys: [first] }, [first.id]);
+    const o = layoutOrigin(iso)!;
+    expect(o.x).toBeCloseTo(iso.keys[0].cx - 0.625 - 0.25, 3);
+    expect(isAtOrigin(alignToOrigin(iso))).toBe(true);
   });
 });

@@ -13,6 +13,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import {
   IconArrowBackUp,
   IconArrowForwardUp,
+  IconArrowUpLeft,
   IconCheck,
   IconChevronDown,
   IconChevronUp,
@@ -50,6 +51,8 @@ import { LayoutCanvas } from "../layoutEditor/components/LayoutCanvas";
 import { useHistory } from "../layoutEditor/hooks/useHistory";
 import {
   addKey,
+  alignToOrigin,
+  layoutOrigin,
   copyKeys,
   defaultPivot,
   deleteKeys,
@@ -309,11 +312,14 @@ function ExportDialog({
   marks,
   stats,
   onRename,
+  onAlign,
 }: {
   open: boolean;
   onClose: () => void;
   project: LayoutProject;
   layer: LayoutLayer;
+  /** Move the whole layout so that it starts at 0, 0. */
+  onAlign: () => void;
   /** What was chosen in the keycap check; goes into the project file. */
   caps: CapSetup;
   /** The keycap check's verdicts when it is on: the picture shows the caps. */
@@ -413,6 +419,8 @@ function ExportDialog({
     { id: "vial", label: "Vial" },
     { id: "project", label: t("Project file") },
   ];
+  const start = layoutOrigin(project);
+  const offOrigin = start && (start.x !== 0 || start.y !== 0) ? start : null;
   const forFirmware = format === "via" || format === "vial";
   const carriesMatrix =
     forFirmware || (format !== "project" && layer !== "legend");
@@ -488,6 +496,22 @@ function ExportDialog({
           <Dialog.Description className="text-sm text-[var(--color-text-muted)] mb-3 leading-relaxed">
             {about}
           </Dialog.Description>
+          {format !== "project" && offOrigin && (
+            <div
+              role="alert"
+              className="text-sm text-[var(--color-warning)] mb-3 leading-relaxed flex flex-wrap items-center gap-2"
+            >
+              <span>
+                {t(
+                  "The layout does not start at 0, 0 (its top left is at {{x}}, {{y}}). Keyboard Layout Editor, VIA and Vial draw from the origin, so it is best moved there first.",
+                  { x: offOrigin.x, y: offOrigin.y },
+                )}
+              </span>
+              <button type="button" className={BUTTON} onClick={onAlign}>
+                {t("Move the layout to the origin")}
+              </button>
+            </div>
+          )}
           {carriesMatrix && (stats.missing > 0 || stats.duplicates > 0) && (
             <p
               role="alert"
@@ -764,6 +788,7 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
     storeCaps(capSetup);
   }, [capSetup]);
 
+  const origin = useMemo(() => layoutOrigin(project), [project]);
   const selectedKeys = useMemo(
     () => project.keys.filter((k) => selection.has(k.id)),
     [project, selection],
@@ -1455,6 +1480,28 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
               <option value="off">{t("Off")}</option>
             </select>
           </label>
+          {origin && (origin.x !== 0 || origin.y !== 0) && (
+            // The layout does not start at 0, 0: say where it starts, and
+            // offer to move the whole of it there.
+            <button
+              type="button"
+              className={`${ICON_BUTTON} !border-[var(--color-warning)]`}
+              onClick={() => commit(alignToOrigin(project))}
+              aria-label={t("Move the layout to the origin")}
+              title={t(
+                "The top left of the layout is at {{x}}, {{y}}. Move the whole layout so that it starts at 0, 0.",
+                { x: origin.x, y: origin.y },
+              )}
+            >
+              <IconArrowUpLeft size={18} />
+              <span className="whitespace-nowrap">
+                {t("To origin")}
+                <span className="hidden sm:inline text-xs text-[var(--color-text-muted)] ml-1.5 tabular-nums">
+                  {origin.x}, {origin.y}
+                </span>
+              </span>
+            </button>
+          )}
           <button
             type="button"
             className={`${ICON_BUTTON} ${
@@ -1712,6 +1759,7 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
         project={project}
         layer={layer}
         caps={capSetup}
+        onAlign={() => commit(alignToOrigin(project))}
         marks={fitMode ? fitMarks : null}
         stats={{
           rows: stats.rows,
