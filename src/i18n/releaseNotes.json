@@ -6,7 +6,13 @@
       "changes": {
         "major": [],
         "minor": [],
-        "patch": []
+        "patch": [
+          {
+            "en": "Layout editor: Acid Caps Standard now shows the printed design of the ◯, ●, Option and App caps, the two blank 1.25u caps and the three ISO Enters, which were drawn plainly. Its Seihakuji colourway is listed under that name alone. On every set, an ISO Enter no longer shows a piece of the cap that stood beside it in the design file.",
+            "ja": "レイアウトエディタ: Acid Caps Standard で、◯・●・Option・App、無刻印の 1.25u 2個、ISO エンター3個が簡易表示になっていたのを直し、印刷デザインで表示するようにしました。カラー名の「Collection seihakuji」は「Seihakuji」に改めました。また、どのセットでも、ISO エンターの切り欠き部分に隣のキャップの一部が写り込んでいたのを直しました。",
+            "zh": "布局编辑器：Acid Caps Standard 的 ◯、●、Option、App、两个无刻 1.25u 键帽和三个 ISO Enter 此前以简易方式显示，现在显示印刷图案。配色名称“Collection seihakuji”改为“Seihakuji”。此外，所有套装的 ISO Enter 缺口处不再露出设计文件中相邻键帽的一部分。"
+          }
+        ]
       }
     },
     {

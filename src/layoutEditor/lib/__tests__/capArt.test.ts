@@ -31,9 +31,25 @@ describe("cap designs", () => {
     expect(capArt("clickprofile", undefined, 0)).toBeNull();
   });
 
-  it("gives no picture for a cap the design file lacks", () => {
-    const colour = coloursOf("standard")[0];
-    expect(colour.missing?.length).toBeGreaterThan(0);
-    expect(capArt("standard", colour.id, colour.missing![0])).toBeNull();
+  it("has a picture for every cap of every colourway", () => {
+    for (const kit of allKits()) {
+      for (const colour of coloursOf(kit.id)) {
+        expect([kit.id, colour.id, colour.missing ?? []]).toEqual([
+          kit.id,
+          colour.id,
+          [],
+        ]);
+        for (const cap of kit.caps) {
+          expect(capArt(kit.id, colour.id, cap.index)).not.toBeNull();
+        }
+      }
+    }
+  });
+
+  it("calls the Standard set's Seihakuji by that name", () => {
+    expect(coloursOf("standard").map((c) => c.name)).toContain("Seihakuji");
+    expect(
+      coloursOf("standard").some((c) => c.name.includes("Collection")),
+    ).toBe(false);
   });
 });

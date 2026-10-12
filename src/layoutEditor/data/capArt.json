@@ -193,27 +193,23 @@
     "colours": [
       {
         "id": "collection-seihakuji",
-        "name": "Collection seihakuji",
-        "file": "standard-collection-seihakuji.webp",
-        "missing": [119, 158, 159, 160, 161, 162, 163, 179, 180]
+        "name": "Seihakuji",
+        "file": "standard-collection-seihakuji.webp"
       },
       {
         "id": "gray-on-black",
         "name": "Gray on Black",
-        "file": "standard-gray-on-black.webp",
-        "missing": [119, 158, 159, 160, 161, 162, 163, 179, 180]
+        "file": "standard-gray-on-black.webp"
       },
       {
         "id": "gray-on-white",
         "name": "Gray on White",
-        "file": "standard-gray-on-white.webp",
-        "missing": [119, 158, 159, 160, 161, 162, 163, 179, 180]
+        "file": "standard-gray-on-white.webp"
       },
       {
         "id": "peri-on-gray",
         "name": "Peri on Gray",
-        "file": "standard-peri-on-gray.webp",
-        "missing": [119, 158, 159, 160, 161, 162, 163, 179, 180]
+        "file": "standard-peri-on-gray.webp"
       }
     ]
   },
