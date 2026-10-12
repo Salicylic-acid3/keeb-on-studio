@@ -6,6 +6,15 @@
       "changes": {
         "major": [],
         "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.12.1",
+      "date": "2026-10-12",
+      "changes": {
+        "major": [],
+        "minor": [],
         "patch": [
           {
             "en": "Layout editor: with Acid Caps Standard and Premium, the keycap check put number-row caps on the Q row of boards that have a line more below the letters (an arrow key under the bottom row, a thumb cluster). The rows are now told from the legends: the row with Q W E is R3 wherever it sits.",
