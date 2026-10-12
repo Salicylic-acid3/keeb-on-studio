@@ -166,13 +166,84 @@ function shapeFits(key: LayoutKey, cap: Cap): boolean {
   return !key.convex || cap.convex;
 }
 
-/** Sculpt rows for a layout's rows, top to bottom, counted up from the bottom. */
+/**
+ * Sculpt rows for a layout's rows, top to bottom, counted up from the
+ * bottom: what inferRows falls back on for a layout with no legends.
+ */
 export function defaultRows(count: number): string[] {
   const fromBottom = ["R1", "R1", "R2", "R3", "R4"];
   return Array.from(
     { length: count },
     (_, i) => fromBottom[Math.min(count - 1 - i, fromBottom.length - 1)],
   );
+}
+
+const ROW_OF_LEGEND: Array<[RegExp, string]> = [
+  [/^(\d|f\d{1,2})$/, "R4"],
+  [/^[qwertyuiop]$/, "R3"],
+  [/^[asdfghjkl]$/, "R2"],
+  [/^[zxcvbnm]$/, "R1"],
+];
+/** Top to bottom, the rows of a full keyboard. */
+const ROW_ORDER = ["R4", "R3", "R2", "R1"];
+
+/**
+ * Sculpt rows for a layout's rows, top to bottom, told from what is on the
+ * keys: the row with Q W E is R3 wherever it sits, the one with A S D is
+ * R2, Z X C is R1, a row of digits or F keys is R4. Rows that say nothing
+ * take after their neighbours: below the last known row it is the bottom
+ * of the board (R1), above the first it is the next row up.
+ *
+ * Counting up from the bottom alone (defaultRows) goes wrong as soon as a
+ * board has a line more below the letters -- an arrow key under the
+ * bottom row, a thumb cluster -- and every row then takes the caps of the
+ * row above. That count is used only when no row can be told.
+ */
+export function inferRows(rows: LayoutKey[][]): string[] {
+  const known: Array<string | null> = rows.map((keys) => {
+    const votes = new Map<string, number>();
+    for (const key of keys) {
+      const legend = normalLabel(mainAndSub(key).main);
+      const row = ROW_OF_LEGEND.find(([re]) => re.test(legend))?.[1];
+      if (row) votes.set(row, (votes.get(row) ?? 0) + 1);
+    }
+    const [best] = [...votes].sort((a, b) => b[1] - a[1]);
+    if (!best) return null;
+    // One stray letter (a lone "M" for a mute key) names nothing, and it
+    // takes a real number row to be R4: the three digits across a numpad
+    // sit on other rows.
+    return best[1] >= (best[0] === "R4" ? 5 : 2) ? best[0] : null;
+  });
+  // Rows only go down the board: one that claims to be higher than a row
+  // above it (F keys on a line at the very bottom) is not believed.
+  let lowest = -1;
+  known.forEach((row, i) => {
+    if (row === null) return;
+    const at = ROW_ORDER.indexOf(row);
+    if (at < lowest) known[i] = null;
+    else lowest = at;
+  });
+  if (known.every((row) => row === null)) return defaultRows(rows.length);
+
+  const out = [...known];
+  const last = out.reduce((at, row, i) => (row === null ? at : i), -1);
+  // Under the last row that can be told is the bottom of the board.
+  for (let i = last + 1; i < out.length; i++) out[i] = "R1";
+  // Above or between: a row with nothing to tell it by goes with the row
+  // below it when that one is known too on the other side (an ISO Enter
+  // standing between Q and A), else it is the next row up.
+  for (let i = last - 1; i >= 0; i--) {
+    if (out[i] !== null) continue;
+    const below = out[i + 1]!;
+    const above = out
+      .slice(0, i)
+      .reverse()
+      .find((row) => row !== null);
+    out[i] = above
+      ? below
+      : ROW_ORDER[Math.max(0, ROW_ORDER.indexOf(below) - 1)];
+  }
+  return out.map((row) => row ?? "R1");
 }
 
 /** Every cap of the chosen sets. */

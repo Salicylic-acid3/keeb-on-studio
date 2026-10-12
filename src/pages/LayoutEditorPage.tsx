@@ -79,7 +79,7 @@ import {
 import {
   capFitsKey,
   compareSets,
-  defaultRows,
+  inferRows,
   fitCaps,
   poolOf,
   type KitChoice,
@@ -818,8 +818,7 @@ export function LayoutEditorPage({ onBack }: { onBack: () => void }) {
   }, [project, selectedIds]);
   const layoutRows = useMemo(() => readingRows(project.keys), [project]);
   const rowNames = useMemo(
-    () =>
-      defaultRows(layoutRows.length).map((row, i) => rowOverrides[i] ?? row),
+    () => inferRows(layoutRows).map((row, i) => rowOverrides[i] ?? row),
     [layoutRows, rowOverrides],
   );
   const fit = useMemo(

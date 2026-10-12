@@ -4,12 +4,14 @@ import {
   compareSets,
   defaultRows,
   fitCaps,
+  inferRows,
   missingBySize,
   normalLabel,
   pileCaps,
   poolOf,
 } from "../fit";
 import { allKits, capsFromKle, kitById, kitsFor } from "../kits";
+import { keyboardProject } from "../keyboards";
 import { importKle } from "../kle";
 import type { LayoutProject } from "../model";
 import { readingRows } from "../order";
@@ -319,5 +321,109 @@ describe("upright keys", () => {
       ["R4", "R3", "R2", "R1"],
     );
     expect([...fit.placed.values()].some((p) => p.turned)).toBe(false);
+  });
+});
+
+describe("telling a layout's rows from its legends", () => {
+  const rowsOf = (p: LayoutProject) => inferRows(readingRows(p.keys));
+
+  it("names the rows of ordinary boards as counting from the bottom did", () => {
+    expect(rowsOf(templateProject("ansi60"))).toEqual([
+      "R4",
+      "R3",
+      "R2",
+      "R1",
+      "R1",
+    ]);
+    expect(rowsOf(sampleProject())).toEqual(["R3", "R2", "R1", "R1"]);
+  });
+
+  it("keeps Q on R3 when the board has a line more under the letters", () => {
+    // The ErgoMini has an arrow key on a line of its own below the bottom
+    // row; counted from the bottom, its Q row came out as R4 and took the
+    // number row's caps.
+    const ergomini = keyboardProject("clickboard_ergomini")!;
+    const rows = readingRows(ergomini.keys);
+    const names = inferRows(rows);
+    const rowWith = (legend: string) =>
+      names[
+        rows.findIndex((keys) =>
+          keys.some((k) => k.legends.some((l) => l === legend)),
+        )
+      ];
+    expect(rowWith("Q")).toBe("R3");
+    expect(rowWith("A")).toBe("R2");
+    expect(rowWith("Z")).toBe("R1");
+    expect(names[names.length - 1]).toBe("R1");
+
+    const fit = fitCaps(ergomini, [{ kitId: "premium", count: 1 }], names);
+    const q = ergomini.keys.find((k) => k.legends.includes("Q"))!;
+    expect(fit.placed.get(q.id)!.cap.cap).toMatchObject({
+      main: "Q",
+      row: "R3",
+    });
+  });
+
+  it("puts a row of numbers or F keys above the letters on R4", () => {
+    const p = importKle([
+      ["F1", "F2", "F3", "F4", "F5"],
+      ["1", "2", "3", "4", "5"],
+      ["Q", "W", "E"],
+      ["A", "S", "D"],
+      ["Z", "X", "C"],
+      ["", "", ""],
+      [""],
+    ]);
+    expect(rowsOf(p)).toEqual(["R4", "R4", "R3", "R2", "R1", "R1", "R1"]);
+  });
+
+  it("works up from the one row it can tell, and counts when it can tell none", () => {
+    const p = importKle([
+      ["", ""],
+      ["", ""],
+      ["A", "S", "D"],
+      ["", ""],
+    ]);
+    expect(rowsOf(p)).toEqual(["R4", "R3", "R2", "R1"]);
+    expect(rowsOf(templateProject("ortho40"))).toEqual([
+      "R3",
+      "R2",
+      "R1",
+      "R1",
+    ]);
+    // A numpad's digits are not a number row: counted from the bottom.
+    const pad = importKle([
+      ["7", "8", "9"],
+      ["4", "5", "6"],
+      ["1", "2", "3"],
+    ]);
+    expect(rowsOf(pad)).toEqual(["R2", "R1", "R1"]);
+    // An ISO Enter stands as a line of its own between Q and A on the JP
+    // boards; it must not push the rows above it up.
+    const jp = keyboardProject("goforty_jp")!;
+    const jpRows = readingRows(jp.keys);
+    const jpNames = inferRows(jpRows);
+    expect(
+      jpNames[
+        jpRows.findIndex((keys) => keys.some((k) => k.legends.includes("Q")))
+      ],
+    ).toBe("R3");
+    expect(
+      jpNames[
+        jpRows.findIndex((keys) => keys.some((k) => k.legends.includes("A")))
+      ],
+    ).toBe("R2");
+    // F keys on a line at the very bottom (the ErgoTrack's hidden gesture
+    // keys) are not a top row.
+    const track = inferRows(
+      readingRows(keyboardProject("clickboard_ergotrack")!.keys),
+    );
+    expect(track[track.length - 1]).toBe("R1");
+    // One stray letter does not name a row.
+    const stray = importKle([
+      ["M", "", ""],
+      ["", "", ""],
+    ]);
+    expect(rowsOf(stray)).toEqual(["R1", "R1"]);
   });
 });

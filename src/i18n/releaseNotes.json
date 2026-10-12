@@ -6,7 +6,13 @@
       "changes": {
         "major": [],
         "minor": [],
-        "patch": []
+        "patch": [
+          {
+            "en": "Layout editor: with Acid Caps Standard and Premium, the keycap check put number-row caps on the Q row of boards that have a line more below the letters (an arrow key under the bottom row, a thumb cluster). The rows are now told from the legends: the row with Q W E is R3 wherever it sits.",
+            "ja": "レイアウトエディタ: Acid Caps Standard と Premium で、文字の行の下にもう1行あるキーボード（最下段の下の矢印キーや親指キーなど）の Q の行に数字行のキャップが割り当てられていたのを直しました。段はレジェンドから判断するようにし、Q W E のある行はどこにあっても R3 になります。",
+            "zh": "布局编辑器：使用 Acid Caps Standard 和 Premium 时，在字母行下方还有一行的键盘（底行下方的方向键、拇指键区等）上，Q 行曾被分配数字行的键帽，现已修正。行高现在根据图例判断：有 Q W E 的一行无论位置都是 R3。"
+          }
+        ]
       }
     },
     {
