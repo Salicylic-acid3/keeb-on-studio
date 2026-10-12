@@ -5,6 +5,15 @@
       "date": null,
       "changes": {
         "major": [],
+        "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.12.0",
+      "date": "2026-10-12",
+      "changes": {
+        "major": [],
         "minor": [
           {
             "en": "Layout editor: the origin (0, 0) is drawn on the canvas, with the side outside it shaded. When a layout does not start at 0, 0, a To origin button moves the whole of it there, and Export says so before the data goes to Keyboard Layout Editor, VIA or Vial.",
