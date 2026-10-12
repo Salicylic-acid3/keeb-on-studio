@@ -6,6 +6,15 @@
       "changes": {
         "major": [],
         "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.12.2",
+      "date": "2026-10-12",
+      "changes": {
+        "major": [],
+        "minor": [],
         "patch": [
           {
             "en": "Layout editor: Acid Caps Standard now shows the printed design of the ◯, ●, Option and App caps, the two blank 1.25u caps and the three ISO Enters, which were drawn plainly. Its Seihakuji colourway is listed under that name alone. On every set, an ISO Enter no longer shows a piece of the cap that stood beside it in the design file.",
