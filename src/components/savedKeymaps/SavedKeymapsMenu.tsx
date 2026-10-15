@@ -43,6 +43,11 @@ export interface SavedKeymapsMenuProps {
   onShare: (record: SavedKeymap) => void;
   onPublish: (record: SavedKeymap) => void;
   onBrowseGallery: () => void;
+  /**
+   * Kept keymaps left out of `keymaps` because they were made for another
+   * keyboard than the one connected. Said in one line so they do not look lost.
+   */
+  hiddenCount?: number;
   disabled?: boolean;
 }
 
@@ -85,6 +90,7 @@ export function SavedKeymapsMenu({
   onShare,
   onPublish,
   onBrowseGallery,
+  hiddenCount = 0,
   disabled = false,
 }: SavedKeymapsMenuProps) {
   const { t } = useLanguage();
@@ -282,7 +288,9 @@ export function SavedKeymapsMenu({
 
           {keymaps.length === 0 ? (
             <p className="px-3 py-2 text-xs text-[var(--color-text-muted)]">
-              {t("Nothing saved yet.")}
+              {hiddenCount > 0
+                ? t("Nothing saved for this keyboard yet.")
+                : t("Nothing saved yet.")}
             </p>
           ) : (
             keymaps.map((record) => {
@@ -377,6 +385,15 @@ export function SavedKeymapsMenu({
                 </div>
               );
             })
+          )}
+
+          {hiddenCount > 0 && (
+            <p className="px-3 py-2 text-xs text-[var(--color-text-muted)]">
+              {t(
+                "{{count}} saved for other keyboards are not listed while this keyboard is connected.",
+                { count: hiddenCount },
+              )}
+            </p>
           )}
         </div>
       )}

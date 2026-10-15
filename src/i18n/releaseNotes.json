@@ -5,7 +5,13 @@
       "date": null,
       "changes": {
         "major": [],
-        "minor": [],
+        "minor": [
+          {
+            "en": "QMK: While a keyboard is connected, My keymaps lists only the keymaps made for that keyboard. The menu says how many for other keyboards are left out, and a keymap added for another keyboard says why it is not in the list. In demo mode, or with nothing connected, every keymap is listed as before.",
+            "ja": "QMK: キーボードを接続している間は、マイキーマップにそのキーボード用のキーマップだけを表示するようにしました。他のキーボード用が何件あるかはメニューに表示し、他のキーボード用を追加したときは一覧に出ない理由をお知らせします。デモモードや未接続のときは、これまで通りすべて表示します。",
+            "zh": "QMK：连接键盘期间，“我的键映射”只显示为该键盘保存的键映射。菜单会显示其他键盘的键映射有几个未列出；添加其他键盘的键映射时，会说明为何不在列表中。演示模式或未连接时，仍与以前一样显示全部。"
+          }
+        ],
         "patch": []
       }
     },

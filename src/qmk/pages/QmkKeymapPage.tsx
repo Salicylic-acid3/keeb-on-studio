@@ -79,8 +79,13 @@ import {
 import {
   useQmkSavedKeymaps,
   type MenuRecord,
+  type QmkSavedKeymap,
 } from "../hooks/useQmkSavedKeymaps";
-import { vilText, type QmkKeymapPayload } from "../lib/savedQmkKeymap";
+import {
+  qmkBoardName,
+  vilText,
+  type QmkKeymapPayload,
+} from "../lib/savedQmkKeymap";
 import { parseQmkShareCode, qmkShareCodeFromHash } from "../lib/qmkShare";
 
 interface QmkKeymapPageProps {
@@ -147,13 +152,22 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
     setImported({ ...result, fileName: record.name });
     setNotice(null);
   };
+  /**
+   * "Added to your keymaps", plus why it is not in the list when it was made
+   * for another keyboard (the menu shows only this keyboard's while connected).
+   */
+  const addedNotice = (record: QmkSavedKeymap) =>
+    myKeymaps.isShown(record)
+      ? t('Added "{{name}}" to your keymaps.', { name: record.name })
+      : t(
+          'Added "{{name}}" to your keymaps. It is for {{board}}, so it is not listed while this keyboard is connected.',
+          { name: record.name, board: qmkBoardName(record.board) },
+        );
   const handleImportFile = async (file: File) => {
     const result = await myKeymaps.importFromFile(file);
     setShareUrl(null);
     setNotice(
-      result.ok
-        ? t('Added "{{name}}" to your keymaps.', { name: result.record.name })
-        : describeRefusal(result.reason),
+      result.ok ? addedNotice(result.record) : describeRefusal(result.reason),
     );
   };
   const handleShare = async (record: MenuRecord) => {
@@ -193,7 +207,7 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
     }
     const stored = await myKeymaps.add(result.value);
     setGalleryOpen(false);
-    setNotice(t('Added "{{name}}" to your keymaps.', { name: stored.name }));
+    setNotice(addedNotice(stored));
   };
   const galleryPosts = useMemo(
     () =>
@@ -485,6 +499,7 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
               canShare={myKeymaps.canShare}
               isDurable={myKeymaps.isDurable}
               compatibility={myKeymaps.compatibility}
+              hiddenCount={myKeymaps.hiddenCount}
               onSave={(name, description) => {
                 void myKeymaps.save(name, description);
               }}
@@ -577,11 +592,7 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
                   onClick={() => {
                     void myKeymaps.add(incoming).then((r) => {
                       setIncoming(null);
-                      setNotice(
-                        t('Added "{{name}}" to your keymaps.', {
-                          name: r.name,
-                        }),
-                      );
+                      setNotice(addedNotice(r));
                     });
                   }}
                 >

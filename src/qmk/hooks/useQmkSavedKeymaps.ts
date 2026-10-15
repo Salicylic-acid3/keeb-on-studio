@@ -151,6 +151,27 @@ export function useQmkSavedKeymaps(keyboard: UseVialKeyboard) {
     [canShare],
   );
 
+  /**
+   * While a real keyboard is plugged in, the menu lists only the keymaps made
+   * for that keyboard: the others cannot go onto it anyway, and a list mixing
+   * every board ever connected buries the ones that can. Demo mode and "no
+   * keyboard" still show everything, since there is no board to sort by.
+   */
+  const filterByBoard = Boolean(board) && !isDemo;
+  const isShown = useCallback(
+    (record: Pick<QmkSavedKeymap, "board">) =>
+      !filterByBoard || record.board === board,
+    [filterByBoard, board],
+  );
+  const shownRecords = useMemo(
+    () => records.filter(isShown),
+    [records, isShown],
+  );
+  const menuRecords = useMemo(
+    () => shownRecords.map(toMenuRecord),
+    [shownRecords],
+  );
+
   const compatibility = useCallback(
     (record: SavedKeymap): Compatibility => {
       const r = (record as MenuRecord).qmk;
@@ -166,7 +187,10 @@ export function useQmkSavedKeymaps(keyboard: UseVialKeyboard) {
 
   return {
     records,
-    menuRecords: records.map(toMenuRecord),
+    menuRecords,
+    /** Kept keymaps left out of the menu because they are for another board. */
+    hiddenCount: records.length - shownRecords.length,
+    isShown,
     isDurable: store.isDurable,
     canSave: Boolean(board && keyboard.keymap),
     canShare,

@@ -1079,6 +1079,12 @@ const ja: Record<string, string> = {
     "名前を付けて、このブラウザに控えを残します。",
   "Description (optional)": "説明（任意）",
   "Nothing saved yet.": "まだ保存されていません。",
+  "Nothing saved for this keyboard yet.":
+    "このキーボード用はまだ保存されていません。",
+  "{{count}} saved for other keyboards are not listed while this keyboard is connected.":
+    "他のキーボード用の {{count}} 件は、このキーボードを接続している間は表示していません。",
+  'Added "{{name}}" to your keymaps. It is for {{board}}, so it is not listed while this keyboard is connected.':
+    "「{{name}}」をマイキーマップに追加しました。{{board}} 用なので、このキーボードを接続している間は一覧に表示されません。",
   "This browser will not keep saved keymaps after you close it.":
     "このブラウザでは、閉じると保存したキーマップが消えます。",
   "made in demo mode": "デモモードで作成",
@@ -2932,6 +2938,11 @@ const zh: Record<string, string> = {
   "Keeps a named copy in this browser.": "在此浏览器中保留一份命名副本。",
   "Description (optional)": "说明（可选）",
   "Nothing saved yet.": "尚未保存任何内容。",
+  "Nothing saved for this keyboard yet.": "尚未为此键盘保存任何内容。",
+  "{{count}} saved for other keyboards are not listed while this keyboard is connected.":
+    "连接此键盘期间，不显示为其他键盘保存的 {{count}} 个键映射。",
+  'Added "{{name}}" to your keymaps. It is for {{board}}, so it is not listed while this keyboard is connected.':
+    "已将“{{name}}”添加到我的键映射。它适用于 {{board}}，因此连接此键盘期间不会显示在列表中。",
   "This browser will not keep saved keymaps after you close it.":
     "此浏览器关闭后不会保留已保存的键映射。",
   "made in demo mode": "在演示模式中创建",
