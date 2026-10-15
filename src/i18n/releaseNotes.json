@@ -5,6 +5,15 @@
       "date": null,
       "changes": {
         "major": [],
+        "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.15.0",
+      "date": "2026-10-15",
+      "changes": {
+        "major": [],
         "minor": [
           {
             "en": "QMK: While a keyboard is connected, My keymaps lists only the keymaps made for that keyboard. The menu says how many for other keyboards are left out, and a keymap added for another keyboard says why it is not in the list. In demo mode, or with nothing connected, every keymap is listed as before.",
