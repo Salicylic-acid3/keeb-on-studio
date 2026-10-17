@@ -9,6 +9,109 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  // Typing practice (phase 0 mock)
+  "Typing practice": "タイピング練習",
+  "Screen mock": "画面モック",
+  "Decide your keymap step by step, then practise on it with the real keymap in front of you. A wrong key points straight at the key you meant, so what you learn here feeds back into the layout.":
+    "キーマップを段階的に決めて、そのキーマップを画面に出したまま練習します。誤打鍵は押すべきキーをそのまま示すので、練習の結果が配列の見直しにつながります。",
+  "Keyboard to practise on": "練習するキーボード",
+  "OS keyboard layout": "OS のキーボード配列",
+  "Demo mode: the keymap shown is this keyboard's default. With a keyboard connected, the guide and the practice use the keymap read from it.":
+    "デモモード: 表示しているのはこの機種のデフォルトキーマップです。実機を接続すると、ガイドと練習は実機から読んだキーマップで動きます。",
+  "Setup guide": "セットアップガイド",
+  "Questions in order: which symbols you use most, where your thumb lands for Space, which thumb key becomes a layer key, what goes on each layer. Each answer becomes a proposal drawn on your keymap, to apply or skip. Practice follows every finished layer.":
+    "よく使う記号、スペースを押す親指の位置、レイヤーキーにする親指キー、各レイヤーの中身を順に問いかけます。回答はキーマップ上の配置案になり、適用するか飛ばすかを選べます。レイヤーが1つ完成するごとに練習を挟みます。",
+  "Start the guide": "ガイドを始める",
+  "Free practice": "自由練習",
+  "Practise sentences and tasks on the keymap as it is now. Stop at a wrong key and see which key you meant, or keep going and read the misses at the end.":
+    "今のキーマップのまま、文章と課題で練習します。誤打鍵で止まって押すべきキーを確かめるか、止まらず進んで最後にミスを振り返るかを選べます。",
+  "Start practising": "練習を始める",
+  "Last time: {{keyboard}}, step {{n}} of {{total}} ({{step}})":
+    "前回: {{keyboard}} ステップ {{n}} / {{total}}（{{step}}）",
+  "Saved progress comes in phase 4": "進捗の保存はフェーズ4で実装",
+  "Continue where you left off": "続きから",
+  // Guide steps
+  Introduction: "導入",
+  "Symbol priority": "記号の優先順位",
+  "Rarely used keys": "重複キーの整理",
+  "Thumb keys": "親指キー",
+  "Layer keys": "レイヤーキー",
+  "Practice: base layer": "練習: ベースレイヤー",
+  "Layer contents: one hand": "レイヤーの中身（片手で完結）",
+  "Layer contents: other side": "レイヤーの中身（反対側）",
+  "Practice: layer tasks": "練習: レイヤー課題",
+  "Occasional keys": "たまに使うキー",
+  "Practice: everything": "練習: 総合",
+  "Step {{n}} of {{total}}": "ステップ {{n}} / {{total}}",
+  "Guide steps": "ガイドのステップ",
+  "Leave the guide": "ガイドを終える",
+  "On a small keyboard not every symbol fits on the base layer. Put the ones you type most where a symbol already sits, and let the rest move to a layer.":
+    "小さなキーボードでは、すべての記号をベースレイヤーに置けません。よく打つ記号を、いま記号が入っている位置に優先して置き、残りはレイヤーに回します。",
+  "For example: I type a hyphen far more often than a colon, so the hyphen took the colon's place.":
+    "例: 私はコロンよりハイフンをよく使うので、コロンの位置にハイフンを置いています。",
+  "Order these by how often you type them": "よく打つ順に並べてください",
+  "Top {{n}} go on the base layer": "上位 {{n}} 個がベースレイヤーに入ります",
+  Hyphen: "ハイフン",
+  Colon: "コロン",
+  Semicolon: "セミコロン",
+  Quote: "クォート",
+  Slash: "スラッシュ",
+  Backslash: "バックスラッシュ",
+  "Left bracket": "角括弧（開き）",
+  "Right bracket": "角括弧（閉じ）",
+  Equals: "イコール",
+  Backquote: "バッククォート",
+  "Show the proposal": "配置案を見る",
+  "Next without changing": "設定せずに次へ",
+  "Applied to the keymap (demo mode: kept in the browser only).":
+    "キーマップに適用しました（デモモード: ブラウザ上の編集状態にのみ反映）",
+  "The proposal is a starting point. To move a single key, open the keymap editor; the guide resumes at this step when you come back.":
+    "配置案はたたき台です。個別のキーを直したいときはキー設定画面を開いてください。戻ってくると、このステップから再開します。",
+  "Open the keymap editor": "キー設定画面を開く",
+  "A layer is finished: practise on it before the next one. The practice screen opens with sentences that need only the keys decided so far.":
+    "レイヤーが1つ完成しました。次に進む前に練習します。練習画面では、ここまでに決めたキーだけで打てる文章が出ます。",
+  "This step is built in phase 4. Only the symbol step is mocked here.":
+    "このステップはフェーズ4で実装します。モックでは記号のステップだけ動きます。",
+  "Base layer": "ベースレイヤー",
+  "Keys the proposal changes (old legend struck through)":
+    "配置案で変わるキー（元のキーは取り消し線）",
+  // Practice
+  Text: "文章",
+  "Stop at a miss": "止まる",
+  "Keep going": "進む",
+  "A wrong key stops the text and lights the key you meant.":
+    "誤打鍵でその文字に止まり、押すべきキーを光らせます。",
+  "A wrong key is counted and the text moves on.":
+    "誤打鍵を数えて次の文字へ進みます。",
+  "Back to the start": "最初の画面へ",
+  "Turn your IME off before practising: the browser must receive the characters themselves. Japanese text is typed in romaji; every usual spelling (si / shi, tu / tsu, nn / n) counts as correct.":
+    "練習の前に IME をオフにしてください。ブラウザが文字そのものを受け取る必要があります。日本語の文章はローマ字で打ちます。表記揺れ（si / shi、tu / tsu、nn / n など）はすべて正解です。",
+  "Click here to start": "ここをクリックして開始",
+  "Not that one: the lit key types this character.":
+    "違うキーです。光っているキーがこの文字です。",
+  "Counted as a miss; the lit key was the one.":
+    "ミスとして数えました。光っていたキーが正解です。",
+  "Hold the layer key (blue) with it.":
+    "レイヤーキー（青）を押しながら打ちます。",
+  "Hold Shift (blue) with it.": "Shift（青）を押しながら打ちます。",
+  "This key is not set anywhere on the keymap, so it cannot be typed. Skipping it.":
+    "このキーは設定されていないので入力できません。飛ばします。",
+  "Not on the keymap: {{chars}}": "入力不可: {{chars}}",
+  "Your keymap, base layer": "現在のキーマップ（ベースレイヤー）",
+  "Key to press": "押すキー",
+  "Hold with it (layer / Shift)": "一緒に押すキー（レイヤー / Shift）",
+  "Pressed by mistake": "間違って押したキー",
+  "So far": "ここまで",
+  Accuracy: "正確率",
+  Speed: "速度",
+  "{{n}} chars/min": "{{n}} 文字/分",
+  "Most missed": "ミスの多いキー",
+  "No misses yet.": "ミスはまだありません。",
+  "Characters not on the keymap": "入力不可文字",
+  "None.": "なし",
+  "The miss heatmap over the keymap, and saving as an image or PDF, come in phase 1.":
+    "キーマップ上の誤打鍵ヒートマップと、画像 / PDF での保存はフェーズ1で実装します。",
+  "Next text": "次の文章",
   // Key test
   "When several keys are assigned the same function, all of them light up. To test the key matrix itself, connect the keyboard and use the key input display.":
     "同じ機能のキーが複数登録されている場合、複数個所が光るようになっています。キーマトリクスのテストをしたい場合は、キーボードを接続してキー入力表示機能を使用してください。",
