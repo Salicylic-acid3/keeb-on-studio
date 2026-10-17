@@ -8,31 +8,19 @@
  * to the keyboard but compares plain characters only; the result panel.
  * What is not here yet: romaji variants, the other steps, saving, images.
  */
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type KeyboardEvent as ReactKeyboardEvent,
-  type ReactNode,
-} from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   IconArrowDown,
   IconArrowUp,
   IconCheck,
   IconChevronRight,
   IconCompass,
-  IconDownload,
   IconExternalLink,
   IconGripVertical,
-  IconInfoCircle,
   IconKeyboard,
   IconPlayerPlay,
-  IconRefresh,
   IconRoute,
   IconSchool,
-  IconSettings,
   IconTypography,
 } from "@tabler/icons-react";
 import { StandaloneFrame } from "../components/StandaloneFrame";
@@ -44,14 +32,13 @@ import {
 } from "../keyTest/lib/boards";
 import type { LabelLayout } from "../layoutEditor/lib/keyLabels";
 import { PracticeBoard, type Mark } from "../practice/components/PracticeBoard";
+import { PracticeSession } from "../practice/components/PracticeSession";
+import { Legend, Notice } from "../practice/components/bits";
 import {
-  findKey,
   GUIDE_40,
-  SENTENCES,
   SYMBOLS,
   symbolSlots,
   type PracticeMode,
-  type StopMode,
   type SymbolChoice,
 } from "../practice/lib/mock";
 
@@ -88,9 +75,6 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
             <h1 className="flex items-center gap-2 text-2xl font-light tracking-wide text-[var(--color-text)]">
               <IconSchool size={26} className="text-[var(--color-electric)]" />
               {t("Typing practice")}
-              <span className="ml-2 rounded-md border border-[var(--color-warning)]/60 bg-[var(--color-warning)]/10 px-2 py-0.5 text-xs font-normal tracking-normal text-[var(--color-warning)]">
-                {t("Screen mock")}
-              </span>
             </h1>
             <p className="text-sm leading-relaxed text-[var(--color-text-secondary)] max-w-3xl">
               {t(
@@ -162,8 +146,8 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
           />
         )}
         {mode === "free" && (
-          <Practice
-            key={board.id}
+          <PracticeSession
+            key={`${board.id}:${layout}`}
             board={board}
             layout={layout}
             t={t}
@@ -369,8 +353,11 @@ function Guide({
               total: GUIDE_40.length,
             })}
           </div>
-          <h2 className="text-lg font-medium text-[var(--color-text)]">
+          <h2 className="flex items-center gap-2 text-lg font-medium text-[var(--color-text)]">
             {t(step.title)}
+            <span className="rounded-md border border-[var(--color-warning)]/60 bg-[var(--color-warning)]/10 px-2 py-0.5 text-xs font-normal text-[var(--color-warning)]">
+              {t("Screen mock")}
+            </span>
           </h2>
 
           {current === 1 ? (
@@ -633,473 +620,5 @@ function StepBar({
         </button>
       </div>
     </nav>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* Practice                                                             */
-/* ------------------------------------------------------------------ */
-
-interface Typed {
-  ch: string;
-  ok: boolean;
-}
-
-function Practice({
-  board,
-  layout,
-  t,
-  onExit,
-}: {
-  board: TestBoard;
-  layout: LabelLayout;
-  t: T;
-  onExit: () => void;
-}) {
-  const [stopMode, setStopMode] = useState<StopMode>("stop");
-  const [sentenceIndex, setSentenceIndex] = useState(0);
-  const sentence = SENTENCES[sentenceIndex];
-  const [started, setStarted] = useState(false);
-  const [pos, setPos] = useState(0);
-  const [typed, setTyped] = useState<Typed[]>([]);
-  const [misses, setMisses] = useState<Record<string, number>>({});
-  const [unavailable, setUnavailable] = useState<Record<string, number>>({});
-  const [lastWrong, setLastWrong] = useState<string | null>(null);
-  const [showHint, setShowHint] = useState(false);
-  const [startedAt, setStartedAt] = useState<number | null>(null);
-  const [finishedAt, setFinishedAt] = useState<number | null>(null);
-  const areaRef = useRef<HTMLDivElement>(null);
-
-  const expected = sentence.typed[pos];
-  const done = pos >= sentence.typed.length;
-  const hint = useMemo(
-    () => (expected ? findKey(board, expected, layout) : null),
-    [board, expected, layout],
-  );
-
-  const reset = useCallback(() => {
-    setStarted(false);
-    setPos(0);
-    setTyped([]);
-    setMisses({});
-    setUnavailable({});
-    setLastWrong(null);
-    setShowHint(false);
-    setStartedAt(null);
-    setFinishedAt(null);
-  }, []);
-
-  // Move to `from`, skipping over characters no key types (reported and
-  // counted, SPEC §6.2), and close the run at the end of the text.
-  const advanceTo = useCallback(
-    (from: number, typedSoFar: Typed[]) => {
-      let p = from;
-      const skipped: Typed[] = [];
-      const unavail: Record<string, number> = {};
-      while (p < sentence.typed.length) {
-        const ch = sentence.typed[p];
-        if (findKey(board, ch, layout)) break;
-        skipped.push({ ch, ok: false });
-        unavail[ch] = (unavail[ch] ?? 0) + 1;
-        p++;
-      }
-      setPos(p);
-      setTyped([...typedSoFar, ...skipped]);
-      if (skipped.length)
-        setUnavailable((u) => {
-          const next = { ...u };
-          for (const [ch, n] of Object.entries(unavail))
-            next[ch] = (next[ch] ?? 0) + n;
-          return next;
-        });
-      if (p >= sentence.typed.length) setFinishedAt(performance.now());
-    },
-    [board, layout, sentence],
-  );
-
-  const start = () => {
-    if (started) return;
-    setStarted(true);
-    advanceTo(0, []);
-  };
-
-  const onKeyDown = (e: ReactKeyboardEvent<HTMLDivElement>) => {
-    if (!started || done) return;
-    // Tab, Space, slash and the like must not reach the browser.
-    if (e.key.length === 1 || e.key === "Tab" || e.key === "Backspace")
-      e.preventDefault();
-    if (e.key.length !== 1 || !expected || !hint) return;
-    if (startedAt === null) setStartedAt(performance.now());
-    if (e.key === expected) {
-      setLastWrong(null);
-      setShowHint(false);
-      advanceTo(pos + 1, [...typed, { ch: expected, ok: true }]);
-      return;
-    }
-    setMisses((m) => {
-      const key = `${expected}→${e.key}`;
-      return { ...m, [key]: (m[key] ?? 0) + 1 };
-    });
-    setLastWrong(e.key);
-    setShowHint(true);
-    if (stopMode === "advance")
-      advanceTo(pos + 1, [...typed, { ch: expected, ok: false }]);
-  };
-
-  const marks = useMemo(() => {
-    const m = new Map<string, Mark>();
-    if (!started || done) return m;
-    if (showHint && hint) {
-      for (const id of hint.keys) m.set(id, { tone: "hint" });
-      for (const id of [...hint.shift, ...hint.layer])
-        m.set(id, { tone: "hold" });
-    }
-    if (lastWrong && stopMode === "stop") {
-      const wrong = findKey(board, lastWrong, layout);
-      for (const id of wrong?.keys ?? [])
-        if (!m.has(id)) m.set(id, { tone: "wrong" });
-    }
-    return m;
-  }, [started, done, showHint, hint, lastWrong, stopMode, board, layout]);
-
-  const correct = typed.filter((x) => x.ok).length;
-  const missCount = Object.values(misses).reduce((a, b) => a + b, 0);
-  const accuracy =
-    correct + missCount
-      ? Math.round((correct / (correct + missCount)) * 100)
-      : 100;
-  const minutes =
-    startedAt && finishedAt ? (finishedAt - startedAt) / 60000 : 0;
-  const cpm = minutes > 0 ? Math.round(sentence.typed.length / minutes) : 0;
-
-  return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)]/85 px-4 py-3 backdrop-blur-sm">
-        <div className="flex flex-wrap items-center gap-3 text-sm">
-          <label className="flex items-center gap-2">
-            <span className="text-xs text-[var(--color-text-muted)]">
-              {t("Text")}
-            </span>
-            <select
-              value={sentenceIndex}
-              onChange={(e) => {
-                setSentenceIndex(Number(e.target.value));
-                reset();
-                e.target.blur();
-              }}
-              className="h-9 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm text-[var(--color-text)] focus:outline-none focus:border-[var(--color-electric)]"
-            >
-              {SENTENCES.map((s, i) => (
-                <option key={i} value={i}>
-                  {s.display}
-                </option>
-              ))}
-            </select>
-          </label>
-          <ModeToggle t={t} value={stopMode} onChange={setStopMode} />
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={reset}
-            className="btn-ghost h-9 border border-[var(--color-border)] flex items-center gap-2 text-sm"
-          >
-            <IconRefresh size={16} />
-            {t("Reset")}
-          </button>
-          <button
-            type="button"
-            onClick={onExit}
-            className="btn-ghost h-9 border border-[var(--color-border)] text-sm"
-          >
-            {t("Back to the start")}
-          </button>
-        </div>
-      </div>
-
-      <Notice>
-        {t(
-          "Turn your IME off before practising: the browser must receive the characters themselves. Japanese text is typed in romaji; every usual spelling (si / shi, tu / tsu, nn / n) counts as correct.",
-        )}
-      </Notice>
-
-      <section
-        ref={areaRef}
-        tabIndex={0}
-        onKeyDown={onKeyDown}
-        onClick={() => {
-          start();
-          areaRef.current?.focus();
-        }}
-        className={`relative rounded-2xl border p-5 sm:p-6 backdrop-blur-sm outline-none transition-colors cursor-text ${
-          started
-            ? "border-[var(--color-electric)]/60 bg-[var(--color-surface)]/85 focus:border-[var(--color-electric)]"
-            : "border-dashed border-[var(--color-border-hover)] bg-[var(--color-surface)]/60"
-        }`}
-      >
-        {!started && (
-          <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-[var(--color-bg)]/40">
-            <span className="flex items-center gap-2 rounded-full border border-[var(--color-electric)] bg-[var(--color-surface)] px-4 py-2 text-sm text-[var(--color-text)]">
-              <IconPlayerPlay
-                size={16}
-                className="text-[var(--color-electric)]"
-              />
-              {t("Click here to start")}
-            </span>
-          </div>
-        )}
-        <p className="text-xl sm:text-2xl leading-relaxed text-[var(--color-text)] tracking-wide">
-          {sentence.display}
-        </p>
-        <p className="mt-3 font-mono text-lg sm:text-xl leading-relaxed break-all">
-          {sentence.typed.split("").map((ch, i) => {
-            const got = typed[i];
-            const cls =
-              i === pos && !done
-                ? "bg-[var(--color-electric)]/25 text-[var(--color-text)] rounded-sm underline decoration-[var(--color-electric)] decoration-2 underline-offset-4"
-                : got
-                  ? got.ok
-                    ? "text-[var(--color-neon)]"
-                    : unavailable[ch] !== undefined
-                      ? "text-[var(--color-text-muted)] line-through"
-                      : "text-[var(--color-warning)]"
-                  : "text-[var(--color-text-muted)]";
-            return (
-              <span key={i} className={cls}>
-                {ch === " " ? "␣" : ch}
-              </span>
-            );
-          })}
-        </p>
-        <div className="mt-3 min-h-[1.5rem] text-sm">
-          {started && !done && showHint && hint && (
-            <span className="text-[var(--color-electric)]">
-              {stopMode === "stop"
-                ? t("Not that one: the lit key types this character.")
-                : t("Counted as a miss; the lit key was the one.")}
-              {hint.layer.length > 0 &&
-                ` ${t("Hold the layer key (blue) with it.")}`}
-              {hint.shift.length > 0 && ` ${t("Hold Shift (blue) with it.")}`}
-            </span>
-          )}
-          {started && !done && expected && !hint && (
-            <span className="text-[var(--color-text-muted)]">
-              {t(
-                "This key is not set anywhere on the keymap, so it cannot be typed. Skipping it.",
-              )}
-            </span>
-          )}
-          {Object.keys(unavailable).length > 0 && !done && (
-            <span className="ml-3 text-xs text-[var(--color-text-muted)]">
-              {t("Not on the keymap: {{chars}}", {
-                chars: Object.keys(unavailable).join(" "),
-              })}
-            </span>
-          )}
-        </div>
-      </section>
-
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-        <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)]/85 p-4 sm:p-6 backdrop-blur-sm space-y-3">
-          <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
-            <span className="font-medium text-[var(--color-text)]">
-              {board.name}
-            </span>
-            <span className="text-xs text-[var(--color-text-muted)]">
-              {t("Your keymap, base layer")}
-            </span>
-          </div>
-          <PracticeBoard board={board} marks={marks} />
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-[var(--color-text-muted)]">
-            <Legend color="var(--color-electric)">{t("Key to press")}</Legend>
-            <Legend color="var(--color-cyber)">
-              {t("Hold with it (layer / Shift)")}
-            </Legend>
-            <Legend color="var(--color-warning)">
-              {t("Pressed by mistake")}
-            </Legend>
-          </div>
-        </section>
-
-        <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)]/85 p-5 backdrop-blur-sm space-y-4">
-          <h2 className="flex items-center gap-2 text-sm font-medium text-[var(--color-text)]">
-            <IconInfoCircle size={18} className="text-[var(--color-cyber)]" />
-            {done ? t("Result") : t("So far")}
-          </h2>
-          <div className="grid grid-cols-2 gap-3">
-            <Stat label={t("Accuracy")} value={`${accuracy}%`} />
-            <Stat
-              label={t("Speed")}
-              value={done && cpm ? t("{{n}} chars/min", { n: cpm }) : "—"}
-            />
-          </div>
-          <div>
-            <h3 className="text-xs text-[var(--color-text-muted)]">
-              {t("Most missed")}
-            </h3>
-            {Object.keys(misses).length === 0 ? (
-              <p className="mt-1 text-sm text-[var(--color-text-muted)]">
-                {t("No misses yet.")}
-              </p>
-            ) : (
-              <ul className="mt-1 space-y-1 font-mono text-sm">
-                {Object.entries(misses)
-                  .sort((a, b) => b[1] - a[1])
-                  .slice(0, 5)
-                  .map(([pair, n]) => (
-                    <li
-                      key={pair}
-                      className="flex justify-between text-[var(--color-text-secondary)]"
-                    >
-                      <span>{pair}</span>
-                      <span className="tabular-nums">×{n}</span>
-                    </li>
-                  ))}
-              </ul>
-            )}
-          </div>
-          <div>
-            <h3 className="text-xs text-[var(--color-text-muted)]">
-              {t("Characters not on the keymap")}
-            </h3>
-            {Object.keys(unavailable).length === 0 ? (
-              <p className="mt-1 text-sm text-[var(--color-text-muted)]">
-                {t("None.")}
-              </p>
-            ) : (
-              <div className="mt-1 flex flex-wrap gap-1.5">
-                {Object.entries(unavailable).map(([ch, n]) => (
-                  <span
-                    key={ch}
-                    className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-2 py-0.5 font-mono text-xs text-[var(--color-text)]"
-                  >
-                    {ch}
-                    {n > 1 ? ` ×${n}` : ""}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-          {done && (
-            <div className="space-y-2 border-t border-[var(--color-border)] pt-4">
-              <p className="text-xs text-[var(--color-text-muted)]">
-                {t(
-                  "The miss heatmap over the keymap, and saving as an image or PDF, come in phase 1.",
-                )}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  disabled
-                  className="btn-ghost h-9 border border-[var(--color-border)] flex items-center gap-2 text-sm opacity-60 cursor-not-allowed"
-                >
-                  <IconDownload size={16} />
-                  PNG
-                </button>
-                <button
-                  type="button"
-                  disabled
-                  className="btn-ghost h-9 border border-[var(--color-border)] flex items-center gap-2 text-sm opacity-60 cursor-not-allowed"
-                >
-                  <IconDownload size={16} />
-                  PDF
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSentenceIndex((i) => (i + 1) % SENTENCES.length);
-                    reset();
-                  }}
-                  className="btn-electric h-9 px-4 text-sm flex items-center gap-2"
-                >
-                  {t("Next text")}
-                  <IconChevronRight size={16} />
-                </button>
-              </div>
-            </div>
-          )}
-        </section>
-      </div>
-    </div>
-  );
-}
-
-function ModeToggle({
-  t,
-  value,
-  onChange,
-}: {
-  t: T;
-  value: StopMode;
-  onChange: (v: StopMode) => void;
-}) {
-  const opt = (v: StopMode, label: string, title: string) => (
-    <button
-      type="button"
-      onClick={() => onChange(v)}
-      title={title}
-      className={`h-9 px-3 text-sm transition-colors ${
-        value === v
-          ? "bg-[var(--color-electric)]/15 text-[var(--color-text)]"
-          : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-      }`}
-    >
-      {label}
-    </button>
-  );
-  return (
-    <div className="flex items-center gap-2">
-      <IconSettings size={14} className="text-[var(--color-text-muted)]" />
-      <div className="flex overflow-hidden rounded-lg border border-[var(--color-border)] divide-x divide-[var(--color-border)]">
-        {opt(
-          "stop",
-          t("Stop at a miss"),
-          t("A wrong key stops the text and lights the key you meant."),
-        )}
-        {opt(
-          "advance",
-          t("Keep going"),
-          t("A wrong key is counted and the text moves on."),
-        )}
-      </div>
-    </div>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)]/60 px-3 py-2">
-      <div className="text-xs text-[var(--color-text-muted)]">{label}</div>
-      <div className="mt-0.5 text-xl tabular-nums text-[var(--color-text)]">
-        {value}
-      </div>
-    </div>
-  );
-}
-
-function Notice({ children }: { children: ReactNode }) {
-  return (
-    <p className="flex items-start gap-2 rounded-xl border border-[var(--color-cyber)]/40 bg-[var(--color-cyber)]/10 px-4 py-3 text-xs leading-relaxed text-[var(--color-text-secondary)]">
-      <IconInfoCircle
-        size={16}
-        className="mt-px flex-shrink-0 text-[var(--color-cyber)]"
-      />
-      <span>{children}</span>
-    </p>
-  );
-}
-
-function Legend({ color, children }: { color: string; children: ReactNode }) {
-  return (
-    <span className="inline-flex items-center gap-1.5">
-      <span
-        className="inline-block h-3.5 w-3.5 rounded border"
-        style={{
-          borderColor: color,
-          background: `color-mix(in srgb, ${color} 25%, var(--color-surface-elevated))`,
-        }}
-      />
-      {children}
-    </span>
   );
 }

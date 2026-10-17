@@ -7,6 +7,8 @@
 import { memo, useMemo } from "react";
 import { rotatePoint } from "../../layoutEditor/lib/model";
 import type { TestBoard, TestKey } from "../../keyTest/lib/boards";
+import type { KeyLabel, LabelLayout } from "../../layoutEditor/lib/keyLabels";
+import { labelOnLayer } from "../lib/keyLookup";
 
 const U = 54;
 
@@ -18,12 +20,17 @@ export type MarkTone =
   /** A layer or Shift key to hold with it. */
   | "hold"
   /** The key just pressed by mistake. */
-  | "wrong";
+  | "wrong"
+  /** Misses on this key, tinted by `level` (0-1) in the result's heatmap. */
+  | "heat";
 
 export interface Mark {
   tone: MarkTone;
   /** A legend to show instead of the key's own. */
   label?: string;
+  /** For "heat": how strong the tint is, 0-1, and the count shown. */
+  level?: number;
+  count?: number;
 }
 
 const TONE_COLOR: Record<MarkTone, string> = {
@@ -31,6 +38,7 @@ const TONE_COLOR: Record<MarkTone, string> = {
   hint: "var(--color-electric)",
   hold: "var(--color-cyber)",
   wrong: "var(--color-warning)",
+  heat: "var(--color-electric)",
 };
 
 function rectsOf(k: TestKey) {
@@ -76,10 +84,13 @@ function boundsOf(keys: TestKey[]) {
 
 const Key = memo(function Key({
   k,
+  label,
   mark,
   dim,
 }: {
   k: TestKey;
+  /** What the key shows on the layer drawn; null when the layer leaves it as is. */
+  label: KeyLabel | null;
   mark?: Mark;
   /** Fade the keys that are not marked, so the marked ones stand out. */
   dim: boolean;
@@ -94,13 +105,16 @@ const Key = memo(function Key({
   }));
   const W = k.w * U;
   const H = k.h * U;
-  const sends = k.trigger.kind === "key" || k.trigger.kind === "mouse";
+  const sends =
+    (k.trigger.kind === "key" || k.trigger.kind === "mouse") && label !== null;
   const tone = mark ? TONE_COLOR[mark.tone] : null;
-  const strong = mark?.tone === "hint";
+  const heat =
+    mark?.tone === "heat" ? Math.round(18 + 62 * (mark.level ?? 0)) : null;
+  const strong = mark?.tone === "hint" || (heat !== null && heat > 55);
   const fill = strong
-    ? `color-mix(in srgb, ${tone} 55%, var(--color-surface-elevated))`
+    ? `color-mix(in srgb, ${tone} ${heat ?? 55}%, var(--color-surface-elevated))`
     : tone
-      ? `color-mix(in srgb, ${tone} 22%, var(--color-surface-elevated))`
+      ? `color-mix(in srgb, ${tone} ${heat ?? 22}%, var(--color-surface-elevated))`
       : sends
         ? "var(--color-surface-elevated)"
         : "transparent";
@@ -112,9 +126,10 @@ const Key = memo(function Key({
       ? "var(--color-text)"
       : "var(--color-text-muted)";
 
-  const main = mark?.label ?? k.label.main;
-  const sub = mark?.label ? undefined : k.label.sub;
-  const old = mark?.label && mark.label !== k.label.main ? k.label.main : null;
+  const own = label ?? k.label;
+  const main = mark?.label ?? (label ? own.main : "");
+  const sub = mark?.label ? undefined : label ? own.sub : undefined;
+  const old = mark?.label && mark.label !== own.main ? own.main : null;
   const longest = Math.max(main.length, 1);
   const fontSize = Math.min(
     U * 0.26,
@@ -209,6 +224,19 @@ const Key = memo(function Key({
       >
         {main}
       </text>
+      {mark?.tone === "heat" && mark.count !== undefined && (
+        <text
+          x={W / 2 - U * 0.12}
+          y={H / 2 - U * 0.1}
+          textAnchor="end"
+          fontSize={U * 0.15}
+          fontWeight={600}
+          fill={text}
+          style={{ pointerEvents: "none", userSelect: "none" }}
+        >
+          {mark.count}
+        </text>
+      )}
     </g>
   );
 });
@@ -217,10 +245,15 @@ export function PracticeBoard({
   board,
   marks,
   dimOthers = false,
+  layer = 0,
+  layout = "us",
 }: {
   board: TestBoard;
   marks: Map<string, Mark>;
   dimOthers?: boolean;
+  /** The layer drawn: 0 for the base, else what the keys send on it. */
+  layer?: number;
+  layout?: LabelLayout;
 }) {
   const box = useMemo(() => boundsOf(board.keys), [board]);
   const pad = 0.1;
@@ -239,7 +272,13 @@ export function PracticeBoard({
       style={{ fontFamily: "inherit", maxWidth: `${vb[2]}px` }}
     >
       {board.keys.map((k) => (
-        <Key key={k.id} k={k} mark={marks.get(k.id)} dim={dimOthers} />
+        <Key
+          key={k.id}
+          k={k}
+          label={labelOnLayer(k, layer, layout)}
+          mark={marks.get(k.id)}
+          dim={dimOthers}
+        />
       ))}
     </svg>
   );

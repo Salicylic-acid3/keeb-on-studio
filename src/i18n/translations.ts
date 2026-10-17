@@ -95,9 +95,6 @@ const ja: Record<string, string> = {
   "Hold the layer key (blue) with it.":
     "レイヤーキー（青）を押しながら打ちます。",
   "Hold Shift (blue) with it.": "Shift（青）を押しながら打ちます。",
-  "This key is not set anywhere on the keymap, so it cannot be typed. Skipping it.":
-    "このキーは設定されていないので入力できません。飛ばします。",
-  "Not on the keymap: {{chars}}": "入力不可: {{chars}}",
   "Your keymap, base layer": "現在のキーマップ（ベースレイヤー）",
   "Key to press": "押すキー",
   "Hold with it (layer / Shift)": "一緒に押すキー（レイヤー / Shift）",
@@ -110,9 +107,19 @@ const ja: Record<string, string> = {
   "No misses yet.": "ミスはまだありません。",
   "Characters not on the keymap": "入力不可文字",
   "None.": "なし",
-  "The miss heatmap over the keymap, and saving as an image or PDF, come in phase 1.":
-    "キーマップ上の誤打鍵ヒートマップと、画像 / PDF での保存はフェーズ1で実装します。",
   "Next text": "次の文章",
+  "The IME seems to be on: turn it off, then type again.":
+    "IME がオンになっているようです。オフにしてからもう一度打ってください。",
+  "Not on the keymap, skipped: {{chars}}":
+    "キーマップに無いので飛ばしました: {{chars}}",
+  "Your keymap, layer {{n}}": "現在のキーマップ（レイヤー {{n}}）",
+  Misses: "ミス",
+  "No misses.": "ミスはありませんでした。",
+  "Where the misses were": "ミスした場所",
+  "Each key is tinted by how often it was missed, with the count in its corner.":
+    "ミスの多いキーほど濃く塗られ、角に回数が出ます。",
+  "Typing practice result": "タイピング練習の結果",
+  "Chars/min": "文字/分",
   // Key test
   "When several keys are assigned the same function, all of them light up. To test the key matrix itself, connect the keyboard and use the key input display.":
     "同じ機能のキーが複数登録されている場合、複数個所が光るようになっています。キーマトリクスのテストをしたい場合は、キーボードを接続してキー入力表示機能を使用してください。",
