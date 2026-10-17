@@ -87,6 +87,7 @@ const Key = memo(function Key({
   label,
   mark,
   dim,
+  onClick,
 }: {
   k: TestKey;
   /** What the key shows on the layer drawn; null when the layer leaves it as is. */
@@ -94,6 +95,7 @@ const Key = memo(function Key({
   mark?: Mark;
   /** Fade the keys that are not marked, so the marked ones stand out. */
   dim: boolean;
+  onClick?: () => void;
 }) {
   const gap = 0.05 * U;
   const radius = 0.1 * U;
@@ -142,7 +144,11 @@ const Key = memo(function Key({
       data-practice-key={k.id}
       data-mark={mark?.tone}
       opacity={dim && !mark ? 0.45 : 1}
-      style={{ transition: "opacity 160ms ease-out" }}
+      style={{
+        transition: "opacity 160ms ease-out",
+        cursor: onClick ? "pointer" : undefined,
+      }}
+      onClick={onClick}
     >
       {rects.map((r, i) => (
         <rect
@@ -247,6 +253,7 @@ export function PracticeBoard({
   dimOthers = false,
   layer = 0,
   layout = "us",
+  onKeyClick,
 }: {
   board: TestBoard;
   marks: Map<string, Mark>;
@@ -254,6 +261,8 @@ export function PracticeBoard({
   /** The layer drawn: 0 for the base, else what the keys send on it. */
   layer?: number;
   layout?: LabelLayout;
+  /** Makes the keys clickable, by their index in the keyboard's key list. */
+  onKeyClick?: (pos: number) => void;
 }) {
   const box = useMemo(() => boundsOf(board.keys), [board]);
   const pad = 0.1;
@@ -271,13 +280,14 @@ export function PracticeBoard({
       aria-label={board.name}
       style={{ fontFamily: "inherit", maxWidth: `${vb[2]}px` }}
     >
-      {board.keys.map((k) => (
+      {board.keys.map((k, i) => (
         <Key
           key={k.id}
           k={k}
           label={labelOnLayer(k, layer, layout)}
           mark={marks.get(k.id)}
           dim={dimOthers}
+          onClick={onKeyClick ? () => onKeyClick(i) : undefined}
         />
       ))}
     </svg>

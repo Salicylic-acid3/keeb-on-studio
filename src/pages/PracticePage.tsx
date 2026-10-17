@@ -34,6 +34,7 @@ import type { LabelLayout } from "../layoutEditor/lib/keyLabels";
 import { PracticeBoard, type Mark } from "../practice/components/PracticeBoard";
 import { PracticeSession } from "../practice/components/PracticeSession";
 import { TaskSession } from "../practice/components/TaskSession";
+import { MetaEditor } from "../practice/components/MetaEditor";
 import { Legend, Notice } from "../practice/components/bits";
 import {
   GUIDE_40,
@@ -65,7 +66,9 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
     () => testBoard(boardId) ?? testBoard(entries[0].id)!,
     [boardId, entries],
   );
-  const [mode, setMode] = useState<PracticeMode>("pick");
+  const [mode, setMode] = useState<PracticeMode>(() =>
+    new URLSearchParams(window.location.search).has("meta") ? "meta" : "pick",
+  );
   const [kind, setKind] = useState<"text" | "task">("text");
   const [layout, setLayout] = useState<LabelLayout>("us");
 
@@ -137,6 +140,7 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
           )}
         </Notice>
 
+        {mode === "meta" && <MetaEditor key={board.id} board={board} t={t} />}
         {mode === "pick" && <ModePicker t={t} onPick={setMode} />}
         {mode === "guide" && (
           <Guide

@@ -10,7 +10,7 @@
  */
 import type { TestBoard, TestKey } from "../../keyTest/lib/boards";
 
-export type PracticeMode = "pick" | "guide" | "free";
+export type PracticeMode = "pick" | "guide" | "free" | "meta";
 export type StopMode = "stop" | "advance";
 
 export interface GuideStep {
