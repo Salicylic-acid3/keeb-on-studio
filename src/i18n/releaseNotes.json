@@ -6,6 +6,15 @@
       "changes": {
         "major": [],
         "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.17.1",
+      "date": "2026-10-17",
+      "changes": {
+        "major": [],
+        "minor": [],
         "patch": [
           {
             "en": "Key test: small keyboards (a tenkey, WzTwenty) are drawn at their own size instead of stretched to the width of the page, and a key lit by a mouse click goes dark as soon as the button is let go.",
