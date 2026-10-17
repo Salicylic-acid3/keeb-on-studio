@@ -101,7 +101,63 @@ const CODES: Record<string, string> = {
   LEFT_WIN: "MetaLeft",
   RGUI: "MetaRight",
   RWIN: "MetaRight",
+  // ZMK's long names and keypad keys.
+  RETURN: "Enter",
+  CAPSLOCK: "CapsLock",
+  PRINTSCREEN: "PrintScreen",
+  SCROLLLOCK: "ScrollLock",
+  SLCK: "ScrollLock",
+  PAUSE_BREAK: "Pause",
+  INSERT: "Insert",
+  PAGE_UP: "PageUp",
+  PAGE_DOWN: "PageDown",
+  UP_ARROW: "ArrowUp",
+  DOWN_ARROW: "ArrowDown",
+  LEFT_ARROW: "ArrowLeft",
+  RIGHT_ARROW: "ArrowRight",
+  K_CONTEXT_MENU: "ContextMenu",
+  KP_NUMLOCK: "NumLock",
+  KP_NUM: "NumLock",
+  KP_PLUS: "NumpadAdd",
+  KP_MINUS: "NumpadSubtract",
+  KP_MULTIPLY: "NumpadMultiply",
+  KP_ASTERISK: "NumpadMultiply",
+  KP_DIVIDE: "NumpadDivide",
+  KP_SLASH: "NumpadDivide",
+  KP_ENTER: "NumpadEnter",
+  KP_DOT: "NumpadDecimal",
+  LEFT_SHIFT: "ShiftLeft",
+  RIGHT_SHIFT: "ShiftRight",
+  LEFT_CONTROL: "ControlLeft",
+  RIGHT_CONTROL: "ControlRight",
+  LEFT_ALT: "AltLeft",
+  RIGHT_ALT: "AltRight",
+  LEFT_GUI: "MetaLeft",
+  RIGHT_GUI: "MetaRight",
+  RIGHT_WIN: "MetaRight",
+  LCMD: "MetaLeft",
+  RCMD: "MetaRight",
 };
+
+/**
+ * The `KeyboardEvent.code` a firmware key name sends: a QMK name with or
+ * without "KC_" ("KC_A", "ENT") or a ZMK one ("A", "N1", "LSHFT").
+ * Undefined for a name that is not a plain key.
+ */
+export function codeForKeyName(name: string): string | undefined {
+  const key = name.replace(/^KC_/, "");
+  if (/^[A-Z]$/.test(key)) return `Key${key}`;
+  const digit = /^N?(\d)$/.exec(key);
+  if (digit) return `Digit${digit[1]}`;
+  const fn = /^F(\d{1,2})$/.exec(key);
+  if (fn && Number(fn[1]) >= 1 && Number(fn[1]) <= 24) return key;
+  const pad = /^(?:P|KP_N)(\d)$/.exec(key);
+  if (pad) return `Numpad${pad[1]}`;
+  // A shifted bracket key of its own ("{") is the bracket key with Shift.
+  if (key === "LCBR") return "BracketLeft";
+  if (key === "RCBR") return "BracketRight";
+  return CODES[key];
+}
 
 const NONE: KeyLabel = { main: "" };
 
@@ -117,7 +173,7 @@ function keyLegend(name: string, layout: LabelLayout): KeyLabel {
   // A shifted bracket key of its own ("{").
   if (key === "LCBR") return { main: "{" };
   if (key === "RCBR") return { main: "}" };
-  const code = CODES[key];
+  const code = codeForKeyName(key);
   return (code && labelForCode(code, layout)) || NONE;
 }
 

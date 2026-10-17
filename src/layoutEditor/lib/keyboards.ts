@@ -148,25 +148,39 @@ function insixtyJpEnter(keys: LayoutKey[]): LayoutKey[] {
   return made.map((k) => (k.id === enter.id ? { ...k, cx: 15.375, cy: 2 } : k));
 }
 
-export function keyboardProject(id: string): LayoutProject | null {
+/**
+ * A keyboard's drawing (no legends yet) and, for each of its keys in the
+ * same order, the binding of its default keymap's base layer: a QMK keycode
+ * ("KC_A", "LT(1, KC_SPC)") or a ZMK binding without its "&" ("kp A").
+ * The key test reads the bindings to know which key a press belongs to.
+ */
+export interface KeyboardBindings {
+  project: LayoutProject;
+  bindings: Array<string | undefined>;
+  firmware: "zmk" | "qmk";
+  layout: LabelLayout;
+}
+
+export function keyboardBindings(id: string): KeyboardBindings | null {
   const zmk = ZMK[id];
   if (zmk) {
+    const project = { ...importKle(zmkToKle(zmk)), name: zmk.name };
     const bindings = DATA.zmk[id] ?? [];
-    return withLegends(
-      { ...importKle(zmkToKle(zmk)), name: zmk.name },
-      (_key, index) =>
-        bindings[index] ? zmkLegend(bindings[index], "us") : undefined,
-    );
+    return {
+      project,
+      bindings: project.keys.map((_k, index) => bindings[index]),
+      firmware: "zmk",
+      layout: "us",
+    };
   }
   const board = QMK.find((b) => b.id === id);
   if (!board) return null;
-  const project = importKle(board.keymap);
+  const imported = importKle(board.keymap);
   // Only the first choice of each layout option; the others are drawn
   // elsewhere in the file as alternatives.
-  const shown = project.keys.filter((k) => !k.option || k.option.choice === 0);
+  const shown = imported.keys.filter((k) => !k.option || k.option.choice === 0);
   const keys = board.id === "insixty_jp" ? insixtyJpEnter(shown) : shown;
   const used = new Set(keys.map((k) => k.groupId));
-  const layout = layoutOf(board.id);
   // One key the drawing and the keymap place differently (the GoForty JP's
   // Enter is 1,11 in vial.json and 0,11 in keyboard.json): when a single
   // key has no keycode and a single keycode has no key, they are the pair.
@@ -177,17 +191,35 @@ export function keyboardProject(id: string): LayoutProject | null {
   const unused = Object.keys(board.keycodes).filter((at) => !positions.has(at));
   const stray = unnamed.length === 1 && unused.length === 1 ? unnamed[0] : null;
   const spare = stray ? board.keycodes[unused[0]] : undefined;
-  return withLegends(
-    {
+  return {
+    project: {
       name: board.name,
       keys,
-      groups: project.groups.filter((g) => used.has(g.id)),
+      groups: imported.groups.filter((g) => used.has(g.id)),
     },
-    (key) => {
+    bindings: keys.map((key) => {
       if (!key.matrix) return undefined;
       const at = `${key.matrix.row},${key.matrix.col}`;
-      const code = board.keycodes[at] ?? (at === stray ? spare : undefined);
-      return code ? qmkLegend(code, layout) : undefined;
-    },
-  );
+      return board.keycodes[at] ?? (at === stray ? spare : undefined);
+    }),
+    firmware: "qmk",
+    layout: layoutOf(board.id),
+  };
+}
+
+/** Which firmware a keyboard of {@link keyboardTemplates} runs. */
+export function keyboardFirmware(id: string): "zmk" | "qmk" | null {
+  if (ZMK[id]) return "zmk";
+  return QMK.some((b) => b.id === id) ? "qmk" : null;
+}
+
+export function keyboardProject(id: string): LayoutProject | null {
+  const found = keyboardBindings(id);
+  if (!found) return null;
+  const { project, bindings, firmware, layout } = found;
+  const legendOf = firmware === "zmk" ? zmkLegend : qmkLegend;
+  return withLegends(project, (_key, index) => {
+    const binding = bindings[index];
+    return binding ? legendOf(binding, layout) : undefined;
+  });
 }

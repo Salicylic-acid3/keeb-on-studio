@@ -16,6 +16,7 @@ import { SplashScreen } from "./components/SplashScreen";
 import { ReleaseNotesPage, RELEASE_NOTES_PATH } from "./pages/ReleaseNotesPage";
 import { AboutPage, ABOUT_PATH } from "./pages/AboutPage";
 import { LayoutEditorPage, LAYOUT_PATH } from "./pages/LayoutEditorPage";
+import { KeyTestPage, KEY_TEST_PATH } from "./pages/KeyTestPage";
 import {
   DownloadsPage,
   DOWNLOADS_PATH,
@@ -203,6 +204,7 @@ function AppContent() {
   const onReleaseNotes = pathname === RELEASE_NOTES_PATH;
   const onAbout = pathname === ABOUT_PATH;
   const onLayout = pathname === LAYOUT_PATH;
+  const onKeyTest = pathname === KEY_TEST_PATH;
   const onDownloads = pathname === DOWNLOADS_PATH;
   const onQmkDownloads = pathname === QMK_DOWNLOADS_PATH;
   const onOauthCallback = pathname === OAUTH_CALLBACK_PATH;
@@ -217,6 +219,7 @@ function AppContent() {
       !onReleaseNotes &&
       !onAbout &&
       !onLayout &&
+      !onKeyTest &&
       !onDownloads &&
       !onOauthCallback &&
       urlTab !== activeTab &&
@@ -231,6 +234,7 @@ function AppContent() {
     onReleaseNotes,
     onAbout,
     onLayout,
+    onKeyTest,
     onDownloads,
     onOauthCallback,
   ]);
@@ -268,6 +272,22 @@ function AppContent() {
   // to one.
   if (onLayout) {
     return <LayoutEditorPage onBack={() => navigatePath("/")} />;
+  }
+
+  // The key test listens to what the keyboard types, so it needs no
+  // connection either, and works for a wireless keyboard.
+  if (onKeyTest) {
+    return (
+      <KeyTestPage
+        onBack={() =>
+          navigatePath(
+            firmwareFromPathname(window.history.state?.from ?? "/") === "qmk"
+              ? QMK_PATH
+              : "/",
+          )
+        }
+      />
+    );
   }
 
   // ZMK and QMK firmware on separate pages, switched the same way as the

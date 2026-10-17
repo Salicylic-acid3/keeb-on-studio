@@ -18,11 +18,26 @@ import {
   IconBrandDiscord,
   IconDownload,
   IconExternalLink,
+  IconKeyboard,
   IconMessages,
 } from "@tabler/icons-react";
-import type { ReactNode } from "react";
+import type { MouseEvent as ReactMouseEvent, ReactNode } from "react";
 import { useLanguage } from "../hooks/useLanguage";
 import { GUIDE_ARTICLES, DISCORD_URL } from "../lib/guideLinks";
+import { KEY_TEST_PATH } from "../pages/KeyTestPage";
+
+/** Opens the key test in place, the way the app's own routes change. */
+function openKeyTest(e: ReactMouseEvent<HTMLAnchorElement>) {
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+  e.preventDefault();
+  // Back returns to the top page it was opened from (ZMK or QMK).
+  window.history.pushState(
+    { from: window.location.pathname },
+    "",
+    KEY_TEST_PATH,
+  );
+  window.dispatchEvent(new PopStateEvent("popstate"));
+}
 
 interface SplashGuideProps {
   /** Open the supported-keyboards / Q&A page (the Home tab's content). */
@@ -121,6 +136,22 @@ export function SplashGuide({
           <IconDownload size={14} />
           {t("Open the downloads page")}
         </button>
+      </Card>
+
+      <Card icon={<IconKeyboard size={18} />} title={t("Key test")}>
+        <p className="text-sm text-[var(--color-text-secondary)]">
+          {t(
+            "Check that every key of a keyboard you just got works. It only listens to what the keyboard types, so there is nothing to connect or unlock, and a wireless keyboard works too.",
+          )}
+        </p>
+        <a
+          href={KEY_TEST_PATH}
+          onClick={openKeyTest}
+          className={`${buttonClass} mt-3`}
+        >
+          <IconKeyboard size={14} />
+          {t("Open the key test")}
+        </a>
       </Card>
 
       <Card
