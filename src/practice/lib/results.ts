@@ -4,8 +4,8 @@
  */
 import type { TestBoard } from "../../keyTest/lib/boards";
 import type { LabelLayout } from "../../layoutEditor/lib/keyLabels";
-import type { Run, StopMode } from "./engine";
-import { findKey } from "./keyLookup";
+import type { Press, Run, Skipped, StopMode } from "./engine";
+import { findKey, findKeyByCode } from "./keyLookup";
 
 export interface MissPair {
   expected: string;
@@ -36,14 +36,34 @@ export interface Summary {
   unavailable: Unavailable[];
 }
 
+/** What a summary is made from: a text run, or a task's steps put together. */
+export interface RunStats {
+  presses: Press[];
+  skipped: Skipped[];
+  /** Characters (or keys) that went in right, for the speed. */
+  typedChars: number;
+  startedAt: number | null;
+  finishedAt: number | null;
+}
+
+export function runStats(run: Run): RunStats {
+  return {
+    presses: run.presses,
+    skipped: run.skipped,
+    typedChars: run.done.join("").length + run.prefix.length,
+    startedAt: run.startedAt,
+    finishedAt: run.finishedAt,
+  };
+}
+
 export function summarize(
-  run: Run,
+  run: RunStats,
   board: TestBoard,
   layout: LabelLayout,
 ): Summary {
   const right = run.presses.filter((p) => p.ok).length;
   const wrong = run.presses.length - right;
-  const typed = run.done.join("").length + run.prefix.length;
+  const typed = run.typedChars;
   const seconds =
     run.startedAt !== null && run.finishedAt !== null
       ? Math.max(0, run.finishedAt - run.startedAt) / 1000
@@ -63,7 +83,9 @@ export function summarize(
     };
     pair.count++;
     pairCount.set(key, pair);
-    const hint = findKey(board, p.expected, layout);
+    const hint = p.code
+      ? findKeyByCode(board, p.code)
+      : findKey(board, p.expected, layout);
     if (!hint) continue;
     for (const id of hint.keys) {
       heat.set(id, (heat.get(id) ?? 0) + 1);

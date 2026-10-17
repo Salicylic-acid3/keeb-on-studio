@@ -17,6 +17,7 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
 import {
+  IconArrowsShuffle,
   IconChevronRight,
   IconDownload,
   IconInfoCircle,
@@ -26,7 +27,13 @@ import {
 } from "@tabler/icons-react";
 import type { TestBoard } from "../../keyTest/lib/boards";
 import type { LabelLayout } from "../../layoutEditor/lib/keyLabels";
-import { TEXTS_JA, type PracticeText } from "../data/texts.ja";
+import {
+  pickText,
+  TEXTS_JA,
+  textsWithin,
+  type PracticeText,
+  type TextTag,
+} from "../data/texts.ja";
 import {
   expected,
   isDone,
@@ -41,17 +48,25 @@ import { findKey } from "../lib/keyLookup";
 import {
   pushResult,
   readMode,
+  runStats,
   summarize,
   writeMode,
   type Summary,
 } from "../lib/results";
 import { resultPdf, resultPng } from "../lib/resultPicture";
-import { Legend, Notice, SELECT_CLASS, Stat } from "./bits";
+import { Legend, Notice, Stat } from "./bits";
 import { PracticeBoard, type Mark } from "./PracticeBoard";
 
 type T = (key: string, params?: Record<string, string | number>) => string;
 
 const SHARE_URL = "keeb-on.studio/practice";
+
+const TAGS: Array<[TextTag, string]> = [
+  ["base", "Letters only"],
+  ["symbols", "With symbols"],
+  ["digits", "With digits"],
+  ["en", "English"],
+];
 
 /** Whether the keymap types a character, remembered per character. */
 function typeableOn(board: TestBoard, layout: LabelLayout) {
@@ -84,8 +99,31 @@ export function PracticeSession({
     setStopModeState(m);
     writeMode(m);
   };
-  const [textIndex, setTextIndex] = useState(0);
-  const text = texts[textIndex] ?? texts[0];
+  // Which kinds of text are on offer, and the one in front of the person.
+  const [allowed, setAllowed] = useState<Set<TextTag>>(
+    () => new Set<TextTag>(["base", "symbols", "digits"]),
+  );
+  const pool = useMemo(() => {
+    const within = textsWithin(texts, allowed);
+    return within.length ? within : texts;
+  }, [texts, allowed]);
+  const [text, setText] = useState<PracticeText>(() => pickText(pool)!);
+  const toggleTag = (tag: TextTag) => {
+    const next = new Set(allowed);
+    if (next.has(tag)) next.delete(tag);
+    else next.add(tag);
+    if (next.size === 0) return;
+    setAllowed(next);
+    const within = textsWithin(texts, next);
+    if (within.length && !within.some((x) => x.id === text.id)) {
+      setText(pickText(within)!);
+      reset();
+    }
+  };
+  const another = () => {
+    setText(pickText(pool, text)!);
+    reset();
+  };
 
   const typeable = useMemo(() => typeableOn(board, layout), [board, layout]);
 
@@ -138,7 +176,7 @@ export function PracticeSession({
   };
 
   const summary = useMemo(
-    () => (run && done ? summarize(run, board, layout) : null),
+    () => (run && done ? summarize(runStats(run), board, layout) : null),
     [run, done, board, layout],
   );
 
@@ -183,26 +221,35 @@ export function PracticeSession({
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)]/85 px-4 py-3 backdrop-blur-sm">
         <div className="flex flex-wrap items-center gap-3 text-sm">
-          <label className="flex items-center gap-2">
-            <span className="text-xs text-[var(--color-text-muted)]">
+          <div className="flex items-center gap-1.5">
+            <span className="mr-1 text-xs text-[var(--color-text-muted)]">
               {t("Text")}
             </span>
-            <select
-              value={textIndex}
-              onChange={(e) => {
-                setTextIndex(Number(e.target.value));
-                reset();
-                e.target.blur();
-              }}
-              className={SELECT_CLASS}
+            {TAGS.map(([tag, label]) => (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => toggleTag(tag)}
+                aria-pressed={allowed.has(tag)}
+                className={`h-8 rounded-full border px-3 text-xs transition-colors ${
+                  allowed.has(tag)
+                    ? "border-[var(--color-electric)] bg-[var(--color-electric)]/10 text-[var(--color-text)]"
+                    : "border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                }`}
+              >
+                {t(label)}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={another}
+              className="btn-ghost h-8 border border-[var(--color-border)] flex items-center gap-1.5 text-xs"
+              title={t("{{n}} texts to choose from", { n: pool.length })}
             >
-              {texts.map((s, i) => (
-                <option key={s.id} value={i}>
-                  {s.display}
-                </option>
-              ))}
-            </select>
-          </label>
+              <IconArrowsShuffle size={14} />
+              {t("Another text")}
+            </button>
+          </div>
           <ModeToggle t={t} value={stopMode} onChange={setStopMode} />
         </div>
         <div className="flex items-center gap-2">
@@ -330,12 +377,9 @@ export function PracticeSession({
           board={board}
           layout={layout}
           summary={summary}
-          text={text}
+          text={text.display}
           t={t}
-          onNext={() => {
-            setTextIndex((i) => (i + 1) % texts.length);
-            reset();
-          }}
+          onNext={another}
         />
       ) : (
         <div className="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
@@ -430,20 +474,23 @@ function LiveStats({ run, t }: { run: Run | null; t: T }) {
 /* Result                                                               */
 /* ------------------------------------------------------------------ */
 
-function ResultPanel({
+export function ResultPanel({
   board,
   layout,
   summary,
   text,
   t,
   onNext,
+  nextLabel,
 }: {
   board: TestBoard;
   layout: LabelLayout;
   summary: Summary;
-  text: PracticeText;
+  /** What was practised, for the picture's header. */
+  text: string;
   t: T;
   onNext: () => void;
+  nextLabel?: string;
 }) {
   const layers = useMemo(
     () => [0, ...[...summary.heatByLayer.keys()].filter((l) => l !== 0).sort()],
@@ -468,7 +515,7 @@ function ResultPanel({
     text: {
       title: t("Typing practice result"),
       boardName: board.name,
-      text: text.display,
+      text,
       date: new Date().toLocaleDateString(),
       accuracy: t("Accuracy"),
       speed: t("Chars/min"),
@@ -621,7 +668,7 @@ function ResultPanel({
               onClick={onNext}
               className="btn-electric h-9 px-4 text-sm flex items-center gap-2"
             >
-              {t("Next text")}
+              {nextLabel ?? t("Next text")}
               <IconChevronRight size={16} />
             </button>
           </div>
@@ -651,7 +698,7 @@ function saveBlob(blob: Blob, fileName: string) {
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-function ModeToggle({
+export function ModeToggle({
   t,
   value,
   onChange,

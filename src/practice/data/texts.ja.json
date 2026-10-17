@@ -1,0 +1,2634 @@
+[
+  {
+    "id": "keebon-studio-manual-1",
+    "display": "対応キーボードや機能は順次増えるので、最新情報はアプリ内の表示を優先してください。",
+    "kana": "たいおうキーボードやきのうはじゅんじふえるので、さいしんじょうほうはアプリないのひょうじをゆうせんしてください。",
+    "tags": ["base", "symbols"],
+    "source": "keebon-studio-manual",
+    "reviewed": false
+  },
+  {
+    "id": "keebon-studio-manual-2",
+    "display": "基本的に私が設計したキーボードのみを使えるように制限していますが、どなたでも無料で使用することができます。",
+    "kana": "きほんてきにわたしがせっけいしたキーボードのみをつかえるようにせいげんしていますが、どなたでもむりょうでしようすることができます。",
+    "tags": ["base", "symbols"],
+    "source": "keebon-studio-manual",
+    "reviewed": false
+  },
+  {
+    "id": "keebon-studio-manual-3",
+    "display": "送られるのはキーボード名と匿名の利用状況だけで、キーマップの中身等は送られません。",
+    "kana": "おくられるのはキーボードめいととくめいのりようじょうきょうだけで、キーマップのなかみとうはおくられません。",
+    "tags": ["base", "symbols"],
+    "source": "keebon-studio-manual",
+    "reviewed": false
+  },
+  {
+    "id": "keebon-studio-manual-4",
+    "display": "ただし共有リンクの発行とギャラリーへの公開は実機接続時のみです。",
+    "kana": "ただしきょうゆうリンクのはっこうとギャラリーへのこうかいはじっきせつぞくじのみです。",
+    "tags": ["base", "symbols"],
+    "source": "keebon-studio-manual",
+    "reviewed": false
+  },
+  {
+    "id": "keebon-studio-manual-5",
+    "display": "タブごとに大まかにできることを以下の表にまとめました。",
+    "kana": "タブごとにおおまかにできることをいかのひょうにまとめました。",
+    "tags": ["base"],
+    "source": "keebon-studio-manual",
+    "reviewed": false
+  },
+  {
+    "id": "keebon-studio-manual-6",
+    "display": "対応しているキーボードを接続すると、自動で現在設定されているキーマップが表示されます。",
+    "kana": "たいおうしているキーボードをせつぞくすると、じどうでげんざいせっていされているキーマップがひょうじされます。",
+    "tags": ["base", "symbols"],
+    "source": "keebon-studio-manual",
+    "reviewed": false
+  },
+  {
+    "id": "keebon-studio-manual-7",
+    "display": "キーボードや設定によって異なりますが、デフォルトで設定されているキーマップの名前を解説します。",
+    "kana": "キーボードやせっていによってことなりますが、デフォルトでせっていされているキーマップのなまえをかいせつします。",
+    "tags": ["base", "symbols"],
+    "source": "keebon-studio-manual",
+    "reviewed": false
+  },
+  {
+    "id": "keebon-studio-manual-8",
+    "display": "レイヤーを追加したり名前を変更する場合は、レイヤーの右側にアイコンがあるのでクリックして追加します。",
+    "kana": "レイヤーをついかしたりなまえをへんこうするばあいは、レイヤーのみぎがわにアイコンがあるのでクリックしてついかします。",
+    "tags": ["base", "symbols"],
+    "source": "keebon-studio-manual",
+    "reviewed": false
+  },
+  {
+    "id": "keebon-studio-manual-9",
+    "display": "キーボードの形にボタンが並んでいるので、設定したい箇所のキーをクリックするとキーの割り当て選択画面が開きます。",
+    "kana": "キーボードのかたちにボタンがならんでいるので、せっていしたいかしょのキーをクリックするとキーのわりあてせんたくがめんがひらきます。",
+    "tags": ["base", "symbols"],
+    "source": "keebon-studio-manual",
+    "reviewed": false
+  },
+  {
+    "id": "keebon-studio-manual-10",
+    "display": "ここから割り当てたい機能を探し、設定することで割り当てられます。",
+    "kana": "ここからわりあてたいきのうをさがし、せっていすることでわりあてられます。",
+    "tags": ["base"],
+    "source": "keebon-studio-manual",
+    "reviewed": false
+  },
+  {
+    "id": "keebon-studio-manual-11",
+    "display": "割り当てを変更すると即座にキーボードに反映されますが、保存しないとキーボードの電源を落とした際に元の状態に戻ってしまいます。",
+    "kana": "わりあてをへんこうするとそくざにキーボードにはんえいされますが、ほぞんしないとキーボードのでんげんをおとしたさいにもとのじょうたいにもどってしまいます。",
+    "tags": ["base", "symbols"],
+    "source": "keebon-studio-manual",
+    "reviewed": false
+  },
+  {
+    "id": "keebon-studio-manual-12",
+    "display": "私がよく使うと思う機能を以下に列挙しておきます。",
+    "kana": "わたしがよくつかうとおもうきのうをいかにれっきょしておきます。",
+    "tags": ["base"],
+    "source": "keebon-studio-manual",
+    "reviewed": false
+  },
+  {
+    "id": "keebon-studio-manual-13",
+    "display": "このタブではキーマップ一覧で設定したマクロやタップダンスの中身を設定したり、コンボを設定したりできます。",
+    "kana": "このタブではキーマップいちらんでせっていしたマクロやタップダンスのなかみをせっていしたり、コンボをせっていしたりできます。",
+    "tags": ["base", "symbols"],
+    "source": "keebon-studio-manual",
+    "reviewed": false
+  },
+  {
+    "id": "keebon-studio-manual-14",
+    "display": "セキュリティ上のリスクになるので、マクロにパスワード等は設定しないようにしましょう。",
+    "kana": "セキュリティじょうのリスクになるので、マクロにパスワードとうはせっていしないようにしましょう。",
+    "tags": ["base", "symbols"],
+    "source": "keebon-studio-manual",
+    "reviewed": false
+  },
+  {
+    "id": "layer-introduction-1",
+    "display": "過去の記事を見返していたら自作キーボードの最大の特徴であるレイヤー機能についての説明が足りていない気がしました。",
+    "kana": "かこのきじをみかえしていたらじさくキーボードのさいだいのとくちょうであるレイヤーきのうについてのせつめいがたりていないきがしました。",
+    "tags": ["base", "symbols"],
+    "source": "layer-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "layer-introduction-2",
+    "display": "レイヤー機能があるおかげで極端にキーが少ないキーボードも普通に使えるのですが、外から見ていると不思議でしょうがないと思います。",
+    "kana": "レイヤーきのうがあるおかげできょくたんにキーがすくないキーボードもふつうにつかえるのですが、そとからみているとふしぎでしょうがないとおもいます。",
+    "tags": ["base", "symbols"],
+    "source": "layer-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "layer-introduction-3",
+    "display": "本記事ではそんなレイヤー機能のメリットと使い方についてじっくりと解説したいと思います。",
+    "kana": "ほんきじではそんなレイヤーきのうのメリットとつかいかたについてじっくりとかいせつしたいとおもいます。",
+    "tags": ["base", "symbols"],
+    "source": "layer-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "layer-introduction-4",
+    "display": "打鍵による疲労の最大の原因は手を大きく動かすこと",
+    "kana": "だけんによるひろうのさいだいのげんいんはてをおおきくうごかすこと",
+    "tags": ["base"],
+    "source": "layer-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "layer-introduction-5",
+    "display": "私が初心者におすすめするのは60%～75%キーボード",
+    "kana": "わたしがしょしんしゃにおすすめするのは60%～75%キーボード",
+    "tags": ["base", "symbols", "digits"],
+    "source": "layer-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "layer-introduction-6",
+    "display": "聞き慣れない単語のようですが、ノートパソコンやコンパクトなキーボードを利用している人の大部分は触ったことがあると思います。",
+    "kana": "ききなれないたんごのようですが、ノートパソコンやコンパクトなキーボードをりようしているひとのだいぶぶんはさわったことがあるとおもいます。",
+    "tags": ["base", "symbols"],
+    "source": "layer-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "layer-introduction-7",
+    "display": "それは狭いキーボードスペースに如何にキーを押し込むかということに腐心しているキーレイアウトが多いからです。",
+    "kana": "それはせまいキーボードスペースにいかがにキーをおしこむかということにふしんしているキーレイアウトがおおいからです。",
+    "tags": ["base", "symbols"],
+    "source": "layer-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "layer-introduction-8",
+    "display": "さて、オタク特有の話が長くなるやつをやってしまいましたが、ようやく本題です。",
+    "kana": "さて、オタクとくゆうのはなしがながくなるやつをやってしまいましたが、ようやくほんだいです。",
+    "tags": ["base"],
+    "source": "layer-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "layer-introduction-9",
+    "display": "レイヤー機能は自作キーボードの最も特徴的な機能と私は考えています。",
+    "kana": "レイヤーきのうはじさくキーボードのもっともとくちょうてきなきのうとわたしはかんがえています。",
+    "tags": ["base", "symbols"],
+    "source": "layer-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "layer-introduction-10",
+    "display": "２．レイヤーを何個でもユニークに設定することができる",
+    "kana": "２．レイヤーをなんこでもユニークにせっていすることができる",
+    "tags": ["base", "symbols", "digits"],
+    "source": "layer-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "layer-introduction-11",
+    "display": "３．レイヤーキーを他のキーと重畳して割り当てることができる",
+    "kana": "３．レイヤーキーをほかのキーとちょうじょうしてわりあてることができる",
+    "tags": ["base", "symbols", "digits"],
+    "source": "layer-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "layer-introduction-12",
+    "display": "これだけだと分かりにくいので、一つずつ解説していきます。",
+    "kana": "これだけだとわかりにくいので、ひとつずつかいせつしていきます。",
+    "tags": ["base"],
+    "source": "layer-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "layer-introduction-13",
+    "display": "しゃらくせえメリットだけ教えろ、という人は少しジャンプしてメリットの部分から参照ください。",
+    "kana": "しゃらくせえメリットだけおしえろ、というひとはすこしジャンプしてメリットのぶぶんからさんしょうください。",
+    "tags": ["base"],
+    "source": "layer-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "layer-introduction-14",
+    "display": "自作キーボードにおいては全てのキーにレイヤーキーを割り当てることができます。",
+    "kana": "じさくキーボードにおいてはすべてのキーにレイヤーキーをわりあてることができます。",
+    "tags": ["base", "symbols"],
+    "source": "layer-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "be30ortho-keymap-guide-1",
+    "display": "キーボードのパーセンテージ表記って皆さんおわかりになりますでしょうか。",
+    "kana": "キーボードのパーセンテージひょうきってみなさんおわかりになりますでしょうか。",
+    "tags": ["base", "symbols"],
+    "source": "be30ortho-keymap-guide",
+    "reviewed": false
+  },
+  {
+    "id": "be30ortho-keymap-guide-2",
+    "display": "では、30%キーボードは、というと、モデファイアキーまでも消してしまって30%なわけですよ。",
+    "kana": "では、30%キーボードは、というと、モデファイアキーまでもけしてしまって30%なわけですよ。",
+    "tags": ["base", "symbols", "digits"],
+    "source": "be30ortho-keymap-guide",
+    "reviewed": false
+  },
+  {
+    "id": "be30ortho-keymap-guide-3",
+    "display": "設定における考え方としては、私ができるだけ覚えやすいキーマップにするということです。",
+    "kana": "せっていにおけるかんがえかたとしては、わたしができるだけおぼえやすいキーマップにするということです。",
+    "tags": ["base", "symbols"],
+    "source": "be30ortho-keymap-guide",
+    "reviewed": false
+  },
+  {
+    "id": "be30ortho-keymap-guide-4",
+    "display": "私が既に使えているキーボードのキーマップをできる限り踏襲することを第一にしていますので、最適化ができているわけではありません。",
+    "kana": "わたしがすでにつかえているキーボードのキーマップをできるかぎりとうしゅうすることをだいいちにしていますので、さいてきかができているわけではありません。",
+    "tags": ["base", "symbols"],
+    "source": "be30ortho-keymap-guide",
+    "reviewed": false
+  },
+  {
+    "id": "be30ortho-keymap-guide-5",
+    "display": "自作キーボードにはレイヤーという機能があります。",
+    "kana": "じさくキーボードにはレイヤーというきのうがあります。",
+    "tags": ["base", "symbols"],
+    "source": "be30ortho-keymap-guide",
+    "reviewed": false
+  },
+  {
+    "id": "be30ortho-keymap-guide-6",
+    "display": "他のレイヤーキーは私の処理能力では使いこなせませんでした。",
+    "kana": "ほかのレイヤーキーはわたしのしょりのうりょくではつかいこなせませんでした。",
+    "tags": ["base", "symbols"],
+    "source": "be30ortho-keymap-guide",
+    "reviewed": false
+  },
+  {
+    "id": "be30ortho-keymap-guide-7",
+    "display": "アルファベットキーなどのよく使うキーが並んでいます。",
+    "kana": "アルファベットキーなどのよくつかうキーがならんでいます。",
+    "tags": ["base", "symbols"],
+    "source": "be30ortho-keymap-guide",
+    "reviewed": false
+  },
+  {
+    "id": "be30ortho-keymap-guide-8",
+    "display": "モデファイヤキーとアルファベットキーを組み合わせています。",
+    "kana": "モデファイヤキーとアルファベットキーをくみあわせています。",
+    "tags": ["base", "symbols"],
+    "source": "be30ortho-keymap-guide",
+    "reviewed": false
+  },
+  {
+    "id": "be30ortho-keymap-guide-9",
+    "display": "アルファベットキーを長押しすることはゲーム以外ではほとんど無いと思いますので、アルファベットキーとモデファイヤキーを重ね合わせておきます。",
+    "kana": "アルファベットキーをながおしすることはゲームいがいではほとんどないとおもいますので、アルファベットキーとモデファイヤキーをかさねあわせておきます。",
+    "tags": ["base", "symbols"],
+    "source": "be30ortho-keymap-guide",
+    "reviewed": false
+  },
+  {
+    "id": "be30ortho-keymap-guide-10",
+    "display": "一段目が単押し、二段目が長押し、三段目が2度押しとなっています。",
+    "kana": "いちだんめがたんおし、にだんめがながおし、さんだんめが2どおしとなっています。",
+    "tags": ["base", "digits"],
+    "source": "be30ortho-keymap-guide",
+    "reviewed": false
+  },
+  {
+    "id": "be30ortho-keymap-guide-11",
+    "display": "一番右側のキーにも長押しを設定しているのも、その組み合わせを使いやすくするためです。",
+    "kana": "いちばんみぎがわのキーにもながおしをせっていしているのも、そのくみあわせをつかいやすくするためです。",
+    "tags": ["base", "symbols"],
+    "source": "be30ortho-keymap-guide",
+    "reviewed": false
+  },
+  {
+    "id": "be30ortho-keymap-guide-12",
+    "display": "こんな感じで、慣れていく過程で色々試行錯誤して馴染ませていきます。",
+    "kana": "こんなかんじで、なれていくかていでいろいろしこうさくごしてなじませていきます。",
+    "tags": ["base"],
+    "source": "be30ortho-keymap-guide",
+    "reviewed": false
+  },
+  {
+    "id": "be30ortho-keymap-guide-13",
+    "display": "日本語配列ユーザーなので変換と無変換はマストです。",
+    "kana": "にほんごはいれつユーザーなのでへんかんとむへんかんはマストです。",
+    "tags": ["base", "symbols"],
+    "source": "be30ortho-keymap-guide",
+    "reviewed": false
+  },
+  {
+    "id": "be30ortho-keymap-guide-14",
+    "display": "そして両手でアクセスしやすい真ん中にバックスペースキーを配置しています。",
+    "kana": "そしてりょうてでアクセスしやすいまんなかにバックスペースキーをはいちしています。",
+    "tags": ["base", "symbols"],
+    "source": "be30ortho-keymap-guide",
+    "reviewed": false
+  },
+  {
+    "id": "go40-custom-guide-1",
+    "display": "使うだけなら最小構成のケースレスで十分ですが、持ち運び時にホコリが入らないようにしたり、打鍵感を追求したりして楽しむことができます。",
+    "kana": "つかうだけならさいしょうこうせいのケースレスでじゅうぶんですが、もちはこびときにホコリがはいらないようにしたり、だけんかんをついきゅうしたりしてたのしむことができます。",
+    "tags": ["base", "symbols"],
+    "source": "go40-custom-guide",
+    "reviewed": false
+  },
+  {
+    "id": "go40-custom-guide-2",
+    "display": "本ガイドのキーボードのカスタマイズは全てご自分の責任において実施してください。",
+    "kana": "ほんガイドのキーボードのカスタマイズはすべてごじぶんのせきにんにおいてじっししてください。",
+    "tags": ["base", "symbols"],
+    "source": "go40-custom-guide",
+    "reviewed": false
+  },
+  {
+    "id": "go40-custom-guide-3",
+    "display": "私に各種カスタマイズを依頼されても対応できかねます。",
+    "kana": "わたしにかくしゅカスタマイズをいらいされてもたいおうできかねます。",
+    "tags": ["base"],
+    "source": "go40-custom-guide",
+    "reviewed": false
+  },
+  {
+    "id": "go40-custom-guide-4",
+    "display": "各工夫もそこまでコストがかからないようにしていますので、少しの気分転換でチャレンジしてみてもいいと思います。",
+    "kana": "かくくふうもそこまでコストがかからないようにしていますので、すこしのきぶんてんかんでチャレンジしてみてもいいとおもいます。",
+    "tags": ["base"],
+    "source": "go40-custom-guide",
+    "reviewed": false
+  },
+  {
+    "id": "go40-custom-guide-5",
+    "display": "このボトムの構成をアクリル積層プレートの構成に変えることができます。",
+    "kana": "このボトムのこうせいをアクリルせきそうプレートのこうせいにかえることができます。",
+    "tags": ["base", "symbols"],
+    "source": "go40-custom-guide",
+    "reviewed": false
+  },
+  {
+    "id": "go40-custom-guide-6",
+    "display": "また、積層プレートを使用するとチルト角度を変更することもできます。",
+    "kana": "また、せきそうプレートをしようするとチルトかくどをへんこうすることもできます。",
+    "tags": ["base", "symbols"],
+    "source": "go40-custom-guide",
+    "reviewed": false
+  },
+  {
+    "id": "go40-custom-guide-7",
+    "display": "通常はボトムプレートにチルト用プレートを4枚重ねることになりますが、これを減らすことでチルト角を減らすことができます。",
+    "kana": "つうじょうはボトムプレートにチルトようプレートを4まいかさねることになりますが、これをへらすことでチルトかくをへらすことができます。",
+    "tags": ["base", "symbols", "digits"],
+    "source": "go40-custom-guide",
+    "reviewed": false
+  },
+  {
+    "id": "go40-custom-guide-8",
+    "display": "チルト角を減らすことで持ち運びしやすくもなりますので、持ち運び重視の場合は考えてみてもいいかもしれません。",
+    "kana": "チルトかくをへらすことでもちはこびしやすくもなりますので、もちはこびじゅうしのばあいはかんがえてみてもいいかもしれません。",
+    "tags": ["base"],
+    "source": "go40-custom-guide",
+    "reviewed": false
+  },
+  {
+    "id": "go40-custom-guide-9",
+    "display": "ケースレス構成の欠点として、キーボード側面部分の覆いがないためホコリやゴミが侵入してしまいそうだという懸念があります。",
+    "kana": "ケースレスこうせいのけってんとして、キーボードそくめんぶぶんのおおいがないためホコリやゴミがしんにゅうしてしまいそうだというけねんがあります。",
+    "tags": ["base", "symbols"],
+    "source": "go40-custom-guide",
+    "reviewed": false
+  },
+  {
+    "id": "go40-custom-guide-10",
+    "display": "実際はそこまで侵入しませんし、ケースレス構成は分解も容易なのでメンテナンスも容易なので大きな問題にはなることはないです。",
+    "kana": "じっさいはそこまでしんにゅうしませんし、ケースレスこうせいはぶんかいもよういなのでメンテナンスもよういなのでおおきなもんだいにはなることはないです。",
+    "tags": ["base", "symbols"],
+    "source": "go40-custom-guide",
+    "reviewed": false
+  },
+  {
+    "id": "go40-custom-guide-11",
+    "display": "ただ、ケースレス構成はいかにも自作の怪しい自作デバイスという見た目になってしまうため、見た目をどうにかしたいと思う方も多いと思います。",
+    "kana": "ただ、ケースレスこうせいはいかにもじさくのあやしいじさくデバイスというみためになってしまうため、みためをどうにかしたいとおもうかたもおおいとおもいます。",
+    "tags": ["base", "symbols"],
+    "source": "go40-custom-guide",
+    "reviewed": false
+  },
+  {
+    "id": "go40-custom-guide-12",
+    "display": "それを解消するためにケース側面に革紐やマスキングテープを巻くというカスタムが流行っているので、このガイドでもその手法を取り込みたいと思います。",
+    "kana": "それをかいしょうするためにケースそくめんにかわひもやマスキングテープをまくというカスタムがはやっているので、このガイドでもそのしゅほうをとりこみたいとおもいます。",
+    "tags": ["base", "symbols"],
+    "source": "go40-custom-guide",
+    "reviewed": false
+  },
+  {
+    "id": "go40-custom-guide-13",
+    "display": "というわけで、遊舎工房のレーザーカットサービスを使用して簡単に製造依頼する事ができます。",
+    "kana": "というわけで、ゆうしゃこうぼうのレーザーカットサービスをしようしてかんたんにせいぞういらいすることができます。",
+    "tags": ["base", "symbols"],
+    "source": "go40-custom-guide",
+    "reviewed": false
+  },
+  {
+    "id": "go40-custom-guide-14",
+    "display": "またキーボード底面と机の間に隙間が少なくなるので打鍵音が低減できます。",
+    "kana": "またキーボードていめんとつくえのあいだにすきまがすくなくなるのでだけんおんがていげんできます。",
+    "tags": ["base", "symbols"],
+    "source": "go40-custom-guide",
+    "reviewed": false
+  },
+  {
+    "id": "goforty-introduction-1",
+    "display": "104の40%だと41.6なので、42キー前後ですね。",
+    "kana": "104の40%だと41.6なので、42キーぜんごですね。",
+    "tags": ["base", "symbols", "digits"],
+    "source": "goforty-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "goforty-introduction-2",
+    "display": "実際には50キー前後まで40%として分類されることがあります。",
+    "kana": "じっさいには50キーぜんごまで40%としてぶんるいされることがあります。",
+    "tags": ["base", "symbols", "digits"],
+    "source": "goforty-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "goforty-introduction-3",
+    "display": "キー数が少ないことによりキーボード全体がコンパクトになることに尽きます。",
+    "kana": "キーすうがすくないことによりキーボードぜんたいがコンパクトになることにつきます。",
+    "tags": ["base", "symbols"],
+    "source": "goforty-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "goforty-introduction-4",
+    "display": "数字にするとピンとこないかもしれませんが、メチャクチャ机が広くなります。",
+    "kana": "すうじにするとピンとこないかもしれませんが、メチャクチャつくえがひろくなります。",
+    "tags": ["base"],
+    "source": "goforty-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "goforty-introduction-5",
+    "display": "持ち運ぶ際もそのコンパクトさが多少なりと役に立つと思います。",
+    "kana": "もちはこぶさいもそのコンパクトさがたしょうなりとやくにたつとおもいます。",
+    "tags": ["base"],
+    "source": "goforty-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "goforty-introduction-6",
+    "display": "しかし、40%サイズのキーボードは独特なサイズのキーキャップを必要とする場合が多く文字印字を一致させることが難しいです。",
+    "kana": "しかし、40%サイズのキーボードはどくとくなサイズのキーキャップをひつようとするばあいがおおくもじいんじをいっちさせることがむずかしいです。",
+    "tags": ["base", "symbols", "digits"],
+    "source": "goforty-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "goforty-introduction-7",
+    "display": "文字印字一致を目指すと高価なキーキャップが必要となり、結局普通のサイズのキーボードより高くなってしまうこともよくあります。",
+    "kana": "もじいんじいっちをめざすとこうかなキーキャップがひつようとなり、けっきょくふつうのサイズのキーボードよりたかくなってしまうこともよくあります。",
+    "tags": ["base", "symbols"],
+    "source": "goforty-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "goforty-introduction-8",
+    "display": "カーソルキーも数字キーも無いので知らない人には思うように入力できませんし、慣れないと早く入力することが難しいです。",
+    "kana": "カーソルキーもすうじキーもないのでしらないひとにはおもうようににゅうりょくできませんし、なれないとはやくにゅうりょくすることがむずかしいです。",
+    "tags": ["base", "symbols"],
+    "source": "goforty-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "goforty-introduction-9",
+    "display": "40%キーボードを使用するにはレイヤーという機能を駆使して入力することになります。",
+    "kana": "40%キーボードをしようするにはレイヤーというきのうをくししてにゅうりょくすることになります。",
+    "tags": ["base", "symbols", "digits"],
+    "source": "goforty-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "goforty-introduction-10",
+    "display": "レイヤー機能は簡単に言うとコントロールキーのような機能です。",
+    "kana": "レイヤーきのうはかんたんにゆうとコントロールキーのようなきのうです。",
+    "tags": ["base", "symbols"],
+    "source": "goforty-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "goforty-introduction-11",
+    "display": "レイヤー機能はコントロールキーのようにアルファベットキーを始めとした全てのキーを変化させます。",
+    "kana": "レイヤーきのうはコントロールキーのようにアルファベットキーをはじめとしたすべてのキーをへんかさせます。",
+    "tags": ["base", "symbols"],
+    "source": "goforty-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "goforty-introduction-12",
+    "display": "かく言う私は、ほぼすべてのキーボードにおいてはデフォルトレイヤーを含めて主に４つ分のレイヤーを使います。",
+    "kana": "かくいうわたしは、ほぼすべてのキーボードにおいてはデフォルトレイヤーをふくめておもに４つぶんのレイヤーをつかいます。",
+    "tags": ["base", "symbols", "digits"],
+    "source": "goforty-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "goforty-introduction-13",
+    "display": "親指にエンターキーを配置して短押しでスペースとエンターを入力し、長押しでレイヤーを切り替えています。",
+    "kana": "おやゆびにエンターキーをはいちしてたんおしでスペースとエンターをにゅうりょくし、ながおしでレイヤーをきりかえています。",
+    "tags": ["base", "symbols"],
+    "source": "goforty-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "goforty-introduction-14",
+    "display": "そしてそれは手元のキーボードを見ても分かりません。",
+    "kana": "そしてそれはてもとのキーボードをみてもわかりません。",
+    "tags": ["base", "symbols"],
+    "source": "goforty-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "gofortysplit-introduction-1",
+    "display": "と問われると微妙かもしれませんが、心の目で見れば40%なのです。",
+    "kana": "ととわれるとびみょうかもしれませんが、こころのめでみれば40%なのです。",
+    "tags": ["base", "digits"],
+    "source": "gofortysplit-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "gofortysplit-introduction-2",
+    "display": "この1列を追加したことにより、記号キーをデフォルトレイヤーにより多く配置できるようになり、利便性が向上しています。",
+    "kana": "この1れつをついかしたことにより、きごうキーをデフォルトレイヤーによりおおくはいちできるようになり、りべんせいがこうじょうしています。",
+    "tags": ["base", "symbols", "digits"],
+    "source": "gofortysplit-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "gofortysplit-introduction-3",
+    "display": "既に40%キーボードに慣れ親しんでいる人はマクロキーとしてお使いください。",
+    "kana": "すでに40%キーボードになれしたしんでいるひとはマクロキーとしておつかいください。",
+    "tags": ["base", "symbols", "digits"],
+    "source": "gofortysplit-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "gofortysplit-introduction-4",
+    "display": "7列の分割レイアウトとするために中央部に2キー分追加されています。",
+    "kana": "7れつのぶんかつレイアウトとするためにちゅうおうぶに2キーぶんついかされています。",
+    "tags": ["base", "symbols", "digits"],
+    "source": "gofortysplit-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "gofortysplit-introduction-5",
+    "display": "普通のキーボードと同じ用に左右非対称の配列であるために2キー分の追加となりましたが、この2キーも便利に使えます。",
+    "kana": "ふつうのキーボードとおなじようにさゆうひたいしょうのはいれつであるために2キーぶんのついかとなりましたが、この2キーもべんりにつかえます。",
+    "tags": ["base", "symbols", "digits"],
+    "source": "gofortysplit-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "gofortysplit-introduction-6",
+    "display": "親指部分に追加したキーは、ホームポジションに両手を置いた際に左右で同じ位置関係に来るように調整しています。",
+    "kana": "おやゆびぶぶんについかしたキーは、ホームポジションにりょうてをおいたさいにさゆうでおなじいちかんけいにくるようにちょうせいしています。",
+    "tags": ["base", "symbols"],
+    "source": "gofortysplit-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "gofortysplit-introduction-7",
+    "display": "こうすることにより、親指を無理なく活用することができます。",
+    "kana": "こうすることにより、おやゆびをむりなくかつようすることができます。",
+    "tags": ["base"],
+    "source": "gofortysplit-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "gofortysplit-introduction-8",
+    "display": "この2種は明確に想定使用場所が異なり、ユーザの目的に沿った使い方をサポートできるようにしています。",
+    "kana": "この2しゅはめいかくにそうていしようばしょがことなり、ユーザのもくてきにそったつかいかたをサポートできるようにしています。",
+    "tags": ["base", "symbols", "digits"],
+    "source": "gofortysplit-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "gofortysplit-introduction-9",
+    "display": "このポリカーボネート削り出しパームレストカバーを使用していないキーボード上部に重ねることで、非使用時に埃の侵入を防ぐことができます。",
+    "kana": "このポリカーボネートけずりだしパームレストカバーをしようしていないキーボードじょうぶにかさねることで、ひしようじにほこりのしんにゅうをふせぐことができます。",
+    "tags": ["base", "symbols"],
+    "source": "gofortysplit-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "gofortysplit-introduction-10",
+    "display": "アッパーケースとボトムケースでスイッチプレートを挟み込むガスケットマウント方式を採用し、良好な打鍵感を実現しています。",
+    "kana": "アッパーケースとボトムケースでスイッチプレートをはさみこむガスケットマウントほうしきをさいようし、りょうこうなだけんかんをじつげんしています。",
+    "tags": ["base", "symbols"],
+    "source": "gofortysplit-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "gofortysplit-introduction-11",
+    "display": "持ち運ぶ際に傷を付けたくないとケースを用いれば更に二つ追加されます。",
+    "kana": "もちはこぶさいにきずをつけたくないとケースをもちいればさらにふたつついかされます。",
+    "tags": ["base", "symbols"],
+    "source": "gofortysplit-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "gofortysplit-introduction-12",
+    "display": "キーキャップ面を合わせてスタックするためにはロの字のスペーサーが必要でした。",
+    "kana": "キーキャップめんをあわせてスタックするためにはロのじのスペーサーがひつようでした。",
+    "tags": ["base", "symbols"],
+    "source": "gofortysplit-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "gofortysplit-introduction-13",
+    "display": "しかし、スペーサーはスペーサーなので、キーボード使用時には邪魔になります。",
+    "kana": "しかし、スペーサーはスペーサーなので、キーボードしようじにはじゃまになります。",
+    "tags": ["base", "symbols"],
+    "source": "gofortysplit-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "gofortysplit-introduction-14",
+    "display": "そこでキーボードとして使用する際には分割してチルト足にするアイデアが浮かびました。",
+    "kana": "そこでキーボードとしてしようするさいにはぶんかつしてチルトあしにするアイデアがうかびました。",
+    "tags": ["base", "symbols"],
+    "source": "gofortysplit-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "go40v2-introduction-1",
+    "display": "コンセプト発表当時はこんなにも派生を生むシリーズだとは夢にも思っていませんでした。",
+    "kana": "コンセプトはっぴょうとうじはこんなにもはせいをうむシリーズだとはゆめにもおもっていませんでした。",
+    "tags": ["base", "symbols"],
+    "source": "go40v2-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "go40v2-introduction-2",
+    "display": "それもこれも購入していただいた皆様の賛同と応援が有ってのことだと思っていますので、この場を借りてお礼を申し上げたいと思います。",
+    "kana": "それもこれもこうにゅうしていただいたみなさまのさんどうとおうえんがあってのことだとおもっていますので、このばをかりておれいをもうしあげたいとおもいます。",
+    "tags": ["base"],
+    "source": "go40v2-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "go40v2-introduction-3",
+    "display": "これだけだと詳しくないと全然ピンとこないと思いますので、端的に言うとマイコンの性能が上がりました。",
+    "kana": "これだけだとくわしくないとぜんぜんピンとこないとおもいますので、たんてきにゆうとマイコンのせいのうがあがりました。",
+    "tags": ["base"],
+    "source": "go40v2-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "go40v2-introduction-4",
+    "display": "これにより、より一層色々な機能を気軽にお届けできるようになったと思います。",
+    "kana": "これにより、よりいっそういろいろなきのうをきがるにおとどけできるようになったとおもいます。",
+    "tags": ["base"],
+    "source": "go40v2-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "go40v2-introduction-5",
+    "display": "打鍵感はほぼ変わりなく、ケースレスでの使用時に透明感のある仕上がりにすることができました。",
+    "kana": "だけんかんはほぼかわりなく、ケースレスでのしようじにとうめいかんのあるしあがりにすることができました。",
+    "tags": ["base", "symbols"],
+    "source": "go40v2-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "go40v2-introduction-6",
+    "display": "ただ値段が高いという意見もごもっともなので、廉価なケースを色々検討してきました。",
+    "kana": "ただねだんがたかいといういけんもごもっともなので、れんかなケースをいろいろけんとうしてきました。",
+    "tags": ["base", "symbols"],
+    "source": "go40v2-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "go40v2-introduction-7",
+    "display": "とはいえ、具体的なスケジュールを発表できる段階ではないので、さらなるアップデートは気長に待っていただければと思います。",
+    "kana": "とはいえ、ぐたいてきなスケジュールをはっぴょうできるだんかいではないので、さらなるアップデートはきながにまっていただければとおもいます。",
+    "tags": ["base", "symbols"],
+    "source": "go40v2-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "go40v2-introduction-8",
+    "display": "販売開始は6月21日を予定していますので、よろしくお願いします。",
+    "kana": "はんばいかいしは6がつ21にちをよていしていますので、よろしくおねがいします。",
+    "tags": ["base", "digits"],
+    "source": "go40v2-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "go40v2-introduction-9",
+    "display": "面白かったり、期待していただけましたらポチッとお願いします！",
+    "kana": "おもしろかったり、きたいしていただけましたらポチッとおねがいします！",
+    "tags": ["base", "symbols"],
+    "source": "go40v2-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "go40v2-introduction-10",
+    "display": "ちゃんと説明しないとなあと思って急いで書きました。",
+    "kana": "ちゃんとせつめいしないとなあとおもっていそいでかきました。",
+    "tags": ["base"],
+    "source": "go40v2-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "go40v2-introduction-11",
+    "display": "個人的にかなり気に入っているコンセプトとシリーズなので、今後とも色々な展開をしていきたいと思います。",
+    "kana": "こじんてきにかなりきにいっているコンセプトとシリーズなので、こんごともいろいろなてんかいをしていきたいとおもいます。",
+    "tags": ["base", "symbols"],
+    "source": "go40v2-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "clickboard-introduction-1",
+    "display": "なかなか他に例を見ない異質な存在なので、ぜひ読んでみてください。",
+    "kana": "なかなかほかにれいをみないいしつなそんざいなので、ぜひよんでみてください。",
+    "tags": ["base"],
+    "source": "clickboard-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "clickboard-introduction-2",
+    "display": "私もどこかで今年の自キ活まとめ記事を書かないといけませんね。",
+    "kana": "わたしもどこかでことしのじキかつまとめきじをかかないといけませんね。",
+    "tags": ["base"],
+    "source": "clickboard-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "clickboard-introduction-3",
+    "display": "というわけで、本記事はこれらの特徴を順に解説していきます。",
+    "kana": "というわけで、ほんきじはこれらのとくちょうをじゅんにかいせつしていきます。",
+    "tags": ["base"],
+    "source": "clickboard-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "clickboard-introduction-4",
+    "display": "薄いとカバンの隙間にもサッと入れて持ち運びしやすいですし、パームレスト等がなくても打鍵時に手首への負担が少ないように感じます。",
+    "kana": "うすいとカバンのすきまにもサッといれてもちはこびしやすいですし、パームレストとうがなくてもだけんじにてくびへのふたんがすくないようにかんじます。",
+    "tags": ["base", "symbols"],
+    "source": "clickboard-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "clickboard-introduction-5",
+    "display": "薄さは全てに優先する、という思想の方にはオススメの特徴だと思います。",
+    "kana": "うすさはすべてにゆうせんする、というしそうのほうにはオススメのとくちょうだとおもいます。",
+    "tags": ["base"],
+    "source": "clickboard-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "clickboard-introduction-6",
+    "display": "カスタムキーボードに代表される、一般的に打鍵感のいい感触では決してないです。",
+    "kana": "カスタムキーボードにだいひょうされる、いっぱんてきにだけんかんのいいかんしょくではけっしてないです。",
+    "tags": ["base", "symbols"],
+    "source": "clickboard-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "clickboard-introduction-7",
+    "display": "しかし、超ショートストロークなので、慣れると思ったように打てて気持ちよくなってきます。",
+    "kana": "しかし、ちょうショートストロークなので、なれるとおもったようにうててきもちよくなってきます。",
+    "tags": ["base", "symbols"],
+    "source": "clickboard-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "clickboard-introduction-8",
+    "display": "たまに味気なく感じることも無いことは無いですが、まあこれはこれで味です。",
+    "kana": "たまにあじけなくかんじることもないことはないですが、まあこれはこれであじです。",
+    "tags": ["base"],
+    "source": "clickboard-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "clickboard-introduction-9",
+    "display": "試行錯誤の果てに狭いピッチを採用することになったのです。",
+    "kana": "しこうさくごのはてにせまいピッチをさいようすることになったのです。",
+    "tags": ["base"],
+    "source": "clickboard-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "clickboard-introduction-10",
+    "display": "おかげでかなり試作を重ねる事になりましたが、最初よりもかなり打鍵感を良くすることができました。",
+    "kana": "おかげでかなりしさくをかさねることになりましたが、さいしょよりもかなりだけんかんをよくすることができました。",
+    "tags": ["base"],
+    "source": "clickboard-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "clickboard-introduction-11",
+    "display": "というわけで、打鍵感を少しでも高めるために狭いピッチを採用したのでした。",
+    "kana": "というわけで、だけんかんをすこしでもたかめるためにせまいピッチをさいようしたのでした。",
+    "tags": ["base"],
+    "source": "clickboard-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "clickboard-introduction-12",
+    "display": "とはいえ、そのまま狭いピッチにすると親指キーが遠くなって押しづらくなることは分かっていたので、親指キーだけ下に離している工夫もしています。",
+    "kana": "とはいえ、そのまませまいピッチにするとおやゆびキーがとおくなっておしづらくなることはわかっていたので、おやゆびキーだけしたにはなしているくふうもしています。",
+    "tags": ["base", "symbols"],
+    "source": "clickboard-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "clickboard-introduction-13",
+    "display": "この特徴は私にとっては非常に嬉しいことですが、もしかしたら嬉しい人は少ないかも知れません。",
+    "kana": "このとくちょうはわたしにとってはひじょうにうれしいことですが、もしかしたらうれしいひとはすくないかもしれません。",
+    "tags": ["base"],
+    "source": "clickboard-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "clickboard-introduction-14",
+    "display": "薄い上にマウススイッチの超ショートストロークです。",
+    "kana": "うすいうえにマウススイッチのちょうショートストロークです。",
+    "tags": ["base", "symbols"],
+    "source": "clickboard-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "sonshi-introduction-1",
+    "display": "このブログには最近ビルドガイドばかり書いていて、このブログ自体の方向性としてどうなのよと思ったので少しでも軌道修正をしようと思います。",
+    "kana": "このブログにはさいきんビルドガイドばかりかいていて、このブログじたいのほうこうせいとしてどうなのよとおもったのですこしでもきどうしゅうせいをしようとおもいます。",
+    "tags": ["base"],
+    "source": "sonshi-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "sonshi-introduction-2",
+    "display": "そんな尊師スタイルを本記事で解説したいと思います。",
+    "kana": "そんなそんしスタイルをほんきじでかいせつしたいとおもいます。",
+    "tags": ["base"],
+    "source": "sonshi-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "sonshi-introduction-3",
+    "display": "このスタイルを愛用している伝説のハッカー、リチャード・ストールマン氏の愛称から来ています。",
+    "kana": "このスタイルをあいようしているでんせつのハッカー、リチャード・ストールマンしのあいしょうからきています。",
+    "tags": ["base", "symbols"],
+    "source": "sonshi-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "sonshi-introduction-4",
+    "display": "私が考える尊師スタイルのメリットは、自分の好きなキーボードを使えること、ポインティングデバイスを持ち歩かなくても済むこと、そしてその両立です。",
+    "kana": "わたしがかんがえるそんしスタイルのメリットは、じぶんのすきなキーボードをつかえること、ポインティングデバイスをもちあるかなくてもすむこと、そしてそのりょうりつです。",
+    "tags": ["base", "symbols"],
+    "source": "sonshi-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "sonshi-introduction-5",
+    "display": "キーボードは平たいのでカバンの空いたスペースに入れ込んで持ち運びもしやすいんですが、マウスやトラックボールは立体的で持ち運びづらいんですよね。",
+    "kana": "キーボードはひらたいのでカバンのあいたスペースにいれこんでもちはこびもしやすいんですが、マウスやトラックボールはりったいてきでもちはこびづらいんですよね。",
+    "tags": ["base", "symbols"],
+    "source": "sonshi-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "sonshi-introduction-6",
+    "display": "また、上の写真のように新幹線の狭い環境ではマウスやトラックボールを置けない場合でも内蔵トラックパッドを使うことで解決できます。",
+    "kana": "また、うえのしゃしんのようにしんかんせんのせまいかんきょうではマウスやトラックボールをおけないばあいでもないぞうトラックパッドをつかうことでかいけつできます。",
+    "tags": ["base", "symbols"],
+    "source": "sonshi-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "sonshi-introduction-7",
+    "display": "最初の2つは分かりやすいと思いますが、最後の1つは意識しないと忘れてしまう場合も多いように感じます。",
+    "kana": "さいしょの2つはわかりやすいとおもいますが、さいごの1つはいしきしないとわすれてしまうばあいもおおいようにかんじます。",
+    "tags": ["base", "digits"],
+    "source": "sonshi-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "sonshi-introduction-8",
+    "display": "まあ、尊師スタイルで長時間ゲームしないと起こらなさそうですが、意識はしておいたほうが良いでしょう。",
+    "kana": "まあ、そんしスタイルでちょうじかんゲームしないとおこらなさそうですが、いしきはしておいたほうがよいでしょう。",
+    "tags": ["base", "symbols"],
+    "source": "sonshi-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "sonshi-introduction-9",
+    "display": "尊師スタイルに対応するための用品も販売されていたりします。",
+    "kana": "そんしスタイルにたいおうするためのようひんもはんばいされていたりします。",
+    "tags": ["base"],
+    "source": "sonshi-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "sonshi-introduction-10",
+    "display": "こういう用品を内蔵キーボードの上に置いてから外付けキーボードを置くことで内蔵キーボードから浮かせることが可能になるわけなんです。",
+    "kana": "こういうようひんをないぞうキーボードのうえにおいてからそとづけキーボードをおくことでないぞうキーボードからうかせることがかのうになるわけなんです。",
+    "tags": ["base", "symbols"],
+    "source": "sonshi-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "sonshi-introduction-11",
+    "display": "プレートタイプよりもだいぶ小型ですし、くっつけて持ち運びもしやすいです。",
+    "kana": "プレートタイプよりもだいぶこがたですし、くっつけてもちはこびもしやすいです。",
+    "tags": ["base", "symbols"],
+    "source": "sonshi-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "sonshi-introduction-12",
+    "display": "この機能を使うことで、外付けキーボードを内蔵キーボードの上に置いても、キーが押されっぱなしになることはなくなるわけです。",
+    "kana": "このきのうをつかうことで、そとづけキーボードをないぞうキーボードのうえにおいても、キーがおされっぱなしになることはなくなるわけです。",
+    "tags": ["base", "symbols"],
+    "source": "sonshi-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "sonshi-introduction-13",
+    "display": "これで最低限は使用できるようになりますが、この方式にも少し欠点があります。",
+    "kana": "これでさいていげんはしようできるようになりますが、このほうしきにもすこしけってんがあります。",
+    "tags": ["base"],
+    "source": "sonshi-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "sonshi-introduction-14",
+    "display": "上に置いた外付けキーボードがあまり安定しないという点です。",
+    "kana": "うえにおいたそとづけキーボードがあまりあんていしないというてんです。",
+    "tags": ["base", "symbols"],
+    "source": "sonshi-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "split-keeb-notes-1",
+    "display": "私以外の方が設計した自作キーボード全てに適用できるというわけでは有りませんが、気をつけておいて損はないと思います。",
+    "kana": "わたしいがいのほうがせっけいしたじさくキーボードすべてにてきようできるというわけではありませんが、きをつけておいてそんはないとおもいます。",
+    "tags": ["base", "symbols"],
+    "source": "split-keeb-notes",
+    "reviewed": false
+  },
+  {
+    "id": "split-keeb-notes-2",
+    "display": "片側だけしか使わない方も同様にキャップをしておくと安心できますので、オススメしておきます。",
+    "kana": "かたがわだけしかつかわないかたもどうようにキャップをしておくとあんしんできますので、オススメしておきます。",
+    "tags": ["base"],
+    "source": "split-keeb-notes",
+    "reviewed": false
+  },
+  {
+    "id": "split-keeb-notes-3",
+    "display": "冗談のようですが、これは割とよく聞くトラブルです。",
+    "kana": "じょうだんのようですが、これはわりとよくきくトラブルです。",
+    "tags": ["base"],
+    "source": "split-keeb-notes",
+    "reviewed": false
+  },
+  {
+    "id": "split-keeb-notes-4",
+    "display": "最悪キーボードが壊れたりする可能性がありますので注意してください。",
+    "kana": "さいあくキーボードがこわれたりするかのうせいがありますのでちゅういしてください。",
+    "tags": ["base", "symbols"],
+    "source": "split-keeb-notes",
+    "reviewed": false
+  },
+  {
+    "id": "split-keeb-notes-5",
+    "display": "マイコン直付け基板である場合、基板ごと交換する必要がある場合があります。",
+    "kana": "マイコンじかつけきばんであるばあい、きばんごとこうかんするひつようがあるばあいがあります。",
+    "tags": ["base"],
+    "source": "split-keeb-notes",
+    "reviewed": false
+  },
+  {
+    "id": "split-keeb-notes-6",
+    "display": "対策としては左右間接続コネクタ部分に赤いマジック等で目印をつけて区別することで間違いを防止することができる、かもしれません。",
+    "kana": "たいさくとしてはさゆうかんせつぞくコネクタぶぶんにあかいマジックとうでめじるしをつけてくべつすることでまちがいをぼうしすることができる、かもしれません。",
+    "tags": ["base"],
+    "source": "split-keeb-notes",
+    "reviewed": false
+  },
+  {
+    "id": "split-keeb-notes-7",
+    "display": "充電用ケーブルでは左右間接続がうまく出来ない場合があります。",
+    "kana": "じゅうでんようケーブルではさゆうかんせつぞくがうまくできないばあいがあります。",
+    "tags": ["base", "symbols"],
+    "source": "split-keeb-notes",
+    "reviewed": false
+  },
+  {
+    "id": "split-keeb-notes-8",
+    "display": "もしちゃんと挿しているのに左右間接続が出来ない場合、ケーブルを交換してみてください。",
+    "kana": "もしちゃんとさしているのにさゆうかんせつぞくができないばあい、ケーブルをこうかんしてみてください。",
+    "tags": ["base", "symbols"],
+    "source": "split-keeb-notes",
+    "reviewed": false
+  },
+  {
+    "id": "split-keeb-notes-9",
+    "display": "以下は取り扱いを間違えても壊れるわけではないですが、知らないと迷ってしまうようなポイントをまとめます。",
+    "kana": "いかはとりあつかいをまちがえてもこわれるわけではないですが、しらないとまよってしまうようなポイントをまとめます。",
+    "tags": ["base"],
+    "source": "split-keeb-notes",
+    "reviewed": false
+  },
+  {
+    "id": "split-keeb-notes-10",
+    "display": "これを逆手に取って左右で繋ぎ変えることでキーマップを切り替えることが出来ます。",
+    "kana": "これをさかてにとってさゆうでつなぎかえることでキーマップをきりかえることができます。",
+    "tags": ["base", "symbols"],
+    "source": "split-keeb-notes",
+    "reviewed": false
+  },
+  {
+    "id": "split-keeb-notes-11",
+    "display": "本記事が有用だと感じた設計者の方はビルドガイド等にリンクしていただくことが出来ます。",
+    "kana": "ほんきじがゆうようだとかんじたせっけいしゃのほうはビルドガイドとうにリンクしていただくことができます。",
+    "tags": ["base"],
+    "source": "split-keeb-notes",
+    "reviewed": false
+  },
+  {
+    "id": "split-keeb-notes-12",
+    "display": "ただし、記事内容をそのままコピーして抜粋したり再利用することは許可しておりません。",
+    "kana": "ただし、きじないようをそのままコピーしてばっすいしたりさいりようすることはきょかしておりません。",
+    "tags": ["base", "symbols"],
+    "source": "split-keeb-notes",
+    "reviewed": false
+  },
+  {
+    "id": "split-keeb-notes-13",
+    "display": "左右分割キーボードは楽な姿勢で長文を打ち込むのに向いていますが、普通の一体型キーボードにない注意点があるため、皆さんも注意してくださいね。",
+    "kana": "さゆうぶんかつキーボードはらくなしせいでちょうぶんをうちこむのにむいていますが、ふつうのいったいがたキーボードにないちゅういてんがあるため、みなさんもちゅういしてくださいね。",
+    "tags": ["base", "symbols"],
+    "source": "split-keeb-notes",
+    "reviewed": false
+  },
+  {
+    "id": "split-keeb-notes-14",
+    "display": "押されたキーの位置のみの伝達であるため、スレイブ側のキーマップは一切考慮されない。",
+    "kana": "おされたキーのいちのみのでんたつであるため、スレイブがわのキーマップはいっさいこうりょされない。",
+    "tags": ["base", "symbols"],
+    "source": "split-keeb-notes",
+    "reviewed": false
+  },
+  {
+    "id": "salicylic-naming-1",
+    "display": "私という人間は好きな工程や部分にはメチャクチャ拘りますが、そうでないところはメチャクチャ大雑把です。",
+    "kana": "わたしというにんげんはすきなこうていやぶぶんにはメチャクチャかかわりますが、そうでないところはメチャクチャおおざっぱです。",
+    "tags": ["base"],
+    "source": "salicylic-naming",
+    "reviewed": false
+  },
+  {
+    "id": "salicylic-naming-2",
+    "display": "名付けは私の好きな工程にはカテゴライズされていないので、一部を除いてかなり適当です。",
+    "kana": "なづけはわたしのすきなこうていにはカテゴライズされていないので、いちぶをのぞいてかなりてきとうです。",
+    "tags": ["base"],
+    "source": "salicylic-naming",
+    "reviewed": false
+  },
+  {
+    "id": "salicylic-naming-3",
+    "display": "私が何でも細部に至るまで完璧にこだわっているように思っていただいている方は、その幻想を壊したくないので本記事を読まない方がいいです。",
+    "kana": "わたしがなんでもさいぶにいたるまでかんぺきにこだわっているようにおもっていただいているかたは、そのげんそうをこわしたくないのでほんきじをよまないほうがいいです。",
+    "tags": ["base"],
+    "source": "salicylic-naming",
+    "reviewed": false
+  },
+  {
+    "id": "salicylic-naming-4",
+    "display": "この記事のインタビューに返信しようとして、色々下書きしているうちにちゃんと全部描きたくなったので本記事を書きました。",
+    "kana": "このきじのインタビューにへんしんしようとして、いろいろしたがきしているうちにちゃんとぜんぶえがきたくなったのでほんきじをかきました。",
+    "tags": ["base", "symbols"],
+    "source": "salicylic-naming",
+    "reviewed": false
+  },
+  {
+    "id": "salicylic-naming-5",
+    "display": "もともとレザークラフトが好きで、車に使った余りのスエード生地をカバーのようにすることを思いつきました。",
+    "kana": "もともとレザークラフトがすきで、くるまにつかったあまりのスエードきじをカバーのようにすることをおもいつきました。",
+    "tags": ["base", "symbols"],
+    "source": "salicylic-naming",
+    "reviewed": false
+  },
+  {
+    "id": "salicylic-naming-6",
+    "display": "当時愛用していたテンキーのレイアウトを踏襲しました。",
+    "kana": "とうじあいようしていたテンキーのレイアウトをとうしゅうしました。",
+    "tags": ["base", "symbols"],
+    "source": "salicylic-naming",
+    "reviewed": false
+  },
+  {
+    "id": "salicylic-naming-7",
+    "display": "浴衣を着ている時に使う履物を探していましたが、結局草履や下駄ではなく雪駄にしました。",
+    "kana": "ゆかたをきているときにつかうはきものをさがしていましたが、けっきょくぞうりやげたではなくせったにしました。",
+    "tags": ["base"],
+    "source": "salicylic-naming",
+    "reviewed": false
+  },
+  {
+    "id": "salicylic-naming-8",
+    "display": "雪駄は雪の上を歩くために裏に革を貼るのですが、裏からグルっと革を貼るオプションがあったら格好いいなと思ったからです。",
+    "kana": "せったはゆきのうえをあるくためにうらにかわをはるのですが、うらからグルっとかわをはるオプションがあったらかっこういいなとおもったからです。",
+    "tags": ["base"],
+    "source": "salicylic-naming",
+    "reviewed": false
+  },
+  {
+    "id": "salicylic-naming-9",
+    "display": "ちなみに革を貼るオプションは革のレーザーカットが大変すぎて頓挫しました。",
+    "kana": "ちなみにかわをはるオプションはかわのレーザーカットがたいへんすぎてとんざしました。",
+    "tags": ["base", "symbols"],
+    "source": "salicylic-naming",
+    "reviewed": false
+  },
+  {
+    "id": "salicylic-naming-10",
+    "display": "自作キーボードの練習用として設計したマクロパッドです。",
+    "kana": "じさくキーボードのれんしゅうようとしてせっけいしたマクロパッドです。",
+    "tags": ["base", "symbols"],
+    "source": "salicylic-naming",
+    "reviewed": false
+  },
+  {
+    "id": "salicylic-naming-11",
+    "display": "温泉シリーズとしてもっと適した名前あるやろ、と思いましたが、思いつかなかったんでしょうがない。",
+    "kana": "おんせんシリーズとしてもっとてきしたなまえあるやろ、とおもいましたが、おもいつかなかったんでしょうがない。",
+    "tags": ["base", "symbols"],
+    "source": "salicylic-naming",
+    "reviewed": false
+  },
+  {
+    "id": "salicylic-naming-12",
+    "display": "実際にこれを使って何回か組み立て会イベントをやりました。",
+    "kana": "じっさいにこれをつかってなんかいかくみたてかいイベントをやりました。",
+    "tags": ["base"],
+    "source": "salicylic-naming",
+    "reviewed": false
+  },
+  {
+    "id": "salicylic-naming-13",
+    "display": "ストリートファイターというとゲームを想像するかもしれませんが、名前の元となったのはバイクのジャンルのストリートファイターです。",
+    "kana": "ストリートファイターというとゲームをそうぞうするかもしれませんが、なまえのもととなったのはバイクのジャンルのストリートファイターです。",
+    "tags": ["base", "symbols"],
+    "source": "salicylic-naming",
+    "reviewed": false
+  },
+  {
+    "id": "salicylic-naming-14",
+    "display": "日本語配列のキーボードが欲しいとの声を受けて開発しました。",
+    "kana": "にほんごはいれつのキーボードがほしいとのこえをうけてかいはつしました。",
+    "tags": ["base", "symbols"],
+    "source": "salicylic-naming",
+    "reviewed": false
+  },
+  {
+    "id": "japanese-layout-1",
+    "display": "今回も初心者の方向けに、自作キーボードと日本語配列についてのお話をしようと思います。",
+    "kana": "こんかいもしょしんしゃのほうむけに、じさくキーボードとにほんごはいれつについてのおはなしをしようとおもいます。",
+    "tags": ["base", "symbols"],
+    "source": "japanese-layout",
+    "reviewed": false
+  },
+  {
+    "id": "japanese-layout-2",
+    "display": "日本語配列がいいんだけど、自作キーボードではどうしたらいい？",
+    "kana": "にほんごはいれつがいいんだけど、じさくキーボードではどうしたらいい？",
+    "tags": ["base", "symbols"],
+    "source": "japanese-layout",
+    "reviewed": false
+  },
+  {
+    "id": "japanese-layout-3",
+    "display": "新しく自作キーボードを使い出そうとする人に大きな注意点があります。",
+    "kana": "あたらしくじさくキーボードをつかいだそうとするひとにおおきなちゅういてんがあります。",
+    "tags": ["base", "symbols"],
+    "source": "japanese-layout",
+    "reviewed": false
+  },
+  {
+    "id": "japanese-layout-4",
+    "display": "それは使おうとするキーキャップが日本語配列に準拠しているかどうかです。",
+    "kana": "それはつかおうとするキーキャップがにほんごはいれつにじゅんきょしているかどうかです。",
+    "tags": ["base", "symbols"],
+    "source": "japanese-layout",
+    "reviewed": false
+  },
+  {
+    "id": "japanese-layout-5",
+    "display": "縦に長い変な形のエンターキーのキーボードならだいたい日本語配列です。",
+    "kana": "たてにながいへんなかたちのエンターキーのキーボードならだいたいにほんごはいれつです。",
+    "tags": ["base", "symbols"],
+    "source": "japanese-layout",
+    "reviewed": false
+  },
+  {
+    "id": "japanese-layout-6",
+    "display": "ほとんどの人はあまり意識したことがないと思いますが、日本で使用されるキーボードは日本語配列と英語配列の二種が大部分を占めます。",
+    "kana": "ほとんどのひとはあまりいしきしたことがないとおもいますが、にっぽんでしようされるキーボードはにほんごはいれつとえいごはいれつのにしゅがだいぶぶんをしめます。",
+    "tags": ["base", "symbols"],
+    "source": "japanese-layout",
+    "reviewed": false
+  },
+  {
+    "id": "japanese-layout-7",
+    "display": "あまりキーボードに詳しくない方でもパッと並べてみると、なんとなく違う感じが分かると思います。",
+    "kana": "あまりキーボードにくわしくないほうでもパッとならべてみると、なんとなくちがうかんじがわかるとおもいます。",
+    "tags": ["base", "symbols"],
+    "source": "japanese-layout",
+    "reviewed": false
+  },
+  {
+    "id": "japanese-layout-8",
+    "display": "細かく違う点を挙げるとキリがないので、以下に大きく違う点をまとめてみました。",
+    "kana": "こまかくちがうてんをあげるとキリがないので、いかにおおきくちがうてんをまとめてみました。",
+    "tags": ["base"],
+    "source": "japanese-layout",
+    "reviewed": false
+  },
+  {
+    "id": "japanese-layout-9",
+    "display": "バックスペースキーとシフトキーが短くなり、その分記号キーが増えています。",
+    "kana": "バックスペースキーとシフトキーがみじかくなり、そのぶんきごうキーがふえています。",
+    "tags": ["base", "symbols"],
+    "source": "japanese-layout",
+    "reviewed": false
+  },
+  {
+    "id": "japanese-layout-10",
+    "display": "この辺りのキーはエンターキーの違いに意識を取られて意識していない人も多いと思いますが、実際に使いだしたら地味に困るポイントですね。",
+    "kana": "このあたりのキーはエンターキーのちがいにいしきをとられていしきしていないひともおおいとおもいますが、じっさいにつかいだしたらじみにこまるポイントですね。",
+    "tags": ["base", "symbols"],
+    "source": "japanese-layout",
+    "reviewed": false
+  },
+  {
+    "id": "japanese-layout-11",
+    "display": "英語配列と比較し、1キー分遠くになっている代わりに縦に長くなっています。",
+    "kana": "えいごはいれつとひかくし、1キーぶんとおくになっているかわりにたてにながくなっています。",
+    "tags": ["base", "symbols", "digits"],
+    "source": "japanese-layout",
+    "reviewed": false
+  },
+  {
+    "id": "japanese-layout-12",
+    "display": "遠くなってしまったためか、中指か人差し指でッターン！",
+    "kana": "とおくなってしまったためか、なかゆびかひとさしゆびでッターン！",
+    "tags": ["base", "symbols"],
+    "source": "japanese-layout",
+    "reviewed": false
+  },
+  {
+    "id": "japanese-layout-13",
+    "display": "と勢いよくエンターキーを押してしまう人も多いと思います。",
+    "kana": "といきおいよくエンターキーをおしてしまうひともおおいとおもいます。",
+    "tags": ["base", "symbols"],
+    "source": "japanese-layout",
+    "reviewed": false
+  },
+  {
+    "id": "japanese-layout-14",
+    "display": "勢いよく打っている方はいいかもしれませんが、自分以外の人が苛つきながらエンターキーを強く叩く音は正直あまり聞いていたくないものです。",
+    "kana": "いきおいよくうっているかたはいいかもしれませんが、じぶんいがいのひとがいらつきながらエンターキーをつよくたたくおとはしょうじきあまりきいていたくないものです。",
+    "tags": ["base", "symbols"],
+    "source": "japanese-layout",
+    "reviewed": false
+  },
+  {
+    "id": "self-made-keyboard-faq-1",
+    "display": "今回は今まで初心者の方から受けた質問や相談をまとめておこうと思います。",
+    "kana": "こんかいはいままでしょしんしゃのほうからうけたしつもんやそうだんをまとめておこうとおもいます。",
+    "tags": ["base"],
+    "source": "self-made-keyboard-faq",
+    "reviewed": false
+  },
+  {
+    "id": "self-made-keyboard-faq-2",
+    "display": "キースイッチが多すぎてどれを選べばいいかか分からない",
+    "kana": "キースイッチがおおすぎてどれをえらべばいいかかわからない",
+    "tags": ["base", "symbols"],
+    "source": "self-made-keyboard-faq",
+    "reviewed": false
+  },
+  {
+    "id": "self-made-keyboard-faq-3",
+    "display": "外で使いたいんだけど、静音スイッチにした方がいい？",
+    "kana": "そとでつかいたいんだけど、せいおんスイッチにしたほうがいい？",
+    "tags": ["base", "symbols"],
+    "source": "self-made-keyboard-faq",
+    "reviewed": false
+  },
+  {
+    "id": "self-made-keyboard-faq-4",
+    "display": "ブログを書いているからかガイドを自称しているからか、私は色々な方から個別に質問をいただくことがあります。",
+    "kana": "ブログをかいているからかガイドをじしょうしているからか、わたしはいろいろなかたからこべつにしつもんをいただくことがあります。",
+    "tags": ["base"],
+    "source": "self-made-keyboard-faq",
+    "reviewed": false
+  },
+  {
+    "id": "self-made-keyboard-faq-5",
+    "display": "つまり大なり小なり何らかの組み立てが必要なキーボードのことという認識です。",
+    "kana": "つまりおおなりこなりなんらかのくみたてがひつようなキーボードのことというにんしきです。",
+    "tags": ["base", "symbols"],
+    "source": "self-made-keyboard-faq",
+    "reviewed": false
+  },
+  {
+    "id": "self-made-keyboard-faq-6",
+    "display": "自作キーボードの一部はキットという形で、ある程度の部品をセットにした状態で販売されています。",
+    "kana": "じさくキーボードのいちぶはキットというかたちで、あるていどのぶひんをセットにしたじょうたいではんばいされています。",
+    "tags": ["base", "symbols"],
+    "source": "self-made-keyboard-faq",
+    "reviewed": false
+  },
+  {
+    "id": "self-made-keyboard-faq-7",
+    "display": "しかしながらキットのほとんどは同人ハードウェアとして提供されているため、組み立て方法や難易度はキットごとに大きく異なります。",
+    "kana": "しかしながらキットのほとんどはどうにんハードウェアとしてていきょうされているため、くみたてほうほうやなんいどはキットごとにおおきくことなります。",
+    "tags": ["base", "symbols"],
+    "source": "self-made-keyboard-faq",
+    "reviewed": false
+  },
+  {
+    "id": "self-made-keyboard-faq-8",
+    "display": "ハンダ付けなどの組み立てに自信がない方は、全てか一部の部品を実装した状態で販売されている物を購入するとよいでしょう。",
+    "kana": "ハンダつけなどのくみたてにじしんがないかたは、すべてかいちぶのぶひんをじっそうしたじょうたいではんばいされているものをこうにゅうするとよいでしょう。",
+    "tags": ["base"],
+    "source": "self-made-keyboard-faq",
+    "reviewed": false
+  },
+  {
+    "id": "self-made-keyboard-faq-9",
+    "display": "または遊舎工房さんの組立サービスを使うのもいいと思います。",
+    "kana": "またはゆうしゃこうぼうさんのくみたてサービスをつかうのもいいとおもいます。",
+    "tags": ["base", "symbols"],
+    "source": "self-made-keyboard-faq",
+    "reviewed": false
+  },
+  {
+    "id": "self-made-keyboard-faq-10",
+    "display": "プログラミングのハードルは以下の記事を参照してみてください。",
+    "kana": "プログラミングのハードルはいかのきじをさんしょうしてみてください。",
+    "tags": ["base", "symbols"],
+    "source": "self-made-keyboard-faq",
+    "reviewed": false
+  },
+  {
+    "id": "self-made-keyboard-faq-11",
+    "display": "いい道具を使うとその分難易度は下がりますので、自信が無い方は是非以下の記事を参考にしてください。",
+    "kana": "いいどうぐをつかうとそのぶんなんいどはさがりますので、じしんがないかたはぜひいかのきじをさんこうにしてください。",
+    "tags": ["base"],
+    "source": "self-made-keyboard-faq",
+    "reviewed": false
+  },
+  {
+    "id": "self-made-keyboard-faq-12",
+    "display": "ハンダ付けをする時、結構な頻度でヤニが弾けて飛びますので、何かは敷いたほうがいいです。",
+    "kana": "ハンダつけをするとき、けっこうなひんどでヤニがはじけてとびますので、なんかはしいたほうがいいです。",
+    "tags": ["base"],
+    "source": "self-made-keyboard-faq",
+    "reviewed": false
+  },
+  {
+    "id": "self-made-keyboard-faq-13",
+    "display": "100均のカッターマットでもいいのですが、やはり溶けますので今後も使う予定があるならシリコンの耐熱マットを購入したほうがいいです。",
+    "kana": "100ひとしのカッターマットでもいいのですが、やはりとけますのでこんごもつかうよていがあるならシリコンのたいねつマットをこうにゅうしたほうがいいです。",
+    "tags": ["base", "symbols", "digits"],
+    "source": "self-made-keyboard-faq",
+    "reviewed": false
+  },
+  {
+    "id": "self-made-keyboard-faq-14",
+    "display": "自作キーボードの組み立てにおいて、なにかトラブルが有った時にテスターが活躍します。",
+    "kana": "じさくキーボードのくみたてにおいて、なにかトラブルがあったときにテスターがかつやくします。",
+    "tags": ["base", "symbols"],
+    "source": "self-made-keyboard-faq",
+    "reviewed": false
+  },
+  {
+    "id": "switches-review-3-1",
+    "display": "書こう書こうと思ってだいぶ期間が空いてしまいましたが、また定期的にキースイッチについて書いていこうと思います。",
+    "kana": "かこうかこうとおもってだいぶきかんがあいてしまいましたが、またていきてきにキースイッチについてかいていこうとおもいます。",
+    "tags": ["base", "symbols"],
+    "source": "switches-review-3",
+    "reviewed": false
+  },
+  {
+    "id": "switches-review-3-2",
+    "display": "他の方が同じ様に感じる事を保証するわけではないので、参考にする場合は一つの目安として参考に留めるようにしてください。",
+    "kana": "ほかのほうがおなじようにかんじることをほしょうするわけではないので、さんこうにするばあいはひとつのめやすとしてさんこうにとめるようにしてください。",
+    "tags": ["base"],
+    "source": "switches-review-3",
+    "reviewed": false
+  },
+  {
+    "id": "switches-review-3-3",
+    "display": "スイッチの速度と聞いて、どのようなものを想像するでしょうか？",
+    "kana": "スイッチのそくどときいて、どのようなものをそうぞうするでしょうか？",
+    "tags": ["base", "symbols"],
+    "source": "switches-review-3",
+    "reviewed": false
+  },
+  {
+    "id": "switches-review-3-4",
+    "display": "ゲームにおいては相手よりも速く反応し、速く入力することが勝利への道です。",
+    "kana": "ゲームにおいてはあいてよりもはやくはんのうし、はやくにゅうりょくすることがしょうりへのみちです。",
+    "tags": ["base", "symbols"],
+    "source": "switches-review-3",
+    "reviewed": false
+  },
+  {
+    "id": "switches-review-3-5",
+    "display": "なのでゲーム用デバイスにスピードタイプのスイッチが採用されることが多いのです。",
+    "kana": "なのでゲームようデバイスにスピードタイプのスイッチがさいようされることがおおいのです。",
+    "tags": ["base", "symbols"],
+    "source": "switches-review-3",
+    "reviewed": false
+  },
+  {
+    "id": "switches-review-3-6",
+    "display": "しかしながら、一回押すときに敏感に反応するだけでゲームに勝てるわけではない、と私は思うのです。",
+    "kana": "しかしながら、いちかいおすときにびんかんにはんのうするだけでゲームにかてるわけではない、とわたしはおもうのです。",
+    "tags": ["base", "symbols"],
+    "source": "switches-review-3",
+    "reviewed": false
+  },
+  {
+    "id": "switches-review-3-7",
+    "display": "そのため、本記事においては以下の2点のスピードを重要視して記載しています。",
+    "kana": "そのため、ほんきじにおいてはいかの2てんのスピードをじゅうようししてきさいしています。",
+    "tags": ["base", "symbols", "digits"],
+    "source": "switches-review-3",
+    "reviewed": false
+  },
+  {
+    "id": "switches-review-3-8",
+    "display": "触ったことがないスイッチを購入する際の目安として、フォースカーブを見たりしますよね？",
+    "kana": "さわったことがないスイッチをこうにゅうするさいのめやすとして、フォースカーブをみたりしますよね？",
+    "tags": ["base", "symbols"],
+    "source": "switches-review-3",
+    "reviewed": false
+  },
+  {
+    "id": "switches-review-3-9",
+    "display": "フォースカーブとは、押し込んでいく距離と力の関係を図示したものです。",
+    "kana": "フォースカーブとは、おしこんでいくきょりとちからのかんけいをずししたものです。",
+    "tags": ["base", "symbols"],
+    "source": "switches-review-3",
+    "reviewed": false
+  },
+  {
+    "id": "switches-review-3-10",
+    "display": "記事内の数値は上記測定を3個違うスイッチに対して行い、その平均値を記載しています。",
+    "kana": "きじないのすうちはじょうきそくていを3こちがうスイッチにたいしておこない、そのへいきんちをきさいしています。",
+    "tags": ["base", "digits"],
+    "source": "switches-review-3",
+    "reviewed": false
+  },
+  {
+    "id": "switches-review-3-11",
+    "display": "各スイッチで記載している入手性の凡例は以下の通り。",
+    "kana": "かくスイッチできさいしているにゅうしゅせいのはんれいはいかのとおり。",
+    "tags": ["base"],
+    "source": "switches-review-3",
+    "reviewed": false
+  },
+  {
+    "id": "switches-review-3-12",
+    "display": "♨♨♨ 複数のスイッチを分解して組み合わせるなど、改造する必要がある",
+    "kana": "♨♨♨ ふくすうのスイッチをぶんかいしてくみあわせるなど、かいぞうするひつようがある",
+    "tags": ["base"],
+    "source": "switches-review-3",
+    "reviewed": false
+  },
+  {
+    "id": "switches-review-3-13",
+    "display": "ゲーム用のキーボードや入力デバイスに採用されることが多いです。",
+    "kana": "ゲームようのキーボードやにゅうりょくデバイスにさいようされることがおおいです。",
+    "tags": ["base", "symbols"],
+    "source": "switches-review-3",
+    "reviewed": false
+  },
+  {
+    "id": "switches-review-3-14",
+    "display": "フォースカーブは大体一緒ですが、アクチエーションポイントが若干遠いみたいですね。",
+    "kana": "フォースカーブはだいたいいっしょですが、アクチエーションポイントがじゃっかんとおいみたいですね。",
+    "tags": ["base", "symbols"],
+    "source": "switches-review-3",
+    "reviewed": false
+  },
+  {
+    "id": "tool-lubrication-1",
+    "display": "今回は自作キーボードを作るために必要な道具やをまとめたいと思います。",
+    "kana": "こんかいはじさくキーボードをつくるためにひつようなどうぐやをまとめたいとおもいます。",
+    "tags": ["base", "symbols"],
+    "source": "tool-lubrication",
+    "reviewed": false
+  },
+  {
+    "id": "tool-lubrication-2",
+    "display": "毎回ビルドガイドに必要な工具を書くのが冗長になって来ましたので、本記事にまとめたいと思います。",
+    "kana": "まいかいビルドガイドにひつようなこうぐをかくのがじょうちょうになってきましたので、ほんきじにまとめたいとおもいます。",
+    "tags": ["base"],
+    "source": "tool-lubrication",
+    "reviewed": false
+  },
+  {
+    "id": "tool-lubrication-3",
+    "display": "また、2018年に書いた記事から工具類も色々アップデートしたので合わせて更新していきます。",
+    "kana": "また、2018ねんにかいたきじからこうぐるいもいろいろアップデートしたのであわせてこうしんしていきます。",
+    "tags": ["base", "symbols", "digits"],
+    "source": "tool-lubrication",
+    "reviewed": false
+  },
+  {
+    "id": "tool-lubrication-4",
+    "display": "最近ははんだ付けが必要ないキットも増え、必ずしも全ての工具が全て必要ではなくなりました。",
+    "kana": "さいきんははんだつけがひつようないキットもふえ、かならずしもすべてのこうぐがすべてひつようではなくなりました。",
+    "tags": ["base"],
+    "source": "tool-lubrication",
+    "reviewed": false
+  },
+  {
+    "id": "tool-lubrication-5",
+    "display": "本記事では組み立てに必要な道具、ハンダ付けを行う場合に必要な工具、あったら便利な道具に分けて紹介します。",
+    "kana": "ほんきじではくみたてにひつようなどうぐ、ハンダつけをおこなうばあいにひつようなこうぐ、あったらべんりなどうぐにわけてしょうかいします。",
+    "tags": ["base"],
+    "source": "tool-lubrication",
+    "reviewed": false
+  },
+  {
+    "id": "tool-lubrication-6",
+    "display": "ドライバーすら必要ないキットも増えましたが、分解時に必要になることが多いので買っておきましょう。",
+    "kana": "ドライバーすらひつようないキットもふえましたが、ぶんかいじにひつようになることがおおいのでかっておきましょう。",
+    "tags": ["base", "symbols"],
+    "source": "tool-lubrication",
+    "reviewed": false
+  },
+  {
+    "id": "tool-lubrication-7",
+    "display": "組み立ての中で何度かキーキャップの抜き差しが必要になることが多いです。",
+    "kana": "くみたてのなかでなんどかキーキャップのぬきさしがひつようになることがおおいです。",
+    "tags": ["base", "symbols"],
+    "source": "tool-lubrication",
+    "reviewed": false
+  },
+  {
+    "id": "tool-lubrication-8",
+    "display": "手でも引き抜けないことはないのですが、安いので予め用意しておきましょう。",
+    "kana": "てでもひきぬけないことはないのですが、やすいのであらかじめよういしておきましょう。",
+    "tags": ["base"],
+    "source": "tool-lubrication",
+    "reviewed": false
+  },
+  {
+    "id": "tool-lubrication-9",
+    "display": "この商品はキーキャップだけでなく、キースイッチも引き抜ける道具です。",
+    "kana": "このしょうひんはキーキャップだけでなく、キースイッチもひきぬけるどうぐです。",
+    "tags": ["base", "symbols"],
+    "source": "tool-lubrication",
+    "reviewed": false
+  },
+  {
+    "id": "tool-lubrication-10",
+    "display": "キーボードのマイコンにファームウェアを書き込む時に必要です。",
+    "kana": "キーボードのマイコンにファームウェアをかきこむときにひつようです。",
+    "tags": ["base", "symbols"],
+    "source": "tool-lubrication",
+    "reviewed": false
+  },
+  {
+    "id": "tool-lubrication-11",
+    "display": "温度調節機能が無いモデルだと濡らしたスポンジで調節して使用しますが、初心者には難易度が高いので、温度調節機能付きのハンダこてを買いましょう。",
+    "kana": "おんどちょうせつきのうがないモデルだとぬらしたスポンジでちょうせつしてしようしますが、しょしんしゃにはなんいどがたかいので、おんどちょうせつきのうつきのハンダこてをかいましょう。",
+    "tags": ["base"],
+    "source": "tool-lubrication",
+    "reviewed": false
+  },
+  {
+    "id": "tool-lubrication-12",
+    "display": "鉛フリーハンダは難易度が高いので鉛含有ハンダがおすすめです。",
+    "kana": "なまりフリーハンダはなんいどがたかいのでなまりがんゆうハンダがおすすめです。",
+    "tags": ["base", "symbols"],
+    "source": "tool-lubrication",
+    "reviewed": false
+  },
+  {
+    "id": "tool-lubrication-13",
+    "display": "ハンダこては高温になりますで、火災＆火傷予防のために最低限専用な物を。",
+    "kana": "ハンダこてはこうおんになりますで、かさい＆やけどよぼうのためにさいていげんせんようなものを。",
+    "tags": ["base"],
+    "source": "tool-lubrication",
+    "reviewed": false
+  },
+  {
+    "id": "tool-lubrication-14",
+    "display": "ちなみにこのこて台のこて先クリーナーはこて先の温度を下げずに余分なハンダを吸い取ってくれますのでとても便利です。",
+    "kana": "ちなみにこのこてだいのこてさきクリーナーはこてさきのおんどをさげずによぶんなハンダをすいとってくれますのでとてもべんりです。",
+    "tags": ["base", "symbols"],
+    "source": "tool-lubrication",
+    "reviewed": false
+  },
+  {
+    "id": "macbook_impression-1",
+    "display": "本記事ではその決断に至るまでの道のりを、時系列に沿ってご紹介します。",
+    "kana": "ほんきじではそのけつだんにいたるまでのみちのりを、じけいれつにそってごしょうかいします。",
+    "tags": ["base"],
+    "source": "macbook_impression",
+    "reviewed": false
+  },
+  {
+    "id": "macbook_impression-2",
+    "display": "上でもチラッと書きましたが、当時の私は結構なヘビースモーカーでした。",
+    "kana": "うえでもチラッとかきましたが、とうじのわたしはけっこうなヘビースモーカーでした。",
+    "tags": ["base", "symbols"],
+    "source": "macbook_impression",
+    "reviewed": false
+  },
+  {
+    "id": "macbook_impression-3",
+    "display": "当時は路上禁煙が罰金化され始めた頃なので、各地の喫煙所や喫茶店、ファミレスがスモーカーの深呼吸の場でした。",
+    "kana": "とうじはろじょうきんえんがばっきんかされはじめたころなので、かくちのきつえんじょやきっさてん、ファミレスがスモーカーのしんこきゅうのばでした。",
+    "tags": ["base", "symbols"],
+    "source": "macbook_impression",
+    "reviewed": false
+  },
+  {
+    "id": "macbook_impression-4",
+    "display": "正直すごくギョッとしましたし、タバコ吸えないし、エスプレッソ苦くて飲めないし、そもそも座れないし、到底いい感情は持てませんでした。",
+    "kana": "しょうじきすごくギョッとしましたし、タバコすえないし、エスプレッソにがくてのめないし、そもそもすわれないし、とうていいいかんじょうはもてませんでした。",
+    "tags": ["base"],
+    "source": "macbook_impression",
+    "reviewed": false
+  },
+  {
+    "id": "macbook_impression-5",
+    "display": "あ、この記事を書いている今は禁煙して9年目になってます。",
+    "kana": "あ、このきじをかいているいまはきんえんして9ねんめになってます。",
+    "tags": ["base", "digits"],
+    "source": "macbook_impression",
+    "reviewed": false
+  },
+  {
+    "id": "macbook_impression-6",
+    "display": "買い替えはしましたが、結果的にいずれの機種も活かせているので、この試行錯誤も無駄ではなかったと感じています。",
+    "kana": "かいかえはしましたが、けっかてきにいずれのきしゅもいかせているので、このしこうさくごもむだではなかったとかんじています。",
+    "tags": ["base"],
+    "source": "macbook_impression",
+    "reviewed": false
+  },
+  {
+    "id": "macbook_impression-7",
+    "display": "初期化したら治るって、対策方法が定期的に初期化する運用にするって感じにするしかないじゃないですか。",
+    "kana": "しょきかしたらなおるって、たいさくほうほうがていきてきにしょきかするうんようにするってかんじにするしかないじゃないですか。",
+    "tags": ["base"],
+    "source": "macbook_impression",
+    "reviewed": false
+  },
+  {
+    "id": "macbook_impression-8",
+    "display": "どれだけ打鍵感が良くてもデットウェイトにしか感じませんので、キーボードが原因の重量感ならちょっと嫌だな、と考えていました。",
+    "kana": "どれだけだけんかんがよくてもデットウェイトにしかかんじませんので、キーボードがげんいんのじゅうりょうかんならちょっといやだな、とかんがえていました。",
+    "tags": ["base", "symbols"],
+    "source": "macbook_impression",
+    "reviewed": false
+  },
+  {
+    "id": "macbook_impression-9",
+    "display": "手に持って360°くまなく眺めてみてもデザインは可もなく不可もなくという感じです。",
+    "kana": "てにもって360°くまなくながめてみてもデザインはかもなくふかもなくというかんじです。",
+    "tags": ["base", "digits"],
+    "source": "macbook_impression",
+    "reviewed": false
+  },
+  {
+    "id": "macbook_impression-10",
+    "display": "しかし、裏側の丸いゴム足はあんまり格好良くないと思います。",
+    "kana": "しかし、うらがわのまるいゴムあしはあんまりかっこうよくないとおもいます。",
+    "tags": ["base"],
+    "source": "macbook_impression",
+    "reviewed": false
+  },
+  {
+    "id": "macbook_impression-11",
+    "display": "スペース削減のためにスタンドを作って立てて使用しているのですが、銀色という色がライトスタンドの光を反射して明るく感じすぎてしまいます。",
+    "kana": "スペースさくげんのためにスタンドをつくってたててしようしているのですが、ぎんいろといういろがライトスタンドのひかりをはんしゃしてあかるくかんじすぎてしまいます。",
+    "tags": ["base", "symbols"],
+    "source": "macbook_impression",
+    "reviewed": false
+  },
+  {
+    "id": "macbook_impression-12",
+    "display": "でも黒色の指紋がベタベタに付く感じも嫌だったので、まあいいか、と今は無理やり納得しています。",
+    "kana": "でもくろいろのしもんがベタベタにつくかんじもいやだったので、まあいいか、といまはむりやりなっとくしています。",
+    "tags": ["base"],
+    "source": "macbook_impression",
+    "reviewed": false
+  },
+  {
+    "id": "macbook_impression-13",
+    "display": "でもちょっと調べると指紋問題は解決しつつあるようなので、次買うなら黒にしようかと思っています。",
+    "kana": "でもちょっとしらべるとしもんもんだいはかいけつしつつあるようなので、つぎかうならくろにしようかとおもっています。",
+    "tags": ["base"],
+    "source": "macbook_impression",
+    "reviewed": false
+  },
+  {
+    "id": "macbook_impression-14",
+    "display": "最近少し年齢による衰えを感じ始めていたところなので、まだまだ私だってやれるやん！",
+    "kana": "さいきんすこしねんれいによるおとろえをかんじはじめていたところなので、まだまだわたしだってやれるやん！",
+    "tags": ["base", "symbols"],
+    "source": "macbook_impression",
+    "reviewed": false
+  },
+  {
+    "id": "keyboard-quantizer-review-1",
+    "display": "また、本記事の中で行う工夫や改造は全て私自身の責任において実施しております。",
+    "kana": "また、ほんきじのなかでおこなうくふうやかいぞうはすべてわたしじしんのせきにんにおいてじっししております。",
+    "tags": ["base"],
+    "source": "keyboard-quantizer-review",
+    "reviewed": false
+  },
+  {
+    "id": "keyboard-quantizer-review-2",
+    "display": "同様の工夫や改造を行ったとしても同じ結果や感想となることを保証できませんのでご注意ください。",
+    "kana": "どうようのくふうやかいぞうをおこなったとしてもおなじけっかやかんそうとなることをほしょうできませんのでごちゅういください。",
+    "tags": ["base"],
+    "source": "keyboard-quantizer-review",
+    "reviewed": false
+  },
+  {
+    "id": "keyboard-quantizer-review-3",
+    "display": "文字入力画面が見えないので分かりづらいですが、エンターキーやバックスペースキーを親指キーに割り当てています。",
+    "kana": "もじにゅうりょくがめんがみえないのでわかりづらいですが、エンターキーやバックスペースキーをおやゆびキーにわりあてています。",
+    "tags": ["base", "symbols"],
+    "source": "keyboard-quantizer-review",
+    "reviewed": false
+  },
+  {
+    "id": "keyboard-quantizer-review-4",
+    "display": "むしろマウスに使った時の威力が絶大なので、持っている方は是非試してみてほしいです。",
+    "kana": "むしろマウスにつかったときのいりょくがぜつだいなので、もっているかたはぜひためしてみてほしいです。",
+    "tags": ["base"],
+    "source": "keyboard-quantizer-review",
+    "reviewed": false
+  },
+  {
+    "id": "keyboard-quantizer-review-5",
+    "display": "このトラックボールには概ね満足していますが、小さい不満がいくつか有りました。",
+    "kana": "このトラックボールにはおおむねまんぞくしていますが、ちいさいふまんがいくつかありました。",
+    "tags": ["base", "symbols"],
+    "source": "keyboard-quantizer-review",
+    "reviewed": false
+  },
+  {
+    "id": "keyboard-quantizer-review-6",
+    "display": "その不満の一つにボタンが少ないこと、ジェスチャー機能が設定出来ない事がありました。",
+    "kana": "そのふまんのひとつにボタンがすくないこと、ジェスチャーきのうがせっていできないことがありました。",
+    "tags": ["base", "symbols"],
+    "source": "keyboard-quantizer-review",
+    "reviewed": false
+  },
+  {
+    "id": "keyboard-quantizer-review-7",
+    "display": "是非一回試してもらいたいと思い、私が設定したファームウェアを公開します。",
+    "kana": "ぜひいちかいためしてもらいたいとおもい、わたしがせっていしたファームウェアをこうかいします。",
+    "tags": ["base", "symbols"],
+    "source": "keyboard-quantizer-review",
+    "reviewed": false
+  },
+  {
+    "id": "keyboard-quantizer-review-8",
+    "display": "ですが、他のマウスでの動作は保証しませんので注意してください。",
+    "kana": "ですが、たのマウスでのどうさはほしょうしませんのでちゅういしてください。",
+    "tags": ["base"],
+    "source": "keyboard-quantizer-review",
+    "reviewed": false
+  },
+  {
+    "id": "keyboard-quantizer-review-9",
+    "display": "単押しと長押しの機能の切り替え時間を定義できます。",
+    "kana": "たんおしとながおしのきのうのきりかえじかんをていぎできます。",
+    "tags": ["base"],
+    "source": "keyboard-quantizer-review",
+    "reviewed": false
+  },
+  {
+    "id": "keyboard-quantizer-review-10",
+    "display": "マウスにおいてはジェスチャー機能の動作に影響が多く出ます。",
+    "kana": "マウスにおいてはジェスチャーきのうのどうさにえいきょうがおおくでます。",
+    "tags": ["base", "symbols"],
+    "source": "keyboard-quantizer-review",
+    "reviewed": false
+  },
+  {
+    "id": "keyboard-quantizer-review-11",
+    "display": "ジェスチャー機能が動作するために必要なマウスカーソルの移動量です。",
+    "kana": "ジェスチャーきのうがどうさするためにひつようなマウスカーソルのいどうりょうです。",
+    "tags": ["base", "symbols"],
+    "source": "keyboard-quantizer-review",
+    "reviewed": false
+  },
+  {
+    "id": "keyboard-quantizer-review-12",
+    "display": "マウスにも使用できて非常に便利＆面白いガジェットなので是非使ってみてください。",
+    "kana": "マウスにもしようできてひじょうにべんり＆おもしろいガジェットなのでぜひつかってみてください。",
+    "tags": ["base"],
+    "source": "keyboard-quantizer-review",
+    "reviewed": false
+  },
+  {
+    "id": "kle-introduction-1",
+    "display": "いやー、私も多くなってて管理が難しかったんですよね。",
+    "kana": "いやー、わたしもおおくなっててかんりがむずかしかったんですよね。",
+    "tags": ["base", "symbols"],
+    "source": "kle-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "kle-introduction-2",
+    "display": "主に想定しているのは購入を検討している方、もしくは、購入したが適用できるキーキャップの選定に迷っている方です。",
+    "kana": "おもにそうていしているのはこうにゅうをけんとうしているかた、もしくは、こうにゅうしたがてきようできるキーキャップのせんていにまよっているかたです。",
+    "tags": ["base", "symbols"],
+    "source": "kle-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "kle-introduction-3",
+    "display": "順序は新しいキーボードシリーズから古いキーボードシリーズの順に記載します。",
+    "kana": "じゅんじょはあたらしいキーボードシリーズからふるいキーボードシリーズのじゅんにきさいします。",
+    "tags": ["base", "symbols"],
+    "source": "kle-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "kle-introduction-4",
+    "display": "シリーズに新しいキーボードが追加される場合は、そのシリーズの先頭に追加されます。",
+    "kana": "シリーズにあたらしいキーボードがついかされるばあいは、そのシリーズのせんとうについかされます。",
+    "tags": ["base", "symbols"],
+    "source": "kle-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "kle-introduction-5",
+    "display": "販売が決定しているものは掲載しますが、開発中でレイアウトが変更される可能性があるものは記載を省略します。",
+    "kana": "はんばいがけっていしているものはけいさいしますが、かいはつちゅうでレイアウトがへんこうされるかのうせいがあるものはきさいをしょうりゃくします。",
+    "tags": ["base"],
+    "source": "kle-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "kle-introduction-6",
+    "display": "日本語配列に対応し、日本の自作キーボードに最適化されたキーキャップセットになっています。",
+    "kana": "にほんごはいれつにたいおうし、にっぽんのじさくキーボードにさいてきかされたキーキャップセットになっています。",
+    "tags": ["base", "symbols"],
+    "source": "kle-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "kle-introduction-7",
+    "display": "カラムスタッガード配列を分割するキーボードシリーズ。",
+    "kana": "カラムスタッガードはいれつをぶんかつするキーボードシリーズ。",
+    "tags": ["base", "symbols"],
+    "source": "kle-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "kle-introduction-8",
+    "display": "カラムスタッガード配列に配置しづらいアローキーを手前に配置しているのが大きな特徴です。",
+    "kana": "カラムスタッガードはいれつにはいちしづらいアローキーをてまえにはいちしているのがおおきなとくちょうです。",
+    "tags": ["base", "symbols"],
+    "source": "kle-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "kle-introduction-9",
+    "display": "自作キーボード設計ガイドの作例として設計したキーボードシリーズです。",
+    "kana": "じさくキーボードせっけいガイドのさくれいとしてせっけいしたキーボードシリーズです。",
+    "tags": ["base", "symbols"],
+    "source": "kle-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "kle-introduction-10",
+    "display": "安価で組み立てやすいマクロパッドを目指したシリーズです。",
+    "kana": "あんかでくみたてやすいマクロパッドをめざしたシリーズです。",
+    "tags": ["base", "symbols"],
+    "source": "kle-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "kle-introduction-11",
+    "display": "誰でも簡単にキーボードを設計できるようにするプロジェクトです。",
+    "kana": "だれでもかんたんにキーボードをせっけいできるようにするプロジェクトです。",
+    "tags": ["base", "symbols"],
+    "source": "kle-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "kle-introduction-12",
+    "display": "アクリル積層を限界まで薄く作るとどうなるかを試したシリーズ。",
+    "kana": "アクリルせきそうをげんかいまでうすくつくるとどうなるかをためしたシリーズ。",
+    "tags": ["base", "symbols"],
+    "source": "kle-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "vial-manual-1",
+    "display": "つまりキー数が少ないキーボードに特に相性がいいのです。",
+    "kana": "つまりキーすうがすくないキーボードにとくにあいしょうがいいのです。",
+    "tags": ["base", "symbols"],
+    "source": "vial-manual",
+    "reviewed": false
+  },
+  {
+    "id": "vial-manual-2",
+    "display": "しかしアプリ版の方はキーマップのファイル保存やロード、テーマ変更ができます。",
+    "kana": "しかしアプリばんのほうはキーマップのファイルほぞんやロード、テーマへんこうができます。",
+    "tags": ["base", "symbols"],
+    "source": "vial-manual",
+    "reviewed": false
+  },
+  {
+    "id": "vial-manual-3",
+    "display": "特にアプリ版でのみできるファイル保存機能は、キーマップが固まったら必ず一度はやっておいたほうがいいです。",
+    "kana": "とくにアプリばんでのみできるファイルほぞんきのうは、キーマップがかたまったらかならずいちどはやっておいたほうがいいです。",
+    "tags": ["base", "symbols"],
+    "source": "vial-manual",
+    "reviewed": false
+  },
+  {
+    "id": "vial-manual-4",
+    "display": "できることが多すぎて全て詳細に説明することは出来ないので、よく使う機能を紹介します。",
+    "kana": "できることがおおすぎてすべてしょうさいにせつめいすることはできないので、よくつかうきのうをしょうかいします。",
+    "tags": ["base"],
+    "source": "vial-manual",
+    "reviewed": false
+  },
+  {
+    "id": "vial-manual-5",
+    "display": "最初に自分が使うキー配列に変更しておきましょう。",
+    "kana": "さいしょにじぶんがつかうキーはいれつにへんこうしておきましょう。",
+    "tags": ["base", "symbols"],
+    "source": "vial-manual",
+    "reviewed": false
+  },
+  {
+    "id": "vial-manual-6",
+    "display": "日本語配列についての詳しい解説は以下を参照してください。",
+    "kana": "にほんごはいれつについてのくわしいかいせつはいかをさんしょうしてください。",
+    "tags": ["base"],
+    "source": "vial-manual",
+    "reviewed": false
+  },
+  {
+    "id": "vial-manual-7",
+    "display": "次に自分が使うレイアウトに変更しておきましょう。",
+    "kana": "つぎにじぶんがつかうレイアウトにへんこうしておきましょう。",
+    "tags": ["base"],
+    "source": "vial-manual",
+    "reviewed": false
+  },
+  {
+    "id": "vial-manual-8",
+    "display": "アンロックには通常、エスケープキーの場所とエンターキーの場所を長押しします。",
+    "kana": "アンロックにはつうじょう、エスケープキーのばしょとエンターキーのばしょをながおしします。",
+    "tags": ["base", "symbols"],
+    "source": "vial-manual",
+    "reviewed": false
+  },
+  {
+    "id": "vial-manual-9",
+    "display": "テスターは反応した部分がアクセントカラーに変化します。",
+    "kana": "テスターははんのうしたぶぶんがアクセントカラーにへんかします。",
+    "tags": ["base", "symbols"],
+    "source": "vial-manual",
+    "reviewed": false
+  },
+  {
+    "id": "vial-manual-10",
+    "display": "キーコードを変更するには変更したいキーを選び、下のキーコード一覧を選ぶことで設定されます。",
+    "kana": "キーコードをへんこうするにはへんこうしたいキーをえらび、したのキーコードいちらんをえらぶことでせっていされます。",
+    "tags": ["base", "symbols"],
+    "source": "vial-manual",
+    "reviewed": false
+  },
+  {
+    "id": "vial-manual-11",
+    "display": "自作キーボードの醍醐味のひとつなので、是非試行錯誤してみてください。",
+    "kana": "じさくキーボードのだいごみのひとつなので、ぜひしこうさくごしてみてください。",
+    "tags": ["base", "symbols"],
+    "source": "vial-manual",
+    "reviewed": false
+  },
+  {
+    "id": "vial-manual-12",
+    "display": "レイヤーの移動方法はいくつかのパターンがあり、使用方法に応じて設定します。",
+    "kana": "レイヤーのいどうほうほうはいくつかのパターンがあり、しようほうほうにおうじてせっていします。",
+    "tags": ["base", "symbols"],
+    "source": "vial-manual",
+    "reviewed": false
+  },
+  {
+    "id": "vial-manual-13",
+    "display": "私の設定の煮詰め方ノウハウについてはこちらを参照してください。",
+    "kana": "わたしのせっていのにつめかたノウハウについてはこちらをさんしょうしてください。",
+    "tags": ["base"],
+    "source": "vial-manual",
+    "reviewed": false
+  },
+  {
+    "id": "vial-manual-14",
+    "display": "各レイヤーに共通するキーを全レイヤーで書くのは大変なので、他レイヤーに関連するキーを設定します。",
+    "kana": "かくレイヤーにきょうつうするキーをぜんレイヤーでかくのはたいへんなので、たレイヤーにかんれんするキーをせっていします。",
+    "tags": ["base", "symbols"],
+    "source": "vial-manual",
+    "reviewed": false
+  },
+  {
+    "id": "remap-manual-1",
+    "display": "この時、画面にはキーボードに書き込まれているキーマップが自動反映されています。",
+    "kana": "このとき、がめんにはキーボードにかきこまれているキーマップがじどうはんえいされています。",
+    "tags": ["base", "symbols"],
+    "source": "remap-manual",
+    "reviewed": false
+  },
+  {
+    "id": "remap-manual-2",
+    "display": "なので、良かれと思っても他の方が設計したキーボードを登録しようとしてはいけません。",
+    "kana": "なので、よかれとおもってもたのほうがせっけいしたキーボードをとうろくしようとしてはいけません。",
+    "tags": ["base", "symbols"],
+    "source": "remap-manual",
+    "reviewed": false
+  },
+  {
+    "id": "remap-manual-3",
+    "display": "左側の歯車マークをクリックし、自分が使うレイアウトに変更します。",
+    "kana": "ひだりがわのはぐるまマークをクリックし、じぶんがつかうレイアウトにへんこうします。",
+    "tags": ["base", "symbols"],
+    "source": "remap-manual",
+    "reviewed": false
+  },
+  {
+    "id": "remap-manual-4",
+    "display": "ロータリーエンコーダの回転を擬似的なキーとしている部分についてはテストができないので注意してください。",
+    "kana": "ロータリーエンコーダのかいてんをぎじてきなキーとしているぶぶんについてはテストができないのでちゅういしてください。",
+    "tags": ["base", "symbols"],
+    "source": "remap-manual",
+    "reviewed": false
+  },
+  {
+    "id": "remap-manual-5",
+    "display": "キーコードを変更するには2種類の方法があります。",
+    "kana": "キーコードをへんこうするには2しゅるいのほうほうがあります。",
+    "tags": ["base", "symbols", "digits"],
+    "source": "remap-manual",
+    "reviewed": false
+  },
+  {
+    "id": "remap-manual-6",
+    "display": "▽のキーはレイヤー番号の一つ数の小さいレイヤーのキーを踏襲するキーです。",
+    "kana": "▽のキーはレイヤーばんごうのひとつすうのちいさいレイヤーのキーをとうしゅうするキーです。",
+    "tags": ["base", "symbols"],
+    "source": "remap-manual",
+    "reviewed": false
+  },
+  {
+    "id": "remap-manual-7",
+    "display": "記号単体や様々な効果を発揮するキーを設定します。",
+    "kana": "きごうたんたいやさまざまなこうかをはっきするキーをせっていします。",
+    "tags": ["base", "symbols"],
+    "source": "remap-manual",
+    "reviewed": false
+  },
+  {
+    "id": "remap-manual-8",
+    "display": "種類が多く普通は使わなさそうなキーが多いので、ここではよく使用するマウスキーを抜粋して紹介します。",
+    "kana": "しゅるいがおおくふつうはつかわなさそうなキーがおおいので、ここではよくしようするマウスキーをばっすいしてしょうかいします。",
+    "tags": ["base", "symbols"],
+    "source": "remap-manual",
+    "reviewed": false
+  },
+  {
+    "id": "remap-manual-9",
+    "display": "もしマウスカーソルが動かない場合はキーボード設計者に確認してください。",
+    "kana": "もしマウスカーソルがうごかないばあいはキーボードせっけいしゃにかくにんしてください。",
+    "tags": ["base", "symbols"],
+    "source": "remap-manual",
+    "reviewed": false
+  },
+  {
+    "id": "remap-manual-10",
+    "display": "マクロ機能という、あらかじめ登録しておいた動作を自動で行う機能を使用できます。",
+    "kana": "マクロきのうという、あらかじめとうろくしておいたどうさをじどうでおこなうきのうをしようできます。",
+    "tags": ["base"],
+    "source": "remap-manual",
+    "reviewed": false
+  },
+  {
+    "id": "remap-manual-11",
+    "display": "通常のキーの設定方法と同じく、下のキーコードを画面上部にドラッグして設定していきます。",
+    "kana": "つうじょうのキーのせっていほうほうとおなじく、したのキーコードをがめんじょうぶにドラッグしてせっていしていきます。",
+    "tags": ["base", "symbols"],
+    "source": "remap-manual",
+    "reviewed": false
+  },
+  {
+    "id": "remap-manual-12",
+    "display": "後は通常のキーと同じく、ドラッグしてキーコードをキーに適用してい来ます。",
+    "kana": "あとはつうじょうのキーとおなじく、ドラッグしてキーコードをキーにてきようしていきます。",
+    "tags": ["base", "symbols"],
+    "source": "remap-manual",
+    "reviewed": false
+  },
+  {
+    "id": "remap-manual-13",
+    "display": "対応キーボードを複数接続している場合、キーマップを変更するキーボードを切り替えることができます。",
+    "kana": "たいおうキーボードをふくすうせつぞくしているばあい、キーマップをへんこうするキーボードをきりかえることができます。",
+    "tags": ["base", "symbols"],
+    "source": "remap-manual",
+    "reviewed": false
+  },
+  {
+    "id": "remap-manual-14",
+    "display": "そこでチートシートを出力して印刷しておくとひと目で確認できて便利です。",
+    "kana": "そこでチートシートをしゅつりょくしていんさつしておくとひとめでかくにんできてべんりです。",
+    "tags": ["base", "symbols"],
+    "source": "remap-manual",
+    "reviewed": false
+  },
+  {
+    "id": "tips-meetup-1",
+    "display": "この2年半以上キーボードイベントが開かれていなかったので、今回のミートアップイベントが初のキーボードイベントという方も多いと思います。",
+    "kana": "この2ねんはんいじょうキーボードイベントがひらかれていなかったので、こんかいのミートアップイベントがはつのキーボードイベントというかたもおおいとおもいます。",
+    "tags": ["base", "symbols", "digits"],
+    "source": "tips-meetup",
+    "reviewed": false
+  },
+  {
+    "id": "tips-meetup-2",
+    "display": "そんな方のために、過去のキーボードイベントを踏まえたイベントの参加イメージをまとめてみたいと思います。",
+    "kana": "そんなかたのために、かこのキーボードイベントをふまえたイベントのさんかイメージをまとめてみたいとおもいます。",
+    "tags": ["base", "symbols"],
+    "source": "tips-meetup",
+    "reviewed": false
+  },
+  {
+    "id": "tips-meetup-3",
+    "display": "恵比寿で行なうキーボードミートアップイベントです。",
+    "kana": "えびすでおこなうキーボードミートアップイベントです。",
+    "tags": ["base", "symbols"],
+    "source": "tips-meetup",
+    "reviewed": false
+  },
+  {
+    "id": "tips-meetup-4",
+    "display": "会場は株式会社ネクストビート様のラウンジをお借りしています。",
+    "kana": "かいじょうはかぶしきがいしゃネクストビートさまのラウンジをおかりしています。",
+    "tags": ["base", "symbols"],
+    "source": "tips-meetup",
+    "reviewed": false
+  },
+  {
+    "id": "tips-meetup-5",
+    "display": "開催概要等はこちらのイベントページを参照してください。",
+    "kana": "かいさいがいようとうはこちらのイベントページをさんしょうしてください。",
+    "tags": ["base", "symbols"],
+    "source": "tips-meetup",
+    "reviewed": false
+  },
+  {
+    "id": "tips-meetup-6",
+    "display": "コロナ禍の前までは色々なキーボードミートアップイベントが開かれていました。",
+    "kana": "ころなかのまえまではいろいろなキーボードミートアップイベントがひらかれていました。",
+    "tags": ["base", "symbols"],
+    "source": "tips-meetup",
+    "reviewed": false
+  },
+  {
+    "id": "tips-meetup-7",
+    "display": "ここにあるイベントが全てではないですが、参考になればと思います。",
+    "kana": "ここにあるイベントがすべてではないですが、さんこうになればとおもいます。",
+    "tags": ["base"],
+    "source": "tips-meetup",
+    "reviewed": false
+  },
+  {
+    "id": "tips-meetup-8",
+    "display": "展示されているキーボードに自分の好きなキーボードに投票をして、イベントの最後に投票数を競うタイプの企画も有りました。",
+    "kana": "てんじされているキーボードにじぶんのすきなキーボードにとうひょうをして、イベントのさいごにとうひょうすうをきそうタイプのきかくもありました。",
+    "tags": ["base", "symbols"],
+    "source": "tips-meetup",
+    "reviewed": false
+  },
+  {
+    "id": "tips-meetup-9",
+    "display": "特に物販は開場数時間前から会場に待機列ができるほど人気を集めていました。",
+    "kana": "とくにぶっぱんはかいじょうすうじかんまえからかいじょうにたいきれつができるほどにんきをあつめていました。",
+    "tags": ["base"],
+    "source": "tips-meetup",
+    "reviewed": false
+  },
+  {
+    "id": "tips-meetup-10",
+    "display": "外国人が多く、英語での会話や発表が多く存在するインターナショナルなイベントです。",
+    "kana": "がいこくじんがおおく、えいごでのかいわやはっぴょうがおおくそんざいするインターナショナルなイベントです。",
+    "tags": ["base", "symbols"],
+    "source": "tips-meetup",
+    "reviewed": false
+  },
+  {
+    "id": "tips-meetup-11",
+    "display": "もちろん、市販品のキーボードを持ち込んではいけない、ということも一切ありません。",
+    "kana": "もちろん、しはんひんのキーボードをもちこんではいけない、ということもいっさいありません。",
+    "tags": ["base", "symbols"],
+    "source": "tips-meetup",
+    "reviewed": false
+  },
+  {
+    "id": "tips-meetup-12",
+    "display": "あなたが見せたいキーボードを持ってきて、よければ展示をして語り合ってみてください。",
+    "kana": "あなたがみせたいキーボードをもってきて、よければてんじをしてかたりあってみてください。",
+    "tags": ["base", "symbols"],
+    "source": "tips-meetup",
+    "reviewed": false
+  },
+  {
+    "id": "tips-meetup-13",
+    "display": "しかし、それだと十分に交流できないまま終了してしまうので、アイコンやアカウント名などが書かれた名札などを用意するとスムーズに交流できます。",
+    "kana": "しかし、それだとじゅうふんにこうりゅうできないまましゅうりょうしてしまうので、アイコンやあかうんとめいなどがかかれたなふだなどをよういするとスムーズにこうりゅうできます。",
+    "tags": ["base", "symbols"],
+    "source": "tips-meetup",
+    "reviewed": false
+  },
+  {
+    "id": "tips-meetup-14",
+    "display": "この記事がイベント初参加の不安を軽減できましたら幸いです。",
+    "kana": "このきじがイベントはつさんかのふあんをけいげんできましたらさいわいです。",
+    "tags": ["base"],
+    "source": "tips-meetup",
+    "reviewed": false
+  },
+  {
+    "id": "room-introduction-1",
+    "display": "なんとなくブロガーっぽくて憧れていたデスク周りの紹介と解説をしたいと思います。",
+    "kana": "なんとなくブロガーっぽくてあこがれていたデスクまわりのしょうかいとかいせつをしたいとおもいます。",
+    "tags": ["base", "symbols"],
+    "source": "room-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "room-introduction-2",
+    "display": "この後ろはメチャクチャ散らかっていますが、まあバレなければいいのだ。",
+    "kana": "このうしろはメチャクチャちらかっていますが、まあバレなければいいのだ。",
+    "tags": ["base"],
+    "source": "room-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "room-introduction-3",
+    "display": "物の説明の前に、軽く部屋の説明を挟んでおきます。",
+    "kana": "もののせつめいのまえに、かるくへやのせつめいをはさんでおきます。",
+    "tags": ["base"],
+    "source": "room-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "room-introduction-4",
+    "display": "この部屋は3.8畳の書斎スペースで、この部屋で仕事と自キ活を行っています。",
+    "kana": "このへやは3.8じょうのしょさいスペースで、このへやでしごととじキかつをおこなっています。",
+    "tags": ["base", "symbols", "digits"],
+    "source": "room-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "room-introduction-5",
+    "display": "デスクは昇降デスクの足とオーダーカットした天板を組み合わせて使っています。",
+    "kana": "デスクはしょうこうデスクのあしとオーダーカットしたてんばんをくみあわせてつかっています。",
+    "tags": ["base", "symbols"],
+    "source": "room-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "room-introduction-6",
+    "display": "この書斎の横幅ピッタリに合わせてオーダーしたので、非常にスッキリとした見た目になっています。",
+    "kana": "このしょさいのよこはばピッタリにあわせてオーダーしたので、ひじょうにスッキリとしたみためになっています。",
+    "tags": ["base", "symbols"],
+    "source": "room-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "room-introduction-7",
+    "display": "購入から3年経ちますが反り等の不具合は有りません。",
+    "kana": "こうにゅうから3ねんたちますがそりとうのふぐあいはありません。",
+    "tags": ["base", "digits"],
+    "source": "room-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "room-introduction-8",
+    "display": "なにより、キーボードごとの高さに合わせた机の高さにすることができるのが非常に良いところです。",
+    "kana": "なにより、キーボードごとのたかさにあわせたつくえのたかさにすることができるのがひじょうによいところです。",
+    "tags": ["base", "symbols"],
+    "source": "room-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "room-introduction-9",
+    "display": "私が書いた記事の最後には使用したキーボードを書いているので、そこを読めば分かると思いますが、最近こればっかり使っています。",
+    "kana": "わたしがかいたきじのさいごにはしようしたキーボードをかいているので、そこをよめばわかるとおもいますが、さいきんこればっかりつかっています。",
+    "tags": ["base", "symbols"],
+    "source": "room-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "room-introduction-10",
+    "display": "パームレストの手触りもいいですし、本当に気に入っています。",
+    "kana": "パームレストのてざわりもいいですし、ほんとうにきにいっています。",
+    "tags": ["base", "symbols"],
+    "source": "room-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "room-introduction-11",
+    "display": "私はトラックボールが好きで、トラックボールを使いだしてもう20年くらいになります。",
+    "kana": "わたしはトラックボールがすきで、トラックボールをつかいだしてもう20ねんくらいになります。",
+    "tags": ["base", "symbols", "digits"],
+    "source": "room-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "room-introduction-12",
+    "display": "トラックボールはマウスと違って置いてある場所から動かないのでノールックでつかめるし、ポインタを動かすのに大きなスペースが必要ありません。",
+    "kana": "トラックボールはマウスとちがっておいてあるばしょからうごかないのでノールックでつかめるし、ポインタをうごかすのにおおきなスペースがひつようありません。",
+    "tags": ["base", "symbols"],
+    "source": "room-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "room-introduction-13",
+    "display": "持ち運ぶ用途としては余り使う機会がない想定でしたが、データの移行などの必要なくメイン環境をそのまま持ち出せるのは非常に心強いです。",
+    "kana": "もちはこぶようととしてはあまりつかうきかいがないそうていでしたが、データのいこうなどのひつようなくメインかんきょうをそのままもちだせるのはひじょうにこころづよいです。",
+    "tags": ["base", "symbols"],
+    "source": "room-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "room-introduction-14",
+    "display": "パソコンにマグネットベースを貼り付け、スタンドにくっつけて使っています。",
+    "kana": "パソコンにマグネットベースをはりつけ、スタンドにくっつけてつかっています。",
+    "tags": ["base", "symbols"],
+    "source": "room-introduction",
+    "reviewed": false
+  },
+  {
+    "id": "libertouch-interview-1",
+    "display": "メンブレンキーボードというと、本ブログの読者諸氏は通常2千～4千円程度の廉価キーボードを想像するかもしれません。",
+    "kana": "メンブレンキーボードというと、ほんブログのどくしゃしょしはつうじょうにせん～よんせんえんていどのれんかキーボードをそうぞうするかもしれません。",
+    "tags": ["base", "symbols", "digits"],
+    "source": "libertouch-interview",
+    "reviewed": false
+  },
+  {
+    "id": "libertouch-interview-2",
+    "display": "とあるところに熱心なキーボードオタクがいました。",
+    "kana": "とあるところにねっしんなキーボードオタクがいました。",
+    "tags": ["base", "symbols"],
+    "source": "libertouch-interview",
+    "reviewed": false
+  },
+  {
+    "id": "libertouch-interview-3",
+    "display": "しかし、入社したときにはもう製造は終了してしまっていることを知りました。",
+    "kana": "しかし、にゅうしゃしたときにはもうせいぞうはしゅうりょうしてしまっていることをしりました。",
+    "tags": ["base"],
+    "source": "libertouch-interview",
+    "reviewed": false
+  },
+  {
+    "id": "libertouch-interview-4",
+    "display": "そのオタクは行動力オバケでありつつ更に往生際も悪かったので、どうすれば復活できるのか、仕事もせずに考えていました。",
+    "kana": "そのオタクはこうどうりょくオバケでありつつさらにおうじょうぎわもわるかったので、どうすればふっかつできるのか、しごともせずにかんがえていました。",
+    "tags": ["base"],
+    "source": "libertouch-interview",
+    "reviewed": false
+  },
+  {
+    "id": "libertouch-interview-5",
+    "display": "とはいえ、いきなり製品開発プロジェクトをスタートすることはできなかったので、まずは市場の興味度を測るために小さく動き始めようとなりました。",
+    "kana": "とはいえ、いきなりせいひんかいはつプロジェクトをスタートすることはできなかったので、まずはしじょうのきょうみどをはかるためにちいさくうごきはじめようとなりました。",
+    "tags": ["base", "symbols"],
+    "source": "libertouch-interview",
+    "reviewed": false
+  },
+  {
+    "id": "libertouch-interview-6",
+    "display": "ただ、販売当時にはキーボードに拘る人も少なく、簡単とはいえ自分で手を入れて調整する人は少なかったと思います。",
+    "kana": "ただ、はんばいとうじにはキーボードにかかわるひともすくなく、かんたんとはいえじぶんでてをいれてちょうせいするひとはすくなかったとおもいます。",
+    "tags": ["base", "symbols"],
+    "source": "libertouch-interview",
+    "reviewed": false
+  },
+  {
+    "id": "libertouch-interview-7",
+    "display": "しかし今はキーボードブームもあり、モジュール化されていることに魅力を感じる人も多くいます。",
+    "kana": "しかしいまはキーボードブームもあり、モジュールかされていることにみりょくをかんじるひともおおくいます。",
+    "tags": ["base", "symbols"],
+    "source": "libertouch-interview",
+    "reviewed": false
+  },
+  {
+    "id": "libertouch-interview-8",
+    "display": "自作キーボードに慣れた人であれば試作品を販売することに違和感はあまりないかもしれませんが、普通は試作品を販売したりはしません。",
+    "kana": "じさくキーボードになれたひとであればしさくひんをはんばいすることにいわかんはあまりないかもしれませんが、ふつうはしさくひんをはんばいしたりはしません。",
+    "tags": ["base", "symbols"],
+    "source": "libertouch-interview",
+    "reviewed": false
+  },
+  {
+    "id": "libertouch-interview-9",
+    "display": "カスタムキーボードの文脈を知る私から見ると、カスタムキーボードの文脈や流行を見ていない仕様のように見えます。",
+    "kana": "カスタムキーボードのぶんみゃくをしるわたしからみると、カスタムキーボードのぶんみゃくやりゅうこうをみていないしようのようにみえます。",
+    "tags": ["base", "symbols"],
+    "source": "libertouch-interview",
+    "reviewed": false
+  },
+  {
+    "id": "libertouch-interview-10",
+    "display": "ボトムケースとネジで締結するトレイマウントですし、ステンレスと思われる硬めのスイッチプレートを採用しています。",
+    "kana": "ボトムケースとネジでていけつするトレイマウントですし、ステンレスとおもわれるかためのスイッチプレートをさいようしています。",
+    "tags": ["base", "symbols"],
+    "source": "libertouch-interview",
+    "reviewed": false
+  },
+  {
+    "id": "libertouch-interview-11",
+    "display": "最近の、どこを見てもガスケットマウント、穴だらけでグニャグニャのスイッチプレート、という仕様ではありません。",
+    "kana": "さいきんの、どこをみてもガスケットマウント、あなだらけでグニャグニャのスイッチプレート、というしようではありません。",
+    "tags": ["base", "symbols"],
+    "source": "libertouch-interview",
+    "reviewed": false
+  },
+  {
+    "id": "libertouch-interview-12",
+    "display": "一つ一つのキーボードのデザインにディテールを入れ込む段階にないということです。",
+    "kana": "ひとつひとつのキーボードのデザインにディテールをいれこむだんかいにないということです。",
+    "tags": ["base", "symbols"],
+    "source": "libertouch-interview",
+    "reviewed": false
+  },
+  {
+    "id": "libertouch-interview-13",
+    "display": "ただ、もうちょっとだけ銘板がピッタリハマってくれるともっと格好いいのに、と思うのは私だけでしょうか。",
+    "kana": "ただ、もうちょっとだけめいばんがピッタリハマってくれるともっとかっこういいのに、とおもうのはわたしだけでしょうか。",
+    "tags": ["base"],
+    "source": "libertouch-interview",
+    "reviewed": false
+  },
+  {
+    "id": "libertouch-interview-14",
+    "display": "打鍵感についてはメカニカルスイッチにはあまり見られない柔らかなストロークと、まっすぐストロークする気持ちよさを感じます。",
+    "kana": "だけんかんについてはメカニカルスイッチにはあまりみられないやわらかなストロークと、まっすぐストロークするきもちよさをかんじます。",
+    "tags": ["base", "symbols"],
+    "source": "libertouch-interview",
+    "reviewed": false
+  },
+  {
+    "id": "looking-back-2025-1",
+    "display": "2025年も飽きずに一年中自作キーボードをやっていました。",
+    "kana": "2025ねんもあきずにいちねんちゅうじさくキーボードをやっていました。",
+    "tags": ["base", "symbols", "digits"],
+    "source": "looking-back-2025",
+    "reviewed": false
+  },
+  {
+    "id": "looking-back-2025-2",
+    "display": "この振り返り記事も20年、22年、23年、24年と5回目です。",
+    "kana": "このふりかえりきじも20ねん、22ねん、23ねん、24ねんと5かいめです。",
+    "tags": ["base", "digits"],
+    "source": "looking-back-2025",
+    "reviewed": false
+  },
+  {
+    "id": "looking-back-2025-3",
+    "display": "もはや飽きている方も多いかも知れませんが、私の年納めだと思って受け入れてください。",
+    "kana": "もはやあきているかたもおおいかもしれませんが、わたしのとしおさめだとおもってうけいれてください。",
+    "tags": ["base"],
+    "source": "looking-back-2025",
+    "reviewed": false
+  },
+  {
+    "id": "looking-back-2025-4",
+    "display": "ビルドガイドは用がある人しか読まないですからね。",
+    "kana": "ビルドガイドはようがあるひとしかよまないですからね。",
+    "tags": ["base"],
+    "source": "looking-back-2025",
+    "reviewed": false
+  },
+  {
+    "id": "looking-back-2025-5",
+    "display": "未完成のものも入っていますが、去年の24種と比較しても1.5倍に増えました。",
+    "kana": "みかんせいのものもはいっていますが、きょねんの24しゅとひかくしても1.5ばいにふえました。",
+    "tags": ["base", "digits"],
+    "source": "looking-back-2025",
+    "reviewed": false
+  },
+  {
+    "id": "looking-back-2025-6",
+    "display": "多すぎて全部紹介するのも疲れるので、紹介記事を紹介します。",
+    "kana": "おおすぎてぜんぶしょうかいするのもつかれるので、しょうかいきじをしょうかいします。",
+    "tags": ["base"],
+    "source": "looking-back-2025",
+    "reviewed": false
+  },
+  {
+    "id": "looking-back-2025-7",
+    "display": "天キーが年3回開催になり、キー部は別のコンセプトにしようかなと思っているところです。",
+    "kana": "てんキーがねん3かいかいさいになり、キーぶはべつのコンセプトにしようかなとおもっているところです。",
+    "tags": ["base", "symbols", "digits"],
+    "source": "looking-back-2025",
+    "reviewed": false
+  },
+  {
+    "id": "looking-back-2025-8",
+    "display": "忘年会、地方開催、勉強＆進捗会みたいな形態が良いんじゃないかなぁと思っているんですが、どうでしょうか。",
+    "kana": "ぼうねんかい、ちほうかいさい、べんきょう＆しんちょくかいみたいなけいたいがよいんじゃないかなぁとおもっているんですが、どうでしょうか。",
+    "tags": ["base"],
+    "source": "looking-back-2025",
+    "reviewed": false
+  },
+  {
+    "id": "looking-back-2025-9",
+    "display": "色々やりたい気持ちはあるのですが、家族が寝ている横で配信するのって結構厳しいんですよね。",
+    "kana": "いろいろやりたいきもちはあるのですが、かぞくがねているよこではいしんするのってけっこうきびしいんですよね。",
+    "tags": ["base"],
+    "source": "looking-back-2025",
+    "reviewed": false
+  },
+  {
+    "id": "looking-back-2025-10",
+    "display": "としての参加で、梱包に追い詰められはしていませんでしたが、それなりに寝不足だった記憶があります。",
+    "kana": "としてのさんかで、こんぽうにおいつめられはしていませんでしたが、それなりにねぶそくだったきおくがあります。",
+    "tags": ["base"],
+    "source": "looking-back-2025",
+    "reviewed": false
+  },
+  {
+    "id": "looking-back-2025-11",
+    "display": "ガジェットブロガー的なことをやりたくて、自作キーボードに限らないブログをやりたかったんですよね。",
+    "kana": "ガジェットブロガーてきなことをやりたくて、じさくキーボードにかぎらないブログをやりたかったんですよね。",
+    "tags": ["base", "symbols"],
+    "source": "looking-back-2025",
+    "reviewed": false
+  },
+  {
+    "id": "looking-back-2025-12",
+    "display": "軽く書くということが実践できており、非常に楽しくやれています。",
+    "kana": "かるくかくということがじっせんできており、ひじょうにたのしくやれています。",
+    "tags": ["base"],
+    "source": "looking-back-2025",
+    "reviewed": false
+  },
+  {
+    "id": "looking-back-2025-13",
+    "display": "この項目だけ自作キーボードとはあんまり関係なかったんで、気になっていたんですよね。",
+    "kana": "このこうもくだけじさくキーボードとはあんまりかんけいなかったんで、きになっていたんですよね。",
+    "tags": ["base", "symbols"],
+    "source": "looking-back-2025",
+    "reviewed": false
+  },
+  {
+    "id": "looking-back-2025-14",
+    "display": "まだまだやれることが多いことは非常に嬉しいですね。",
+    "kana": "まだまだやれることがおおいことはひじょうにうれしいですね。",
+    "tags": ["base"],
+    "source": "looking-back-2025",
+    "reviewed": false
+  }
+]

@@ -33,6 +33,7 @@ import {
 import type { LabelLayout } from "../layoutEditor/lib/keyLabels";
 import { PracticeBoard, type Mark } from "../practice/components/PracticeBoard";
 import { PracticeSession } from "../practice/components/PracticeSession";
+import { TaskSession } from "../practice/components/TaskSession";
 import { Legend, Notice } from "../practice/components/bits";
 import {
   GUIDE_40,
@@ -65,6 +66,7 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
     [boardId, entries],
   );
   const [mode, setMode] = useState<PracticeMode>("pick");
+  const [kind, setKind] = useState<"text" | "task">("text");
   const [layout, setLayout] = useState<LabelLayout>("us");
 
   return (
@@ -146,13 +148,46 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
           />
         )}
         {mode === "free" && (
-          <PracticeSession
-            key={`${board.id}:${layout}`}
-            board={board}
-            layout={layout}
-            t={t}
-            onExit={() => setMode("pick")}
-          />
+          <>
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-xs text-[var(--color-text-muted)]">
+                {t("Practise with")}
+              </span>
+              <div className="flex overflow-hidden rounded-lg border border-[var(--color-border)] divide-x divide-[var(--color-border)]">
+                {(["text", "task"] as const).map((k) => (
+                  <button
+                    key={k}
+                    type="button"
+                    onClick={() => setKind(k)}
+                    className={`h-9 px-4 text-sm transition-colors ${
+                      kind === k
+                        ? "bg-[var(--color-electric)]/15 text-[var(--color-text)]"
+                        : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                    }`}
+                  >
+                    {k === "text" ? t("Sentences") : t("Tasks")}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {kind === "text" ? (
+              <PracticeSession
+                key={`${board.id}:${layout}`}
+                board={board}
+                layout={layout}
+                t={t}
+                onExit={() => setMode("pick")}
+              />
+            ) : (
+              <TaskSession
+                key={`${board.id}:${layout}`}
+                board={board}
+                layout={layout}
+                t={t}
+                onExit={() => setMode("pick")}
+              />
+            )}
+          </>
         )}
       </div>
     </StandaloneFrame>

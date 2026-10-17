@@ -21,12 +21,14 @@ export type StopMode = "stop" | "advance";
 
 export interface Press {
   unit: number;
-  /** The character the text wanted. */
+  /** The character (or, for a task, the key name) the text wanted. */
   expected: string;
-  /** The character that came. */
+  /** The character (or key name) that came. */
   got: string;
   ok: boolean;
   time: number;
+  /** For a task's key step: the KeyboardEvent.code wanted, for the heatmap. */
+  code?: string;
 }
 
 export interface Skipped {

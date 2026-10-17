@@ -94,3 +94,56 @@ export function labelOnLayer(
   const on = key.onLayers?.find((o) => o.layer === layer);
   return on ? labelOf(on.trigger, layout) : null;
 }
+
+/**
+ * Which key sends `code` (a KeyboardEvent.code such as "F5" or
+ * "ArrowLeft"), on the base layer first and then on any layer a layer key
+ * reaches; null when none does.
+ */
+export function findKeyByCode(board: TestBoard, code: string): KeyHint | null {
+  const base = board.keys
+    .filter(
+      (k) =>
+        k.trigger.kind === "key" &&
+        k.trigger.mods.length === 0 &&
+        (k.trigger.code === code || k.alsoCodes?.includes(code)),
+    )
+    .map((k) => k.id);
+  if (base.length) return { keys: base, shift: [], layerKeys: [], layer: 0 };
+  for (const k of board.keys) {
+    for (const on of k.onLayers ?? []) {
+      if (on.trigger.kind !== "key" || on.trigger.code !== code) continue;
+      const layerKeys = board.keys
+        .filter(
+          (lk) =>
+            (lk.trigger.kind === "layer" && lk.trigger.layer === on.layer) ||
+            (lk.trigger.kind === "key" && lk.trigger.holdLayer === on.layer),
+        )
+        .map((lk) => lk.id);
+      return { keys: [k.id], shift: [], layerKeys, layer: on.layer };
+    }
+  }
+  return null;
+}
+
+/** The keys that send a modifier (either side), for lighting a chord. */
+export function modifierKeys(
+  board: TestBoard,
+  mod: "ctrl" | "alt" | "meta" | "shift",
+): string[] {
+  const codes = {
+    ctrl: ["ControlLeft", "ControlRight"],
+    alt: ["AltLeft", "AltRight"],
+    meta: ["MetaLeft", "MetaRight", "OSLeft", "OSRight"],
+    shift: ["ShiftLeft", "ShiftRight"],
+  }[mod];
+  return board.keys
+    .filter(
+      (k) =>
+        (k.trigger.kind === "key" && codes.includes(k.trigger.code)) ||
+        (k.trigger.kind === "key" &&
+          k.trigger.hold !== undefined &&
+          codes.includes(k.trigger.hold)),
+    )
+    .map((k) => k.id);
+}

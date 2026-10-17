@@ -1,10 +1,15 @@
 /**
- * The sentences the practice offers, until the real set is extracted from
- * the blog (SPEC §6.4, phase 2). Each has the text as shown and its
- * reading in kana, which is what the romaji is made from; the tags say
- * which keys a sentence needs, so a guide step can pick sentences typed
- * on the keys decided so far.
+ * The sentences the practice offers.
+ *
+ * texts.ja.json holds sentences extracted from the blog by
+ * scripts/practice_texts.py (SPEC §6.4), each with its reading in kana,
+ * which is what the romaji is made from, and tags saying which keys it
+ * needs, so a guide step can pick sentences typed on the keys decided so
+ * far. "reviewed" is set by hand once a reading has been checked. A few
+ * English lines are added here for the symbol keys.
  */
+import extracted from "./texts.ja.json";
+
 export type TextTag = "base" | "symbols" | "digits" | "en";
 
 export interface PracticeText {
@@ -12,63 +17,11 @@ export interface PracticeText {
   display: string;
   kana: string;
   tags: TextTag[];
+  source?: string;
+  reviewed?: boolean;
 }
 
-export const TEXTS_JA: PracticeText[] = [
-  {
-    id: "ja-1",
-    display: "よく使うキーから順に置いていく",
-    kana: "よくつかうきーからじゅんにおいていく",
-    tags: ["base"],
-  },
-  {
-    id: "ja-2",
-    display: "親指でスペースを押す場所を決める",
-    kana: "おやゆびですぺーすをおすばしょをきめる",
-    tags: ["base"],
-  },
-  {
-    id: "ja-3",
-    display: "記号はハイフンとコロンを入れ替えた",
-    kana: "きごうははいふんところんをいれかえた",
-    tags: ["base"],
-  },
-  {
-    id: "ja-4",
-    display: "キーマップは使いながら少しずつ直していけばいい",
-    kana: "きーまっぷはつかいながらすこしずつなおしていけばいい",
-    tags: ["base"],
-  },
-  {
-    id: "ja-5",
-    display: "レイヤーキーは親指のホームポジション近くに置く",
-    kana: "れいやーきーはおやゆびのほーむぽじしょんちかくにおく",
-    tags: ["base"],
-  },
-  {
-    id: "ja-6",
-    display: "自作キーボードは、用途に合わせて配列を変えてこそ本領を発揮する。",
-    kana: "じさくきーぼーどは、ようとにあわせてはいれつをかえてこそほんりょうをはっきする。",
-    tags: ["base", "symbols"],
-  },
-  {
-    id: "ja-7",
-    display: "一つのレイヤーが完成したら、次へ進む前に練習する",
-    kana: "ひとつのれいやーがかんせいしたら、つぎへすすむまえにれんしゅうする",
-    tags: ["base", "symbols"],
-  },
-  {
-    id: "ja-8",
-    display: "右手だけでカーソルを動かし、左手だけで記号を打つ",
-    kana: "みぎてだけでかーそるをうごかし、ひだりてだけできごうをうつ",
-    tags: ["base", "symbols"],
-  },
-  {
-    id: "ja-9",
-    display: "2026年10月17日にキーテストを公開した",
-    kana: "2026ねん10がつ17にちにきーてすとをこうかいした",
-    tags: ["base", "digits"],
-  },
+const EN: PracticeText[] = [
   {
     id: "en-1",
     display: "keeb-on.studio/practice",
@@ -81,4 +34,33 @@ export const TEXTS_JA: PracticeText[] = [
     kana: "Hold the layer key, then press the arrow keys.",
     tags: ["en", "symbols"],
   },
+  {
+    id: "en-3",
+    display: "A 40% keyboard puts the symbols you use most on the base layer.",
+    kana: "A 40% keyboard puts the symbols you use most on the base layer.",
+    tags: ["en", "symbols", "digits"],
+  },
 ];
+
+export const TEXTS_JA: PracticeText[] = [
+  ...(extracted as PracticeText[]),
+  ...EN,
+];
+
+/** Texts carrying only the given tags (every tag of the text must be allowed). */
+export function textsWithin(
+  texts: PracticeText[],
+  allowed: Set<TextTag>,
+): PracticeText[] {
+  return texts.filter((t) => t.tags.every((tag) => allowed.has(tag)));
+}
+
+/** A text other than `not`, at random; `not` itself when it is the only one. */
+export function pickText(
+  texts: PracticeText[],
+  not?: PracticeText,
+): PracticeText | undefined {
+  const pool = texts.filter((t) => t.id !== not?.id);
+  if (pool.length === 0) return not ?? texts[0];
+  return pool[Math.floor(Math.random() * pool.length)];
+}
