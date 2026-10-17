@@ -5,6 +5,15 @@
       "date": null,
       "changes": {
         "major": [],
+        "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.17.0",
+      "date": "2026-10-17",
+      "changes": {
+        "major": [],
         "minor": [
           {
             "en": "New key test (keeb-on.studio/keyboard-test, also linked from the top page): choose a keyboard and press its keys to see each one light up. It only listens to what the keyboard types, so there is nothing to connect or unlock, and wireless keyboards can be tested too. Every keyboard of Keeb-On! Studio is drawn with its default keymap, including what its layer keys reach, and standard ANSI and JIS full-size keyboards can be chosen for a keyboard whose keymap has been changed. Keys that bounce are flagged.",
