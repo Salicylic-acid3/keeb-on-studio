@@ -49,7 +49,8 @@ const ja: Record<string, string> = {
     "小さなキーボードでは、すべての記号をベースレイヤーに置けません。よく打つ記号を、いま記号が入っている位置に優先して置き、残りはレイヤーに回します。",
   "For example: I type a hyphen far more often than a colon, so the hyphen took the colon's place.":
     "例: 私はコロンよりハイフンをよく使うので、コロンの位置にハイフンを置いています。",
-  "Order these by how often you type them": "よく打つ順に並べてください",
+  "Drag the rows, or use the arrows, to order them by how often you type them":
+    "よく打つ順に並べてください（ドラッグまたは矢印ボタン）",
   "Top {{n}} go on the base layer": "上位 {{n}} 個がベースレイヤーに入ります",
   Hyphen: "ハイフン",
   Colon: "コロン",

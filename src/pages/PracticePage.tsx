@@ -25,6 +25,7 @@ import {
   IconCompass,
   IconDownload,
   IconExternalLink,
+  IconGripVertical,
   IconInfoCircle,
   IconKeyboard,
   IconPlayerPlay,
@@ -323,6 +324,21 @@ function Guide({
     setOrder(next);
     setProposed(false);
   };
+  // Dragging a row: it is lifted out and dropped in at the row under it.
+  const [dragging, setDragging] = useState<number | null>(null);
+  const [dropAt, setDropAt] = useState<number | null>(null);
+  const dropOn = (i: number) => {
+    if (dragging === null || dragging === i) return;
+    const next = [...order];
+    const [row] = next.splice(dragging, 1);
+    next.splice(i, 0, row);
+    setOrder(next);
+    setProposed(false);
+  };
+  const endDrag = () => {
+    setDragging(null);
+    setDropAt(null);
+  };
 
   const finish = (how: StepStatus) => {
     setStatus((s) => ({ ...s, [current]: how }));
@@ -372,7 +388,9 @@ function Guide({
               <div>
                 <div className="flex items-baseline justify-between">
                   <h3 className="text-sm font-medium text-[var(--color-text)]">
-                    {t("Order these by how often you type them")}
+                    {t(
+                      "Drag the rows, or use the arrows, to order them by how often you type them",
+                    )}
                   </h3>
                   <span className="text-xs text-[var(--color-text-muted)]">
                     {t("Top {{n}} go on the base layer", { n: slots.length })}
@@ -382,12 +400,37 @@ function Guide({
                   {order.map((s, i) => (
                     <li
                       key={s.ch}
-                      className={`flex items-center gap-3 rounded-lg border px-3 py-1.5 text-sm ${
+                      draggable
+                      onDragStart={(e) => {
+                        setDragging(i);
+                        e.dataTransfer.effectAllowed = "move";
+                      }}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        if (dropAt !== i) setDropAt(i);
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        dropOn(i);
+                        endDrag();
+                      }}
+                      onDragEnd={endDrag}
+                      className={`flex cursor-grab items-center gap-3 rounded-lg border px-3 py-1.5 text-sm transition-[opacity,box-shadow] active:cursor-grabbing ${
                         i < slots.length
                           ? "border-[var(--color-neon)]/50 bg-[var(--color-neon)]/10"
                           : "border-[var(--color-border)] bg-[var(--color-surface-elevated)]/60"
+                      } ${dragging === i ? "opacity-40" : ""} ${
+                        dropAt === i && dragging !== null && dragging !== i
+                          ? dragging < i
+                            ? "shadow-[0_2px_0_0_var(--color-electric)]"
+                            : "shadow-[0_-2px_0_0_var(--color-electric)]"
+                          : ""
                       }`}
                     >
+                      <IconGripVertical
+                        size={14}
+                        className="flex-shrink-0 text-[var(--color-text-muted)]"
+                      />
                       <span className="w-5 text-xs tabular-nums text-[var(--color-text-muted)]">
                         {i + 1}
                       </span>
