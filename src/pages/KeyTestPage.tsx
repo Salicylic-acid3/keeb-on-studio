@@ -204,18 +204,25 @@ function KeyTest({
     const onVisibility = () => {
       if (document.hidden) dispatch({ type: "releaseAll" });
     };
-    const onMouseUp = (e: MouseEvent) =>
+    // Pointer events, not mouse events: the board cancels its pointerdown
+    // (no text selection, no autoscroll), and a cancelled pointerdown means
+    // the browser sends no mouseup at all.
+    const onPointerUp = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") return;
       dispatch({ type: "mouseUp", button: e.button, time: e.timeStamp });
+    };
     window.addEventListener("keydown", onDown, true);
     window.addEventListener("keyup", onUp, true);
     window.addEventListener("blur", onBlur);
-    window.addEventListener("mouseup", onMouseUp);
+    window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("pointercancel", onPointerUp);
     document.addEventListener("visibilitychange", onVisibility);
     return () => {
       window.removeEventListener("keydown", onDown, true);
       window.removeEventListener("keyup", onUp, true);
       window.removeEventListener("blur", onBlur);
-      window.removeEventListener("mouseup", onMouseUp);
+      window.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("pointercancel", onPointerUp);
       document.removeEventListener("visibilitychange", onVisibility);
     };
   }, [mac]);
@@ -480,7 +487,7 @@ function KeyTest({
             </li>
             <li>
               {t(
-                "Keys that send the same thing (several Space keys, say) cannot be told apart: pressing any of them lights them all.",
+                "When several keys are assigned the same function, all of them light up. To test the key matrix itself, connect the keyboard and use the key input display.",
               )}
             </li>
             <li>

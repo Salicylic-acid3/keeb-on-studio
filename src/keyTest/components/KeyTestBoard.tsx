@@ -245,12 +245,14 @@ export function KeyTestBoard({
     (box.maxY - box.minY + pad * 2) * U,
   ];
   return (
+    // Drawn at 1u = 54px and only ever shrunk to fit: a tenkey is not
+    // blown up to the width of a full-size keyboard.
     <svg
       viewBox={vb.join(" ")}
-      className="block w-full h-auto max-h-[62vh]"
+      className="block w-full h-auto max-h-[62vh] mx-auto"
       role="img"
       aria-label={board.name}
-      style={{ fontFamily: "inherit" }}
+      style={{ fontFamily: "inherit", maxWidth: `${vb[2]}px` }}
     >
       {board.keys.map((k) => (
         <Key

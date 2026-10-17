@@ -10,13 +10,13 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // Key test
+  "When several keys are assigned the same function, all of them light up. To test the key matrix itself, connect the keyboard and use the key input display.":
+    "同じ機能のキーが複数登録されている場合、複数個所が光るようになっています。キーマトリクスのテストをしたい場合は、キーボードを接続してキー入力表示機能を使用してください。",
   Notes: "注意事項",
   "Layer keys light nothing on their own. Hold one with another key: that key lights up, and so does the layer key, once what they sent together shows it was held.":
     "レイヤーキーは単独では反応しません。他のキーと組み合わせて押すと、組み合わせたキーが光り、その入力からレイヤーキーが押されていたと分かる場合はレイヤーキーも光ります。",
   "Keys with a dashed outline (Bluetooth keys and the like) send nothing a browser can see, and are not counted.":
     "点線のキー（Bluetooth キーなど）はブラウザで検出できる入力を送らないため、数に含めていません。",
-  "Keys that send the same thing (several Space keys, say) cannot be told apart: pressing any of them lights them all.":
-    "同じ入力を送るキー（複数の Space キーなど）は区別できないため、どれを押しても全部光ります。",
   "Browser and system shortcuts (closing the tab, switching apps) cannot be held back.":
     "ブラウザや OS のショートカット（タブを閉じる・アプリの切り替えなど）は止められません。",
   "On a keyboard with a trackpad, gestures may be registered as virtual keys.":
@@ -2559,13 +2559,13 @@ const ja: Record<string, string> = {
 
 const zh: Record<string, string> = {
   // Key test
+  "When several keys are assigned the same function, all of them light up. To test the key matrix itself, connect the keyboard and use the key input display.":
+    "当多个按键被分配了相同功能时，这些按键会同时亮起。若要测试键矩阵本身，请连接键盘并使用按键输入显示功能。",
   Notes: "注意事项",
   "Layer keys light nothing on their own. Hold one with another key: that key lights up, and so does the layer key, once what they sent together shows it was held.":
     "层键单独按下不会有反应。与其他按键组合按下时，该按键会亮起；若由发送的内容可确定层键被按住，层键也会亮起。",
   "Keys with a dashed outline (Bluetooth keys and the like) send nothing a browser can see, and are not counted.":
     "虚线边框的按键（蓝牙键等）不会发送浏览器可检测的输入，因此不计入。",
-  "Keys that send the same thing (several Space keys, say) cannot be told apart: pressing any of them lights them all.":
-    "发送相同输入的按键（例如多个空格键）无法区分，按下任意一个都会全部亮起。",
   "Browser and system shortcuts (closing the tab, switching apps) cannot be held back.":
     "浏览器和系统的快捷键（关闭标签页、切换应用等）无法拦截。",
   "On a keyboard with a trackpad, gestures may be registered as virtual keys.":
