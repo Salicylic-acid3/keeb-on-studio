@@ -12,7 +12,6 @@
  * keyboard, where a press lights the key that sends the same thing.
  */
 import {
-  useCallback,
   useEffect,
   useMemo,
   useReducer,
@@ -21,8 +20,6 @@ import {
 } from "react";
 import {
   IconAlertTriangle,
-  IconArrowsMaximize,
-  IconArrowsMinimize,
   IconInfoCircle,
   IconKeyboard,
   IconListDetails,
@@ -36,6 +33,7 @@ import {
   JIS_ID,
   testBoard,
   testBoardEntries,
+  testableLayers,
   type BoardGroup,
   type TestBoard,
 } from "../keyTest/lib/boards";
@@ -125,15 +123,6 @@ function initialBoardId(language: string): string {
   return language === "ja" ? JIS_ID : ANSI_ID;
 }
 
-interface KeyboardLock {
-  lock?: (codes?: string[]) => Promise<void>;
-  unlock?: () => void;
-}
-
-function keyboardLock(): KeyboardLock | undefined {
-  return (navigator as Navigator & { keyboard?: KeyboardLock }).keyboard;
-}
-
 export function KeyTestPage({ onBack }: { onBack: () => void }) {
   const { t, language } = useLanguage();
   const [boardId, setBoardId] = useState(() => initialBoardId(language));
@@ -176,9 +165,9 @@ function KeyTest({
   t: (key: string, params?: Record<string, string | number>) => string;
 }) {
   const index = useMemo(() => indexBoard(board), [board]);
+  const layers = useMemo(() => testableLayers(board), [board]);
   const reduce = useMemo(() => reducer(index), [index]);
   const [state, dispatch] = useReducer(reduce, undefined, initialState);
-  const [fullscreen, setFullscreen] = useState(false);
   const mac = useMemo(() => isMac(), []);
   const entries = useMemo(() => testBoardEntries(), []);
   const standard = board.id === ANSI_ID || board.id === JIS_ID;
@@ -241,32 +230,6 @@ function KeyTest({
     );
     return () => window.clearTimeout(timer);
   }, [flashTop]);
-
-  useEffect(() => {
-    const onChange = () => {
-      const on = Boolean(document.fullscreenElement);
-      setFullscreen(on);
-      if (!on) keyboardLock()?.unlock?.();
-    };
-    document.addEventListener("fullscreenchange", onChange);
-    return () => document.removeEventListener("fullscreenchange", onChange);
-  }, []);
-
-  const toggleFullscreen = useCallback(async () => {
-    try {
-      if (document.fullscreenElement) {
-        await document.exitFullscreen();
-        return;
-      }
-      await document.documentElement.requestFullscreen();
-      // In full screen Chrome and Edge can keep Esc, Command / Windows and
-      // the like for the page instead of acting on them.
-      await keyboardLock()?.lock?.();
-    } catch {
-      // Not allowed here (an embedded preview, an old browser): the test
-      // works the same without it.
-    }
-  }, []);
 
   const held = useMemo(() => heldKeys(state), [state]);
   const done = index.testable.filter((id) => state.counts[id]).length;
@@ -331,21 +294,6 @@ function KeyTest({
         >
           <IconRefresh size={16} />
           {t("Reset")}
-        </button>
-        <button
-          type="button"
-          onClick={(e) => {
-            void toggleFullscreen();
-            e.currentTarget.blur();
-          }}
-          className="btn-ghost h-10 border border-[var(--color-border)] flex items-center gap-2 text-sm"
-        >
-          {fullscreen ? (
-            <IconArrowsMinimize size={16} />
-          ) : (
-            <IconArrowsMaximize size={16} />
-          )}
-          {fullscreen ? t("Exit full screen") : t("Full screen")}
         </button>
       </div>
 
@@ -415,6 +363,7 @@ function KeyTest({
         >
           <KeyTestBoard
             board={board}
+            layers={layers}
             held={held}
             counts={state.counts}
             chatter={state.chatter}
@@ -516,17 +465,22 @@ function KeyTest({
         <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)]/85 p-5 backdrop-blur-sm">
           <h2 className="flex items-center gap-2 text-sm font-medium text-[var(--color-text)]">
             <IconInfoCircle size={18} className="text-[var(--color-cyber)]" />
-            {t("Good to know")}
+            {t("Notes")}
           </h2>
           <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-relaxed text-[var(--color-text-secondary)]">
             <li>
               {t(
-                "Layer keys light nothing on their own. Hold one with another key and that key lights up.",
+                "Layer keys light nothing on their own. Hold one with another key: that key lights up, and so does the layer key, once what they sent together shows it was held.",
               )}
             </li>
             <li>
               {t(
-                "Keys with a dashed outline (layer keys, Bluetooth keys and the like) send nothing a browser can see, and are not counted.",
+                "Keys with a dashed outline (Bluetooth keys and the like) send nothing a browser can see, and are not counted.",
+              )}
+            </li>
+            <li>
+              {t(
+                "Keys that send the same thing (several Space keys, say) cannot be told apart: pressing any of them lights them all.",
               )}
             </li>
             <li>
@@ -534,7 +488,12 @@ function KeyTest({
             </li>
             <li>
               {t(
-                "Browser and system shortcuts (closing the tab, switching apps) cannot be held back. In Chrome and Edge, Full screen catches more of them; hold Esc to leave it.",
+                "Browser and system shortcuts (closing the tab, switching apps) cannot be held back.",
+              )}
+            </li>
+            <li>
+              {t(
+                "On a keyboard with a trackpad, gestures may be registered as virtual keys.",
               )}
             </li>
           </ul>

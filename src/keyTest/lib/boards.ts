@@ -41,6 +41,11 @@ export interface TestKey {
   /** Second rectangle of a stepped key (ISO / JIS Enter), from the primary's top left. */
   second?: { x: number; y: number; w: number; h: number };
   trigger: Trigger;
+  /**
+   * What the key sends while a layer key is held, on each layer a layer
+   * key of this keyboard turns on; only where that differs from `trigger`.
+   */
+  onLayers?: Array<{ layer: number; trigger: Trigger }>;
   /** Further codes the same key may send (Mac's 英数 / かな on a JIS board). */
   alsoCodes?: string[];
   label: KeyLabel;
@@ -369,22 +374,70 @@ export function testBoard(id: string): TestBoard | null {
   if (id === ANSI_ID || id === JIS_ID) return standardBoard(id);
   const found = keyboardBindings(id);
   if (!found) return null;
-  const { project, bindings, firmware, layout } = found;
+  const { project, bindings, layers, firmware, layout } = found;
   const parse = firmware === "zmk" ? zmkTrigger : qmkTrigger;
-  return {
-    id,
-    name: project.name,
-    keys: project.keys
-      // Decals are drawings, not keys.
-      .filter((key) => !key.kle?.decal)
-      .map((key) => {
-        const trigger = parse(bindings[project.keys.indexOf(key)]);
-        return { ...geometry(key), trigger, label: labelOf(trigger, layout) };
-      }),
-  };
+  const triggers = bindings.map(parse);
+  // The layers a key of the base layer turns on, and so can be tested.
+  const reachable = new Set<number>();
+  for (const t of triggers) {
+    if (t.kind === "layer" && t.layer !== undefined) reachable.add(t.layer);
+    if (t.kind === "key" && t.holdLayer !== undefined)
+      reachable.add(t.holdLayer);
+  }
+  const keys = project.keys
+    // Decals are drawings, not keys.
+    .filter((key) => !key.kle?.decal)
+    .map((key) => {
+      const index = project.keys.indexOf(key);
+      const trigger = triggers[index];
+      const onLayers = [...reachable]
+        .filter((layer) => layer >= 1 && layer - 1 < layers.length)
+        .flatMap((layer) => {
+          const t = parse(layers[layer - 1][index]);
+          const sends = t.kind === "key" || t.kind === "mouse";
+          return sends && !sameTrigger(t, trigger)
+            ? [{ layer, trigger: t }]
+            : [];
+        });
+      return {
+        ...geometry(key),
+        trigger,
+        ...(onLayers.length ? { onLayers } : {}),
+        label: labelOf(trigger, layout),
+      };
+    });
+  return { id, name: project.name, keys };
 }
 
-/** Whether pressing the key shows anything on the page. */
-export function isTestable(key: TestKey): boolean {
-  return key.trigger.kind === "key" || key.trigger.kind === "mouse";
+function sameTrigger(a: Trigger, b: Trigger): boolean {
+  if (a.kind === "key" && b.kind === "key")
+    return (
+      a.code === b.code &&
+      a.mods.length === b.mods.length &&
+      a.mods.every((m) => b.mods.includes(m))
+    );
+  if (a.kind === "mouse" && b.kind === "mouse") return a.button === b.button;
+  return false;
+}
+
+/** The layers a keyboard's keys send something on while a layer key is held. */
+export function testableLayers(board: TestBoard): Set<number> {
+  const layers = new Set<number>();
+  for (const key of board.keys)
+    for (const on of key.onLayers ?? []) layers.add(on.layer);
+  return layers;
+}
+
+/**
+ * Whether pressing the key shows anything on the page: a key or a mouse
+ * button does; a layer key only when some key sends something on its layer.
+ */
+export function isTestable(key: TestKey, layers?: Set<number>): boolean {
+  const t = key.trigger;
+  if (t.kind === "key" || t.kind === "mouse") return true;
+  return (
+    t.kind === "layer" &&
+    t.layer !== undefined &&
+    (layers?.has(t.layer) ?? false)
+  );
 }

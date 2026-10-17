@@ -5,11 +5,12 @@ editor's templates, into src/layoutEditor/data/keyboards.json.
 QMK: reads the keyboards listed in src/lib/firmwareDownloads.ts and, from
 the vial-qmk fork on GitHub, each one's vial.json (`layouts.keymap`, the
 KLE drawing with matrix positions), keyboard.json (which matrix position
-each LAYOUT argument is) and keymap.c (layer 0, as keycode names by matrix
-position; the multi-os keymap the released firmware is built from when
-there is one).
+each LAYOUT argument is) and keymap.c (every layer, as keycode names by
+matrix position: `keycodes` is layer 0, `layers` the rest; the multi-os
+keymap the released firmware is built from when there is one).
 
-ZMK: the base layer's bindings of each keyboard's .keymap, in key order.
+ZMK: every layer's bindings of each keyboard's .keymap, in key order
+(`zmk` is the base layer, `zmkLayers` the rest).
 
 Rerun when a keyboard is added or its vial.json changes:
 
@@ -59,20 +60,28 @@ def split_args(text):
     return out
 
 
+def layers_of(keymap_c):
+    """[(layout macro, arguments)] of every layer in a keymap.c, in order."""
+    text = strip_comments(keymap_c)
+    out = []
+    for m in re.finditer(r"\[\s*\w+\s*\]\s*=\s*(LAYOUT\w*)\s*\(", text):
+        depth, i = 1, m.end()
+        while depth and i < len(text):
+            depth += {"(": 1, ")": -1}.get(text[i], 0)
+            i += 1
+        out.append((m.group(1), split_args(text[m.end() : i - 1])))
+    return out
+
+
 def layer0(keymap_c):
     """(layout macro, arguments) of the first layer in a keymap.c."""
-    text = strip_comments(keymap_c)
-    m = re.search(r"\[\s*\w+\s*\]\s*=\s*(LAYOUT\w*)\s*\(", text)
-    if not m:
-        return None
-    depth, i = 1, m.end()
-    while depth and i < len(text):
-        depth += {"(": 1, ")": -1}.get(text[i], 0)
-        i += 1
-    return m.group(1), split_args(text[m.end() : i - 1])
+    layers = layers_of(keymap_c)
+    return layers[0] if layers else None
 
 
 def qmk_keycodes(branch, asset, paths):
+    """Every layer of the default keymap as keycode names by "row,col",
+    or None. Layer 0 is the base; the key test reads the rest."""
     base = f"keyboards/salicylic_acid3/{asset}"
     info = next((f"{base}/{n}" for n in ("keyboard.json", "info.json") if f"{base}/{n}" in paths), None)
     if not info:
@@ -84,20 +93,28 @@ def qmk_keycodes(branch, asset, paths):
         keymap = f"{base}/keymaps/{name}/keymap.c"
         if keymap not in paths:
             continue
-        found = layer0(get(raw + keymap))
+        found = layers_of(get(raw + keymap))
         if not found:
             continue
-        macro, args = found
+        macro, args = found[0]
         layout = layouts.get(macro) or next(iter(layouts.values()), None)
         if layout and len(layout["layout"]) == len(args):
-            return {f"{k['matrix'][0]},{k['matrix'][1]}": code for k, code in zip(layout["layout"], args)}
+            return [
+                {f"{k['matrix'][0]},{k['matrix'][1]}": code for k, code in zip(layout["layout"], layer_args)}
+                for layer_macro, layer_args in found
+                if len(layer_args) == len(args)
+            ]
     return None
 
 
-def zmk_bindings(repo, path):
+def zmk_layers(repo, path):
+    """Every layer's bindings of a ZMK keymap, in order, without "&"."""
     text = strip_comments(get(f"https://raw.githubusercontent.com/{repo}/HEAD/{path}"))
-    m = re.search(r"keymap\s*\{.*?bindings\s*=\s*<(.*?)>", text, flags=re.S)
-    return [" ".join(b.split()) for b in m.group(1).split("&") if b.strip()]
+    keymap = re.search(r"keymap\s*\{(.*)", text, flags=re.S).group(1)
+    return [
+        [" ".join(b.split()) for b in m.group(1).split("&") if b.strip()]
+        for m in re.finditer(r"bindings\s*=\s*<(.*?)>", keymap, flags=re.S)
+    ]
 
 
 def main():
@@ -122,22 +139,25 @@ def main():
             missing.append(asset)
             continue
         vial = json.loads(get(f"https://raw.githubusercontent.com/{REPO}/{found[0]}/{found[1]}"))
-        keycodes = qmk_keycodes(found[0], asset, trees[found[0]])
+        layers = qmk_keycodes(found[0], asset, trees[found[0]]) or []
         out.append(
             {
                 "id": asset,
                 "name": name,
                 "series": series or name,
                 "keymap": vial["layouts"]["keymap"],
-                "keycodes": keycodes or {},
+                "keycodes": layers[0] if layers else {},
+                "layers": layers[1:],
             }
         )
-        print(f"{asset}: {found[0]}/{found[1].split('/')[-2]}, {len(keycodes or {})} keycodes")
+        print(f"{asset}: {found[0]}/{found[1].split('/')[-2]}, {len(layers[0]) if layers else 0} keycodes, {len(layers)} layers")
     target = ROOT / "src/layoutEditor/data/keyboards.json"
-    zmk = {board: zmk_bindings(*source) for board, source in ZMK.items()}
-    for board, bindings in zmk.items():
-        print(f"{board}: {len(bindings)} bindings")
-    out = {"qmk": out, "zmk": zmk}
+    zmk_all = {board: zmk_layers(*source) for board, source in ZMK.items()}
+    zmk = {board: layers[0] for board, layers in zmk_all.items()}
+    zmk_upper = {board: layers[1:] for board, layers in zmk_all.items()}
+    for board, layers in zmk_all.items():
+        print(f"{board}: {len(layers[0])} bindings, {len(layers)} layers")
+    out = {"qmk": out, "zmk": zmk, "zmkLayers": zmk_upper}
     target.write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     print(f"{len(out['qmk'])} + {len(zmk)} keyboards -> {target.relative_to(ROOT)}")
     if missing:

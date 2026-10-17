@@ -5,7 +5,7 @@
  * A "source" is one thing the browser reports going down and up: a key code
  * ("key:KeyA") or a mouse button ("mouse:0").
  */
-import { isTestable, type TestBoard } from "./boards";
+import { isTestable, testableLayers, type TestBoard } from "./boards";
 import { modOfCode, type Mod } from "./triggers";
 
 /** Down-up-down quicker than this is a switch bouncing, not a finger. */
@@ -71,26 +71,33 @@ export function initialState(): TestState {
 interface CodeEntry {
   plain: string[];
   modded: Array<{ id: string; mods: Mod[] }>;
+  /** Keys that send the code while a layer key is held. */
+  layered: Array<{ id: string; mods: Mod[]; layer: number }>;
   hold: string[];
 }
 
 export interface BoardIndex {
   codes: Map<string, CodeEntry>;
-  mouse: Map<number, string[]>;
+  mouse: Map<number, Array<{ id: string; layer?: number }>>;
+  /** The keys that turn each layer on. */
+  layerKeys: Map<number, string[]>;
   testable: string[];
 }
 
 export function indexBoard(board: TestBoard): BoardIndex {
   const codes = new Map<string, CodeEntry>();
-  const mouse = new Map<number, string[]>();
+  const mouse = new Map<number, Array<{ id: string; layer?: number }>>();
+  const layerKeys = new Map<number, string[]>();
   const entry = (code: string) => {
     let e = codes.get(code);
     if (!e) {
-      e = { plain: [], modded: [], hold: [] };
+      e = { plain: [], modded: [], layered: [], hold: [] };
       codes.set(code, e);
     }
     return e;
   };
+  const turnsOn = (layer: number, id: string) =>
+    layerKeys.set(layer, [...(layerKeys.get(layer) ?? []), id]);
   for (const key of board.keys) {
     const t = key.trigger;
     if (t.kind === "key") {
@@ -100,34 +107,108 @@ export function indexBoard(board: TestBoard): BoardIndex {
         else entry(code).plain.push(key.id);
       }
       if (t.hold) entry(t.hold).hold.push(key.id);
+      if (t.holdLayer !== undefined) turnsOn(t.holdLayer, key.id);
     } else if (t.kind === "mouse") {
-      mouse.set(t.button, [...(mouse.get(t.button) ?? []), key.id]);
+      mouse.set(t.button, [...(mouse.get(t.button) ?? []), { id: key.id }]);
+    } else if (t.kind === "layer" && t.layer !== undefined) {
+      turnsOn(t.layer, key.id);
+    }
+    for (const { layer, trigger } of key.onLayers ?? []) {
+      if (trigger.kind === "key")
+        entry(trigger.code).layered.push({
+          id: key.id,
+          mods: trigger.mods,
+          layer,
+        });
+      else if (trigger.kind === "mouse")
+        mouse.set(trigger.button, [
+          ...(mouse.get(trigger.button) ?? []),
+          { id: key.id, layer },
+        ]);
     }
   }
+  const layers = testableLayers(board);
   return {
     codes,
     mouse,
-    testable: board.keys.filter(isTestable).map((k) => k.id),
+    layerKeys,
+    testable: board.keys.filter((k) => isTestable(k, layers)).map((k) => k.id),
   };
 }
 
-/** The keys a code pressed with `mods` held belongs to. */
+export interface Resolved {
+  /** The keys that send this. */
+  ids: string[];
+  /** Modifiers those keys send along with it. */
+  viaMods: Mod[];
+  /** Layer keys that must have been held for those keys to send this. */
+  layerIds: string[];
+}
+
+const NOTHING: Resolved = { ids: [], viaMods: [], layerIds: [] };
+
+/**
+ * The keys a code pressed with `mods` held belongs to: first a key of the
+ * base layer that sends it, else one that sends it while a layer key is
+ * held (and then that layer key too), else a mod-tap whose hold sends it.
+ */
 export function resolve(
   index: BoardIndex,
   code: string,
   mods: Mod[],
-): { ids: string[]; viaMods: Mod[] } {
+): Resolved {
   const e = index.codes.get(code);
-  if (!e) return { ids: [], viaMods: [] };
+  if (!e) return NOTHING;
   const fits = e.modded.filter((m) => m.mods.every((x) => mods.includes(x)));
   if (fits.length) {
     const most = Math.max(...fits.map((m) => m.mods.length));
     const best = fits.filter((m) => m.mods.length === most);
-    return { ids: best.map((m) => m.id), viaMods: best[0].mods };
+    return { ids: best.map((m) => m.id), viaMods: best[0].mods, layerIds: [] };
   }
-  if (e.plain.length) return { ids: e.plain, viaMods: [] };
-  if (e.modded.length) return { ids: e.modded.map((m) => m.id), viaMods: [] };
-  return { ids: e.hold, viaMods: [] };
+  if (e.plain.length) return { ids: e.plain, viaMods: [], layerIds: [] };
+  if (e.modded.length)
+    return { ids: e.modded.map((m) => m.id), viaMods: [], layerIds: [] };
+  if (e.layered.length) {
+    const onLayer = e.layered.filter((m) =>
+      m.mods.every((x) => mods.includes(x)),
+    );
+    const hits = onLayer.length ? onLayer : e.layered;
+    return {
+      ids: [...new Set(hits.map((m) => m.id))],
+      viaMods: hits[0].mods,
+      layerIds: [
+        ...new Set(hits.flatMap((m) => index.layerKeys.get(m.layer) ?? [])),
+      ],
+    };
+  }
+  return { ids: e.hold, viaMods: [], layerIds: [] };
+}
+
+/** The keys a mouse button belongs to, the same way. */
+function resolveMouse(index: BoardIndex, button: number): Resolved {
+  const hits = index.mouse.get(button) ?? [];
+  const base = hits.filter((h) => h.layer === undefined);
+  if (base.length)
+    return { ids: base.map((h) => h.id), viaMods: [], layerIds: [] };
+  return {
+    ids: hits.map((h) => h.id),
+    viaMods: [],
+    layerIds: [
+      ...new Set(
+        hits.flatMap((h) =>
+          h.layer === undefined ? [] : (index.layerKeys.get(h.layer) ?? []),
+        ),
+      ),
+    ],
+  };
+}
+
+/** A layer key counts as worked once; it is not a key one presses on its own. */
+function countOnce(record: Record<string, number>, ids: string[]) {
+  return bump(
+    record,
+    ids.filter((id) => !record[id]),
+  );
 }
 
 function bump(record: Record<string, number>, ids: string[], by = 1) {
@@ -164,7 +245,7 @@ export function keyDown(
 ): TestState {
   const source = `key:${ev.code}`;
   if (ev.repeat || state.pressed[source]) return state;
-  const { ids, viaMods } = resolve(index, ev.code, ev.mods);
+  const { ids, viaMods, layerIds } = resolve(index, ev.code, ev.mods);
   const last = state.lastUp[source];
   const bounced =
     ids.length > 0 && last !== undefined && ev.time - last < CHATTER_MS;
@@ -193,8 +274,10 @@ export function keyDown(
     for (const id of ids) next.flash[id] = next.seq + 1;
   } else {
     next.counts = bump(next.counts, ids);
-    next.pressed = { ...next.pressed, [source]: ids };
+    // The layer key lights with the key it shifted: it was held for this.
+    next.pressed = { ...next.pressed, [source]: [...ids, ...layerIds] };
   }
+  next.counts = countOnce(next.counts, layerIds);
   if (bounced) next.chatter = bump(next.chatter, ids);
 
   const mod = modOfCode(ev.code);
@@ -216,7 +299,7 @@ export function keyDown(
     code: ev.code,
     key: ev.key,
     mods: ev.mods,
-    keyIds: ids,
+    keyIds: [...layerIds, ...ids],
     chatter: bounced,
   });
 }
@@ -258,20 +341,20 @@ export function mouseDown(
 ): TestState {
   const source = `mouse:${ev.button}`;
   if (state.pressed[source]) return state;
-  const ids = index.mouse.get(ev.button) ?? [];
+  const { ids, layerIds } = resolveMouse(index, ev.button);
   const last = state.lastUp[source];
   const bounced =
     ids.length > 0 && last !== undefined && ev.time - last < CHATTER_MS;
   const next: TestState = {
     ...state,
-    counts: bump(state.counts, ids),
-    pressed: { ...state.pressed, [source]: ids },
+    counts: countOnce(bump(state.counts, ids), layerIds),
+    pressed: { ...state.pressed, [source]: [...ids, ...layerIds] },
     chatter: bounced ? bump(state.chatter, ids) : state.chatter,
   };
   return pushLog(next, {
     code: `Mouse ${ev.button}`,
     mods: [],
-    keyIds: ids,
+    keyIds: [...layerIds, ...ids],
     chatter: bounced,
   });
 }

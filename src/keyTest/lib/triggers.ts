@@ -21,10 +21,15 @@ export type Trigger =
       mods: Mod[];
       /** Code its hold sends, for a mod-tap (MT, SFT_T, &mt). */
       hold?: string;
+      /** Layer its hold turns on, for a layer-tap (LT, &lt). */
+      holdLayer?: number;
     }
   | { kind: "mouse"; button: number }
-  /** A layer key: shows nothing by itself, only through the keys it shifts. */
-  | { kind: "layer" }
+  /**
+   * A layer key: shows nothing by itself, only through the keys it shifts.
+   * `layer` is the layer it turns on, when the binding says which.
+   */
+  | { kind: "layer"; layer?: number }
   /** Sends something a page cannot see (Bluetooth, lighting, a reset...). */
   | { kind: "other"; label: string }
   /** Unassigned or transparent. */
@@ -130,14 +135,19 @@ export function qmkTrigger(keycode: string | undefined): Trigger {
   const text = keycode.replace(/\s+/g, "");
   if (/^(KC_NO|XXXXXXX|KC_TRNS|KC_TRANSPARENT|_______)$/.test(text))
     return { kind: "none" };
+  const layerKey = /^(?:MO|TG|TO|TT|OSL|DF|PDF)\((\d+)\)$/.exec(text);
+  if (layerKey) return { kind: "layer", layer: Number(layerKey[1]) };
   if (/^(MO|TG|TO|TT|OSL|DF|PDF)\(/.test(text)) return { kind: "layer" };
   const mouse = /^(?:KC_|MS_)(?:MS_)?(BTN\d)$/.exec(text);
   if (mouse && mouse[1] in QMK_MOUSE)
     return { kind: "mouse", button: QMK_MOUSE[mouse[1]] };
-  const lt = /^LT\(\d+,(.+)\)$/.exec(text);
+  const lt = /^LT\((\d+),(.+)\)$/.exec(text);
   if (lt) {
-    const tap = keyWithMods(lt[1]);
-    return tap ? { kind: "key", ...tap } : { kind: "layer" };
+    const layer = Number(lt[1]);
+    const tap = keyWithMods(lt[2]);
+    return tap
+      ? { kind: "key", ...tap, holdLayer: layer }
+      : { kind: "layer", layer };
   }
   const mt = /^MT\(([^,]+),(.+)\)$/.exec(text);
   if (mt) {
@@ -190,13 +200,24 @@ export function zmkTrigger(binding: string | undefined): Trigger {
   // Hold-taps, including this workshop's timing presets (lt_mid, mt_fast).
   if (/^(mt|lt)(_\w+)?$/.test(behavior) && params[1]) {
     const tap = keyWithMods(params[1]);
-    if (!tap)
-      return behavior.startsWith("lt") ? { kind: "layer" } : { kind: "none" };
-    if (behavior.startsWith("lt")) return { kind: "key", ...tap };
+    if (behavior.startsWith("lt")) {
+      const layer = /^\d+$/.test(params[0]) ? Number(params[0]) : undefined;
+      if (!tap)
+        return { kind: "layer", ...(layer !== undefined ? { layer } : {}) };
+      return {
+        kind: "key",
+        ...tap,
+        ...(layer !== undefined ? { holdLayer: layer } : {}),
+      };
+    }
+    if (!tap) return { kind: "none" };
     const hold = codeForKeyName(params[0]);
     return { kind: "key", ...tap, ...(hold ? { hold } : {}) };
   }
-  if (/^(mo|tog|to|sl)$/.test(behavior)) return { kind: "layer" };
+  if (/^(mo|tog|to|sl)$/.test(behavior))
+    return /^\d+$/.test(params[0] ?? "")
+      ? { kind: "layer", layer: Number(params[0]) }
+      : { kind: "layer" };
   if (behavior === "mkp" && params[0] && params[0] in ZMK_MOUSE)
     return { kind: "mouse", button: ZMK_MOUSE[params[0]] };
   // Custom mouse behaviours of these keyboards (drag_lclk...).

@@ -41,7 +41,8 @@ describe("triggers", () => {
       code: "Digit1",
       mods: ["shift"],
     });
-    expect(qmkTrigger("MO(1)")).toEqual({ kind: "layer" });
+    expect(qmkTrigger("MO(1)")).toEqual({ kind: "layer", layer: 1 });
+    expect(qmkTrigger("LT(2, KC_SPC)")).toMatchObject({ holdLayer: 2 });
     expect(qmkTrigger("KC_BTN2")).toEqual({ kind: "mouse", button: 2 });
     expect(qmkTrigger("_______")).toEqual({ kind: "none" });
     expect(qmkTrigger("QK_BOOT").kind).toBe("other");
@@ -67,7 +68,8 @@ describe("triggers", () => {
     });
     expect(zmkTrigger("mkp RCLK")).toEqual({ kind: "mouse", button: 2 });
     expect(zmkTrigger("drag_lclk")).toEqual({ kind: "mouse", button: 0 });
-    expect(zmkTrigger("mo 1")).toEqual({ kind: "layer" });
+    expect(zmkTrigger("mo 1")).toEqual({ kind: "layer", layer: 1 });
+    expect(zmkTrigger("lt_mid 2 SPACE")).toMatchObject({ holdLayer: 2 });
     expect(zmkTrigger("bt BT_NXT").kind).toBe("other");
     expect(zmkTrigger("none")).toEqual({ kind: "none" });
   });
@@ -103,7 +105,7 @@ describe("boards", () => {
     for (const entry of testBoardEntries()) {
       const board = testBoard(entry.id);
       expect(board).not.toBeNull();
-      const testable = board!.keys.filter(isTestable);
+      const testable = board!.keys.filter((k) => isTestable(k));
       // Every keyboard has at least most of its keys testable.
       expect(testable.length).toBeGreaterThan(board!.keys.length / 2);
     }
@@ -214,5 +216,33 @@ describe("matcher", () => {
       const { ids } = resolve(indexBoard(b), "MetaLeft", []);
       expect(ids.sort()).toEqual(plain.map((k) => k.id).sort());
     }
+  });
+
+  it("lights a key sent through a layer, and the layer key with it", () => {
+    // InSixty JP: Fn (MO(1)) + 1 sends F1 on layer 1.
+    const b = testBoard("insixty_jp")!;
+    const i = indexBoard(b);
+    const fn = b.keys.filter((k) => k.trigger.kind === "layer");
+    expect(fn.length).toBeGreaterThan(0);
+    expect(i.testable).toEqual(expect.arrayContaining(fn.map((k) => k.id)));
+    const { ids, layerIds } = resolve(i, "F1", []);
+    expect(ids.length).toBeGreaterThan(0);
+    expect(layerIds).toEqual(fn.map((k) => k.id));
+    let s = keyDown(initialState(), i, down("F1", 0));
+    const held = heldKeys(s);
+    for (const id of [...ids, ...layerIds]) expect(held.has(id)).toBe(true);
+    expect(s.counts[layerIds[0]]).toBe(1);
+    s = keyUp(s, i, { code: "F1", time: 50 });
+    s = keyDown(s, i, down("F2", 100));
+    // The layer key is counted once, however many keys it shifts.
+    expect(s.counts[layerIds[0]]).toBe(1);
+  });
+
+  it("does not count a layer key nothing is reachable through", () => {
+    // GoForty US's Fn layer is all transparent in the shipped firmware.
+    const b = testBoard("goforty_us")!;
+    const i = indexBoard(b);
+    const fn = b.keys.filter((k) => k.trigger.kind === "layer");
+    for (const k of fn) expect(i.testable).not.toContain(k.id);
   });
 });

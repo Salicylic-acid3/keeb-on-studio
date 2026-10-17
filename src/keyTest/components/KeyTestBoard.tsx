@@ -14,6 +14,8 @@ const U = 54;
 
 interface KeyTestBoardProps {
   board: TestBoard;
+  /** Layers some key sends something on, so their layer keys are testable. */
+  layers: Set<number>;
   held: Set<string>;
   counts: Record<string, number>;
   chatter: Record<string, number>;
@@ -64,18 +66,19 @@ function boundsOf(keys: TestKey[]) {
 
 const Key = memo(function Key({
   k,
+  testable,
   held,
   count,
   bounced,
   untestableTitle,
 }: {
   k: TestKey;
+  testable: boolean;
   held: boolean;
   count: number;
   bounced: number;
   untestableTitle: string;
 }) {
-  const testable = isTestable(k);
   const gap = 0.05 * U;
   const radius = 0.1 * U;
   const rects = rectsOf(k).map((r) => ({
@@ -227,6 +230,7 @@ const Key = memo(function Key({
 
 export function KeyTestBoard({
   board,
+  layers,
   held,
   counts,
   chatter,
@@ -252,6 +256,7 @@ export function KeyTestBoard({
         <Key
           key={k.id}
           k={k}
+          testable={isTestable(k, layers)}
           held={held.has(k.id)}
           count={counts[k.id] ?? 0}
           bounced={chatter[k.id] ?? 0}

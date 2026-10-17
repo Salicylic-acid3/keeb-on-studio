@@ -40,9 +40,13 @@ const DATA = data as unknown as {
     keymap: KleDocument;
     /** Layer 0 of the default keymap: keycode names by "row,col". */
     keycodes: Record<string, string>;
+    /** Layers 1 and up, the same way. */
+    layers?: Array<Record<string, string>>;
   }>;
   /** The base layer's bindings of each ZMK keyboard, in key order. */
   zmk: Record<string, string[] | undefined>;
+  /** Layers 1 and up of each ZMK keyboard, the same way. */
+  zmkLayers?: Record<string, string[][] | undefined>;
 };
 const QMK = DATA.qmk;
 
@@ -157,6 +161,8 @@ function insixtyJpEnter(keys: LayoutKey[]): LayoutKey[] {
 export interface KeyboardBindings {
   project: LayoutProject;
   bindings: Array<string | undefined>;
+  /** The same for layer 1 and up, where the keymap has them. */
+  layers: Array<Array<string | undefined>>;
   firmware: "zmk" | "qmk";
   layout: LabelLayout;
 }
@@ -166,9 +172,13 @@ export function keyboardBindings(id: string): KeyboardBindings | null {
   if (zmk) {
     const project = { ...importKle(zmkToKle(zmk)), name: zmk.name };
     const bindings = DATA.zmk[id] ?? [];
+    const layers = DATA.zmkLayers?.[id] ?? [];
     return {
       project,
       bindings: project.keys.map((_k, index) => bindings[index]),
+      layers: layers.map((layer) =>
+        project.keys.map((_k, index) => layer[index]),
+      ),
       firmware: "zmk",
       layout: "us",
     };
@@ -190,18 +200,20 @@ export function keyboardBindings(id: string): KeyboardBindings | null {
   const unnamed = [...positions].filter((at) => !(at in board.keycodes));
   const unused = Object.keys(board.keycodes).filter((at) => !positions.has(at));
   const stray = unnamed.length === 1 && unused.length === 1 ? unnamed[0] : null;
-  const spare = stray ? board.keycodes[unused[0]] : undefined;
+  const codesOf = (layer: Record<string, string>) =>
+    keys.map((key) => {
+      if (!key.matrix) return undefined;
+      const at = `${key.matrix.row},${key.matrix.col}`;
+      return layer[at] ?? (at === stray ? layer[unused[0]] : undefined);
+    });
   return {
     project: {
       name: board.name,
       keys,
       groups: imported.groups.filter((g) => used.has(g.id)),
     },
-    bindings: keys.map((key) => {
-      if (!key.matrix) return undefined;
-      const at = `${key.matrix.row},${key.matrix.col}`;
-      return board.keycodes[at] ?? (at === stray ? spare : undefined);
-    }),
+    bindings: codesOf(board.keycodes),
+    layers: (board.layers ?? []).map(codesOf),
     firmware: "qmk",
     layout: layoutOf(board.id),
   };

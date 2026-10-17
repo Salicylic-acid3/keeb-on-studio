@@ -7,9 +7,9 @@
         "major": [],
         "minor": [
           {
-            "en": "New key test (keeb-on.studio/keyboard-test, also linked from the top page): choose a keyboard and press its keys to see each one light up. It only listens to what the keyboard types, so there is nothing to connect or unlock, and wireless keyboards can be tested too. Every keyboard of Keeb-On! Studio is drawn with its default keymap, and standard ANSI and JIS full-size keyboards can be chosen for a keyboard whose keymap has been changed. Keys that bounce are flagged.",
-            "ja": "キーテストを追加しました（keeb-on.studio/keyboard-test、トップ画面からも開けます）。キーボードを選んでキーを押すと、画面上のキーが光ります。キーボードの入力を受け取るだけなので接続もロック解除も不要で、無線キーボードもテストできます。Keeb-On! Studio の各キーボードはデフォルトのキーマップで表示し、キーマップを変更したキーボード向けに標準の ANSI / JIS フルサイズも選べます。チャタリングしたキーには印を付けます。",
-            "zh": "新增按键测试（keeb-on.studio/keyboard-test，也可从首页打开）：选择键盘后按下按键，屏幕上的对应按键就会亮起。它只接收键盘输入，因此无需连接或解锁，无线键盘也能测试。Keeb-On! Studio 的各款键盘均以默认键映射显示；修改过键映射的键盘可改选标准 ANSI / JIS 全尺寸键盘。出现抖动的按键会被标记。"
+            "en": "New key test (keeb-on.studio/keyboard-test, also linked from the top page): choose a keyboard and press its keys to see each one light up. It only listens to what the keyboard types, so there is nothing to connect or unlock, and wireless keyboards can be tested too. Every keyboard of Keeb-On! Studio is drawn with its default keymap, including what its layer keys reach, and standard ANSI and JIS full-size keyboards can be chosen for a keyboard whose keymap has been changed. Keys that bounce are flagged.",
+            "ja": "キーテストを追加しました（keeb-on.studio/keyboard-test、トップ画面からも開けます）。キーボードを選んでキーを押すと、画面上のキーが光ります。キーボードの入力を受け取るだけなので接続もロック解除も不要で、無線キーボードもテストできます。Keeb-On! Studio の各キーボードはデフォルトのキーマップ（レイヤーキーで届く割り当てを含む）で表示し、キーマップを変更したキーボード向けに標準の ANSI / JIS フルサイズも選べます。チャタリングしたキーには印を付けます。",
+            "zh": "新增按键测试（keeb-on.studio/keyboard-test，也可从首页打开）：选择键盘后按下按键，屏幕上的对应按键就会亮起。它只接收键盘输入，因此无需连接或解锁，无线键盘也能测试。Keeb-On! Studio 的各款键盘均以默认键映射（包括层键可到达的分配）显示；修改过键映射的键盘可改选标准 ANSI / JIS 全尺寸键盘。出现抖动的按键会被标记。"
           }
         ],
         "patch": []

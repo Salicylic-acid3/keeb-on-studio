@@ -10,12 +10,21 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // Key test
+  Notes: "注意事項",
+  "Layer keys light nothing on their own. Hold one with another key: that key lights up, and so does the layer key, once what they sent together shows it was held.":
+    "レイヤーキーは単独では反応しません。他のキーと組み合わせて押すと、組み合わせたキーが光り、その入力からレイヤーキーが押されていたと分かる場合はレイヤーキーも光ります。",
+  "Keys with a dashed outline (Bluetooth keys and the like) send nothing a browser can see, and are not counted.":
+    "点線のキー（Bluetooth キーなど）はブラウザで検出できる入力を送らないため、数に含めていません。",
+  "Keys that send the same thing (several Space keys, say) cannot be told apart: pressing any of them lights them all.":
+    "同じ入力を送るキー（複数の Space キーなど）は区別できないため、どれを押しても全部光ります。",
+  "Browser and system shortcuts (closing the tab, switching apps) cannot be held back.":
+    "ブラウザや OS のショートカット（タブを閉じる・アプリの切り替えなど）は止められません。",
+  "On a keyboard with a trackpad, gestures may be registered as virtual keys.":
+    "トラックパッド付きキーボードは、ジェスチャー動作が仮想的なキーとして登録されている場合があります。",
   "Key test": "キーテスト",
   "Press each key of the keyboard in front of you: the key on screen lights up while it is held and stays tinted once it has worked. Nothing needs connecting or unlocking, so a wireless keyboard is tested the same way.":
     "手元のキーボードのキーを1つずつ押してください。押している間は画面上のキーが光り、一度反応したキーは色が付いたままになります。接続やロック解除は不要なので、無線キーボードも同じようにテストできます。",
   "Keyboard to test": "テストするキーボード",
-  "Exit full screen": "全画面を終了",
-  "Full screen": "全画面",
   "Shown is this keyboard's default keymap. If you have changed its keymap, choose ANSI or JIS full size instead: a press then lights the key that sends the same thing.":
     "表示しているのは、このキーボードのデフォルトのキーマップです。キーマップを変更している場合は、ANSI か JIS のフルサイズを選んでください。押したキーと同じ入力のキーが光ります。",
   "All {{total}} keys work": "全 {{total}} キーの反応を確認しました",
@@ -32,15 +41,8 @@ const ja: Record<string, string> = {
   "Recent input": "直近の入力",
   "Press any key.": "キーを押してください。",
   "Not on this keyboard": "このキーボードに無いキー",
-  "Good to know": "知っておくと良いこと",
-  "Layer keys light nothing on their own. Hold one with another key and that key lights up.":
-    "レイヤーキーは単独では反応しません。他のキーと組み合わせて押すと、組み合わせたキーが光ります。",
-  "Keys with a dashed outline (layer keys, Bluetooth keys and the like) send nothing a browser can see, and are not counted.":
-    "点線のキー（レイヤーキーや Bluetooth キーなど）はブラウザで検出できる入力を送らないため、数に含めていません。",
   "For mouse buttons, click on the keyboard drawn above.":
     "マウスボタンは、上のキーボードの図の上でクリックしてください。",
-  "Browser and system shortcuts (closing the tab, switching apps) cannot be held back. In Chrome and Edge, Full screen catches more of them; hold Esc to leave it.":
-    "ブラウザや OS のショートカット（タブを閉じる・アプリの切り替えなど）は止められません。Chrome と Edge では「全画面」にするとより多くのキーを受け取れます（Esc 長押しで終了）。",
   "Check that every key of a keyboard you just got works. It only listens to what the keyboard types, so there is nothing to connect or unlock, and a wireless keyboard works too.":
     "届いたキーボードの全キーが反応するか確かめられます。キーボードの入力を受け取るだけなので、接続もロック解除も不要で、無線キーボードにも使えます。",
   "Open the key test": "キーテストを開く",
@@ -2557,13 +2559,22 @@ const ja: Record<string, string> = {
 
 const zh: Record<string, string> = {
   // Key test
+  Notes: "注意事项",
+  "Layer keys light nothing on their own. Hold one with another key: that key lights up, and so does the layer key, once what they sent together shows it was held.":
+    "层键单独按下不会有反应。与其他按键组合按下时，该按键会亮起；若由发送的内容可确定层键被按住，层键也会亮起。",
+  "Keys with a dashed outline (Bluetooth keys and the like) send nothing a browser can see, and are not counted.":
+    "虚线边框的按键（蓝牙键等）不会发送浏览器可检测的输入，因此不计入。",
+  "Keys that send the same thing (several Space keys, say) cannot be told apart: pressing any of them lights them all.":
+    "发送相同输入的按键（例如多个空格键）无法区分，按下任意一个都会全部亮起。",
+  "Browser and system shortcuts (closing the tab, switching apps) cannot be held back.":
+    "浏览器和系统的快捷键（关闭标签页、切换应用等）无法拦截。",
+  "On a keyboard with a trackpad, gestures may be registered as virtual keys.":
+    "带触控板的键盘，其手势操作可能被注册为虚拟按键。",
   "ZMK keyboards": "ZMK 键盘",
   "Key test": "按键测试",
   "Press each key of the keyboard in front of you: the key on screen lights up while it is held and stays tinted once it has worked. Nothing needs connecting or unlocking, so a wireless keyboard is tested the same way.":
     "请逐个按下手边键盘上的按键：按住时屏幕上的对应按键会亮起，响应过一次的按键会保持着色。无需连接或解锁，无线键盘也能同样测试。",
   "Keyboard to test": "要测试的键盘",
-  "Exit full screen": "退出全屏",
-  "Full screen": "全屏",
   "Shown is this keyboard's default keymap. If you have changed its keymap, choose ANSI or JIS full size instead: a press then lights the key that sends the same thing.":
     "这里显示的是该键盘的默认键映射。如果你修改过键映射，请改选 ANSI 或 JIS 全尺寸键盘，按下时会点亮发送相同输入的按键。",
   "All {{total}} keys work": "全部 {{total}} 个按键均已响应",
@@ -2580,15 +2591,8 @@ const zh: Record<string, string> = {
   "Recent input": "最近的输入",
   "Press any key.": "请按任意键。",
   "Not on this keyboard": "不在此键盘上",
-  "Good to know": "须知",
-  "Layer keys light nothing on their own. Hold one with another key and that key lights up.":
-    "层键单独按下不会有反应。与其他按键组合按下时，组合的那个按键会亮起。",
-  "Keys with a dashed outline (layer keys, Bluetooth keys and the like) send nothing a browser can see, and are not counted.":
-    "虚线边框的按键（层键、蓝牙键等）不会发送浏览器可检测的输入，因此不计入。",
   "For mouse buttons, click on the keyboard drawn above.":
     "鼠标按键请在上方的键盘图上点击。",
-  "Browser and system shortcuts (closing the tab, switching apps) cannot be held back. In Chrome and Edge, Full screen catches more of them; hold Esc to leave it.":
-    "浏览器和系统的快捷键（关闭标签页、切换应用等）无法拦截。在 Chrome 和 Edge 中使用“全屏”可以捕获更多按键；长按 Esc 退出。",
   "Check that every key of a keyboard you just got works. It only listens to what the keyboard types, so there is nothing to connect or unlock, and a wireless keyboard works too.":
     "检查刚到手的键盘是否每个按键都正常。它只接收键盘输入，因此无需连接或解锁，无线键盘也可以使用。",
   "Open the key test": "打开按键测试",
