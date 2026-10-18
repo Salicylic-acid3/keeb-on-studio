@@ -273,7 +273,10 @@ describe("guide proposals on GoFortyMax Ortho", () => {
       mods: ["shift"],
     });
     // The modifier column: " left of A, ' left of Z, nothing above it.
-    expect(on(byLabel("Ctrl"))).toMatchObject({ code: "Quote", mods: ["shift"] });
+    expect(on(byLabel("Ctrl"))).toMatchObject({
+      code: "Quote",
+      mods: ["shift"],
+    });
     expect(on(byLabel("Shift"))).toMatchObject({ code: "Quote", mods: [] });
     expect(on(byLabel("Tab"))).toBeUndefined();
     expect(changes.length).toBe(17);
@@ -284,7 +287,15 @@ describe("guide proposals on GoFortyMax Ortho", () => {
     const m = keyboardMeta(b);
     const cols = symbolColumns(b, m, "L");
     expect(cols.length).toBeLessThanOrEqual(5);
-    const changes = placeContent(b, m, 1, "L", "symbols", DEFAULT_ANSWERS, "us");
+    const changes = placeContent(
+      b,
+      m,
+      1,
+      "L",
+      "symbols",
+      DEFAULT_ANSWERS,
+      "us",
+    );
     const q = b.keys.findIndex((k) => k.label.main === "Q");
     const a = b.keys.findIndex((k) => k.label.main === "A");
     const at = (pos: number) => changes.find((c) => c.pos === pos)?.trigger;
@@ -332,5 +343,99 @@ describe("guide proposals on GoFortyMax Ortho", () => {
         board.keys[pos].cy - board.keys[home].cy,
       ),
     ).toBeGreaterThan(3);
+  });
+
+  it("lays the numpad with 0 under the index finger and * - + on the little finger's column", () => {
+    const byLabel = (l: string) =>
+      board.keys.findIndex((k) => k.label.main === l);
+    const at = (changes: ReturnType<typeof placeContent>, l: string) =>
+      changes.find((c) => c.pos === byLabel(l))?.trigger;
+    const right = placeContent(
+      board,
+      meta,
+      2,
+      "R",
+      "digits",
+      DEFAULT_ANSWERS,
+      "us",
+    );
+    expect(at(right, "N")).toMatchObject({ code: "Digit0" });
+    expect(at(right, "J")).toMatchObject({ code: "Digit4" });
+    expect(at(right, "M")).toMatchObject({ code: "Digit1" });
+    expect(at(right, "U")).toMatchObject({ code: "Digit7" });
+    expect(at(right, "P")).toMatchObject({ code: "Digit8", mods: ["shift"] });
+    const left = placeContent(
+      board,
+      meta,
+      2,
+      "L",
+      "digits",
+      DEFAULT_ANSWERS,
+      "us",
+    );
+    expect(at(left, "B")).toMatchObject({ code: "Digit0" });
+    expect(at(left, "X")).toMatchObject({ code: "Digit1" });
+    expect(at(left, "S")).toMatchObject({ code: "Digit4" });
+    expect(at(left, "W")).toMatchObject({ code: "Digit7" });
+    expect(at(left, "Q")).toMatchObject({ code: "Digit8", mods: ["shift"] });
+    expect(at(left, "A")).toMatchObject({ code: "Minus", mods: [] });
+    expect(at(left, "Z")).toMatchObject({ code: "Equal", mods: ["shift"] });
+  });
+
+  it("blocks the keys around the cursor keys even on an empty layer, and shows them as None", () => {
+    let km = keymapOf(board);
+    km = applyChanges(
+      km,
+      proposeLayerKeys(meta, km, {
+        ...DEFAULT_ANSWERS,
+        layerKeyPos: suggestedLayerKeys(meta, km),
+      }).changes,
+    );
+    const p = proposeOneHand(
+      board,
+      meta,
+      km,
+      { ...DEFAULT_ANSWERS, cursorAround: "none" },
+      "us",
+    );
+    const blocked = p.changes.filter(
+      (c) => c.trigger.kind === "none" && c.trigger.blocked,
+    );
+    expect(blocked.length).toBeGreaterThan(0);
+    const after = boardWith(board, applyChanges(km, p.changes), "us");
+    const one = after.keys[blocked[0].pos];
+    expect(one.onLayers?.some((o) => o.trigger.kind === "none")).toBe(true);
+  });
+
+  it("gives a layer to one kind of content per side", () => {
+    let km = keymapOf(board);
+    km = applyChanges(
+      km,
+      proposeLayerKeys(meta, km, {
+        ...DEFAULT_ANSWERS,
+        layerKeyPos: suggestedLayerKeys(meta, km),
+      }).changes,
+    );
+    const right = thumbLayerKeys(meta, km).find((k) => k.hand === "R")!;
+    const p = proposeOneHand(
+      board,
+      meta,
+      km,
+      {
+        ...DEFAULT_ANSWERS,
+        oneHand: { cursor: right.layer, digits: right.layer },
+      },
+      "us",
+    );
+    expect(
+      p.changes.some(
+        (c) => c.trigger.kind === "key" && c.trigger.code === "ArrowLeft",
+      ),
+    ).toBe(true);
+    expect(
+      p.changes.some(
+        (c) => c.trigger.kind === "key" && /^Digit/.test(c.trigger.code),
+      ),
+    ).toBe(false);
   });
 });

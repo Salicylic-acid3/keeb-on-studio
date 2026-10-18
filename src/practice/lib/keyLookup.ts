@@ -92,7 +92,9 @@ export function labelOnLayer(
 ): KeyLabel | null {
   if (layer === 0) return key.label;
   const on = key.onLayers?.find((o) => o.layer === layer);
-  return on ? labelOf(on.trigger, layout) : null;
+  if (!on) return null;
+  if (on.trigger.kind === "none") return { main: "None" };
+  return labelOf(on.trigger, layout);
 }
 
 /**

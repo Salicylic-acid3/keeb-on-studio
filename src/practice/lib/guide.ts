@@ -31,6 +31,8 @@ export interface WorkingKeymap {
 }
 
 const NONE: Trigger = { kind: "none" };
+/** A key that does nothing on the layer, as opposed to showing the base layer through. */
+const BLOCKED: Trigger = { kind: "none", blocked: true };
 
 /** The keymap a board was drawn from, as layers of triggers. */
 export function keymapOf(board: TestBoard): WorkingKeymap {
@@ -61,6 +63,8 @@ export function sameTrigger(a: Trigger, b: Trigger): boolean {
   if (a.kind === "mouse" && b.kind === "mouse") return a.button === b.button;
   if (a.kind === "layer" && b.kind === "layer") return a.layer === b.layer;
   if (a.kind === "other" && b.kind === "other") return a.label === b.label;
+  if (a.kind === "none" && b.kind === "none")
+    return !!a.blocked === !!b.blocked;
   return true;
 }
 
@@ -79,7 +83,10 @@ export function boardWith(
         .filter(({ l }) => l > 0)
         .flatMap(({ layer, l }) => {
           const t = layer[i] ?? NONE;
-          const sends = t.kind === "key" || t.kind === "mouse";
+          const sends =
+            t.kind === "key" ||
+            t.kind === "mouse" ||
+            (t.kind === "none" && t.blocked);
           return sends && !sameTrigger(t, trigger)
             ? [{ layer: l, trigger: t }]
             : [];
@@ -893,7 +900,7 @@ export function placeContent(
       changes.push({ layer, pos, trigger: key(code) });
   };
   // The keys touching a set of keys do nothing on the layer, so a slip
-  // beside the cursor keys presses nothing (none, not transparent).
+  // beside the cursor keys presses nothing (blocked, not transparent).
   const clearAround = (keys: number[]) => {
     const inside = new Set(keys);
     const around = new Set<number>();
@@ -905,8 +912,7 @@ export function placeContent(
         keyNear(board, k, 1, 0),
       ])
         if (n !== null && !inside.has(n)) around.add(n);
-    for (const n of around)
-      changes.push({ layer, pos: n, trigger: { kind: "none" } });
+    for (const n of around) changes.push({ layer, pos: n, trigger: BLOCKED });
   };
   switch (content) {
     case "none":
@@ -946,7 +952,11 @@ export function placeContent(
       return changes;
     }
     case "digits": {
-      const three = home.slice(0, 3);
+      // A numpad under the three fingers beside the index finger's column:
+      // right hand 7 8 9 / 4 5 6 / 1 2 3 on U I O / J K L / M , . with 0
+      // on N; left hand on W E R / S D F / X C V with 0 on B. The little
+      // finger's column holds * - + from the top.
+      const three = hand === "L" ? home.slice(1, 4) : home.slice(0, 3);
       const row = (digits: string[], ps: (number | null | undefined)[]) =>
         ps.forEach((p, i) => digits[i] && put(p, `Digit${digits[i]}`));
       row(
@@ -958,7 +968,22 @@ export function placeContent(
         ["1", "2", "3"],
         three.map((p) => below(board, p)),
       );
-      put(home[3] !== undefined ? below(board, home[3]) : null, "Digit0");
+      const indexHome = hand === "L" ? home[home.length - 1] : home[0];
+      const innerKey =
+        indexHome !== undefined
+          ? keyNear(board, indexHome, hand === "L" ? 1 : -1, 0)
+          : null;
+      put(innerKey !== null ? below(board, innerKey) : null, "Digit0");
+      const pinky = hand === "L" ? home[0] : home[3];
+      if (pinky !== undefined) {
+        const sym = (pos: number | null, ch: string) => {
+          const t = pos !== null ? triggerForChar(ch, layout) : null;
+          if (t && pos !== null) changes.push({ layer, pos, trigger: t });
+        };
+        sym(above(board, pinky), "*");
+        sym(pinky, "-");
+        sym(below(board, pinky), "+");
+      }
       return changes;
     }
     case "fkeys": {
@@ -1012,11 +1037,16 @@ function placeSide(
   const keys = thumbLayerKeys(meta, km);
   if (!keys.length) return { changes: [], note: "one-layer" };
   const changes: Change[] = [];
+  const taken = new Set<number>();
   for (const content of CONTENTS) {
     const layer = contentLayer(meta, km, answers, side, content);
     if (layer === null) continue;
     const key = keys.find((k) => k.layer === layer);
     if (!key) continue;
+    // One kind of content per layer on a side: two under the same hand on
+    // the same layer would land on top of each other.
+    if (taken.has(layer)) continue;
+    taken.add(layer);
     const hand: Hand = side === "one" ? key.hand : key.hand === "L" ? "R" : "L";
     changes.push(
       ...placeContent(board, meta, layer, hand, content, answers, layout),
@@ -1084,7 +1114,9 @@ export function proposeRare(
       const base = km.layers[0]?.[i];
       const isMod =
         base?.kind === "key" && /^(Shift|Control|Alt|Meta)/.test(base.code);
-      return t.kind === "none" && !isMod && k.trigger.kind === "key";
+      return (
+        t.kind === "none" && !t.blocked && !isMod && k.trigger.kind === "key"
+      );
     })
     // Farthest from the home row first.
     .map((e) => ({ ...e, d: distFromHome(e.k) }))

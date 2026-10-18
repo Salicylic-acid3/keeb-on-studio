@@ -290,16 +290,21 @@ export function GuideFlow({
     () => [...thumbLayerKeys(meta, km)].sort((a, b) => a.layer - b.layer),
     [meta, km],
   );
+  // A layer holds one kind of content per side; choosing it for one kind
+  // takes it from any other that had it.
   const setContent = (
     side: "one" | "other",
     content: LayerContent,
     layer: number | null,
-  ) =>
-    answer(
-      side === "one"
-        ? { oneHand: { ...answers.oneHand, [content]: layer } }
-        : { otherHand: { ...answers.otherHand, [content]: layer } },
-    );
+  ) => {
+    const next: Partial<Record<LayerContent, number | null>> = {};
+    for (const c of CONTENTS) {
+      const was = contentLayer(meta, km, answers, side, c);
+      next[c] =
+        c === content ? layer : layer !== null && was === layer ? null : was;
+    }
+    answer(side === "one" ? { oneHand: next } : { otherHand: next });
+  };
 
   const review = useMemo(
     () => (step.id === "duplicates" ? reviewKeys(km, answers, layout) : []),
@@ -1149,7 +1154,9 @@ function SymbolGridEditor({
               value={grid[r]?.[c] ?? ""}
               onChange={(e) => set(r, c, e.target.value)}
               maxLength={1}
-              title={unused(c) ? t("No column here on this keyboard") : undefined}
+              title={
+                unused(c) ? t("No column here on this keyboard") : undefined
+              }
               className={`h-9 w-9 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] text-center font-mono text-sm text-[var(--color-text)] ${
                 unused(c) ? "opacity-30" : ""
               }`}
