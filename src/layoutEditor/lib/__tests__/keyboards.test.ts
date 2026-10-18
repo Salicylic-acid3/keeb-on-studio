@@ -73,6 +73,24 @@ describe("keyboard templates", () => {
     expect(mainAndSub(ergotrack.keys[1])).toEqual({ main: "1", sub: "!" });
   });
 
+  it("draws the ClickBoard ErgoMini as built, not as a plain grid", () => {
+    // Its vial.json on the older branches was the simplified grid of
+    // keyboard.json; the real board has staggered columns, four thumb keys
+    // turned to the hand and half-height up and down arrows.
+    const ergomini = keyboardProject("clickboard_ergomini")!;
+    expect(ergomini.keys).toHaveLength(50);
+    expect(ergomini.keys.filter((k) => k.angle !== 0)).toHaveLength(4);
+    expect(ergomini.keys.filter((k) => k.h === 0.5)).toHaveLength(4);
+    // As in the VIA definition, the left thumb keys touch at their corners
+    // by a few hundredths of a unit; nothing else overlaps.
+    const clashes = ergomini.keys.filter((k) =>
+      findOverlaps(ergomini.keys).has(k.id),
+    );
+    expect(
+      clashes.map((k) => `${k.matrix!.row},${k.matrix!.col}`).sort(),
+    ).toEqual(["3,3", "3,4", "3,5"]);
+  });
+
   it("knows no keyboard by a wrong id", () => {
     expect(keyboardProject("nope")).toBeNull();
   });

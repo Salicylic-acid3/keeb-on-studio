@@ -11,6 +11,11 @@
             "en": "Key test: small keyboards (a tenkey, WzTwenty) are drawn at their own size instead of stretched to the width of the page, and a key lit by a mouse click goes dark as soon as the button is let go.",
             "ja": "キーテスト: 小さいキーボード（テンキー、WzTwenty など）をページ幅まで拡大せず、本来の大きさで表示するようにしました。また、マウスクリックで光ったキーが、ボタンを離した瞬間に消えるようにしました。",
             "zh": "按键测试：小型键盘（数字小键盘、WzTwenty 等）不再拉伸到页面宽度，而是按本身大小显示；鼠标点击点亮的按键会在松开按钮时立即熄灭。"
+          },
+          {
+            "en": "Layout editor and key test: ClickBoard ErgoMini is drawn as the real board, with its staggered columns, the thumb keys turned towards each hand and the half-height arrow keys, instead of a plain grid.",
+            "ja": "レイアウトエディタとキーテスト: ClickBoard ErgoMini が単純な格子の配列で表示されていたのを直し、実機と同じ配列（列ごとの段ずれ、手の向きに傾いた親指キー、半分の高さの矢印キー）で表示するようにしました。",
+            "zh": "布局编辑器和按键测试：ClickBoard ErgoMini 此前以简单的网格显示，现在按实物显示，包括各列的错位、朝向双手倾斜的拇指键以及半高的方向键。"
           }
         ]
       }
