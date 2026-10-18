@@ -201,6 +201,8 @@ export interface ThumbAssign {
 export interface Answers {
   /** Symbols by how often they are typed, most first. */
   symbols: string[];
+  /** Hand-picked symbols for slots, by position: a character, or "keep" to leave the key. */
+  symbolOverride: Record<string, string>;
   /** Replacements for CapsLock, the IME key and doubled modifiers, by position; "keep" leaves one. */
   replace: Record<string, string>;
   /** The thumb keys, by position. */
@@ -292,6 +294,7 @@ export const RARE_CHOICES = [
 
 export const DEFAULT_ANSWERS: Answers = {
   symbols: SYMBOL_CHOICES,
+  symbolOverride: {},
   replace: {},
   thumbs: {},
   layerKeyPos: [],
@@ -413,6 +416,15 @@ export function proposeSymbols(
     }
     const slot = remaining.shift();
     if (slot !== undefined) placed.set(ch, slot);
+  }
+  // Hand-picked symbols win over the order: a symbol put on a slot by
+  // hand leaves wherever the order had put it, and a slot kept as it is
+  // gives up its symbol.
+  for (const [p, ch] of Object.entries(answers.symbolOverride)) {
+    const pos = Number(p);
+    if (!slots.includes(pos)) continue;
+    for (const [c, at] of [...placed]) if (at === pos) placed.delete(c);
+    if (ch !== "keep") placed.set(ch, pos);
   }
   const changes: Change[] = [];
   for (const [ch, pos] of placed) {

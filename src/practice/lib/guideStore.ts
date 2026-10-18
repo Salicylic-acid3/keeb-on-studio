@@ -5,7 +5,7 @@
  * proposals applied so far.
  */
 import type { Trigger } from "../../keyTest/lib/triggers";
-import type { Answers, Change } from "./guide";
+import { DEFAULT_ANSWERS, type Answers, type Change } from "./guide";
 
 export type StepStatus = "todo" | "applied" | "skipped" | "done";
 
@@ -32,7 +32,25 @@ export function readProgress(boardId: string): GuideProgress | null {
     const raw = window.localStorage.getItem(PREFIX + boardId);
     if (!raw) return null;
     const p = JSON.parse(raw) as GuideProgress;
-    return p && p.version === 1 && Array.isArray(p.layers) ? p : null;
+    if (!p || p.version !== 1 || !Array.isArray(p.layers)) return null;
+    // Progress saved by an earlier version may lack newer answers; the
+    // defaults fill them in rather than letting the guide fall over.
+    const answers: Answers = { ...DEFAULT_ANSWERS, ...(p.answers ?? {}) };
+    for (const k of Object.keys(DEFAULT_ANSWERS) as (keyof Answers)[]) {
+      const want = DEFAULT_ANSWERS[k];
+      const got = answers[k] as unknown;
+      const same = Array.isArray(want)
+        ? Array.isArray(got)
+        : typeof got === typeof want;
+      if (!same || got === null)
+        (answers as unknown as Record<string, unknown>)[k] = want;
+    }
+    return {
+      ...p,
+      answers,
+      status: p.status ?? {},
+      step: Number.isFinite(p.step) ? p.step : 0,
+    };
   } catch {
     return null;
   }

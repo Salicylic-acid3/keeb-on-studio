@@ -8,15 +8,23 @@
  * "Apply" changes the working keymap here (demo mode); writing it to a
  * connected keyboard through the remapper's own path is a later step.
  */
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  Component,
+  useEffect,
+  useMemo,
+  useState,
+  type ErrorInfo,
+  type ReactNode,
+} from "react";
 import {
   IconArrowDown,
   IconArrowUp,
   IconCheck,
-  IconExternalLink,
   IconGripVertical,
   IconPlayerPlay,
   IconRestore,
+  IconZoomIn,
+  IconZoomOut,
 } from "@tabler/icons-react";
 import type { TestBoard } from "../../keyTest/lib/boards";
 import { labelOf } from "../../keyTest/lib/boards";
@@ -86,21 +94,23 @@ export function GuideFlow({
   board,
   meta,
   layout,
-  remapperHref,
   t,
   onExit,
 }: {
   board: TestBoard;
   meta: KeyboardMeta;
   layout: LabelLayout;
-  /** Where the keymap editor lives, for fixing a key by hand. */
-  remapperHref: string;
   t: T;
   onExit: () => void;
 }) {
   const [progress, setProgress] = useState<GuideProgress>(
     () => readProgress(board.id) ?? fresh(board),
   );
+  // The keyboard drawn to fit, or at full size with sideways scrolling.
+  const [zoom, setZoom] = useState(false);
+  // Step 2 by hand: the slot picked on the drawing, if any.
+  const [manual, setManual] = useState(false);
+  const [pickedSlot, setPickedSlot] = useState<number | null>(null);
   useEffect(() => {
     writeProgress(board.id, progress);
   }, [board.id, progress]);
@@ -214,7 +224,7 @@ export function GuideFlow({
       // The slots a symbol may take, and in vermillion the ones that change.
       for (const pos of orderedSymbolSlots(board, meta)) {
         const k = board.keys[pos];
-        if (k) m.set(k.id, { tone: "set" });
+        if (k) m.set(k.id, { tone: pos === pickedSlot ? "hold" : "set" });
       }
     }
     for (const [pos, { layer, label }] of proposalLabels(
@@ -226,8 +236,13 @@ export function GuideFlow({
       if (k)
         m.set(k.id, { tone: step.id === "symbols" ? "hint" : "set", label });
     }
+    if (step.id === "symbols" && pickedSlot !== null) {
+      const k = board.keys[pickedSlot];
+      const prev = k ? m.get(k.id) : undefined;
+      if (k) m.set(k.id, { ...(prev ?? { tone: "hold" }), tone: "hold" });
+    }
     return m;
-  }, [proposal, layout, board, shownLayer, step.id, km, meta]);
+  }, [proposal, layout, board, shownLayer, step.id, km, meta, pickedSlot]);
 
   // Layer keys are chosen once; the suggestion fills the answer the first time.
   useEffect(() => {
@@ -302,13 +317,6 @@ export function GuideFlow({
         <IconCheck size={16} />
         {t("Apply")}
       </button>
-      <a
-        href={remapperHref}
-        className="btn-ghost h-10 border border-[var(--color-border)] px-4 text-sm flex items-center gap-2"
-      >
-        {t("Change by hand")}
-        <IconExternalLink size={14} />
-      </a>
       <button
         type="button"
         onClick={() => finish("skipped")}
@@ -485,6 +493,87 @@ export function GuideFlow({
                   })}
                   onChange={(symbols) => answer({ symbols })}
                 />
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    aria-pressed={manual}
+                    onClick={() => {
+                      setManual((m) => !m);
+                      setPickedSlot(null);
+                    }}
+                    className={`h-9 rounded-lg border px-3 text-sm transition-colors ${
+                      manual
+                        ? "border-[var(--color-electric)] bg-[var(--color-electric)]/10 text-[var(--color-text)]"
+                        : "border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
+                    }`}
+                  >
+                    {t("Change by hand")}
+                  </button>
+                  {manual && (
+                    <Para muted>
+                      {t(
+                        "Click a candidate key on the drawing, then pick the symbol it should hold.",
+                      )}
+                    </Para>
+                  )}
+                  {manual && pickedSlot !== null && (
+                    <div className="space-y-1.5 rounded-xl border border-[var(--color-electric)]/50 p-3">
+                      <div className="text-xs text-[var(--color-text-muted)]">
+                        {t("Key {{key}}: put", {
+                          key: thumbLabel(pickedSlot) || "#" + pickedSlot,
+                        })}
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {answers.symbols.map((ch) => (
+                          <button
+                            key={ch}
+                            type="button"
+                            onClick={() =>
+                              answer({
+                                symbolOverride: {
+                                  ...answers.symbolOverride,
+                                  [String(pickedSlot)]: ch,
+                                },
+                              })
+                            }
+                            className={`h-8 min-w-8 rounded-md border px-2 font-mono text-sm ${
+                              answers.symbolOverride[String(pickedSlot)] === ch
+                                ? "border-[var(--color-electric)] bg-[var(--color-electric)]/10 text-[var(--color-text)]"
+                                : "border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
+                            }`}
+                          >
+                            {ch}
+                          </button>
+                        ))}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            answer({
+                              symbolOverride: {
+                                ...answers.symbolOverride,
+                                [String(pickedSlot)]: "keep",
+                              },
+                            })
+                          }
+                          className="h-8 rounded-md border border-[var(--color-border)] px-2 text-xs text-[var(--color-text-secondary)]"
+                        >
+                          {t("Keep as it is")}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const next = { ...answers.symbolOverride };
+                            delete next[String(pickedSlot)];
+                            answer({ symbolOverride: next });
+                          }}
+                          className="h-8 rounded-md border border-[var(--color-border)] px-2 text-xs text-[var(--color-text-secondary)]"
+                        >
+                          {t("Back to the order")}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
                 {changeButtons}
               </>
             )}
@@ -563,7 +652,7 @@ export function GuideFlow({
                 </Para>
                 <Example>
                   {t(
-                    "My own, left to right: on the left thumbs 無変換 / Win, Space / layer, Backspace; on the right thumbs Delete, Enter / layer, 変換 / Alt.",
+                    "The author, Salicylic_acid3, goes left to right: on the left thumbs 無変換 / Win, Space / layer, Backspace; on the right thumbs Delete, Enter / layer, 変換 / Alt.",
                   )}
                 </Example>
                 <div className="flex flex-wrap gap-2">
@@ -581,7 +670,7 @@ export function GuideFlow({
                     }
                     className="btn-ghost h-9 border border-[var(--color-border)] px-3 text-sm"
                   >
-                    {t("Fill in the recommended row")}
+                    {t("Use Salicylic_acid3's row")}
                   </button>
                   <button
                     type="button"
@@ -832,21 +921,6 @@ export function GuideFlow({
               step.id !== "rare" && (
                 <Para muted>{noteText(proposal.note)}</Para>
               )}
-
-            {!practiceStep && step.id !== "intro" && (
-              <p className="text-xs text-[var(--color-text-muted)]">
-                {t(
-                  "The proposal is a starting point. To move a single key, open the keymap editor; the guide resumes at this step when you come back.",
-                )}{" "}
-                <a
-                  href={remapperHref}
-                  className="inline-flex items-center gap-1 text-[var(--color-electric)] underline"
-                >
-                  {t("Open the keymap editor")}
-                  <IconExternalLink size={12} />
-                </a>
-              </p>
-            )}
           </section>
 
           <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)]/85 p-4 sm:p-6 backdrop-blur-sm space-y-3">
@@ -854,10 +928,19 @@ export function GuideFlow({
               <span className="font-medium text-[var(--color-text)]">
                 {board.name}
               </span>
-              <span className="text-xs text-[var(--color-text-muted)]">
+              <span className="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
                 {shownLayer === 0
                   ? t("Base layer")
                   : t("Layer {{n}}", { n: shownLayer })}
+                <button
+                  type="button"
+                  aria-pressed={zoom}
+                  onClick={() => setZoom((z) => !z)}
+                  className="btn-ghost h-7 border border-[var(--color-border)] flex items-center gap-1 px-2 text-xs"
+                >
+                  {zoom ? <IconZoomOut size={14} /> : <IconZoomIn size={14} />}
+                  {zoom ? t("Fit") : t("Enlarge")}
+                </button>
               </span>
             </div>
             <PracticeBoard
@@ -866,7 +949,17 @@ export function GuideFlow({
               dimOthers={marks.size > 0}
               layer={shownLayer}
               layout={layout}
-              scroll
+              scroll={zoom}
+              onKeyClick={
+                step.id === "symbols" && manual
+                  ? (pos) =>
+                      setPickedSlot(
+                        orderedSymbolSlots(board, meta).includes(pos)
+                          ? pos
+                          : null,
+                      )
+                  : undefined
+              }
             />
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-[var(--color-text-muted)]">
               {step.id === "symbols" ? (
@@ -1225,4 +1318,48 @@ function StepBar({
       </div>
     </nav>
   );
+}
+
+/**
+ * Keeps a fault in the guide from blanking the page: what is shown
+ * instead is a note and a way to start the guide over, which also drops
+ * the saved progress that may have caused it.
+ */
+export class GuideBoundary extends Component<
+  { t: T; boardId: string; children: ReactNode },
+  { failed: boolean }
+> {
+  state = { failed: false };
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error("guide failed", error, info.componentStack);
+  }
+
+  render() {
+    if (!this.state.failed) return this.props.children;
+    const { t, boardId } = this.props;
+    return (
+      <div className="space-y-3 rounded-2xl border border-[var(--color-warning)]/50 bg-[var(--color-warning)]/10 px-5 py-4 text-sm text-[var(--color-text)]">
+        <p>
+          {t(
+            "The guide ran into a problem, probably with progress saved by an earlier version. Starting over clears it.",
+          )}
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            clearProgress(boardId);
+            this.setState({ failed: false });
+          }}
+          className="btn-electric h-9 px-4 text-sm"
+        >
+          {t("Start over")}
+        </button>
+      </div>
+    );
+  }
 }

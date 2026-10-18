@@ -108,6 +108,14 @@ const ja: Record<string, string> = {
   "Characters not on the keymap": "入力不可文字",
   "None.": "なし",
   "Next text": "次の文章",
+  "Click a candidate key on the drawing, then pick the symbol it should hold.":
+    "描画上の候補キーをクリックして、置く記号を選んでください。",
+  "Key {{key}}: put": "キー {{key}} に置くもの",
+  "Back to the order": "順番どおりに戻す",
+  Fit: "全体",
+  Enlarge: "拡大",
+  "The guide ran into a problem, probably with progress saved by an earlier version. Starting over clears it.":
+    "ガイドで問題が起きました。以前のバージョンで保存した進捗が原因の可能性があります。「最初から」で保存データを消してやり直せます。",
   "Also Home / End / PgUp / PgDn around the cursor keys":
     "カーソルキーの周りに Home / End / PgUp / PgDn も入れる",
   "Change by hand": "手動で変更",
@@ -187,9 +195,9 @@ const ja: Record<string, string> = {
     "スペースバーを押そうとして無意識に親指で押す部分だけをスペースキーにすると、他の部分に色々なキーを割り当てられて便利です。親指の自然な位置から順番に、優先順位の高いものを置いていきます。",
   "Keys tapped on their own -- Backspace, Delete, 変換, 無変換 -- make long Japanese text easier; Shift, Ctrl, Alt and Win on the thumbs make the letter combinations easier. With a tap and a hold on the same key, one thumb key can carry two of them.":
     "単体で押す Backspace・Delete・変換・無変換は長文の日本語入力が楽になり、組み合わせて押す Shift・Ctrl・Alt・Win を親指に置くとアルファベットとの組み合わせが楽になります。単押しと長押しを組み合わせれば、1つの親指キーに多くの機能を持たせられます。",
-  "My own, left to right: on the left thumbs 無変換 / Win, Space / layer, Backspace; on the right thumbs Delete, Enter / layer, 変換 / Alt.":
-    "私は左から順番に、左側の親指キーに 無変換/Win、スペース/レイヤー、Backspace、右側の親指キーに Delete、Enter/レイヤー、変換/Alt の順で設定しています。",
-  "Fill in the recommended row": "おすすめの割り当てを入れる",
+  "The author, Salicylic_acid3, goes left to right: on the left thumbs 無変換 / Win, Space / layer, Backspace; on the right thumbs Delete, Enter / layer, 変換 / Alt.":
+    "作者のサリチル酸は左側から順番に、左側の親指キーに 無変換/Win、スペース/レイヤー、Backspace、右側の親指キーに Delete、Enter/レイヤー、変換/Alt の順で設定しています。",
+  "Use Salicylic_acid3's row": "サリチル酸のおすすめを反映",
   Key: "キー",
   Hold: "長押し",
   "No hold": "なし",

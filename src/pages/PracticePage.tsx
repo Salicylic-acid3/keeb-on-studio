@@ -24,12 +24,10 @@ import { PracticeSession } from "../practice/components/PracticeSession";
 import { TaskSession } from "../practice/components/TaskSession";
 import { MetaEditor } from "../practice/components/MetaEditor";
 import { Notice } from "../practice/components/bits";
-import { GuideFlow } from "../practice/components/GuideFlow";
+import { GuideBoundary, GuideFlow } from "../practice/components/GuideFlow";
 import { GUIDE_40 } from "../practice/lib/guide";
 import { readProgress } from "../practice/lib/guideStore";
 import { keyboardMeta } from "../practice/lib/metadata";
-import { keyboardFirmware } from "../layoutEditor/lib/keyboards";
-import { QMK_PATH } from "../lib/firmware";
 
 type PracticeMode = "pick" | "guide" | "free" | "meta";
 
@@ -55,9 +53,21 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
     () => testBoard(boardId) ?? testBoard(entries[0].id)!,
     [boardId, entries],
   );
-  const [mode, setMode] = useState<PracticeMode>(() =>
-    new URLSearchParams(window.location.search).has("meta") ? "meta" : "pick",
-  );
+  // The mode lives in the URL too (?mode=guide), so Back and Forward, or
+  // a reload, land on the same screen rather than the picker.
+  const [mode, setModeState] = useState<PracticeMode>(() => {
+    const q = new URLSearchParams(window.location.search);
+    if (q.has("meta")) return "meta";
+    const m = q.get("mode");
+    return m === "guide" || m === "free" ? m : "pick";
+  });
+  const setMode = (m: PracticeMode) => {
+    setModeState(m);
+    const url = new URL(window.location.href);
+    if (m === "pick" || m === "meta") url.searchParams.delete("mode");
+    else url.searchParams.set("mode", m);
+    window.history.replaceState(null, "", url);
+  };
   const [kind, setKind] = useState<"text" | "task">("text");
   const [layout, setLayout] = useState<LabelLayout>("us");
 
@@ -132,15 +142,15 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
         {mode === "meta" && <MetaEditor key={board.id} board={board} t={t} />}
         {mode === "pick" && <ModePicker t={t} board={board} onPick={setMode} />}
         {mode === "guide" && (
-          <GuideFlow
-            key={`${board.id}:${layout}`}
-            board={board}
-            meta={keyboardMeta(board)}
-            layout={layout}
-            remapperHref={keyboardFirmware(board.id) === "qmk" ? QMK_PATH : "/"}
-            t={t}
-            onExit={() => setMode("pick")}
-          />
+          <GuideBoundary key={`${board.id}:${layout}`} t={t} boardId={board.id}>
+            <GuideFlow
+              board={board}
+              meta={keyboardMeta(board)}
+              layout={layout}
+              t={t}
+              onExit={() => setMode("pick")}
+            />
+          </GuideBoundary>
         )}
         {mode === "free" && (
           <>
