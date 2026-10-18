@@ -128,9 +128,11 @@ const Key = memo(function Key({
       ? "var(--color-text)"
       : "var(--color-text-muted)";
 
+  // On a layer that leaves a key as it is, the base legend shows faintly,
+  // so the drawing still reads as the keyboard.
   const own = label ?? k.label;
-  const main = mark?.label ?? (label ? own.main : "");
-  const sub = mark?.label ? undefined : label ? own.sub : undefined;
+  const main = mark?.label ?? own.main;
+  const sub = mark?.label ? undefined : own.sub;
   const old = mark?.label && mark.label !== own.main ? own.main : null;
   const longest = Math.max(main.length, 1);
   const fontSize = Math.min(

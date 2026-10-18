@@ -144,9 +144,15 @@ export function estimateMeta(board: TestBoard): KeyboardMeta {
   const spaces = bottom.filter((k) => k.label.main === "Space");
   let thumbs: TestKey[] = [];
   if (spaces.length) {
-    const lo = Math.min(...spaces.map((k) => k.cx - k.w / 2)) - 1.75;
-    const hi = Math.max(...spaces.map((k) => k.cx + k.w / 2)) + 1.75;
-    thumbs = bottom.filter((k) => k.cx >= lo && k.cx <= hi);
+    const left = Math.min(...spaces.map((k) => k.cx - k.w / 2));
+    const right = Math.max(...spaces.map((k) => k.cx + k.w / 2));
+    // Keys right beside Space, and wider keys a little further out
+    // (an Enter or Backspace on the thumb row), but not the 1u modifiers
+    // at the corners.
+    thumbs = bottom.filter((k) => {
+      const gap = Math.max(left - k.cx, k.cx - right, 0);
+      return gap <= 1.75 || (gap <= 3.25 && k.w >= 1.25);
+    });
   } else if (sizeClass !== "pad") {
     thumbs = bottom.filter((k) => k.w >= 1.25);
   }

@@ -40,6 +40,10 @@
       {
         "pos": 89,
         "hand": "R"
+      },
+      {
+        "pos": 90,
+        "hand": "R"
       }
     ],
     "homeRow": {
@@ -67,6 +71,14 @@
     "allowGuide": ["60"],
     "split": false,
     "thumbKeys": [
+      {
+        "pos": 78,
+        "hand": "L"
+      },
+      {
+        "pos": 79,
+        "hand": "L"
+      },
       {
         "pos": 80,
         "hand": "L"
@@ -166,6 +178,10 @@
     "split": false,
     "thumbKeys": [
       {
+        "pos": 28,
+        "hand": "L"
+      },
+      {
         "pos": 29,
         "hand": "L"
       },
@@ -187,6 +203,10 @@
       },
       {
         "pos": 34,
+        "hand": "R"
+      },
+      {
+        "pos": 35,
         "hand": "R"
       }
     ],
@@ -405,6 +425,10 @@
     "split": false,
     "thumbKeys": [
       {
+        "pos": 37,
+        "hand": "L"
+      },
+      {
         "pos": 38,
         "hand": "L"
       },
@@ -555,6 +579,10 @@
     "split": false,
     "thumbKeys": [
       {
+        "pos": 37,
+        "hand": "L"
+      },
+      {
         "pos": 38,
         "hand": "L"
       },
@@ -655,6 +683,10 @@
     "split": false,
     "thumbKeys": [
       {
+        "pos": 37,
+        "hand": "L"
+      },
+      {
         "pos": 38,
         "hand": "L"
       },
@@ -705,6 +737,10 @@
     "split": false,
     "thumbKeys": [
       {
+        "pos": 33,
+        "hand": "L"
+      },
+      {
         "pos": 34,
         "hand": "L"
       },
@@ -722,6 +758,10 @@
       },
       {
         "pos": 38,
+        "hand": "R"
+      },
+      {
+        "pos": 39,
         "hand": "R"
       }
     ],
@@ -744,6 +784,14 @@
     "allowGuide": ["30", "40"],
     "split": false,
     "thumbKeys": [
+      {
+        "pos": 45,
+        "hand": "L"
+      },
+      {
+        "pos": 46,
+        "hand": "L"
+      },
       {
         "pos": 47,
         "hand": "R"
@@ -793,6 +841,10 @@
     "split": false,
     "thumbKeys": [
       {
+        "pos": 55,
+        "hand": "L"
+      },
+      {
         "pos": 57,
         "hand": "L"
       },
@@ -814,6 +866,10 @@
       },
       {
         "pos": 62,
+        "hand": "R"
+      },
+      {
+        "pos": 64,
         "hand": "R"
       }
     ],
@@ -1093,6 +1149,14 @@
     "allowGuide": ["60"],
     "split": false,
     "thumbKeys": [
+      {
+        "pos": 57,
+        "hand": "L"
+      },
+      {
+        "pos": 58,
+        "hand": "L"
+      },
       {
         "pos": 59,
         "hand": "L"

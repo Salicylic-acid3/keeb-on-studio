@@ -108,6 +108,66 @@ const ja: Record<string, string> = {
   "Characters not on the keymap": "入力不可文字",
   "None.": "なし",
   "Next text": "次の文章",
+  // Setup guide
+  "A keymap is yours to decide, and the order of deciding matters: the keys you use most go where they are easiest to reach, and everything else finds a place after them.":
+    "キーマップは自分で決めるものですが、決める順番が大事です。よく使うキーから、いちばん押しやすい場所に置いていき、残りはその後で居場所を決めます。",
+  "This guide asks a few questions in that order -- symbols, thumbs, layer keys, what each layer holds -- and turns each answer into a proposal drawn on your keymap. Apply it, skip it, or fix a key by hand in the keymap editor and come back.":
+    "このガイドはその順番で質問します。記号、親指キー、レイヤーキー、各レイヤーの中身。回答はキーマップ上の配置案になります。適用するか、飛ばすか、キー設定画面で個別に直して戻ってくるかを選べます。",
+  "A layer is practised as soon as it is complete, so a change you do not like shows up at once.":
+    "レイヤーが1つ完成するごとに練習するので、合わない変更はすぐに分かります。",
+  Begin: "始める",
+  "A pad has no guide: its keys are decided by what it is for. Free practice still works.":
+    "テンキーやマクロパッドにはガイドがありません。キーは用途で決まるためです。自由練習は使えます。",
+  "A thumb key can do two things: one on a tap, another while held. Space and Enter are hardly ever held, so their hold can open a layer. Backspace and Delete are held to erase, so they stay as they are.":
+    "親指キーには、単押しと長押しで別の役割を持たせられます。スペースと Enter は長押しすることがほとんど無いので、長押しをレイヤーにできます。Backspace と Delete は長押しで連続削除するので、そのままにします。",
+  "Cursor under the left hand (left thumb's layer)":
+    "カーソルは左手（左親指のレイヤー）",
+  "Cursor under the right hand (right thumb's layer)":
+    "カーソルは右手（右親指のレイヤー）",
+  "Done, next step": "終わったので次へ",
+  "Finish the guide": "ガイドを終える",
+  "Keep CapsLock": "CapsLock のまま残す",
+  "Make CapsLock a Ctrl": "CapsLock を Ctrl にする",
+  "Make CapsLock an Esc": "CapsLock を Esc にする",
+  "Keys used now and then need no place of their own: they go on free keys of a layer, at the bottom row where nothing else was put.":
+    "たまにしか使わないキーに専用の場所は要りません。レイヤーの空いているキー、何も置かなかった最下段に入れます。",
+  "Layer keys: {{list}}": "レイヤーキー: {{list}}",
+  "Measuring where the thumb lands on a connected keyboard comes later; for now, choose the key.":
+    "実機で親指が落ちる場所を計測する機能は後で入ります。いまはキーを選んでください。",
+  "Nothing to change with this answer.": "この回答では変更はありません。",
+  "Numpad on the left, F keys on the right": "テンキーは左手、Fキーは右手",
+  "Numpad on the right, F keys on the left": "テンキーは右手、Fキーは左手",
+  "Order these by how often you use them": "よく使う順に並べてください",
+  "Sentences and symbols together, on the finished keymap.":
+    "完成したキーマップで、文章と記号をまとめて練習します。",
+  "Sentences typed on the base layer alone. When it feels settled, go on to the layers.":
+    "ベースレイヤーだけで打てる文章です。手に馴染んだらレイヤーへ進みます。",
+  "Some keys earn their place less than others. CapsLock is rarely needed, and the key under the left little finger is easy to reach: it can be Ctrl, or Esc.":
+    "キーには、その場所に見合うだけ使われていないものがあります。CapsLock はほとんど使わないのに、左小指のすぐ横という押しやすい場所にあります。Ctrl か Esc に置き換えられます。",
+  "Space goes where your thumb lands without thinking. The other thumb keys take Backspace, Delete and Enter, the most used nearest to Space.":
+    "スペースは、無意識に親指が落ちる場所に置きます。残りの親指キーには Backspace・Delete・Enter を、よく使うものからスペースの近くに置きます。",
+  "Start over": "最初から",
+  "Start the guide over? The applied proposals are dropped from the working keymap.":
+    "ガイドを最初からやり直しますか？ 適用した配置案は作業中のキーマップから取り消されます。",
+  "The cursor, numbers and F keys you just put on the layers, as tasks.":
+    "レイヤーに置いたカーソル・数字・Fキーを課題で練習します。",
+  "The other thumb's layer takes what is used with the opposite hand: a numpad under one hand, the F keys under the other.":
+    "もう一方の親指のレイヤーには、反対の手で使うものを置きます。片手の下にテンキー、もう片手の下にFキーです。",
+  "This keyboard has no CapsLock on its base layer.":
+    "この機種のベースレイヤーには CapsLock がありません。",
+  "This keyboard has no symbol slots on its base layer, so there is nothing to place here.":
+    "この機種のベースレイヤーには記号スロットが無いので、ここで置くものはありません。",
+  "This keyboard has no thumb keys recorded, so the thumb steps have nothing to propose.":
+    "この機種には親指キーが登録されていないので、親指のステップでは提案できません。",
+  "This needs a second layer key. Go back to the layer key step and choose two thumb keys.":
+    "2つ目のレイヤーキーが必要です。レイヤーキーのステップに戻って、親指キーを2つ選んでください。",
+  "Two layer keys, one under each thumb, give the next steps a layer for each hand.":
+    "左右の親指に1つずつ、2つのレイヤーキーがあると、次のステップで手ごとにレイヤーを割り当てられます。",
+  "What one hand should finish on its own goes on that hand's layer: the cursor keys under the fingers of the hand whose thumb holds the layer, so the other hand is free; and on the other side of the same layer, the symbols that did not fit the base layer, each without a modifier.":
+    "片手で完結させたいものを、その手のレイヤーに置きます。レイヤーキーを押す親指と同じ手の指の下にカーソルキーを置けば、もう片方の手は空きます。同じレイヤーの反対側には、ベースレイヤーに入らなかった記号を、修飾キー無しで打てるように置きます。",
+  "Which thumb key is Space?": "どの親指キーをスペースにしますか？",
+  "Which thumb keys open a layer when held?":
+    "長押しでレイヤーになる親指キーはどれですか？",
   "Keyboard metadata for the setup guide. Pick a role, then click keys on the drawing to give or take it. Paste the JSON into src/practice/data/keyboards.json.":
     "セットアップガイド用の機種メタデータです。役割を選んでから描画上のキーをクリックすると、その役割を付け外しできます。JSON を src/practice/data/keyboards.json に貼り付けてください。",
   "This keyboard has stored values.": "この機種は保存済みの値があります。",
