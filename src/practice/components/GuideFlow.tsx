@@ -290,19 +290,18 @@ export function GuideFlow({
     () => [...thumbLayerKeys(meta, km)].sort((a, b) => a.layer - b.layer),
     [meta, km],
   );
-  // A layer holds one kind of content per side; choosing it for one kind
-  // takes it from any other that had it.
+  // A layer holds one kind of content per side; the picker offers a layer
+  // another kind has only as a disabled choice, so nothing is taken away
+  // behind the user's back.
   const setContent = (
     side: "one" | "other",
     content: LayerContent,
     layer: number | null,
   ) => {
     const next: Partial<Record<LayerContent, number | null>> = {};
-    for (const c of CONTENTS) {
-      const was = contentLayer(meta, km, answers, side, c);
+    for (const c of CONTENTS)
       next[c] =
-        c === content ? layer : layer !== null && was === layer ? null : was;
-    }
+        c === content ? layer : contentLayer(meta, km, answers, side, c);
     answer(side === "one" ? { oneHand: next } : { otherHand: next });
   };
 
@@ -1211,15 +1210,28 @@ function LayerPicker({
             className="h-8 w-full min-w-0 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm text-[var(--color-text)]"
           >
             <option value="">{t("Not placed")}</option>
-            {thumbLayers.map((k) => (
-              <option key={k.layer} value={k.layer}>
-                {t("Layer {{n}} ({{key}} held) → {{hand}}", {
-                  n: k.layer,
-                  key: label(k.pos),
-                  hand: handName(k),
-                })}
-              </option>
-            ))}
+            {thumbLayers.map((k) => {
+              // A layer another kind already has is shown but cannot be
+              // picked: that kind must be taken off it first.
+              const usedBy = CONTENTS.find(
+                (o) => o !== c && value(o) === k.layer,
+              );
+              const name = t("Layer {{n}} ({{key}} held) → {{hand}}", {
+                n: k.layer,
+                key: label(k.pos),
+                hand: handName(k),
+              });
+              return (
+                <option key={k.layer} value={k.layer} disabled={!!usedBy}>
+                  {usedBy
+                    ? t("{{name}} — taken by {{content}}", {
+                        name,
+                        content: t(CONTENT_NAME[usedBy]),
+                      })
+                    : name}
+                </option>
+              );
+            })}
           </select>
         </div>
       ))}

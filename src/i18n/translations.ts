@@ -108,6 +108,7 @@ const ja: Record<string, string> = {
   "Characters not on the keymap": "入力不可文字",
   "None.": "なし",
   "Next text": "次の文章",
+  "{{name}} — taken by {{content}}": "{{name}}（{{content}}で使用中）",
   "No column here on this keyboard": "このキーボードにはこの列がありません",
   "Around the cursor keys": "カーソルキーの周り",
   "Home / End / PgUp / PgDn around them": "Home / End / PgUp / PgDn を入れる",
