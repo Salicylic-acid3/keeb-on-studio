@@ -25,7 +25,6 @@ import { TEXTS_JA, textsWithin } from "../data/texts.ja";
 import {
   applyChanges,
   boardWith,
-  currentSpace,
   DEFAULT_ANSWERS,
   GUIDE_40,
   keymapOf,
@@ -38,12 +37,19 @@ import {
   proposeSymbols,
   proposeThumbs,
   RARE_CHOICES,
+  recommendThumbs,
+  REPLACE_CHOICES,
+  reviewKeys,
   suggestedLayerKeys,
   SYMBOL_NAMES,
+  THUMB_TAPS,
   thumbLayerKeys,
+  thumbsLeftToRight,
+  currentThumb,
   type Answers,
+  type HoldChoice,
   type Proposal,
-  type ThumbRole,
+  type ThumbAssign,
   type WorkingKeymap,
 } from "../lib/guide";
 import {
@@ -133,7 +139,7 @@ export function GuideFlow({
       case "symbols":
         return proposeSymbols(board, meta, km, answers, layout);
       case "duplicates":
-        return proposeDuplicates(meta, km, answers);
+        return proposeDuplicates(km, answers);
       case "thumbs":
         return proposeThumbs(board, meta, km, answers);
       case "layer-keys":
@@ -178,11 +184,43 @@ export function GuideFlow({
       answers.layerKeyPos.length === 0 &&
       status[current] === undefined
     ) {
-      const suggested = suggestedLayerKeys(meta, km);
+      const fromThumbs = Object.entries(answers.thumbs)
+        .filter(([, a]) => a.hold === "layer")
+        .map(([p]) => Number(p));
+      const suggested = fromThumbs.length
+        ? fromThumbs
+        : suggestedLayerKeys(meta, km);
       if (suggested.length) answer({ layerKeyPos: suggested });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step.id]);
+
+  const review = useMemo(
+    () => (step.id === "duplicates" ? reviewKeys(km, answers, layout) : []),
+    [step.id, km, answers, layout],
+  );
+  const spaceFromAnswers = useMemo(() => {
+    const hit = Object.entries(answers.thumbs).find(
+      ([, a]) => a.tap === "Space",
+    );
+    return hit ? Number(hit[0]) : null;
+  }, [answers.thumbs]);
+  const codeName = (code: string) =>
+    labelOf({ kind: "key", code, mods: [] }, layout).main || code;
+  /** Where a key sits, in words: its row from the top and its side. */
+  const keyPlace = (pos: number) => {
+    const k = board.keys[pos];
+    const rows = [
+      ...new Set(board.keys.map((x) => Math.round(x.cy * 2) / 2)),
+    ].sort((a, b) => a - b);
+    const row = rows.indexOf(Math.round(k.cy * 2) / 2) + 1;
+    const xs = board.keys.map((x) => x.cx);
+    const mid = (Math.min(...xs) + Math.max(...xs)) / 2;
+    return t("row {{row}}, {{side}}", {
+      row,
+      side: k.cx < mid ? t("left") : t("right"),
+    });
+  };
 
   const thumbLabel = (pos: number) => {
     const tr = km.layers[0]?.[pos];
@@ -384,23 +422,57 @@ export function GuideFlow({
               <>
                 <Para>
                   {t(
-                    "Some keys earn their place less than others. CapsLock is rarely needed, and the key under the left little finger is easy to reach: it can be Ctrl, or Esc.",
+                    "Some keys earn their place less than others. The CapsLock beside A is hardly used when Japanese is what you mostly type, yet it sits in an easy spot under the left little finger. The same goes for a modifier that appears twice once CapsLock has become a Ctrl.",
                   )}
                 </Para>
-                {meta.fixedKeys.capslock === null ? (
+                {review.length === 0 ? (
                   <Para muted>
-                    {t("This keyboard has no CapsLock on its base layer.")}
+                    {t("Nothing on the base layer needs a second look.")}
                   </Para>
                 ) : (
-                  <Choices
-                    value={answers.capslock}
-                    onChange={(v) => answer({ capslock: v })}
-                    options={[
-                      ["ctrl", t("Make CapsLock a Ctrl")],
-                      ["esc", t("Make CapsLock an Esc")],
-                      ["keep", t("Keep CapsLock")],
-                    ]}
-                  />
+                  <ul className="space-y-1.5">
+                    {review.map((r) => (
+                      <li
+                        key={r.pos}
+                        className="flex items-center gap-3 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+                      >
+                        <span className="w-24 flex-shrink-0 font-mono text-[var(--color-text)]">
+                          {
+                            labelOf(
+                              { kind: "key", code: r.code, mods: [] },
+                              layout,
+                            ).main
+                          }
+                        </span>
+                        <span className="w-28 flex-shrink-0 text-xs text-[var(--color-text-muted)]">
+                          {r.reason === "capslock"
+                            ? t("rarely used")
+                            : r.reason === "ime"
+                              ? t("IME toggle")
+                              : t("doubled")}{" "}
+                          · {keyPlace(r.pos)}
+                        </span>
+                        <select
+                          value={answers.replace[String(r.pos)] ?? "keep"}
+                          onChange={(e) =>
+                            answer({
+                              replace: {
+                                ...answers.replace,
+                                [String(r.pos)]: e.target.value,
+                              },
+                            })
+                          }
+                          className="h-8 flex-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm text-[var(--color-text)]"
+                        >
+                          {REPLACE_CHOICES.map((c) => (
+                            <option key={c} value={c}>
+                              {c === "keep" ? t("Keep as it is") : codeName(c)}
+                            </option>
+                          ))}
+                        </select>
+                      </li>
+                    ))}
+                  </ul>
                 )}
                 {changeButtons}
               </>
@@ -410,52 +482,104 @@ export function GuideFlow({
               <>
                 <Para>
                   {t(
-                    "Space goes where your thumb lands without thinking. The other thumb keys take Backspace, Delete and Enter, the most used nearest to Space.",
+                    "If only the part your thumb presses without thinking when it goes for the space bar is Space, the rest of the thumb row is free for other keys. From the thumb's natural position outward, the more useful a key the nearer it goes.",
                   )}
                 </Para>
+                <Para>
+                  {t(
+                    "Keys tapped on their own -- Backspace, Delete, 変換, 無変換 -- make long Japanese text easier; Shift, Ctrl, Alt and Win on the thumbs make the letter combinations easier. With a tap and a hold on the same key, one thumb key can carry two of them.",
+                  )}
+                </Para>
+                <Example>
+                  {t(
+                    "My own, left to right: on the left thumbs 無変換 / Win, Space / layer, Backspace; on the right thumbs Delete, Enter / layer, 変換 / Alt.",
+                  )}
+                </Example>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      answer({
+                        thumbs: recommendThumbs(
+                          board,
+                          meta,
+                          km,
+                          spaceFromAnswers,
+                        ),
+                      })
+                    }
+                    className="btn-ghost h-9 border border-[var(--color-border)] px-3 text-sm"
+                  >
+                    {t("Fill in the recommended row")}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => answer({ thumbs: {} })}
+                    className="btn-ghost h-9 border border-[var(--color-border)] px-3 text-sm"
+                  >
+                    {t("Clear")}
+                  </button>
+                </div>
+                <div className="space-y-1.5">
+                  <div className="grid grid-cols-[5rem_1fr_1fr] gap-2 px-1 text-xs text-[var(--color-text-muted)]">
+                    <span>{t("Key")}</span>
+                    <span>{t("Tap")}</span>
+                    <span>{t("Hold")}</span>
+                  </div>
+                  {thumbsLeftToRight(board, meta).map((th) => {
+                    const a =
+                      answers.thumbs[String(th.pos)] ??
+                      currentThumb(km, th.pos);
+                    const set = (patch: Partial<ThumbAssign>) =>
+                      answer({
+                        thumbs: {
+                          ...answers.thumbs,
+                          [String(th.pos)]: { ...a, ...patch },
+                        },
+                      });
+                    return (
+                      <div
+                        key={th.pos}
+                        className="grid grid-cols-[5rem_1fr_1fr] items-center gap-2 rounded-lg border border-[var(--color-border)] px-2 py-1.5 text-sm"
+                      >
+                        <span className="font-mono text-xs text-[var(--color-text-secondary)]">
+                          {th.hand} · {thumbLabel(th.pos)}
+                        </span>
+                        <select
+                          value={a.tap}
+                          onChange={(e) => set({ tap: e.target.value })}
+                          className="h-8 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm text-[var(--color-text)]"
+                        >
+                          <option value="keep">{t("Keep as it is")}</option>
+                          {THUMB_TAPS.map((c) => (
+                            <option key={c} value={c}>
+                              {codeName(c)}
+                            </option>
+                          ))}
+                        </select>
+                        <select
+                          value={a.hold}
+                          onChange={(e) =>
+                            set({ hold: e.target.value as HoldChoice })
+                          }
+                          className="h-8 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm text-[var(--color-text)]"
+                        >
+                          <option value="none">{t("No hold")}</option>
+                          <option value="layer">{t("Layer")}</option>
+                          <option value="shift">Shift</option>
+                          <option value="ctrl">Ctrl</option>
+                          <option value="alt">Alt</option>
+                          <option value="meta">{codeName("MetaLeft")}</option>
+                        </select>
+                      </div>
+                    );
+                  })}
+                </div>
                 <Para muted>
                   {t(
                     "Measuring where the thumb lands on a connected keyboard comes later; for now, choose the key.",
                   )}
                 </Para>
-                <h3 className="text-sm font-medium text-[var(--color-text)]">
-                  {t("Which thumb key is Space?")}
-                </h3>
-                <div className="flex flex-wrap gap-1.5">
-                  {meta.thumbKeys.map((th) => {
-                    const chosen =
-                      (answers.spacePos ?? currentSpace(meta, km)) === th.pos;
-                    return (
-                      <button
-                        key={th.pos}
-                        type="button"
-                        onClick={() => answer({ spacePos: th.pos })}
-                        className={`h-9 rounded-lg border px-3 font-mono text-sm transition-colors ${
-                          chosen
-                            ? "border-[var(--color-electric)] bg-[var(--color-electric)]/10 text-[var(--color-text)]"
-                            : "border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
-                        }`}
-                        title={`#${th.pos} (${th.hand})`}
-                      >
-                        {th.hand} · {thumbLabel(th.pos)}
-                      </button>
-                    );
-                  })}
-                </div>
-                <OrderList
-                  t={t}
-                  items={answers.thumbOrder}
-                  highlight={answers.thumbOrder.length}
-                  render={(r) => (
-                    <span className="flex-1 text-[var(--color-text)]">
-                      {t(r)}
-                    </span>
-                  )}
-                  title={t("Order these by how often you use them")}
-                  onChange={(thumbOrder) =>
-                    answer({ thumbOrder: thumbOrder as ThumbRole[] })
-                  }
-                />
                 {changeButtons}
               </>
             )}

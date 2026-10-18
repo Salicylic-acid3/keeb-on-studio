@@ -142,10 +142,27 @@ const ja: Record<string, string> = {
     "完成したキーマップで、文章と記号をまとめて練習します。",
   "Sentences typed on the base layer alone. When it feels settled, go on to the layers.":
     "ベースレイヤーだけで打てる文章です。手に馴染んだらレイヤーへ進みます。",
-  "Some keys earn their place less than others. CapsLock is rarely needed, and the key under the left little finger is easy to reach: it can be Ctrl, or Esc.":
-    "キーには、その場所に見合うだけ使われていないものがあります。CapsLock はほとんど使わないのに、左小指のすぐ横という押しやすい場所にあります。Ctrl か Esc に置き換えられます。",
-  "Space goes where your thumb lands without thinking. The other thumb keys take Backspace, Delete and Enter, the most used nearest to Space.":
-    "スペースは、無意識に親指が落ちる場所に置きます。残りの親指キーには Backspace・Delete・Enter を、よく使うものからスペースの近くに置きます。",
+  "Some keys earn their place less than others. The CapsLock beside A is hardly used when Japanese is what you mostly type, yet it sits in an easy spot under the left little finger. The same goes for a modifier that appears twice once CapsLock has become a Ctrl.":
+    "キーには、その場所に見合うだけ使われていないものがあります。A の隣にある CapsLock は、日本語入力がメインの場合はほとんど使わないのに、左小指のすぐ横という押しやすい場所にあります。CapsLock を Ctrl にして Ctrl が2つになったときも同じで、そのキーもここで整理します。",
+  "Nothing on the base layer needs a second look.":
+    "ベースレイヤーに見直すキーはありません。",
+  "rarely used": "ほとんど使わない",
+  "IME toggle": "IME 切り替え",
+  doubled: "重複",
+  "row {{row}}, {{side}}": "{{side}}・上から{{row}}段目",
+  left: "左",
+  right: "右",
+  "Keep as it is": "そのまま",
+  "If only the part your thumb presses without thinking when it goes for the space bar is Space, the rest of the thumb row is free for other keys. From the thumb's natural position outward, the more useful a key the nearer it goes.":
+    "スペースバーを押そうとして無意識に親指で押す部分だけをスペースキーにすると、他の部分に色々なキーを割り当てられて便利です。親指の自然な位置から順番に、優先順位の高いものを置いていきます。",
+  "Keys tapped on their own -- Backspace, Delete, 変換, 無変換 -- make long Japanese text easier; Shift, Ctrl, Alt and Win on the thumbs make the letter combinations easier. With a tap and a hold on the same key, one thumb key can carry two of them.":
+    "単体で押す Backspace・Delete・変換・無変換は長文の日本語入力が楽になり、組み合わせて押す Shift・Ctrl・Alt・Win を親指に置くとアルファベットとの組み合わせが楽になります。単押しと長押しを組み合わせれば、1つの親指キーに多くの機能を持たせられます。",
+  "My own, left to right: on the left thumbs 無変換 / Win, Space / layer, Backspace; on the right thumbs Delete, Enter / layer, 変換 / Alt.":
+    "私は左から順番に、左側の親指キーに 無変換/Win、スペース/レイヤー、Backspace、右側の親指キーに Delete、Enter/レイヤー、変換/Alt の順で設定しています。",
+  "Fill in the recommended row": "おすすめの割り当てを入れる",
+  Key: "キー",
+  Hold: "長押し",
+  "No hold": "なし",
   "Start over": "最初から",
   "Start the guide over? The applied proposals are dropped from the working keymap.":
     "ガイドを最初からやり直しますか？ 適用した配置案は作業中のキーマップから取り消されます。",

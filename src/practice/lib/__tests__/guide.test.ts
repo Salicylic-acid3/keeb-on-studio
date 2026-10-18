@@ -1,6 +1,11 @@
 import { testBoard } from "../../../keyTest/lib/boards";
 import {
   applyChanges,
+  orderedSymbolSlots,
+  proposeDuplicates,
+  recommendThumbs,
+  reviewKeys,
+  thumbsLeftToRight,
   boardWith,
   DEFAULT_ANSWERS,
   keymapOf,
@@ -37,7 +42,7 @@ describe("guide proposals on GoFortyMax Ortho", () => {
     const p = proposeSymbols(board, meta, km, answers, "us");
     expect(p.changes.length).toBeGreaterThan(0);
     const after = boardWith(board, applyChanges(km, p.changes), "us");
-    const first = meta.symbolSlots[0];
+    const first = orderedSymbolSlots(board, meta)[0];
     // ":" is Shift+; on a US layout, shown as ":".
     expect(label(after, first)).toBe(":");
   });
@@ -55,18 +60,82 @@ describe("guide proposals on GoFortyMax Ortho", () => {
     expect(triggerForChar("あ", "us")).toBeNull();
   });
 
-  it("places Space where asked and the rest by use, nearest first", () => {
+  it("orders the symbol slots from the home row outward and keeps brackets together", () => {
+    const slots = orderedSymbolSlots(board, meta);
+    // The key beside L comes first.
+    const l = board.keys.findIndex((k) => k.label.main === "L");
+    const besideL = board.keys.findIndex(
+      (k, i) =>
+        i !== l &&
+        Math.abs(k.cy - board.keys[l].cy) < 0.3 &&
+        k.cx > board.keys[l].cx &&
+        k.cx - board.keys[l].cx < 1.2,
+    );
+    expect(slots[0]).toBe(besideL);
+    // Brackets side by side, on a keyboard that has neighbouring slots.
+    const b = testBoard("insixty_en")!;
+    const m = keyboardMeta(b);
+    const km = keymapOf(b);
+    const p = proposeSymbols(
+      b,
+      m,
+      km,
+      { ...DEFAULT_ANSWERS, symbols: ["[", "]", "-", ":", ";"] },
+      "us",
+    );
+    const after = boardWith(b, applyChanges(km, p.changes), "us");
+    const placed = (ch: string) =>
+      p.changes.find((c) => after.keys[c.pos].label.main === ch)!.pos;
+    const open = placed("[");
+    const close = placed("]");
+    expect(open).toBeGreaterThanOrEqual(0);
+    expect(Math.abs(after.keys[open].cy - after.keys[close].cy)).toBeLessThan(
+      0.3,
+    );
+    expect(after.keys[close].cx).toBeGreaterThan(after.keys[open].cx);
+  });
+
+  it("reviews CapsLock and a modifier doubled by a replacement", () => {
+    const b = testBoard("goforty_jp")!;
+    const km = keymapOf(b);
+    const before = reviewKeys(km, DEFAULT_ANSWERS, "jis");
+    const caps = before.find((r) => r.reason === "capslock");
+    expect(caps).toBeDefined();
+    const answers = {
+      ...DEFAULT_ANSWERS,
+      replace: { [String(caps!.pos)]: "ControlLeft" },
+    };
+    const after = reviewKeys(km, answers, "jis");
+    // The CapsLock (now a Ctrl) and the corner Ctrl both come up.
+    expect(after.filter((r) => r.reason === "doubled").length).toBe(1);
+    expect(after.filter((r) => r.reason === "capslock").length).toBe(1);
+    const p = proposeDuplicates(km, answers);
+    expect(p.changes).toHaveLength(1);
+  });
+
+  it("recommends the thumb row from Space outward and applies taps with holds", () => {
     const km = keymapOf(board);
-    const space = meta.thumbKeys[1].pos;
+    const space = thumbsLeftToRight(board, meta)[1].pos;
+    const rec = recommendThumbs(board, meta, km, space);
+    expect(rec[String(space)]).toEqual({ tap: "Space", hold: "layer" });
     const p = proposeThumbs(board, meta, km, {
       ...DEFAULT_ANSWERS,
-      spacePos: space,
-      thumbOrder: ["Enter", "Backspace", "Delete"],
+      thumbs: rec,
     });
-    const after = boardWith(board, applyChanges(km, p.changes), "us");
-    expect(label(after, space)).toBe("Space");
-    const labels = meta.thumbKeys.map((t) => label(after, t.pos));
-    expect(labels).toEqual(expect.arrayContaining(["Space", "Enter", "BS"]));
+    const after = applyChanges(km, p.changes);
+    const taps = thumbsLeftToRight(board, meta).map((th) => {
+      const t = after.layers[0][th.pos];
+      return t.kind === "key"
+        ? `${t.code}${t.hold ? "/" + t.hold : ""}${t.holdLayer !== undefined ? "/L" : ""}`
+        : "?";
+    });
+    expect(taps).toEqual([
+      "NonConvert/MetaLeft",
+      "Space/L",
+      "Backspace",
+      "Delete",
+      "Enter/L",
+    ]);
   });
 
   it("gives chosen thumb keys a hold layer and keeps their tap", () => {

@@ -188,17 +188,21 @@ export function charOf(t: Trigger, layout: LabelLayout): string | null {
 /* Answers                                                              */
 /* ------------------------------------------------------------------ */
 
-export type ThumbRole = "Backspace" | "Delete" | "Enter";
-export type CapsChoice = "ctrl" | "esc" | "keep";
+export type HoldChoice = "none" | "shift" | "ctrl" | "alt" | "meta" | "layer";
+
+/** What a thumb key does: its tap (a code, or "keep" for what it has) and its hold. */
+export interface ThumbAssign {
+  tap: string;
+  hold: HoldChoice;
+}
 
 export interface Answers {
   /** Symbols by how often they are typed, most first. */
   symbols: string[];
-  capslock: CapsChoice;
-  /** The thumb key for Space; null until chosen. */
-  spacePos: number | null;
-  /** Backspace / Delete / Enter by how often they are used. */
-  thumbOrder: ThumbRole[];
+  /** Replacements for CapsLock, the IME key and doubled modifiers, by position; "keep" leaves one. */
+  replace: Record<string, string>;
+  /** The thumb keys, by position. */
+  thumbs: Record<string, ThumbAssign>;
   /** Thumb keys that get a layer on hold. */
   layerKeyPos: number[];
   /** The hand whose thumb layer carries the cursor; "auto" picks the right. */
@@ -278,9 +282,8 @@ export const RARE_CHOICES = [
 
 export const DEFAULT_ANSWERS: Answers = {
   symbols: SYMBOL_CHOICES,
-  capslock: "ctrl",
-  spacePos: null,
-  thumbOrder: ["Backspace", "Enter", "Delete"],
+  replace: {},
+  thumbs: {},
   layerKeyPos: [],
   cursorHand: "auto",
   otherMirror: false,
@@ -320,7 +323,47 @@ const below = (b: TestBoard, pos: number) => keyNear(b, pos, 0, 1);
 /* Proposals                                                            */
 /* ------------------------------------------------------------------ */
 
-/** Step 2: the most used symbols take the base layer's symbol slots. */
+const PAIR: Record<string, string> = {
+  "[": "]",
+  "]": "[",
+  "(": ")",
+  ")": "(",
+  "{": "}",
+  "}": "{",
+};
+
+/** The symbol slots nearest the home row first: the key beside L comes before the top row. */
+export function orderedSymbolSlots(
+  board: TestBoard,
+  meta: KeyboardMeta,
+): number[] {
+  const home = [...meta.homeRow.L, ...meta.homeRow.R]
+    .map((p) => board.keys[p])
+    .filter((k) => k !== undefined);
+  const dist = (pos: number) => {
+    const k = board.keys[pos];
+    if (!home.length) return k.cy * 10 + k.cx;
+    return Math.min(...home.map((h) => Math.hypot(k.cx - h.cx, k.cy - h.cy)));
+  };
+  return meta.symbolSlots
+    .filter((p) => p < board.keys.length)
+    .sort((a, b) => dist(a) - dist(b) || board.keys[a].cx - board.keys[b].cx);
+}
+
+function sideBySide(board: TestBoard, a: number, b: number): boolean {
+  const ka = board.keys[a];
+  const kb = board.keys[b];
+  return (
+    Math.abs(ka.cy - kb.cy) < 0.3 &&
+    Math.abs(Math.abs(ka.cx - kb.cx) - (ka.w + kb.w) / 2) < 0.3
+  );
+}
+
+/**
+ * Step 2: the most used symbols take the base layer's symbol slots, the
+ * nearest to the home row first; a pair of brackets goes on two keys side
+ * by side, the opening one on the left.
+ */
 export function proposeSymbols(
   board: TestBoard,
   meta: KeyboardMeta,
@@ -328,27 +371,132 @@ export function proposeSymbols(
   answers: Answers,
   layout: LabelLayout,
 ): Proposal {
-  const slots = meta.symbolSlots.filter((p) => p < board.keys.length);
+  const slots = orderedSymbolSlots(board, meta);
   if (!slots.length) return { changes: [], note: "no-slots" };
+  const wanted = answers.symbols.slice(0, slots.length);
+  const remaining = [...slots];
+  const placed = new Map<string, number>();
+  for (const ch of wanted) {
+    if (placed.has(ch)) continue;
+    const partner = PAIR[ch];
+    if (partner && wanted.includes(partner) && !placed.has(partner)) {
+      // Two neighbouring free slots, the nearest pair first.
+      let found: [number, number] | null = null;
+      for (const a of remaining) {
+        const b = remaining.find((x) => x !== a && sideBySide(board, a, x));
+        if (b !== undefined) {
+          found = board.keys[a].cx <= board.keys[b].cx ? [a, b] : [b, a];
+          break;
+        }
+      }
+      if (found) {
+        const opening = "[({".includes(ch) ? ch : partner;
+        const closing = PAIR[opening];
+        placed.set(opening, found[0]);
+        placed.set(closing, found[1]);
+        remaining.splice(remaining.indexOf(found[0]), 1);
+        remaining.splice(remaining.indexOf(found[1]), 1);
+        continue;
+      }
+    }
+    const slot = remaining.shift();
+    if (slot !== undefined) placed.set(ch, slot);
+  }
   const changes: Change[] = [];
-  answers.symbols.slice(0, slots.length).forEach((ch, i) => {
+  for (const [ch, pos] of placed) {
     const t = triggerForChar(ch, layout);
-    if (t) changes.push({ layer: 0, pos: slots[i], trigger: t });
-  });
+    if (t) changes.push({ layer: 0, pos, trigger: t });
+  }
   return { changes: dedupe(km, changes) };
 }
 
-/** Step 3: CapsLock becomes Ctrl or Esc, or stays. */
+/** What a key under review may become; "keep" leaves it. */
+export const REPLACE_CHOICES = [
+  "keep",
+  "ControlLeft",
+  "Escape",
+  "ShiftLeft",
+  "AltLeft",
+  "MetaLeft",
+  "Tab",
+  "Backquote",
+  "CapsLock",
+  "Backspace",
+  "Delete",
+];
+
+const MODIFIER_LIKE =
+  /^(Control|Shift|Alt|Meta)(Left|Right)$|^(Escape|Tab|CapsLock|Backquote)$/;
+
+const SAME_MOD: Record<string, string> = {
+  ControlRight: "ControlLeft",
+  ShiftRight: "ShiftLeft",
+  AltRight: "AltLeft",
+  MetaRight: "MetaLeft",
+};
+
+export interface ReviewKey {
+  pos: number;
+  code: string;
+  reason: "capslock" | "ime" | "doubled";
+}
+
+/**
+ * Step 3: the keys worth a second look on the base layer, with the
+ * replacements chosen so far applied: CapsLock, the IME toggle, and any
+ * modifier that appears more than once (a Ctrl made out of CapsLock
+ * doubles the Ctrl in the corner, which then comes up here too).
+ */
+export function reviewKeys(
+  km: WorkingKeymap,
+  answers: Answers,
+  layout: LabelLayout,
+): ReviewKey[] {
+  const base = (km.layers[0] ?? []).map((t, pos) => {
+    const r = answers.replace[String(pos)];
+    return r && r !== "keep" ? key(r) : t;
+  });
+  const out: ReviewKey[] = [];
+  const seen = new Map<string, number[]>();
+  // Shown by what the key is now, not by what it is about to become.
+  const original = (pos: number) => {
+    const t = km.layers[0]?.[pos];
+    return t?.kind === "key" ? t.code : "";
+  };
+  base.forEach((t, pos) => {
+    if (t.kind !== "key" || t.mods.length) return;
+    if (original(pos) === "CapsLock")
+      out.push({ pos, code: "CapsLock", reason: "capslock" });
+    else if (original(pos) === "Backquote" && layout === "jis")
+      out.push({ pos, code: "Backquote", reason: "ime" });
+    if (MODIFIER_LIKE.test(t.code)) {
+      const family = SAME_MOD[t.code] ?? t.code;
+      seen.set(family, [...(seen.get(family) ?? []), pos]);
+    }
+  });
+  for (const [, positions] of seen) {
+    if (positions.length < 2) continue;
+    for (const pos of positions) {
+      if (out.some((r) => r.pos === pos)) continue;
+      out.push({ pos, code: original(pos), reason: "doubled" });
+    }
+  }
+  return out.sort((a, b) => a.pos - b.pos);
+}
+
+/** Step 3: the chosen replacements. */
 export function proposeDuplicates(
-  meta: KeyboardMeta,
   km: WorkingKeymap,
   answers: Answers,
 ): Proposal {
-  const pos = meta.fixedKeys.capslock;
-  if (pos === null || answers.capslock === "keep")
-    return { changes: [], note: "nothing" };
-  const code = answers.capslock === "ctrl" ? "ControlLeft" : "Escape";
-  return { changes: dedupe(km, [{ layer: 0, pos, trigger: key(code) }]) };
+  const changes: Change[] = [];
+  for (const [p, code] of Object.entries(answers.replace)) {
+    const pos = Number(p);
+    if (code === "keep" || !Number.isFinite(pos)) continue;
+    changes.push({ layer: 0, pos, trigger: key(code) });
+  }
+  const deduped = dedupe(km, changes);
+  return { changes: deduped, ...(deduped.length ? {} : { note: "nothing" }) };
 }
 
 /** The thumb key currently sending Space, if any. */
@@ -363,68 +511,153 @@ export function currentSpace(
   return null;
 }
 
+/** Taps a thumb key may be given. */
+export const THUMB_TAPS = [
+  "Space",
+  "Backspace",
+  "Delete",
+  "Enter",
+  "Tab",
+  "Escape",
+  "Convert",
+  "NonConvert",
+  "Lang1",
+  "Lang2",
+  "ShiftLeft",
+  "ControlLeft",
+  "AltLeft",
+  "MetaLeft",
+  "Backquote",
+  "CapsLock",
+];
+
+const HOLD_CODE: Record<Exclude<HoldChoice, "none" | "layer">, string> = {
+  shift: "ShiftLeft",
+  ctrl: "ControlLeft",
+  alt: "AltLeft",
+  meta: "MetaLeft",
+};
+
+/** The thumb keys left to right, as the page lists them. */
+export function thumbsLeftToRight(board: TestBoard, meta: KeyboardMeta) {
+  return meta.thumbKeys
+    .filter((t) => t.pos < board.keys.length)
+    .sort((a, b) => board.keys[a.pos].cx - board.keys[b.pos].cx);
+}
+
+/** What a thumb key does now, as an assignment. */
+export function currentThumb(km: WorkingKeymap, pos: number): ThumbAssign {
+  const t = km.layers[0]?.[pos];
+  if (t?.kind !== "key") return { tap: "keep", hold: "none" };
+  const hold: HoldChoice =
+    t.holdLayer !== undefined
+      ? "layer"
+      : t.hold
+        ? ((Object.entries(HOLD_CODE).find(([, c]) => c === t.hold)?.[0] as
+            | HoldChoice
+            | undefined) ?? "none")
+        : "none";
+  return { tap: t.code, hold };
+}
+
 /**
- * Step 4: Space where the thumb lands, then Backspace / Delete / Enter on
- * the thumb keys nearest to it, in the order they are used.
+ * The recommended thumb row: from Space, the keys towards the middle of
+ * the keyboard take what is tapped on its own while writing (Backspace,
+ * Delete, then Enter with a layer on hold, then 変換 with Alt), and the
+ * keys outward of Space take 無変換 with Win on hold, then Shift and Ctrl.
+ * That is one person's layout, offered as a starting point.
  */
+export function recommendThumbs(
+  board: TestBoard,
+  meta: KeyboardMeta,
+  km: WorkingKeymap,
+  spacePos: number | null,
+): Record<string, ThumbAssign> {
+  const thumbs = thumbsLeftToRight(board, meta);
+  if (!thumbs.length) return {};
+  const space =
+    spacePos ??
+    currentSpace(meta, km) ??
+    thumbs[Math.floor((thumbs.length - 1) / 2)].pos;
+  const sx = board.keys[space].cx;
+  const spaceHand = meta.thumbKeys.find((t) => t.pos === space)?.hand ?? "L";
+  const inward = (pos: number) =>
+    spaceHand === "L" ? board.keys[pos].cx > sx : board.keys[pos].cx < sx;
+  const byDistance = (a: number, b: number) =>
+    Math.abs(board.keys[a].cx - sx) - Math.abs(board.keys[b].cx - sx);
+  const inner = thumbs
+    .map((t) => t.pos)
+    .filter((p) => p !== space && inward(p))
+    .sort(byDistance);
+  const outer = thumbs
+    .map((t) => t.pos)
+    .filter((p) => p !== space && !inward(p))
+    .sort(byDistance);
+  const innerSeq: ThumbAssign[] = [
+    { tap: "Backspace", hold: "none" },
+    { tap: "Delete", hold: "none" },
+    { tap: "Enter", hold: "layer" },
+    { tap: "Convert", hold: "alt" },
+    { tap: "ShiftLeft", hold: "none" },
+    { tap: "ControlLeft", hold: "none" },
+  ];
+  const outerSeq: ThumbAssign[] = [
+    { tap: "NonConvert", hold: "meta" },
+    { tap: "ShiftLeft", hold: "none" },
+    { tap: "ControlLeft", hold: "none" },
+  ];
+  const out: Record<string, ThumbAssign> = {
+    [space]: { tap: "Space", hold: "layer" },
+  };
+  inner.forEach((pos, i) => {
+    out[pos] = innerSeq[i] ?? { tap: "keep", hold: "none" };
+  });
+  outer.forEach((pos, i) => {
+    out[pos] = outerSeq[i] ?? { tap: "keep", hold: "none" };
+  });
+  return out;
+}
+
+/** Step 4: the thumb keys as assigned; a layer on hold gets a layer number. */
 export function proposeThumbs(
   board: TestBoard,
   meta: KeyboardMeta,
   km: WorkingKeymap,
   answers: Answers,
 ): Proposal {
-  const thumbs = meta.thumbKeys.filter((t) => t.pos < board.keys.length);
+  const thumbs = thumbsLeftToRight(board, meta);
   if (!thumbs.length) return { changes: [], note: "no-thumbs" };
-  const space = answers.spacePos ?? currentSpace(meta, km) ?? thumbs[0].pos;
-  const sx = board.keys[space].cx;
-  const rest = thumbs
-    .filter((t) => t.pos !== space)
-    .sort(
-      (a, b) =>
-        Math.abs(board.keys[a.pos].cx - sx) -
-        Math.abs(board.keys[b.pos].cx - sx),
-    );
-  const assigned = new Map<number, Trigger>([[space, key("Space")]]);
-  answers.thumbOrder.forEach((role, i) => {
-    const th = rest[i];
-    if (th) assigned.set(th.pos, key(role));
-  });
-  // The thumb keys left over take the taps that were pushed out, so no
-  // key is lost and none is doubled: a 変換 that sat where Enter now
-  // goes moves to the key Enter came from.
-  const codeOf = (t: Trigger | undefined) =>
-    t?.kind === "key" && t.mods.length === 0 ? t.code : null;
-  const used = new Set([...assigned.values()].map(codeOf));
-  const pool = thumbs
-    .map((t) => km.layers[0]?.[t.pos])
-    .filter((t): t is Trigger => t !== undefined && !used.has(codeOf(t)))
-    .filter((t) => t.kind !== "none");
+  const used = new Set<number>();
+  for (const t of km.layers[0] ?? [])
+    if (t.kind === "key" && t.holdLayer !== undefined) used.add(t.holdLayer);
+  let next = Math.max(1, km.layers.length);
+  const changes: Change[] = [];
   for (const th of thumbs) {
-    if (assigned.has(th.pos)) continue;
+    const a = answers.thumbs[String(th.pos)];
+    if (!a) continue;
     const now = km.layers[0]?.[th.pos];
-    if (now && !used.has(codeOf(now))) continue; // keeps what it has
-    const next = pool.shift();
-    if (next) {
-      const { holdLayer: _h, ...tap } =
-        next.kind === "key" ? next : { ...next, holdLayer: undefined };
-      void _h;
-      assigned.set(th.pos, tap as Trigger);
+    const tapCode =
+      a.tap === "keep" ? (now?.kind === "key" ? now.code : null) : a.tap;
+    if (!tapCode) continue;
+    const t: Extract<Trigger, { kind: "key" }> = {
+      kind: "key",
+      code: tapCode,
+      mods: [],
+    };
+    if (a.hold === "layer") {
+      if (now?.kind === "key" && now.holdLayer !== undefined)
+        t.holdLayer = now.holdLayer;
+      else {
+        while (used.has(next)) next++;
+        used.add(next);
+        t.holdLayer = next++;
+      }
+    } else if (a.hold !== "none") {
+      t.hold = HOLD_CODE[a.hold];
     }
+    changes.push({ layer: 0, pos: th.pos, trigger: t });
   }
-  const changes: Change[] = [...assigned.entries()].map(([pos, t]) => ({
-    layer: 0,
-    pos,
-    trigger: keep(km, pos, t),
-  }));
   return { changes: dedupe(km, changes) };
-}
-
-/** A new tap on a key keeps the hold layer it already has. */
-function keep(km: WorkingKeymap, pos: number, t: Trigger): Trigger {
-  const now = km.layers[0]?.[pos];
-  if (t.kind === "key" && now?.kind === "key" && now.holdLayer !== undefined)
-    return { ...t, holdLayer: now.holdLayer };
-  return t;
 }
 
 /** The layer keys among the thumbs, with the layer each holds. */
@@ -677,10 +910,11 @@ export function proposalLabels(
   const m = new Map<number, { layer: number; label: string }>();
   for (const c of changes) {
     const l = labelOf(c.trigger, layout);
-    const hold =
-      c.trigger.kind === "key" && c.trigger.holdLayer !== undefined
-        ? ` / L${c.trigger.holdLayer}`
-        : "";
+    let hold = "";
+    if (c.trigger.kind === "key" && c.trigger.holdLayer !== undefined)
+      hold = ` / L${c.trigger.holdLayer}`;
+    else if (c.trigger.kind === "key" && c.trigger.hold)
+      hold = ` / ${labelForCode(c.trigger.hold, layout)?.main ?? c.trigger.hold}`;
     m.set(c.pos, { layer: c.layer, label: `${l.main}${hold}` });
   }
   return m;
