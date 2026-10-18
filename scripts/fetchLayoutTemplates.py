@@ -23,7 +23,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 REPO = "Salicylic-acid3/vial-qmk"
-BRANCHES = ["vial", "keebon-os", "stm32g0-support"]
+# keebon-os first: the released firmware is built from it, and the other
+# branches can hold an older vial.json (ClickBoard ErgoMini had a plain grid
+# there while keebon-os has the real layout).
+BRANCHES = ["keebon-os", "vial", "stm32g0-support"]
 KEYMAPS = ["vial", "multi-os"]
 KEYCODE_KEYMAPS = ["multi-os", "vial", "default"]
 ZMK = {
