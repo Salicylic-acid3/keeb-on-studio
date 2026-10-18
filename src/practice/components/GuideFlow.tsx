@@ -49,6 +49,7 @@ import {
   proposeThumbs,
   RARE_CHOICES,
   recommendThumbs,
+  SALICYLIC_SYMBOL_GRID,
   REPLACE_CHOICES,
   reviewKeys,
   suggestedLayerKeys,
@@ -277,7 +278,10 @@ export function GuideFlow({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step.id]);
 
-  const thumbLayers = useMemo(() => thumbLayerKeys(meta, km), [meta, km]);
+  const thumbLayers = useMemo(
+    () => [...thumbLayerKeys(meta, km)].sort((a, b) => a.layer - b.layer),
+    [meta, km],
+  );
   const setContent = (
     side: "one" | "other",
     content: LayerContent,
@@ -293,12 +297,6 @@ export function GuideFlow({
     () => (step.id === "duplicates" ? reviewKeys(km, answers, layout) : []),
     [step.id, km, answers, layout],
   );
-  const spaceFromAnswers = useMemo(() => {
-    const hit = Object.entries(answers.thumbs).find(
-      ([, a]) => a.tap === "Space",
-    );
-    return hit ? Number(hit[0]) : null;
-  }, [answers.thumbs]);
   const codeName = (code: string) =>
     labelOf({ kind: "key", code, mods: [] }, layout).main || code;
   /** Where a key sits, in words: its row from the top and its side. */
@@ -675,12 +673,7 @@ export function GuideFlow({
                     type="button"
                     onClick={() =>
                       answer({
-                        thumbs: recommendThumbs(
-                          board,
-                          meta,
-                          km,
-                          spaceFromAnswers,
-                        ),
+                        thumbs: recommendThumbs(board, meta),
                       })
                     }
                     className="btn-ghost h-9 border border-[var(--color-border)] px-3 text-sm"
@@ -838,19 +831,33 @@ export function GuideFlow({
                     ["row", t("One row, like Vim: ← ↓ ↑ → on the home row")],
                   ]}
                 />
-                <label className="flex items-center gap-2 text-sm text-[var(--color-text)]">
-                  <input
-                    type="checkbox"
-                    checked={answers.navKeys}
-                    onChange={(e) => answer({ navKeys: e.target.checked })}
-                  />
-                  {t("Also Home / End / PgUp / PgDn around the cursor keys")}
-                </label>
+                <h3 className="text-sm font-medium text-[var(--color-text)]">
+                  {t("Around the cursor keys")}
+                </h3>
+                <Choices
+                  value={answers.cursorAround}
+                  onChange={(v) => answer({ cursorAround: v })}
+                  options={[
+                    ["leave", t("Leave the keys around them as they are")],
+                    [
+                      "none",
+                      t(
+                        "Set the keys around them to nothing (a slip presses nothing)",
+                      ),
+                    ],
+                    ["nav", t("Home / End / PgUp / PgDn around them")],
+                  ]}
+                />
                 <Para muted>
                   {t(
-                    "Keys around the cursor keys get pressed by mistake, so they are off unless you want them.",
+                    "Keys around the cursor keys get pressed by mistake, so Home / End / PgUp / PgDn there are not recommended.",
                   )}
                 </Para>
+                <SymbolGridEditor
+                  t={t}
+                  grid={answers.symbolGrid}
+                  onChange={(symbolGrid) => answer({ symbolGrid })}
+                />
                 {proposal?.note && <Para muted>{noteText(proposal.note)}</Para>}
                 {changeButtons}
               </>
@@ -878,6 +885,11 @@ export function GuideFlow({
                   value={(c) => contentLayer(meta, km, answers, "other", c)}
                   label={(pos) => thumbLabel(pos)}
                   onChange={(c, layer) => setContent("other", c, layer)}
+                />
+                <SymbolGridEditor
+                  t={t}
+                  grid={answers.symbolGrid}
+                  onChange={(symbolGrid) => answer({ symbolGrid })}
                 />
                 {proposal?.note && <Para muted>{noteText(proposal.note)}</Para>}
                 {changeButtons}
@@ -1080,9 +1092,64 @@ const CONTENT_NAME: Record<LayerContent, string> = {
   none: "No content",
   cursor: "Cursor keys",
   digits: "Numbers (numpad)",
-  symbols: "Symbols left over",
+  symbols: "Symbols (the grid below)",
   fkeys: "F keys",
 };
+
+/**
+ * The symbol layer as a grid to fill in: three rows (above the home row,
+ * on it, below it) by six columns, the author's layout to start from.
+ */
+function SymbolGridEditor({
+  t,
+  grid,
+  onChange,
+}: {
+  t: T;
+  grid: string[][];
+  onChange: (grid: string[][]) => void;
+}) {
+  const rows = [0, 1, 2];
+  const cols = [0, 1, 2, 3, 4, 5];
+  const set = (r: number, c: number, v: string) => {
+    const next = rows.map((rr) => cols.map((cc) => grid[rr]?.[cc] ?? ""));
+    next[r][c] = v.slice(-1);
+    onChange(next);
+  };
+  return (
+    <div className="space-y-2">
+      <h3 className="text-sm font-medium text-[var(--color-text)]">
+        {t("Symbols on the layer")}
+      </h3>
+      <Para muted>
+        {t(
+          "Symbols you type often should be a layer key plus one key: a modifier on top of a layer is hard to press. Pairs go side by side, ! beside ?, and the rows follow the number row where they can. Rows: above the home row, on it, below it; columns from the outer finger inward.",
+        )}
+      </Para>
+      <div className="inline-grid grid-cols-6 gap-1">
+        {rows.map((r) =>
+          cols.map((c) => (
+            <input
+              key={`${r}-${c}`}
+              type="text"
+              value={grid[r]?.[c] ?? ""}
+              onChange={(e) => set(r, c, e.target.value)}
+              maxLength={1}
+              className="h-9 w-9 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] text-center font-mono text-sm text-[var(--color-text)]"
+            />
+          )),
+        )}
+      </div>
+      <button
+        type="button"
+        onClick={() => onChange(SALICYLIC_SYMBOL_GRID.map((row) => [...row]))}
+        className="btn-ghost h-8 border border-[var(--color-border)] px-3 text-xs"
+      >
+        {t("Use Salicylic_acid3's symbols")}
+      </button>
+    </div>
+  );
+}
 
 /** Each kind of content with the thumb layer it goes on, or none. */
 function LayerPicker({

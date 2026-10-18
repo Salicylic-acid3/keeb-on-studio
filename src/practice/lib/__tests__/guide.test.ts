@@ -14,6 +14,7 @@ import {
   proposeOther,
   proposeRare,
   proposeSymbols,
+  placeContent,
   proposeThumbs,
   suggestedLayerKeys,
   thumbLayerKeys,
@@ -116,7 +117,7 @@ describe("guide proposals on GoFortyMax Ortho", () => {
   it("recommends the thumb row from Space outward and applies taps with holds", () => {
     const km = keymapOf(board);
     const space = thumbsLeftToRight(board, meta)[1].pos;
-    const rec = recommendThumbs(board, meta, km, space);
+    const rec = recommendThumbs(board, meta);
     expect(rec[String(space)]).toEqual({ tap: "Space", hold: "layer" });
     const p = proposeThumbs(board, meta, km, {
       ...DEFAULT_ANSWERS,
@@ -170,7 +171,7 @@ describe("guide proposals on GoFortyMax Ortho", () => {
       board,
       meta,
       km,
-      { ...DEFAULT_ANSWERS, cursorShape: "row", navKeys: true },
+      { ...DEFAULT_ANSWERS, cursorShape: "row", cursorAround: "nav" },
       "us",
     );
     const right = thumbLayerKeys(meta, km).find((k) => k.hand === "R")!;
@@ -228,11 +229,40 @@ describe("guide proposals on GoFortyMax Ortho", () => {
   it("leaves Delete out of the recommended row on a five-thumb keyboard", () => {
     const b = testBoard("goforty_jp")!;
     const m = keyboardMeta(b);
-    const km = keymapOf(b);
-    const rec = recommendThumbs(b, m, km, null);
+    const rec = recommendThumbs(b, m);
     const taps = Object.values(rec).map((a) => a.tap);
     expect(taps).toContain("Backspace");
     expect(taps).toContain("Enter");
     expect(taps).not.toContain("Delete");
+  });
+
+  it("lays the symbol grid under the left hand, rows above, on and below the home row", () => {
+    const km = keymapOf(board);
+    const left =
+      thumbLayerKeys(meta, km).find((k) => k.hand === "L") ??
+      thumbLayerKeys(meta, km)[0];
+    const layer = left.layer;
+    const changes = placeContent(
+      board,
+      meta,
+      layer,
+      "L",
+      "symbols",
+      DEFAULT_ANSWERS,
+      "us",
+    );
+    const after = boardWith(board, applyChanges(km, changes), "us");
+    const on = (pos: number) =>
+      after.keys[pos].onLayers?.find((o) => o.layer === layer)?.trigger;
+    const a = meta.homeRow.L[0];
+    // '"' on A's row, '!' above it, "'" below it.
+    expect(on(a)).toMatchObject({ code: "Quote", mods: ["shift"] });
+    const aboveA = board.keys.findIndex(
+      (k) =>
+        Math.abs(k.cx - board.keys[a].cx) < 0.3 &&
+        Math.abs(k.cy - (board.keys[a].cy - 1)) < 0.3,
+    );
+    expect(on(aboveA)).toMatchObject({ code: "Digit1", mods: ["shift"] });
+    expect(changes.length).toBeGreaterThanOrEqual(15);
   });
 });

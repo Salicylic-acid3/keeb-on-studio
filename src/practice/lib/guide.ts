@@ -190,6 +190,14 @@ export function charOf(t: Trigger, layout: LabelLayout): string | null {
 
 export type HoldChoice = "none" | "shift" | "ctrl" | "alt" | "meta" | "layer";
 export type CursorShape = "t" | "row";
+export type CursorAround = "nav" | "none" | "leave";
+
+/** The author's symbol layer, as rows above / on / below the home row. */
+export const SALICYLIC_SYMBOL_GRID: string[][] = [
+  ["!", "?", "[", "]", "~", ""],
+  ['"', "#", "$", "(", ")", "@"],
+  ["'", "%", "&", ";", ":", "|"],
+];
 export type LayerContent = "none" | "cursor" | "digits" | "symbols" | "fkeys";
 
 /** What a thumb key does: its tap (a code, or "keep" for what it has) and its hold. */
@@ -211,8 +219,17 @@ export interface Answers {
   layerKeyPos: number[];
   /** How the cursor keys lie: an inverted T, or a row like Vim's hjkl. */
   cursorShape: CursorShape;
-  /** Home / End / PgUp / PgDn around the cursor keys, or not. */
-  navKeys: boolean;
+  /**
+   * The keys around the cursor keys: Home / End / PgUp / PgDn, nothing at
+   * all (so a slip presses nothing), or left as they are.
+   */
+  cursorAround: CursorAround;
+  /**
+   * The symbols on a layer, three rows (above the home row, the home row,
+   * below it) by up to six columns, laid out to be remembered: pairs side
+   * by side, in the number row's order.
+   */
+  symbolGrid: string[][];
   /**
    * Step 7: which thumb layer each kind of content goes on, under the
    * hand whose thumb holds that layer. Missing means the default; null
@@ -299,7 +316,8 @@ export const DEFAULT_ANSWERS: Answers = {
   thumbs: {},
   layerKeyPos: [],
   cursorShape: "t",
-  navKeys: false,
+  cursorAround: "leave",
+  symbolGrid: SALICYLIC_SYMBOL_GRID.map((r) => [...r]),
   oneHand: {},
   otherHand: {},
   rare: ["PrintScreen", "Insert"],
@@ -592,64 +610,29 @@ export function currentThumb(km: WorkingKeymap, pos: number): ThumbAssign {
   return { tap: t.code, hold };
 }
 
-/**
- * The recommended thumb row: from Space, the keys towards the middle of
- * the keyboard take what is tapped on its own while writing (Backspace,
- * Delete, then Enter with a layer on hold, then 変換 with Alt), and the
- * keys outward of Space take 無変換 with Win on hold, then Shift and Ctrl.
- * That is one person's layout, offered as a starting point.
- */
+/** The author's thumb row, left to right, as a starting point. */
 export function recommendThumbs(
   board: TestBoard,
   meta: KeyboardMeta,
-  km: WorkingKeymap,
-  spacePos: number | null,
 ): Record<string, ThumbAssign> {
   const thumbs = thumbsLeftToRight(board, meta);
   if (!thumbs.length) return {};
-  const space =
-    spacePos ??
-    currentSpace(meta, km) ??
-    thumbs[Math.floor((thumbs.length - 1) / 2)].pos;
-  const sx = board.keys[space].cx;
-  const spaceHand = meta.thumbKeys.find((t) => t.pos === space)?.hand ?? "L";
-  const inward = (pos: number) =>
-    spaceHand === "L" ? board.keys[pos].cx > sx : board.keys[pos].cx < sx;
-  const byDistance = (a: number, b: number) =>
-    Math.abs(board.keys[a].cx - sx) - Math.abs(board.keys[b].cx - sx);
-  const inner = thumbs
-    .map((t) => t.pos)
-    .filter((p) => p !== space && inward(p))
-    .sort(byDistance);
-  const outer = thumbs
-    .map((t) => t.pos)
-    .filter((p) => p !== space && !inward(p))
-    .sort(byDistance);
-  // With five thumb keys or fewer, Delete is left out: the row is usually
-  // built without it.
-  const innerSeq: ThumbAssign[] = [
+  // Left to right: 無変換 / Win, Space / layer, Backspace, Delete, Enter /
+  // layer, 変換 / Alt. With five thumb keys or fewer, Delete is left out:
+  // the row is usually built without it.
+  const seq: ThumbAssign[] = [
+    { tap: "NonConvert", hold: "meta" },
+    { tap: "Space", hold: "layer" },
     { tap: "Backspace", hold: "none" },
     ...(thumbs.length >= 6
       ? [{ tap: "Delete", hold: "none" } as ThumbAssign]
       : []),
     { tap: "Enter", hold: "layer" },
     { tap: "Convert", hold: "alt" },
-    { tap: "ShiftLeft", hold: "none" },
-    { tap: "ControlLeft", hold: "none" },
   ];
-  const outerSeq: ThumbAssign[] = [
-    { tap: "NonConvert", hold: "meta" },
-    { tap: "ShiftLeft", hold: "none" },
-    { tap: "ControlLeft", hold: "none" },
-  ];
-  const out: Record<string, ThumbAssign> = {
-    [space]: { tap: "Space", hold: "layer" },
-  };
-  inner.forEach((pos, i) => {
-    out[pos] = innerSeq[i] ?? { tap: "keep", hold: "none" };
-  });
-  outer.forEach((pos, i) => {
-    out[pos] = outerSeq[i] ?? { tap: "keep", hold: "none" };
+  const out: Record<string, ThumbAssign> = {};
+  thumbs.forEach((th, i) => {
+    out[th.pos] = seq[i] ?? { tap: "keep", hold: "none" };
   });
   return out;
 }
@@ -824,7 +807,6 @@ export function contentLayer(
 export function placeContent(
   board: TestBoard,
   meta: KeyboardMeta,
-  km: WorkingKeymap,
   layer: number,
   hand: Hand,
   content: LayerContent,
@@ -837,6 +819,22 @@ export function placeContent(
     if (pos !== null && pos !== undefined)
       changes.push({ layer, pos, trigger: key(code) });
   };
+  // The keys touching a set of keys do nothing on the layer, so a slip
+  // beside the cursor keys presses nothing (none, not transparent).
+  const clearAround = (keys: number[]) => {
+    const inside = new Set(keys);
+    const around = new Set<number>();
+    for (const k of inside)
+      for (const n of [
+        above(board, k),
+        below(board, k),
+        keyNear(board, k, -1, 0),
+        keyNear(board, k, 1, 0),
+      ])
+        if (n !== null && !inside.has(n)) around.add(n);
+    for (const n of around)
+      changes.push({ layer, pos: n, trigger: { kind: "none" } });
+  };
   switch (content) {
     case "none":
       return [];
@@ -845,10 +843,11 @@ export function placeContent(
         ["ArrowLeft", "ArrowDown", "ArrowUp", "ArrowRight"].forEach((c, i) =>
           put(home[i], c),
         );
-        if (answers.navKeys)
+        if (answers.cursorAround === "nav")
           ["Home", "PageDown", "PageUp", "End"].forEach((c, i) =>
             put(home[i] !== undefined ? above(board, home[i]) : null, c),
           );
+        if (answers.cursorAround === "none") clearAround(home.slice(0, 4));
       } else {
         // An inverted T from the index finger: ← ↓ → on J K L (the home
         // row's first three), ↑ above the middle one; Home / End above
@@ -858,12 +857,18 @@ export function placeContent(
         put(h1, "ArrowDown");
         put(h2, "ArrowRight");
         put(h1 !== undefined ? above(board, h1) : null, "ArrowUp");
-        if (answers.navKeys) {
+        if (answers.cursorAround === "nav") {
           put(h0 !== undefined ? above(board, h0) : null, "Home");
           put(h2 !== undefined ? above(board, h2) : null, "End");
           put(h3 !== undefined ? above(board, h3) : null, "PageUp");
           put(h3, "PageDown");
         }
+        if (answers.cursorAround === "none")
+          clearAround(
+            [h0, h1, h2, h1 !== undefined ? above(board, h1) : null].filter(
+              (p): p is number => p !== undefined && p !== null,
+            ),
+          );
       }
       return changes;
     }
@@ -899,27 +904,31 @@ export function placeContent(
       return changes;
     }
     case "symbols": {
-      // The symbols not on the base layer, most used first.
-      const onBase = new Set(
-        (km.layers[0] ?? [])
-          .map((t) => charOf(t, layout))
-          .filter((c): c is string => c !== null),
-      );
-      const left = answers.symbols.filter((ch) => !onBase.has(ch));
-      const slots = [
-        ...home,
-        ...home
-          .map((p) => above(board, p))
-          .filter((p): p is number => p !== null),
-        ...home
-          .map((p) => below(board, p))
-          .filter((p): p is number => p !== null),
+      // The grid under the hand: columns are the home row's four keys
+      // and the keys inward of them, in x order; rows above / on / below.
+      const inward = hand === "L" ? 1 : -1;
+      const cols = [...home];
+      let edge = hand === "L" ? home[home.length - 1] : home[0];
+      while (cols.length < 6 && edge !== undefined) {
+        const next = keyNear(board, edge, inward, 0);
+        if (next === null || cols.includes(next)) break;
+        cols.push(next);
+        edge = next;
+      }
+      cols.sort((p, q) => board.keys[p].cx - board.keys[q].cx);
+      const rows = [
+        cols.map((p) => above(board, p)),
+        cols.map((p): number | null => p),
+        cols.map((p) => below(board, p)),
       ];
-      left.forEach((ch, i) => {
-        const t = triggerForChar(ch, layout);
-        const pos = slots[i];
-        if (t && pos !== undefined) changes.push({ layer, pos, trigger: t });
-      });
+      answers.symbolGrid.forEach((row, r) =>
+        row.forEach((ch, c) => {
+          const pos = rows[r]?.[c];
+          if (!ch || pos === null || pos === undefined) return;
+          const t = triggerForChar(ch, layout);
+          if (t) changes.push({ layer, pos, trigger: t });
+        }),
+      );
       return changes;
     }
   }
@@ -943,7 +952,7 @@ function placeSide(
     if (!key) continue;
     const hand: Hand = side === "one" ? key.hand : key.hand === "L" ? "R" : "L";
     changes.push(
-      ...placeContent(board, meta, km, layer, hand, content, answers, layout),
+      ...placeContent(board, meta, layer, hand, content, answers, layout),
     );
   }
   const deduped = dedupe(km, changes);
@@ -1021,6 +1030,10 @@ export function proposalLabels(
   const m = new Map<number, { layer: number; label: string }>();
   for (const c of changes) {
     const l = labelOf(c.trigger, layout);
+    if (c.trigger.kind === "none") {
+      m.set(c.pos, { layer: c.layer, label: "None" });
+      continue;
+    }
     let hold = "";
     if (c.trigger.kind === "key" && c.trigger.holdLayer !== undefined)
       hold = ` / L${c.trigger.holdLayer}`;

@@ -108,6 +108,17 @@ const ja: Record<string, string> = {
   "Characters not on the keymap": "入力不可文字",
   "None.": "なし",
   "Next text": "次の文章",
+  "Around the cursor keys": "カーソルキーの周り",
+  "Home / End / PgUp / PgDn around them": "Home / End / PgUp / PgDn を入れる",
+  "Keys around the cursor keys get pressed by mistake, so Home / End / PgUp / PgDn there are not recommended.":
+    "カーソルキーの周りは誤打鍵しやすいので、Home / End / PgUp / PgDn を入れるのはおすすめしません。",
+  "Leave the keys around them as they are": "周りのキーはそのまま",
+  "Set the keys around them to nothing (a slip presses nothing)":
+    "周りのキーは None にする（押し間違えても何も起きない）",
+  "Symbols on the layer": "レイヤーに置く記号",
+  "Symbols you type often should be a layer key plus one key: a modifier on top of a layer is hard to press. Pairs go side by side, ! beside ?, and the rows follow the number row where they can. Rows: above the home row, on it, below it; columns from the outer finger inward.":
+    "普段使う記号はレイヤーキー＋1キーで押せるようにします。数字列の記号は修飾キー＋数字で打てますが、そこにレイヤーが加わると押しにくくなるためです。括弧のようなペアは隣同士に、! と ? も隣に置き、できるだけ数字列と同じ並びにします。行は上からホームロウの上段・ホームロウ・下段、列は小指側から中央へ向かう順です。",
+  "Use Salicylic_acid3's symbols": "サリチル酸の記号配置を反映",
   "Click a candidate key on the drawing, then pick the symbol it should hold.":
     "描画上の候補キーをクリックして、置く記号を選んでください。",
   "Key {{key}}: put": "キー {{key}} に置くもの",
@@ -125,8 +136,6 @@ const ja: Record<string, string> = {
   "Slots a symbol may take": "記号を置ける候補のキー",
   "Keys that change (old legend struck through)":
     "変わるキー（元のキーは取り消し線）",
-  "Keys around the cursor keys get pressed by mistake, so they are off unless you want them.":
-    "カーソルキーの周りのキーは誤打鍵しやすいので、入れたい場合だけオンにしてください。",
   "Keys to finish with one hand": "片手で完結したいキー",
   "Keys under the other hand": "反対の手に置くキー",
   "Layer {{n}} ({{key}} held) → {{hand}}":
@@ -148,7 +157,7 @@ const ja: Record<string, string> = {
   "One row, like Vim: ← ↓ ↑ → on the home row":
     "横一列（VIM型）: ホームロウに ← ↓ ↑ →",
   "Numbers (numpad)": "数字キー（テンキー配置）",
-  "Symbols left over": "ベースに入らなかった記号",
+  "Symbols (the grid below)": "記号（下の表の並び）",
   "What one hand should finish on its own goes on that hand's layer: the cursor keys under the fingers of the hand whose thumb holds the layer, so the other hand stays free.":
     "片手で完結させたいものを、その手のレイヤーに置きます。レイヤーキーを押す親指と同じ手の指の下にカーソルキーを置けば、もう片方の手は空いたままです。",
   // Setup guide
