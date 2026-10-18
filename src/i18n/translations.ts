@@ -108,6 +108,7 @@ const ja: Record<string, string> = {
   "Characters not on the keymap": "入力不可文字",
   "None.": "なし",
   "Next text": "次の文章",
+  "No column here on this keyboard": "このキーボードにはこの列がありません",
   "Around the cursor keys": "カーソルキーの周り",
   "Home / End / PgUp / PgDn around them": "Home / End / PgUp / PgDn を入れる",
   "Keys around the cursor keys get pressed by mistake, so Home / End / PgUp / PgDn there are not recommended.":
@@ -116,8 +117,8 @@ const ja: Record<string, string> = {
   "Set the keys around them to nothing (a slip presses nothing)":
     "周りのキーは None にする（押し間違えても何も起きない）",
   "Symbols on the layer": "レイヤーに置く記号",
-  "Symbols you type often should be a layer key plus one key: a modifier on top of a layer is hard to press. Pairs go side by side, ! beside ?, and the rows follow the number row where they can. Rows: above the home row, on it, below it; columns from the outer finger inward.":
-    "普段使う記号はレイヤーキー＋1キーで押せるようにします。数字列の記号は修飾キー＋数字で打てますが、そこにレイヤーが加わると押しにくくなるためです。括弧のようなペアは隣同士に、! と ? も隣に置き、できるだけ数字列と同じ並びにします。行は上からホームロウの上段・ホームロウ・下段、列は小指側から中央へ向かう順です。",
+  "Symbols you type often should be a layer key plus one key: a modifier on top of a layer is hard to press. Pairs go side by side, ! beside ?, and the rows follow the number row where they can. Rows: above the home row, on it, below it; columns from the hand's outer edge (the modifier column) to the key inward of the index finger.":
+    "よく使う記号は、レイヤーキー＋1キーで打てるようにします（レイヤーの上にさらにモディファイアを重ねるのは押しにくいため）。対になる記号は隣同士に、! と ? も隣に、並びはできるだけ数字キーの順に。行は上から「ホームポジションの上の段・ホームポジションの段・下の段」、列は手の外側（モディファイアの列）から人差し指の内側のキーまでです。",
   "Use Salicylic_acid3's symbols": "サリチル酸の記号配置を反映",
   "Click a candidate key on the drawing, then pick the symbol it should hold.":
     "描画上の候補キーをクリックして、置く記号を選んでください。",
@@ -181,8 +182,8 @@ const ja: Record<string, string> = {
   "Keep CapsLock": "CapsLock のまま残す",
   "Make CapsLock a Ctrl": "CapsLock を Ctrl にする",
   "Make CapsLock an Esc": "CapsLock を Esc にする",
-  "Keys used now and then need no place of their own: they go on free keys of a layer, at the bottom row where nothing else was put.":
-    "たまにしか使わないキーに専用の場所は要りません。レイヤーの空いているキー、何も置かなかった最下段に入れます。",
+  "Keys used now and then need no place of their own, and nothing is suggested here. Pick any you want on the keyboard, and they go on free keys of a layer, away from the home row.":
+    "たまにしか使わないキーは、無理に置き場所を決めなくて大丈夫です。ここでは何もおすすめしません。キーボードに欲しいものがあれば選んでください。レイヤーの空いているキーのうち、ホームポジションから遠いところに置く案を出します。",
   "Layer keys: {{list}}": "レイヤーキー: {{list}}",
   "Measuring where the thumb lands on a connected keyboard comes later; for now, choose the key.":
     "実機で親指が落ちる場所を計測する機能は後で入ります。いまはキーを選んでください。",

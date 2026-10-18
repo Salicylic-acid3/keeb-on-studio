@@ -192,9 +192,14 @@ export type HoldChoice = "none" | "shift" | "ctrl" | "alt" | "meta" | "layer";
 export type CursorShape = "t" | "row";
 export type CursorAround = "nav" | "none" | "leave";
 
-/** The author's symbol layer, as rows above / on / below the home row. */
+/**
+ * The author's symbol layer, as rows above / on / below the home row,
+ * from the outer edge of the hand (the modifier column) inward: ! on Q,
+ * ~ on T, " left of A, @ on G, ' left of Z, | on B.
+ */
+export const SYMBOL_GRID_COLUMNS = 6;
 export const SALICYLIC_SYMBOL_GRID: string[][] = [
-  ["!", "?", "[", "]", "~", ""],
+  ["", "!", "?", "[", "]", "~"],
   ['"', "#", "$", "(", ")", "@"],
   ["'", "%", "&", ";", ":", "|"],
 ];
@@ -320,7 +325,7 @@ export const DEFAULT_ANSWERS: Answers = {
   symbolGrid: SALICYLIC_SYMBOL_GRID.map((r) => [...r]),
   oneHand: {},
   otherHand: {},
-  rare: ["PrintScreen", "Insert"],
+  rare: [],
 };
 
 /* ------------------------------------------------------------------ */
@@ -630,6 +635,8 @@ export function recommendThumbs(
     { tap: "Enter", hold: "layer" },
     { tap: "Convert", hold: "alt" },
   ];
+  // With seven thumb keys the middle one is left as it is, three a side.
+  if (thumbs.length >= 7) seq.splice(3, 0, { tap: "keep", hold: "none" });
   const out: Record<string, ThumbAssign> = {};
   thumbs.forEach((th, i) => {
     out[th.pos] = seq[i] ?? { tap: "keep", hold: "none" };
@@ -803,6 +810,72 @@ export function contentLayer(
   return defaultContentLayers(meta, km, side)[content] ?? null;
 }
 
+/**
+ * The columns the symbol grid covers under a hand, outer edge first: the
+ * home row from the hand's outer edge (the modifier column, when the row
+ * has one) to the key inward of the index finger, at most the grid's
+ * width. A 30% without the modifier column has five.
+ */
+export function symbolColumns(
+  board: TestBoard,
+  meta: KeyboardMeta,
+  hand: Hand,
+): number[] {
+  const home = meta.homeRow[hand].filter((p) => p < board.keys.length);
+  if (!home.length) return [];
+  const inward = hand === "L" ? 1 : -1;
+  const sorted = [...home].sort((p, q) => board.keys[p].cx - board.keys[q].cx);
+  const innerHome = hand === "L" ? sorted[sorted.length - 1] : sorted[0];
+  const outerHome = hand === "L" ? sorted[0] : sorted[sorted.length - 1];
+  const cols = [...sorted];
+  const inner = keyNear(board, innerHome, inward, 0);
+  if (inner !== null && !cols.includes(inner)) cols.push(inner);
+  let edge: number | null = outerHome;
+  while (cols.length < SYMBOL_GRID_COLUMNS && edge !== null) {
+    const next: number | null = keyNear(board, edge, -inward, 0);
+    if (next === null || cols.includes(next)) break;
+    const k = board.keys[next];
+    // Only a key of ordinary width: a wide Shift or Enter is not a column.
+    if (k.w > 2) break;
+    cols.push(next);
+    edge = next;
+  }
+  cols.sort((p, q) => board.keys[p].cx - board.keys[q].cx);
+  // Aligned to the inner edge: the outermost columns are dropped first.
+  return hand === "L"
+    ? cols.slice(-SYMBOL_GRID_COLUMNS)
+    : cols.slice(0, SYMBOL_GRID_COLUMNS);
+}
+
+/** The key of the row `dy` above (-1) or below (1) each column, nearest by x. */
+function rowBeside(
+  board: TestBoard,
+  cols: number[],
+  dy: number,
+): (number | null)[] {
+  if (!cols.length) return [];
+  const y = board.keys[cols[0]].cy + dy;
+  const row = board.keys
+    .map((k, i) => ({ k, i }))
+    .filter(({ k }) => Math.abs(k.cy - y) < 0.3 && k.w <= 2);
+  const used = new Set<number>();
+  return cols.map((p) => {
+    const cx = board.keys[p].cx;
+    let best: number | null = null;
+    let bestD = 0.75;
+    for (const { k, i } of row) {
+      if (used.has(i)) continue;
+      const d = Math.abs(k.cx - cx);
+      if (d < bestD) {
+        bestD = d;
+        best = i;
+      }
+    }
+    if (best !== null) used.add(best);
+    return best;
+  });
+}
+
 /** Changes that put `content` under `hand` on `layer`. */
 export function placeContent(
   board: TestBoard,
@@ -904,27 +977,21 @@ export function placeContent(
       return changes;
     }
     case "symbols": {
-      // The grid under the hand: columns are the home row's four keys
-      // and the keys inward of them, in x order; rows above / on / below.
-      const inward = hand === "L" ? 1 : -1;
-      const cols = [...home];
-      let edge = hand === "L" ? home[home.length - 1] : home[0];
-      while (cols.length < 6 && edge !== undefined) {
-        const next = keyNear(board, edge, inward, 0);
-        if (next === null || cols.includes(next)) break;
-        cols.push(next);
-        edge = next;
-      }
-      cols.sort((p, q) => board.keys[p].cx - board.keys[q].cx);
+      // The grid under the hand, from its outer edge inward; rows above /
+      // on / below the home row. On a hand with fewer columns than the
+      // grid, the grid's outer columns are the ones left out.
+      const cols = symbolColumns(board, meta, hand);
       const rows = [
-        cols.map((p) => above(board, p)),
+        rowBeside(board, cols, -1),
         cols.map((p): number | null => p),
-        cols.map((p) => below(board, p)),
+        rowBeside(board, cols, 1),
       ];
+      const skip = SYMBOL_GRID_COLUMNS - cols.length;
       answers.symbolGrid.forEach((row, r) =>
         row.forEach((ch, c) => {
-          const pos = rows[r]?.[c];
-          if (!ch || pos === null || pos === undefined) return;
+          const gc = hand === "L" ? c - skip : c;
+          const pos = rows[r]?.[gc];
+          if (!ch || gc < 0 || pos === null || pos === undefined) return;
           const t = triggerForChar(ch, layout);
           if (t) changes.push({ layer, pos, trigger: t });
         }),
@@ -987,7 +1054,11 @@ export function proposeOther(
   return placeSide(board, meta, km, answers, layout, "other");
 }
 
-/** Step 10: occasional keys go on free keys of the second layer, from the bottom. */
+/**
+ * Step 10: the occasional keys picked go on free keys of the last thumb
+ * layer, the ones farthest from the home row first, so nothing that is
+ * typed often is in the way. Nothing is picked by default.
+ */
 export function proposeRare(
   board: TestBoard,
   meta: KeyboardMeta,
@@ -997,6 +1068,13 @@ export function proposeRare(
   const keys = thumbLayerKeys(meta, km);
   if (!keys.length) return { changes: [], note: "one-layer" };
   const layer = keys[keys.length - 1].layer;
+  const homeKeys = [...meta.homeRow.L, ...meta.homeRow.R]
+    .map((p) => board.keys[p])
+    .filter(Boolean);
+  const distFromHome = (k: TestKey) =>
+    homeKeys.length
+      ? Math.min(...homeKeys.map((h) => Math.hypot(h.cx - k.cx, h.cy - k.cy)))
+      : 0;
   const taken = new Set([...meta.thumbKeys.map((t) => t.pos)]);
   const free = board.keys
     .map((k, i) => ({ k, i }))
@@ -1008,8 +1086,9 @@ export function proposeRare(
         base?.kind === "key" && /^(Shift|Control|Alt|Meta)/.test(base.code);
       return t.kind === "none" && !isMod && k.trigger.kind === "key";
     })
-    // Lowest row first, left to right.
-    .sort((a, b) => b.k.cy - a.k.cy || a.k.cx - b.k.cx)
+    // Farthest from the home row first.
+    .map((e) => ({ ...e, d: distFromHome(e.k) }))
+    .sort((a, b) => b.d - a.d || a.k.cy - b.k.cy || a.k.cx - b.k.cx)
     .map(({ i }) => i);
   const changes: Change[] = [];
   answers.rare.forEach((code, i) => {

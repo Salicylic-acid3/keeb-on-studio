@@ -53,6 +53,7 @@ import {
   REPLACE_CHOICES,
   reviewKeys,
   suggestedLayerKeys,
+  symbolColumns,
   SYMBOL_NAMES,
   THUMB_TAPS,
   thumbLayerKeys,
@@ -260,24 +261,31 @@ export function GuideFlow({
     return m;
   };
 
-  // Layer keys are chosen once; the suggestion fills the answer the first time.
+  // The layer keys start from what step 4 set: every thumb key that holds
+  // a layer in the keymap as it is before this step. Coming back here after
+  // changing the thumbs keeps the two steps in agreement; the suggestion
+  // fills in only when no thumb key holds a layer yet.
   useEffect(() => {
-    if (
-      step.id === "layer-keys" &&
-      answers.layerKeyPos.length === 0 &&
-      status[current] === undefined
-    ) {
-      const fromThumbs = Object.entries(answers.thumbs)
-        .filter(([, a]) => a.hold === "layer")
-        .map(([p]) => Number(p));
-      const suggested = fromThumbs.length
-        ? fromThumbs
+    if (step.id !== "layer-keys") return;
+    const holding = thumbLayerKeys(meta, km).map((k) => k.pos);
+    const next = holding.length
+      ? holding
+      : answers.layerKeyPos.length
+        ? answers.layerKeyPos
         : suggestedLayerKeys(meta, km);
-      if (suggested.length) answer({ layerKeyPos: suggested });
-    }
+    const same =
+      next.length === answers.layerKeyPos.length &&
+      next.every((p) => answers.layerKeyPos.includes(p));
+    if (!same) answer({ layerKeyPos: next });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step.id]);
 
+  // The columns the symbol grid covers on this keyboard (the two hands
+  // match on any keyboard the guide is for; the left one is drawn).
+  const symbolColumnCount = useMemo(
+    () => symbolColumns(board, meta, "L").length,
+    [board, meta],
+  );
   const thumbLayers = useMemo(
     () => [...thumbLayerKeys(meta, km)].sort((a, b) => a.layer - b.layer),
     [meta, km],
@@ -856,6 +864,7 @@ export function GuideFlow({
                 <SymbolGridEditor
                   t={t}
                   grid={answers.symbolGrid}
+                  columns={symbolColumnCount}
                   onChange={(symbolGrid) => answer({ symbolGrid })}
                 />
                 {proposal?.note && <Para muted>{noteText(proposal.note)}</Para>}
@@ -889,6 +898,7 @@ export function GuideFlow({
                 <SymbolGridEditor
                   t={t}
                   grid={answers.symbolGrid}
+                  columns={symbolColumnCount}
                   onChange={(symbolGrid) => answer({ symbolGrid })}
                 />
                 {proposal?.note && <Para muted>{noteText(proposal.note)}</Para>}
@@ -900,7 +910,7 @@ export function GuideFlow({
               <>
                 <Para>
                   {t(
-                    "Keys used now and then need no place of their own: they go on free keys of a layer, at the bottom row where nothing else was put.",
+                    "Keys used now and then need no place of their own, and nothing is suggested here. Pick any you want on the keyboard, and they go on free keys of a layer, away from the home row.",
                   )}
                 </Para>
                 <div className="flex flex-wrap gap-1.5">
@@ -1103,14 +1113,18 @@ const CONTENT_NAME: Record<LayerContent, string> = {
 function SymbolGridEditor({
   t,
   grid,
+  columns,
   onChange,
 }: {
   t: T;
   grid: string[][];
+  /** How many columns the hand has; the grid's outer columns beyond that are unused. */
+  columns: number;
   onChange: (grid: string[][]) => void;
 }) {
   const rows = [0, 1, 2];
   const cols = [0, 1, 2, 3, 4, 5];
+  const unused = (c: number) => c < cols.length - columns;
   const set = (r: number, c: number, v: string) => {
     const next = rows.map((rr) => cols.map((cc) => grid[rr]?.[cc] ?? ""));
     next[r][c] = v.slice(-1);
@@ -1123,7 +1137,7 @@ function SymbolGridEditor({
       </h3>
       <Para muted>
         {t(
-          "Symbols you type often should be a layer key plus one key: a modifier on top of a layer is hard to press. Pairs go side by side, ! beside ?, and the rows follow the number row where they can. Rows: above the home row, on it, below it; columns from the outer finger inward.",
+          "Symbols you type often should be a layer key plus one key: a modifier on top of a layer is hard to press. Pairs go side by side, ! beside ?, and the rows follow the number row where they can. Rows: above the home row, on it, below it; columns from the hand's outer edge (the modifier column) to the key inward of the index finger.",
         )}
       </Para>
       <div className="inline-grid grid-cols-6 gap-1">
@@ -1135,7 +1149,10 @@ function SymbolGridEditor({
               value={grid[r]?.[c] ?? ""}
               onChange={(e) => set(r, c, e.target.value)}
               maxLength={1}
-              className="h-9 w-9 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] text-center font-mono text-sm text-[var(--color-text)]"
+              title={unused(c) ? t("No column here on this keyboard") : undefined}
+              className={`h-9 w-9 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] text-center font-mono text-sm text-[var(--color-text)] ${
+                unused(c) ? "opacity-30" : ""
+              }`}
             />
           )),
         )}

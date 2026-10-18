@@ -17,6 +17,7 @@ import {
   placeContent,
   proposeThumbs,
   suggestedLayerKeys,
+  symbolColumns,
   thumbLayerKeys,
   triggerForChar,
 } from "../guide";
@@ -220,7 +221,10 @@ describe("guide proposals on GoFortyMax Ortho", () => {
       ),
     ).toBe(true);
     km = applyChanges(km, other.changes);
-    const rare = proposeRare(board, meta, km, DEFAULT_ANSWERS);
+    const rare = proposeRare(board, meta, km, {
+      ...DEFAULT_ANSWERS,
+      rare: ["PrintScreen", "Insert"],
+    });
     expect(
       rare.changes.map((c) => c.trigger.kind === "key" && c.trigger.code),
     ).toEqual(["PrintScreen", "Insert"]);
@@ -236,7 +240,7 @@ describe("guide proposals on GoFortyMax Ortho", () => {
     expect(taps).not.toContain("Delete");
   });
 
-  it("lays the symbol grid under the left hand, rows above, on and below the home row", () => {
+  it("lays the symbol grid from the hand's outer edge: ! on Q, # on A, \" left of A", () => {
     const km = keymapOf(board);
     const left =
       thumbLayerKeys(meta, km).find((k) => k.hand === "L") ??
@@ -254,15 +258,79 @@ describe("guide proposals on GoFortyMax Ortho", () => {
     const after = boardWith(board, applyChanges(km, changes), "us");
     const on = (pos: number) =>
       after.keys[pos].onLayers?.find((o) => o.layer === layer)?.trigger;
-    const a = meta.homeRow.L[0];
-    // '"' on A's row, '!' above it, "'" below it.
-    expect(on(a)).toMatchObject({ code: "Quote", mods: ["shift"] });
-    const aboveA = board.keys.findIndex(
-      (k) =>
-        Math.abs(k.cx - board.keys[a].cx) < 0.3 &&
-        Math.abs(k.cy - (board.keys[a].cy - 1)) < 0.3,
+    const byLabel = (l: string) =>
+      board.keys.findIndex((k) => k.label.main === l);
+    expect(symbolColumns(board, meta, "L")).toHaveLength(6);
+    expect(on(byLabel("A"))).toMatchObject({ code: "Digit3", mods: ["shift"] });
+    expect(on(byLabel("Q"))).toMatchObject({ code: "Digit1", mods: ["shift"] });
+    expect(on(byLabel("T"))).toMatchObject({
+      code: "Backquote",
+      mods: ["shift"],
+    });
+    expect(on(byLabel("G"))).toMatchObject({ code: "Digit2", mods: ["shift"] });
+    expect(on(byLabel("B"))).toMatchObject({
+      code: "Backslash",
+      mods: ["shift"],
+    });
+    // The modifier column: " left of A, ' left of Z, nothing above it.
+    expect(on(byLabel("Ctrl"))).toMatchObject({ code: "Quote", mods: ["shift"] });
+    expect(on(byLabel("Shift"))).toMatchObject({ code: "Quote", mods: [] });
+    expect(on(byLabel("Tab"))).toBeUndefined();
+    expect(changes.length).toBe(17);
+  });
+
+  it("drops the grid's outer column on a hand with five columns", () => {
+    const b = testBoard("bethirty_ortho")!;
+    const m = keyboardMeta(b);
+    const cols = symbolColumns(b, m, "L");
+    expect(cols.length).toBeLessThanOrEqual(5);
+    const changes = placeContent(b, m, 1, "L", "symbols", DEFAULT_ANSWERS, "us");
+    const q = b.keys.findIndex((k) => k.label.main === "Q");
+    const a = b.keys.findIndex((k) => k.label.main === "A");
+    const at = (pos: number) => changes.find((c) => c.pos === pos)?.trigger;
+    expect(at(q)).toMatchObject({ code: "Digit1", mods: ["shift"] });
+    expect(at(a)).toMatchObject({ code: "Digit3", mods: ["shift"] });
+  });
+
+  it("keeps the middle of seven thumb keys as it is", () => {
+    const b = testBoard("clickboard_ortho")!;
+    const m = keyboardMeta(b);
+    const row = thumbsLeftToRight(b, m);
+    expect(row).toHaveLength(7);
+    const rec = recommendThumbs(b, m);
+    expect(row.map((th) => rec[String(th.pos)].tap)).toEqual([
+      "NonConvert",
+      "Space",
+      "Backspace",
+      "keep",
+      "Delete",
+      "Enter",
+      "Convert",
+    ]);
+  });
+
+  it("suggests no occasional keys unless picked, and puts picked ones away from the home row", () => {
+    let km = keymapOf(board);
+    km = applyChanges(
+      km,
+      proposeLayerKeys(meta, km, {
+        ...DEFAULT_ANSWERS,
+        layerKeyPos: suggestedLayerKeys(meta, km),
+      }).changes,
     );
-    expect(on(aboveA)).toMatchObject({ code: "Digit1", mods: ["shift"] });
-    expect(changes.length).toBeGreaterThanOrEqual(15);
+    expect(proposeRare(board, meta, km, DEFAULT_ANSWERS).changes).toEqual([]);
+    const p = proposeRare(board, meta, km, {
+      ...DEFAULT_ANSWERS,
+      rare: ["PrintScreen"],
+    });
+    expect(p.changes).toHaveLength(1);
+    const pos = p.changes[0].pos;
+    const home = meta.homeRow.L[0];
+    expect(
+      Math.hypot(
+        board.keys[pos].cx - board.keys[home].cx,
+        board.keys[pos].cy - board.keys[home].cy,
+      ),
+    ).toBeGreaterThan(3);
   });
 });
