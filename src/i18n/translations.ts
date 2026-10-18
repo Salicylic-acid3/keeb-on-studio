@@ -16,8 +16,6 @@ const ja: Record<string, string> = {
     "キーマップを段階的に決めて、そのキーマップを画面に出したまま練習します。誤打鍵は押すべきキーをそのまま示すので、練習の結果が配列の見直しにつながります。",
   "Keyboard to practise on": "練習するキーボード",
   "OS keyboard layout": "OS のキーボード配列",
-  "Demo mode: the keymap shown is this keyboard's default. With a keyboard connected, the guide and the practice use the keymap read from it.":
-    "デモモード: 表示しているのはこの機種のデフォルトキーマップです。実機を接続すると、ガイドと練習は実機から読んだキーマップで動きます。",
   "Setup guide": "セットアップガイド",
   "Questions in order: which symbols you use most, where your thumb lands for Space, which thumb key becomes a layer key, what goes on each layer. Each answer becomes a proposal drawn on your keymap, to apply or skip. Practice follows every finished layer.":
     "よく使う記号、スペースを押す親指の位置、レイヤーキーにする親指キー、各レイヤーの中身を順に問いかけます。回答はキーマップ上の配置案になり、適用するか飛ばすかを選べます。レイヤーが1つ完成するごとに練習を挟みます。",
@@ -108,6 +106,16 @@ const ja: Record<string, string> = {
   "Characters not on the keymap": "入力不可文字",
   "None.": "なし",
   "Next text": "次の文章",
+  "Demo mode: the keymap shown is this keyboard's default. Connect a ZMK keyboard to use the keymap read from it, and the guide writes each applied step to the keyboard.":
+    "デモモード: 表示しているのはこの機種のデフォルトキーマップです。ZMK のキーボードを接続すると実機から読んだキーマップで動き、ガイドで「適用」した内容はその都度キーボードに書き込まれます。",
+  "Connected: the guide and the practice use the keymap read from {{name}}.":
+    "接続中: ガイドと練習は {{name}} から読んだキーマップで動いています。",
+  "Reading the keymap from {{name}}...": "{{name}} からキーマップを読み込んでいます…",
+  "Written to the keyboard, not yet saved.": "キーボードに書き込み済み（まだ保存していません）",
+  "{{n}} of the changes could not be written to the keyboard.":
+    "変更のうち {{n}} 件はキーボードに書き込めませんでした。",
+  "Save to keyboard": "キーボードに保存",
+  "Discard unsaved": "未保存の変更を破棄",
   "{{name}} — taken by {{content}}": "{{name}}（{{content}}で使用中）",
   "No column here on this keyboard": "このキーボードにはこの列がありません",
   "Around the cursor keys": "カーソルキーの周り",

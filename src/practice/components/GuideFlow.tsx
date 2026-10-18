@@ -33,6 +33,7 @@ import { TEXTS_JA, textsWithin } from "../data/texts.ja";
 import {
   applyChanges,
   boardWith,
+  type Change,
   DEFAULT_ANSWERS,
   contentLayer,
   CONTENTS,
@@ -80,14 +81,14 @@ import { TaskSession } from "./TaskSession";
 
 type T = (key: string, params?: Record<string, string | number>) => string;
 
-function fresh(board: TestBoard): GuideProgress {
+function fresh(board: TestBoard, start?: WorkingKeymap): GuideProgress {
   return {
     version: 1,
     guide: "40",
     step: 0,
     answers: DEFAULT_ANSWERS,
     status: {},
-    layers: keymapOf(board).layers,
+    layers: (start ?? keymapOf(board)).layers,
     savedAt: Date.now(),
   };
 }
@@ -98,15 +99,28 @@ export function GuideFlow({
   layout,
   t,
   onExit,
+  startKeymap,
+  progressKey,
+  onApply,
 }: {
   board: TestBoard;
   meta: KeyboardMeta;
   layout: LabelLayout;
   t: T;
   onExit: () => void;
+  /** The keymap to start from: the connected keyboard's, when there is one. */
+  startKeymap?: WorkingKeymap;
+  /** Where progress is kept; the board id unless the keyboard is connected. */
+  progressKey?: string;
+  /**
+   * With a keyboard connected: the bindings to write when a step is
+   * applied, in order (what the step set before is put back first).
+   */
+  onApply?: (writes: Change[]) => void;
 }) {
+  const storeKey = progressKey ?? board.id;
   const [progress, setProgress] = useState<GuideProgress>(
-    () => readProgress(board.id) ?? fresh(board),
+    () => readProgress(storeKey) ?? fresh(board, startKeymap),
   );
   // The keyboard drawn to fit, or at full size with sideways scrolling.
   const [zoom, setZoom] = useState(false);
@@ -114,8 +128,8 @@ export function GuideFlow({
   const [manual, setManual] = useState(false);
   const [pickedSlot, setPickedSlot] = useState<number | null>(null);
   useEffect(() => {
-    writeProgress(board.id, progress);
-  }, [board.id, progress]);
+    writeProgress(storeKey, progress);
+  }, [storeKey, progress]);
 
   const kmNow: WorkingKeymap = useMemo(
     () => ({ layers: progress.layers }),
@@ -140,36 +154,39 @@ export function GuideFlow({
     update({ answers: { ...answers, ...patch } });
   const goTo = (i: number) =>
     update({ step: Math.max(0, Math.min(GUIDE_40.length - 1, i)) });
-  const finish = (how: StepStatus, changes?: Proposal["changes"]) =>
-    setProgress((p) => {
-      // Undo what this step applied before, then apply the new changes.
-      const was = p.applied?.[p.step];
-      let layers = was
-        ? applyChanges({ layers: p.layers }, was.previous).layers
-        : p.layers;
-      const applied = { ...(p.applied ?? {}) };
-      delete applied[p.step];
-      if (changes?.length) {
-        const previous: Proposal["changes"] = changes.map((c) => ({
-          layer: c.layer,
-          pos: c.pos,
-          trigger: layers[c.layer]?.[c.pos] ?? { kind: "none" },
-        }));
-        layers = applyChanges({ layers }, changes).layers;
-        applied[p.step] = { changes, previous };
-      }
-      return {
-        ...p,
-        status: { ...p.status, [p.step]: how },
-        layers,
-        applied,
-        step: Math.min(GUIDE_40.length - 1, p.step + 1),
-        savedAt: Date.now(),
-      };
+  const finish = (how: StepStatus, changes?: Proposal["changes"]) => {
+    // Undo what this step applied before, then apply the new changes.
+    const p = progress;
+    const was = p.applied?.[p.step];
+    let layers = was
+      ? applyChanges({ layers: p.layers }, was.previous).layers
+      : p.layers;
+    const applied = { ...(p.applied ?? {}) };
+    delete applied[p.step];
+    const writes: Change[] = was ? [...was.previous] : [];
+    if (changes?.length) {
+      const previous: Proposal["changes"] = changes.map((c) => ({
+        layer: c.layer,
+        pos: c.pos,
+        trigger: layers[c.layer]?.[c.pos] ?? { kind: "none" },
+      }));
+      layers = applyChanges({ layers }, changes).layers;
+      applied[p.step] = { changes, previous };
+      writes.push(...changes);
+    }
+    setProgress({
+      ...p,
+      status: { ...p.status, [p.step]: how },
+      layers,
+      applied,
+      step: Math.min(GUIDE_40.length - 1, p.step + 1),
+      savedAt: Date.now(),
     });
+    if (writes.length) onApply?.(writes);
+  };
   const restart = () => {
-    clearProgress(board.id);
-    setProgress(fresh(board));
+    clearProgress(storeKey);
+    setProgress(fresh(board, startKeymap));
   };
 
   // The proposal of the step in front of the person, from the answers so far.
