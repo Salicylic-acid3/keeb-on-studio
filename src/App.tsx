@@ -32,6 +32,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { KeyboardLayoutProvider } from "./contexts/KeyboardLayoutProvider";
 import { StudioUnlockProvider } from "./contexts/StudioUnlockContext";
+import { VialKeyboardProvider } from "./qmk/VialKeyboardProvider";
 import { TabNavigation } from "./components/TabNavigation";
 import type { TabItem } from "./components/TabNavigation";
 import { AppLayout } from "./layouts/AppLayout";
@@ -151,7 +152,9 @@ function AppRouter() {
     <KeyboardLayoutProvider>
       <DeviceConnectionProvider>
         <StudioUnlockProvider>
-          <AppContent />
+          <VialKeyboardProvider>
+            <AppContent />
+          </VialKeyboardProvider>
         </StudioUnlockProvider>
       </DeviceConnectionProvider>
     </KeyboardLayoutProvider>

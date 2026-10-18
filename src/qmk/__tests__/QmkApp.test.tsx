@@ -16,6 +16,7 @@ import {
 import { LanguageProvider } from "../../contexts/LanguageContext";
 import { ThemeProvider } from "../../contexts/ThemeContext";
 import { KeyboardLayoutProvider } from "../../contexts/KeyboardLayoutProvider";
+import { VialKeyboardProvider } from "../VialKeyboardProvider";
 import { QmkApp } from "../QmkApp";
 
 jest.mock("../../lib/analytics", () => ({ trackPageView: jest.fn() }));
@@ -26,12 +27,14 @@ function renderApp() {
     <ThemeProvider>
       <LanguageProvider>
         <KeyboardLayoutProvider>
-          <QmkApp
-            onFirmwareChange={jest.fn()}
-            onShowReleaseNotes={jest.fn()}
-            onShowAbout={jest.fn()}
-            onShowDownloads={jest.fn()}
-          />
+          <VialKeyboardProvider>
+            <QmkApp
+              onFirmwareChange={jest.fn()}
+              onShowReleaseNotes={jest.fn()}
+              onShowAbout={jest.fn()}
+              onShowDownloads={jest.fn()}
+            />
+          </VialKeyboardProvider>
         </KeyboardLayoutProvider>
       </LanguageProvider>
     </ThemeProvider>,

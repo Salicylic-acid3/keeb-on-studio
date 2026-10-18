@@ -404,7 +404,7 @@ export function liveKeyboard(
 /** A change the keyboard could not take, and why. */
 export interface Unwritable {
   change: Change;
-  reason: "behavior" | "layer" | "rejected";
+  reason: "behavior" | "keycode" | "layer" | "rejected";
 }
 
 /**

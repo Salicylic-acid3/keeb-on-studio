@@ -21,6 +21,7 @@ import { useLanguage } from "../hooks/useLanguage";
 import { hasAcceptedNotice } from "../lib/connectionNoticeStorage";
 import {
   usePracticeDevice,
+  type DeviceFirmware,
   type PracticeDevice,
 } from "../practice/hooks/usePracticeDevice";
 import {
@@ -36,7 +37,7 @@ import { Notice } from "../practice/components/bits";
 import { GuideBoundary, GuideFlow } from "../practice/components/GuideFlow";
 import { GUIDE_40 } from "../practice/lib/guide";
 import { readProgress } from "../practice/lib/guideStore";
-import { keyboardMeta } from "../practice/lib/metadata";
+import { keyboardMeta, metaForBoard } from "../practice/lib/metadata";
 
 type PracticeMode = "pick" | "guide" | "free" | "meta";
 
@@ -69,10 +70,19 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
     () => live?.board ?? testBoard(boardId) ?? testBoard(entries[0].id)!,
     [live, boardId, entries],
   );
-  // Metadata comes from the registered board the device is, when known.
+  // Metadata comes from the registered board the device is, when known,
+  // carried over to the device's own drawing (its keys may be ordered
+  // differently from the registered one).
   const metaBoard = useMemo(
     () => (live && device.boardId ? testBoard(device.boardId) : null) ?? board,
     [live, device.boardId, board],
+  );
+  const meta = useMemo(
+    () =>
+      metaBoard === board
+        ? keyboardMeta(board)
+        : metaForBoard(keyboardMeta(metaBoard), metaBoard, board),
+    [metaBoard, board],
   );
   const progressKey = live ? `live:${board.id}` : board.id;
   const onApply = useCallback(
@@ -194,7 +204,7 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
           >
             <GuideFlow
               board={board}
-              meta={keyboardMeta(metaBoard)}
+              meta={meta}
               layout={layout}
               t={t}
               onExit={() => setMode("pick")}
@@ -261,10 +271,11 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
  * buttons. Writes go to the keyboard's memory; saving keeps them.
  */
 function DeviceBar({ t, device }: { t: T; device: PracticeDevice }) {
-  const [notice, setNotice] = useState(false);
-  const connect = () => {
-    if (hasAcceptedNotice("serial")) device.connect("serial");
-    else setNotice(true);
+  // Which firmware's connect was asked for, while the notice is up.
+  const [pending, setPending] = useState<DeviceFirmware | null>(null);
+  const connect = (firmware: DeviceFirmware) => {
+    if (hasAcceptedNotice("serial")) device.connect(firmware);
+    else setPending(firmware);
   };
   const outcome = device.lastWrite;
   const failed = outcome?.unwritable.length ?? 0;
@@ -275,18 +286,33 @@ function DeviceBar({ t, device }: { t: T; device: PracticeDevice }) {
           <span className="flex flex-wrap items-center gap-x-4 gap-y-2">
             <span>
               {t(
-                "Demo mode: the keymap shown is this keyboard's default. Connect a ZMK keyboard to use the keymap read from it, and the guide writes each applied step to the keyboard.",
+                "Demo mode: the keymap shown is this keyboard's default. Connect your keyboard to use the keymap read from it; the guide then writes each applied step to the keyboard.",
               )}
             </span>
-            <button
-              type="button"
-              onClick={connect}
-              disabled={device.loading}
-              className="btn-electric h-8 px-3 text-xs flex items-center gap-1.5"
-            >
-              <IconPlugConnected size={14} />
-              {device.loading ? t("Connecting...") : t("Connect Keyboard")}
-            </button>
+            <span className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => connect("zmk")}
+                disabled={device.loading}
+                className="btn-electric h-8 px-3 text-xs flex items-center gap-1.5"
+              >
+                <IconPlugConnected size={14} />
+                {device.loading
+                  ? t("Connecting...")
+                  : t("Connect ZMK keyboard")}
+              </button>
+              <button
+                type="button"
+                onClick={() => connect("qmk")}
+                disabled={device.loading}
+                className="btn-electric h-8 px-3 text-xs flex items-center gap-1.5"
+              >
+                <IconPlugConnected size={14} />
+                {device.loading
+                  ? t("Connecting...")
+                  : t("Connect QMK keyboard")}
+              </button>
+            </span>
           </span>
           {device.error && (
             <span className="block mt-1 text-[var(--color-warning)]">
@@ -295,13 +321,14 @@ function DeviceBar({ t, device }: { t: T; device: PracticeDevice }) {
           )}
         </Notice>
         <ConnectionNoticeDialog
-          open={notice}
+          open={pending !== null}
           method="serial"
           onAgree={() => {
-            setNotice(false);
-            device.connect("serial");
+            const which = pending;
+            setPending(null);
+            if (which) device.connect(which);
           }}
-          onCancel={() => setNotice(false)}
+          onCancel={() => setPending(null)}
         />
       </>
     );
@@ -316,8 +343,9 @@ function DeviceBar({ t, device }: { t: T; device: PracticeDevice }) {
           />
           {device.ready
             ? t(
-                "Connected: the guide and the practice use the keymap read from {{name}}.",
+                "Connected ({{firmware}}): the guide and the practice use the keymap read from {{name}}.",
                 {
+                  firmware: device.firmware === "qmk" ? "QMK" : "ZMK",
                   name: device.deviceName ?? "",
                 },
               )

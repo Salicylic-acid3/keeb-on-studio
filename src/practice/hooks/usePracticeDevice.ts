@@ -1,8 +1,12 @@
 /**
- * The connected ZMK keyboard for the practice page: its keymap read into
- * a board the guide and the practice can use, and the guide's changes
- * written back through the same path the remapper uses (one binding at a
- * time, into the keyboard's RAM, saved to flash only when asked).
+ * The connected keyboard for the practice page, ZMK or Vial (QMK): its
+ * keymap read into a board the guide and the practice can use, and the
+ * guide's changes written back through the same paths the remappers use.
+ *
+ * ZMK: each binding goes to the keyboard's memory at once (setBinding),
+ * and "save" writes them to flash. Vial: each keycode is staged in the
+ * browser (setKeycode), and "save" writes them all to the keyboard. From
+ * the page both look the same: written, then saved.
  *
  * Without a connection everything here is null and the page runs on the
  * registered keyboard's default keymap (demo mode).
@@ -11,15 +15,23 @@ import { useCallback, useMemo, useState } from "react";
 import { useConnection } from "../../hooks/useConnection";
 import { useKeymap } from "../../hooks/useKeymap";
 import type { LabelLayout } from "../../layoutEditor/lib/keyLabels";
+import { useVialKeyboardContext } from "../../qmk/hooks/useVialKeyboardContext";
+import {
+  isWebHidAvailable,
+  requestWebHidTransport,
+} from "../../qmk/lib/vial/transport";
 import {
   behaviorIds,
   bindingsFor,
   boardIdForDevice,
   liveKeyboard,
-  type LiveKeyboard,
   type Unwritable,
 } from "../lib/device";
-import type { Change } from "../lib/guide";
+import type { Change, WorkingKeymap } from "../lib/guide";
+import { keycodesFor, liveQmkKeyboard } from "../lib/qmkDevice";
+import type { TestBoard } from "../../keyTest/lib/boards";
+
+export type DeviceFirmware = "zmk" | "qmk";
 
 export interface WriteOutcome {
   written: number;
@@ -31,39 +43,55 @@ export interface PracticeDevice {
   /** A keyboard is connected and its keymap has been read. */
   ready: boolean;
   connected: boolean;
+  firmware: DeviceFirmware | null;
   deviceName: string | undefined;
   /** The registered board the device is, for metadata and progress; null for an unknown one. */
   boardId: string | null;
-  live: LiveKeyboard | null;
+  live: { board: TestBoard; keymap: WorkingKeymap } | null;
   loading: boolean;
   error: string | null;
   hasUnsavedChanges: boolean;
   /** The last write's outcome, for the page to show. */
   lastWrite: WriteOutcome | null;
   writing: boolean;
-  /** Write changes to the keyboard (adding layers it lacks), in order. */
+  /** Write changes to the keyboard (adding layers it lacks, where it can), in order. */
   write: (changes: Change[]) => Promise<WriteOutcome>;
   save: () => Promise<boolean>;
   discard: () => Promise<boolean>;
-  connect: (method: "serial" | "ble") => void;
+  connect: (firmware: DeviceFirmware) => void;
   disconnect: () => void;
 }
 
 export function usePracticeDevice(labelLayout: LabelLayout): PracticeDevice {
   const connection = useConnection();
   const keymap = useKeymap();
+  const vial = useVialKeyboardContext();
   const [lastWrite, setLastWrite] = useState<WriteOutcome | null>(null);
   const [writing, setWriting] = useState(false);
+  const [qmkError, setQmkError] = useState<string | null>(null);
+  const [qmkConnecting, setQmkConnecting] = useState(false);
 
-  const connected = connection.isConnected && !connection.isDemo;
-  const deviceName = connection.deviceName;
-  const boardId = useMemo(
-    () => (connected ? boardIdForDevice(deviceName) : null),
-    [connected, deviceName],
-  );
+  const zmkConnected = connection.isConnected && !connection.isDemo;
+  const qmkConnected = vial.info !== null && !vial.info.isDemo;
+  const firmware: DeviceFirmware | null = zmkConnected
+    ? "zmk"
+    : qmkConnected
+      ? "qmk"
+      : null;
+  const deviceName =
+    firmware === "zmk"
+      ? connection.deviceName
+      : firmware === "qmk"
+        ? vial.info?.productName
+        : undefined;
+  const boardId = useMemo(() => {
+    if (firmware === "zmk") return boardIdForDevice(connection.deviceName);
+    if (firmware === "qmk") return vial.info?.definition.name ?? null;
+    return null;
+  }, [firmware, connection.deviceName, vial.info]);
 
-  const live = useMemo(() => {
-    if (!connected || !keymap.isFullyLoaded) return null;
+  const liveZmk = useMemo(() => {
+    if (firmware !== "zmk" || !keymap.isFullyLoaded) return null;
     const layouts = keymap.physicalLayouts;
     const km = keymap.keymap;
     if (!layouts || !km) return null;
@@ -78,7 +106,7 @@ export function usePracticeDevice(labelLayout: LabelLayout): PracticeDevice {
       labelLayout,
     );
   }, [
-    connected,
+    firmware,
     keymap.isFullyLoaded,
     keymap.physicalLayouts,
     keymap.keymap,
@@ -88,46 +116,75 @@ export function usePracticeDevice(labelLayout: LabelLayout): PracticeDevice {
     labelLayout,
   ]);
 
+  // The Vial board is built from the saved keymap, not the staged one, so
+  // the guide's own working keymap stays the one source of its changes.
+  const liveQmk = useMemo(() => {
+    if (firmware !== "qmk" || !vial.info || !vial.saved) return null;
+    return liveQmkKeyboard(
+      boardId ?? `qmk:${vial.info.productName.toLowerCase()}`,
+      vial.info.productName,
+      vial.visible,
+      vial.saved,
+      labelLayout,
+    );
+  }, [firmware, vial.info, vial.saved, vial.visible, boardId, labelLayout]);
+
+  const live = liveZmk ?? liveQmk;
+
   const write = useCallback(
     async (changes: Change[]): Promise<WriteOutcome> => {
-      const km = keymap.keymap;
       const outcome: WriteOutcome = {
         written: 0,
         unwritable: [],
         addedLayers: 0,
       };
-      if (!km || !connected) {
+      const rejectAll = () => {
         outcome.unwritable = changes.map((change) => ({
           change,
           reason: "rejected" as const,
         }));
         setLastWrite(outcome);
         return outcome;
-      }
+      };
       setWriting(true);
       try {
-        // Layers the changes reach beyond the keymap are added first; the
-        // keyboard hands back a free slot, or null when it has none left.
-        const layerIds = km.layers.map((l) => l.id);
-        const highest = Math.max(-1, ...changes.map((c) => c.layer));
-        while (layerIds.length <= highest) {
-          const added = await keymap.addLayer();
-          if (!added) break;
-          layerIds.splice(added.index, 0, added.layer.id);
-          outcome.addedLayers++;
-        }
-        const ids = behaviorIds(keymap.behaviors, km);
-        const { writes, unwritable } = bindingsFor(changes, ids, layerIds);
-        outcome.unwritable.push(...unwritable);
-        for (const w of writes) {
-          const ok = await keymap.setBinding(
-            w.layerId,
-            w.change.pos,
-            w.binding,
-          );
-          if (ok) outcome.written++;
-          else
-            outcome.unwritable.push({ change: w.change, reason: "rejected" });
+        if (firmware === "zmk") {
+          const km = keymap.keymap;
+          if (!km) return rejectAll();
+          // Layers the changes reach beyond the keymap are added first; the
+          // keyboard hands back a free slot, or null when it has none left.
+          const layerIds = km.layers.map((l) => l.id);
+          const highest = Math.max(-1, ...changes.map((c) => c.layer));
+          while (layerIds.length <= highest) {
+            const added = await keymap.addLayer();
+            if (!added) break;
+            layerIds.splice(added.index, 0, added.layer.id);
+            outcome.addedLayers++;
+          }
+          const ids = behaviorIds(keymap.behaviors, km);
+          const { writes, unwritable } = bindingsFor(changes, ids, layerIds);
+          outcome.unwritable.push(...unwritable);
+          for (const w of writes) {
+            const ok = await keymap.setBinding(
+              w.layerId,
+              w.change.pos,
+              w.binding,
+            );
+            if (ok) outcome.written++;
+            else
+              outcome.unwritable.push({ change: w.change, reason: "rejected" });
+          }
+        } else if (firmware === "qmk") {
+          if (!liveQmk) return rejectAll();
+          // QMK's layer count is fixed by the firmware; nothing can be added.
+          const { writes, unwritable } = keycodesFor(changes, liveQmk);
+          outcome.unwritable.push(...unwritable);
+          for (const w of writes) {
+            vial.setKeycode(w.change.layer, w.row, w.col, w.code);
+            outcome.written++;
+          }
+        } else {
+          return rejectAll();
         }
       } finally {
         setWriting(false);
@@ -135,24 +192,83 @@ export function usePracticeDevice(labelLayout: LabelLayout): PracticeDevice {
       setLastWrite(outcome);
       return outcome;
     },
-    [keymap, connected],
+    [firmware, keymap, liveQmk, vial],
   );
+
+  const connectQmk = useCallback(async () => {
+    setQmkError(null);
+    if (!isWebHidAvailable()) {
+      setQmkError("WebHID is not available in this browser.");
+      return;
+    }
+    setQmkConnecting(true);
+    try {
+      const transport = await requestWebHidTransport();
+      if (!transport) return;
+      await vial.connect(transport, "hid");
+    } catch (e) {
+      setQmkError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setQmkConnecting(false);
+    }
+  }, [vial]);
+
+  const connect = useCallback(
+    (which: DeviceFirmware) => {
+      if (which === "zmk") connection.onConnect("serial");
+      else void connectQmk();
+    },
+    [connection, connectQmk],
+  );
+
+  const disconnect = useCallback(() => {
+    if (firmware === "zmk") connection.onDisconnect();
+    else if (firmware === "qmk") void vial.disconnect();
+  }, [firmware, connection, vial]);
+
+  const save = useCallback(async () => {
+    if (firmware === "zmk") return keymap.saveChanges();
+    if (firmware === "qmk") {
+      await vial.saveChanges();
+      return true;
+    }
+    return false;
+  }, [firmware, keymap, vial]);
+
+  const discard = useCallback(async () => {
+    if (firmware === "zmk") return keymap.discardChanges();
+    if (firmware === "qmk") {
+      vial.discardChanges();
+      return true;
+    }
+    return false;
+  }, [firmware, keymap, vial]);
 
   return {
     ready: live !== null,
-    connected,
+    connected: firmware !== null,
+    firmware,
     deviceName,
     boardId,
     live,
-    loading: connection.isLoading || (connected && !keymap.isFullyLoaded),
-    error: connection.error ?? keymap.error,
-    hasUnsavedChanges: keymap.hasUnsavedChanges,
+    loading:
+      connection.isLoading ||
+      qmkConnecting ||
+      vial.isConnecting ||
+      (firmware === "zmk" && !keymap.isFullyLoaded),
+    error: connection.error ?? keymap.error ?? qmkError ?? vial.error,
+    hasUnsavedChanges:
+      firmware === "zmk"
+        ? keymap.hasUnsavedChanges
+        : firmware === "qmk"
+          ? vial.hasUnsavedChanges
+          : false,
     lastWrite,
-    writing,
+    writing: writing || vial.isSaving,
     write,
-    save: keymap.saveChanges,
-    discard: keymap.discardChanges,
-    connect: connection.onConnect,
-    disconnect: connection.onDisconnect,
+    save,
+    discard,
+    connect,
+    disconnect,
   };
 }

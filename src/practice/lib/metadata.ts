@@ -241,3 +241,51 @@ export function keyboardMeta(board: TestBoard): KeyboardMeta {
 export function hasStoredMeta(id: string): boolean {
   return id in STORED;
 }
+
+/**
+ * The metadata of a registered board carried over to another drawing of
+ * the same keyboard (one read from the connected device), whose keys may
+ * come in a different order: each position is matched by where its key
+ * sits, and one with no key there is dropped.
+ */
+export function metaForBoard(
+  meta: KeyboardMeta,
+  from: TestBoard,
+  to: TestBoard,
+): KeyboardMeta {
+  const at = (pos: number): number | null => {
+    const k = from.keys[pos];
+    if (!k) return null;
+    let best: number | null = null;
+    let bestD = 0.3;
+    to.keys.forEach((o, i) => {
+      const d = Math.hypot(o.cx - k.cx, o.cy - k.cy);
+      if (d < bestD) {
+        bestD = d;
+        best = i;
+      }
+    });
+    return best;
+  };
+  const list = (ps: number[]) =>
+    ps.map(at).filter((p): p is number => p !== null);
+  const one = (p: number | null) => (p === null ? null : at(p));
+  return {
+    ...meta,
+    thumbKeys: meta.thumbKeys.flatMap((t) => {
+      const pos = at(t.pos);
+      return pos === null ? [] : [{ ...t, pos }];
+    }),
+    homeRow: { L: list(meta.homeRow.L), R: list(meta.homeRow.R) },
+    fixedKeys: {
+      esc: one(meta.fixedKeys.esc),
+      tab: one(meta.fixedKeys.tab),
+      capslock: one(meta.fixedKeys.capslock),
+    },
+    symbolSlots: list(meta.symbolSlots),
+    defaultLayerKeys: meta.defaultLayerKeys.flatMap((l) => {
+      const pos = at(l.pos);
+      return pos === null ? [] : [{ ...l, pos }];
+    }),
+  };
+}

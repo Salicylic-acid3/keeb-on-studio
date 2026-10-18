@@ -106,10 +106,12 @@ const ja: Record<string, string> = {
   "Characters not on the keymap": "入力不可文字",
   "None.": "なし",
   "Next text": "次の文章",
-  "Demo mode: the keymap shown is this keyboard's default. Connect a ZMK keyboard to use the keymap read from it, and the guide writes each applied step to the keyboard.":
-    "デモモード: 表示しているのはこの機種のデフォルトキーマップです。ZMK のキーボードを接続すると実機から読んだキーマップで動き、ガイドで「適用」した内容はその都度キーボードに書き込まれます。",
-  "Connected: the guide and the practice use the keymap read from {{name}}.":
-    "接続中: ガイドと練習は {{name}} から読んだキーマップで動いています。",
+  "Demo mode: the keymap shown is this keyboard's default. Connect your keyboard to use the keymap read from it; the guide then writes each applied step to the keyboard.":
+    "デモモード: 表示しているのはこの機種のデフォルトキーマップです。キーボードを接続すると実機から読んだキーマップで動き、ガイドで「適用」した内容はその都度キーボードに書き込まれます。",
+  "Connect ZMK keyboard": "ZMK のキーボードを接続",
+  "Connect QMK keyboard": "QMK のキーボードを接続",
+  "Connected ({{firmware}}): the guide and the practice use the keymap read from {{name}}.":
+    "接続中（{{firmware}}）: ガイドと練習は {{name}} から読んだキーマップで動いています。",
   "Reading the keymap from {{name}}...": "{{name}} からキーマップを読み込んでいます…",
   "Written to the keyboard, not yet saved.": "キーボードに書き込み済み（まだ保存していません）",
   "{{n}} of the changes could not be written to the keyboard.":
