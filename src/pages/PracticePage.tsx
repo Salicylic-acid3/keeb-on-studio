@@ -538,14 +538,23 @@ function Guide({
                   "A layer is finished: practise on it before the next one. The practice screen opens with sentences that need only the keys decided so far.",
                 )}
               </p>
-              <button
-                type="button"
-                onClick={onPractice}
-                className="btn-electric h-10 px-4 text-sm flex items-center gap-2"
-              >
-                <IconPlayerPlay size={16} />
-                {t("Start practising")}
-              </button>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={onPractice}
+                  className="btn-electric h-10 px-4 text-sm flex items-center gap-2"
+                >
+                  <IconPlayerPlay size={16} />
+                  {t("Start practising")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => finish("skipped")}
+                  className="btn-ghost h-10 border border-[var(--color-border)] px-4 text-sm"
+                >
+                  {t("Skip to the next step")}
+                </button>
+              </div>
             </>
           ) : (
             <>

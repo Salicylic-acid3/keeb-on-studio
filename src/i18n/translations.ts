@@ -63,6 +63,7 @@ const ja: Record<string, string> = {
   Backquote: "バッククォート",
   "Show the proposal": "配置案を見る",
   "Next without changing": "設定せずに次へ",
+  "Skip to the next step": "スキップして次へ",
   "Applied to the keymap (demo mode: kept in the browser only).":
     "キーマップに適用しました（デモモード: ブラウザ上の編集状態にのみ反映）",
   "The proposal is a starting point. To move a single key, open the keymap editor; the guide resumes at this step when you come back.":
