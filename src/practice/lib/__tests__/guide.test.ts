@@ -170,7 +170,7 @@ describe("guide proposals on GoFortyMax Ortho", () => {
       board,
       meta,
       km,
-      { ...DEFAULT_ANSWERS, cursorShape: "row" },
+      { ...DEFAULT_ANSWERS, cursorShape: "row", navKeys: true },
       "us",
     );
     const right = thumbLayerKeys(meta, km).find((k) => k.hand === "R")!;
@@ -196,7 +196,18 @@ describe("guide proposals on GoFortyMax Ortho", () => {
         layerKeyPos: suggestedLayerKeys(meta, km),
       }).changes,
     );
-    const other = proposeOther(board, meta, km, DEFAULT_ANSWERS, "us");
+    // By default the numbers go on the other thumb's layer; the F keys
+    // only once given a layer.
+    const keys = thumbLayerKeys(meta, km);
+    const layerOf = (hand: "L" | "R") =>
+      keys.find((k) => k.hand === hand)!.layer;
+    const other = proposeOther(
+      board,
+      meta,
+      km,
+      { ...DEFAULT_ANSWERS, otherHand: { fkeys: layerOf("R") } },
+      "us",
+    );
     expect(
       other.changes.some(
         (c) => c.trigger.kind === "key" && c.trigger.code === "Digit5",

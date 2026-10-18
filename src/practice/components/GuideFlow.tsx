@@ -26,10 +26,11 @@ import {
   applyChanges,
   boardWith,
   DEFAULT_ANSWERS,
+  contentLayer,
+  CONTENTS,
   GUIDE_40,
   keymapOf,
-  layerRoles,
-  planFor,
+  orderedSymbolSlots,
   proposalLabels,
   proposeDuplicates,
   proposeLayerKeys,
@@ -62,7 +63,7 @@ import {
   type GuideProgress,
   type StepStatus,
 } from "../lib/guideStore";
-import type { KeyboardMeta } from "../lib/metadata";
+import type { Hand, KeyboardMeta } from "../lib/metadata";
 import { PracticeBoard, type Mark } from "./PracticeBoard";
 import { PracticeSession } from "./PracticeSession";
 import { TaskSession } from "./TaskSession";
@@ -209,13 +210,21 @@ export function GuideFlow({
       }
       return m;
     }
+    if (step.id === "symbols") {
+      // The slots a symbol may take, and in vermillion the ones that change.
+      for (const pos of orderedSymbolSlots(board, meta)) {
+        const k = board.keys[pos];
+        if (k) m.set(k.id, { tone: "set" });
+      }
+    }
     for (const [pos, { layer, label }] of proposalLabels(
       proposal.changes,
       layout,
     )) {
       if (layer !== shownLayer) continue;
       const k = board.keys[pos];
-      if (k) m.set(k.id, { tone: "set", label });
+      if (k)
+        m.set(k.id, { tone: step.id === "symbols" ? "hint" : "set", label });
     }
     return m;
   }, [proposal, layout, board, shownLayer, step.id, km, meta]);
@@ -238,21 +247,17 @@ export function GuideFlow({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step.id]);
 
-  const roles = useMemo(
-    () => layerRoles(meta, km, answers),
-    [meta, km, answers],
-  );
-  const setPlan = (
-    layer: number,
-    isPrimary: boolean,
-    patch: Partial<{ same: LayerContent; other: LayerContent }>,
+  const thumbLayers = useMemo(() => thumbLayerKeys(meta, km), [meta, km]);
+  const setContent = (
+    side: "one" | "other",
+    content: LayerContent,
+    layer: number | null,
   ) =>
-    answer({
-      layerPlan: {
-        ...answers.layerPlan,
-        [String(layer)]: { ...planFor(answers, layer, isPrimary), ...patch },
-      },
-    });
+    answer(
+      side === "one"
+        ? { oneHand: { ...answers.oneHand, [content]: layer } }
+        : { otherHand: { ...answers.otherHand, [content]: layer } },
+    );
 
   const review = useMemo(
     () => (step.id === "duplicates" ? reviewKeys(km, answers, layout) : []),
@@ -297,6 +302,13 @@ export function GuideFlow({
         <IconCheck size={16} />
         {t("Apply")}
       </button>
+      <a
+        href={remapperHref}
+        className="btn-ghost h-10 border border-[var(--color-border)] px-4 text-sm flex items-center gap-2"
+      >
+        {t("Change by hand")}
+        <IconExternalLink size={14} />
+      </a>
       <button
         type="button"
         onClick={() => finish("skipped")}
@@ -695,16 +707,21 @@ export function GuideFlow({
                     "What one hand should finish on its own goes on that hand's layer: the cursor keys under the fingers of the hand whose thumb holds the layer, so the other hand stays free.",
                   )}
                 </Para>
-                <Choices
-                  value={answers.cursorHand}
-                  onChange={(v) => answer({ cursorHand: v })}
-                  options={[
-                    [
-                      "auto",
-                      t("Cursor under the right hand (right thumb's layer)"),
-                    ],
-                    ["L", t("Cursor under the left hand (left thumb's layer)")],
-                  ]}
+                <h3 className="text-sm font-medium text-[var(--color-text)]">
+                  {t("Keys to finish with one hand")}
+                </h3>
+                <Para muted>
+                  {t(
+                    "The layers are the ones given to thumb keys in the layer key step. Besides the cursor keys, anything else one hand should finish goes here too.",
+                  )}
+                </Para>
+                <LayerPicker
+                  t={t}
+                  side="one"
+                  thumbLayers={thumbLayers}
+                  value={(c) => contentLayer(meta, km, answers, "one", c)}
+                  label={(pos) => thumbLabel(pos)}
+                  onChange={(c, layer) => setContent("one", c, layer)}
                 />
                 <h3 className="text-sm font-medium text-[var(--color-text)]">
                   {t("How the cursor keys lie")}
@@ -717,51 +734,19 @@ export function GuideFlow({
                     ["row", t("One row, like Vim: ← ↓ ↑ → on the home row")],
                   ]}
                 />
-                {roles.primary && (
-                  <>
-                    <h3 className="text-sm font-medium text-[var(--color-text)]">
-                      {t("Under the other hand of the same layer")}
-                    </h3>
-                    <Para muted>
-                      {t(
-                        "What that hand alone should type while the thumb holds the layer; or nothing yet.",
-                      )}
-                    </Para>
-                    <ContentChoice
-                      t={t}
-                      value={planFor(answers, roles.primary.layer, true).other}
-                      onChange={(v) =>
-                        setPlan(roles.primary!.layer, true, { other: v })
-                      }
-                      exclude={["cursor"]}
-                    />
-                  </>
-                )}
-                {roles.extras.map((x) => (
-                  <div
-                    key={x.layer}
-                    className="space-y-2 rounded-xl border border-[var(--color-border)] p-3"
-                  >
-                    <h3 className="text-sm font-medium text-[var(--color-text)]">
-                      {t("Layer {{n}} ({{hand}} thumb)", {
-                        n: x.layer,
-                        hand: x.hand === "L" ? t("left") : t("right"),
-                      })}
-                    </h3>
-                    <Para muted>{t("Under the same hand")}</Para>
-                    <ContentChoice
-                      t={t}
-                      value={planFor(answers, x.layer, false).same}
-                      onChange={(v) => setPlan(x.layer, false, { same: v })}
-                    />
-                    <Para muted>{t("Under the other hand")}</Para>
-                    <ContentChoice
-                      t={t}
-                      value={planFor(answers, x.layer, false).other}
-                      onChange={(v) => setPlan(x.layer, false, { other: v })}
-                    />
-                  </div>
-                ))}
+                <label className="flex items-center gap-2 text-sm text-[var(--color-text)]">
+                  <input
+                    type="checkbox"
+                    checked={answers.navKeys}
+                    onChange={(e) => answer({ navKeys: e.target.checked })}
+                  />
+                  {t("Also Home / End / PgUp / PgDn around the cursor keys")}
+                </label>
+                <Para muted>
+                  {t(
+                    "Keys around the cursor keys get pressed by mistake, so they are off unless you want them.",
+                  )}
+                </Para>
                 {proposal?.note && <Para muted>{noteText(proposal.note)}</Para>}
                 {changeButtons}
               </>
@@ -771,16 +756,24 @@ export function GuideFlow({
               <>
                 <Para>
                   {t(
-                    "The hand that is not holding the layer key gets what you type with both hands in typing posture: the thumb holds the layer on one side, the fingers of the other side press the keys. A numpad and the F keys are the usual examples.",
+                    "The hand that is not holding the layer key gets what you type with both hands in typing posture: the thumb holds the layer on one side, the fingers of the other side press the keys.",
                   )}
                 </Para>
-                <Choices
-                  value={answers.otherMirror ? "L" : "R"}
-                  onChange={(v) => answer({ otherMirror: v === "L" })}
-                  options={[
-                    ["R", t("Numpad on the right, F keys on the left")],
-                    ["L", t("Numpad on the left, F keys on the right")],
-                  ]}
+                <Para>
+                  {t(
+                    "Unlike the base layer, a key may appear more than once here: put each where it feels easiest to type.",
+                  )}
+                </Para>
+                <h3 className="text-sm font-medium text-[var(--color-text)]">
+                  {t("Keys under the other hand")}
+                </h3>
+                <LayerPicker
+                  t={t}
+                  side="other"
+                  thumbLayers={thumbLayers}
+                  value={(c) => contentLayer(meta, km, answers, "other", c)}
+                  label={(pos) => thumbLabel(pos)}
+                  onChange={(c, layer) => setContent("other", c, layer)}
                 />
                 {proposal?.note && <Para muted>{noteText(proposal.note)}</Para>}
                 {changeButtons}
@@ -873,12 +866,26 @@ export function GuideFlow({
               dimOthers={marks.size > 0}
               layer={shownLayer}
               layout={layout}
+              scroll
             />
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-[var(--color-text-muted)]">
-              <span className="inline-flex items-center gap-1.5">
-                <span className="inline-block h-3.5 w-3.5 rounded border border-[var(--color-neon)] bg-[color-mix(in_srgb,var(--color-neon)_25%,var(--color-surface-elevated))]" />
-                {t("Keys the proposal changes (old legend struck through)")}
-              </span>
+              {step.id === "symbols" ? (
+                <>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="inline-block h-3.5 w-3.5 rounded border border-[var(--color-neon)] bg-[color-mix(in_srgb,var(--color-neon)_25%,var(--color-surface-elevated))]" />
+                    {t("Slots a symbol may take")}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="inline-block h-3.5 w-3.5 rounded border border-[var(--color-electric)] bg-[color-mix(in_srgb,var(--color-electric)_55%,var(--color-surface-elevated))]" />
+                    {t("Keys that change (old legend struck through)")}
+                  </span>
+                </>
+              ) : (
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="inline-block h-3.5 w-3.5 rounded border border-[var(--color-neon)] bg-[color-mix(in_srgb,var(--color-neon)_25%,var(--color-surface-elevated))]" />
+                  {t("Keys the proposal changes (old legend struck through)")}
+                </span>
+              )}
               {thumbLayerKeys(meta, km).length > 0 && (
                 <span>
                   {t("Layer keys: {{list}}", {
@@ -924,41 +931,61 @@ function Example({ children }: { children: ReactNode }) {
   );
 }
 
-const CONTENTS: Array<[LayerContent, string]> = [
-  ["none", "No content"],
-  ["cursor", "Cursor keys"],
-  ["digits", "Numbers (numpad)"],
-  ["symbols", "Symbols left over"],
-  ["fkeys", "F keys"],
-];
+const CONTENT_NAME: Record<LayerContent, string> = {
+  none: "No content",
+  cursor: "Cursor keys",
+  digits: "Numbers (numpad)",
+  symbols: "Symbols left over",
+  fkeys: "F keys",
+};
 
-function ContentChoice({
+/** Each kind of content with the thumb layer it goes on, or none. */
+function LayerPicker({
   t,
+  side,
+  thumbLayers,
   value,
+  label,
   onChange,
-  exclude = [],
 }: {
   t: T;
-  value: LayerContent;
-  onChange: (v: LayerContent) => void;
-  exclude?: LayerContent[];
+  side: "one" | "other";
+  thumbLayers: Array<{ pos: number; layer: number; hand: Hand }>;
+  value: (content: LayerContent) => number | null;
+  label: (pos: number) => string;
+  onChange: (content: LayerContent, layer: number | null) => void;
 }) {
+  const handName = (k: { hand: Hand }) => {
+    const left = side === "one" ? k.hand === "L" : k.hand === "R";
+    return left ? t("left hand") : t("right hand");
+  };
   return (
-    <div className="flex flex-wrap gap-1.5">
-      {CONTENTS.filter(([v]) => !exclude.includes(v)).map(([v, label]) => (
-        <button
-          key={v}
-          type="button"
-          aria-pressed={value === v}
-          onClick={() => onChange(v)}
-          className={`h-8 rounded-full border px-3 text-xs transition-colors ${
-            value === v
-              ? "border-[var(--color-electric)] bg-[var(--color-electric)]/10 text-[var(--color-text)]"
-              : "border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-          }`}
+    <div className="space-y-1.5">
+      {CONTENTS.map((c) => (
+        <div
+          key={c}
+          className="grid grid-cols-[8rem_1fr] items-center gap-2 rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-sm"
         >
-          {t(label)}
-        </button>
+          <span className="text-[var(--color-text)]">{t(CONTENT_NAME[c])}</span>
+          <select
+            value={value(c) ?? ""}
+            onChange={(e) =>
+              onChange(c, e.target.value === "" ? null : Number(e.target.value))
+            }
+            className="h-8 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm text-[var(--color-text)]"
+          >
+            <option value="">{t("Not placed")}</option>
+            {thumbLayers.map((k) => (
+              <option key={k.layer} value={k.layer}>
+                {t("Layer {{n}} ({{key}} held) → {{hand}}", {
+                  n: k.layer,
+                  key: label(k.pos),
+                  hand: handName(k),
+                })}
+              </option>
+            ))}
+          </select>
+        </div>
       ))}
     </div>
   );

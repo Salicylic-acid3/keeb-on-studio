@@ -108,6 +108,27 @@ const ja: Record<string, string> = {
   "Characters not on the keymap": "入力不可文字",
   "None.": "なし",
   "Next text": "次の文章",
+  "Also Home / End / PgUp / PgDn around the cursor keys":
+    "カーソルキーの周りに Home / End / PgUp / PgDn も入れる",
+  "Change by hand": "手動で変更",
+  "Slots a symbol may take": "記号を置ける候補のキー",
+  "Keys that change (old legend struck through)":
+    "変わるキー（元のキーは取り消し線）",
+  "Keys around the cursor keys get pressed by mistake, so they are off unless you want them.":
+    "カーソルキーの周りのキーは誤打鍵しやすいので、入れたい場合だけオンにしてください。",
+  "Keys to finish with one hand": "片手で完結したいキー",
+  "Keys under the other hand": "反対の手に置くキー",
+  "Layer {{n}} ({{key}} held) → {{hand}}":
+    "レイヤー {{n}}（{{key}} 長押し）→ {{hand}}",
+  "Not placed": "置かない",
+  "The hand that is not holding the layer key gets what you type with both hands in typing posture: the thumb holds the layer on one side, the fingers of the other side press the keys.":
+    "レイヤーキーを押していない側の手には、両手を使って入力するものを置きます。片方の親指でレイヤーキーを押しながら、もう片方の手の指でキーを打つので、打鍵姿勢で使うキーを割り当てるとよいです。",
+  "The layers are the ones given to thumb keys in the layer key step. Besides the cursor keys, anything else one hand should finish goes here too.":
+    "選べるレイヤーは、レイヤーキーのステップで親指キーに入れたものです。カーソルキー以外にも片手で完結したいキーがあれば、ここで設定してください。",
+  "Unlike the base layer, a key may appear more than once here: put each where it feels easiest to type.":
+    "デフォルトレイヤーと違い、重複してもいいので、自分が打ちやすいと思う場所に入れていけばいいです。",
+  "left hand": "左手",
+  "right hand": "右手",
   "No content": "なし",
   "Cursor keys": "カーソルキー",
   "How the cursor keys lie": "カーソルキーの並び",
@@ -115,18 +136,10 @@ const ja: Record<string, string> = {
     "山型（逆T字）: ホームロウに ← ↓ →、その上に ↑",
   "One row, like Vim: ← ↓ ↑ → on the home row":
     "横一列（VIM型）: ホームロウに ← ↓ ↑ →",
-  "Layer {{n}} ({{hand}} thumb)": "レイヤー {{n}}（{{hand}}の親指）",
   "Numbers (numpad)": "数字キー（テンキー配置）",
   "Symbols left over": "ベースに入らなかった記号",
-  "The hand that is not holding the layer key gets what you type with both hands in typing posture: the thumb holds the layer on one side, the fingers of the other side press the keys. A numpad and the F keys are the usual examples.":
-    "レイヤーキーを押していない側の手には、両手を使って入力するものを置きます。片方の親指でレイヤーキーを押しながら、もう片方の手の指でキーを打つので、打鍵姿勢（両手をホームポジションに置いた状態）で使うキーを割り当てるとよいです。テンキーやFキーがその例です。",
-  "Under the other hand": "反対の手の下",
-  "Under the other hand of the same layer": "同じレイヤーの、反対の手の下",
-  "Under the same hand": "同じ手の下",
   "What one hand should finish on its own goes on that hand's layer: the cursor keys under the fingers of the hand whose thumb holds the layer, so the other hand stays free.":
     "片手で完結させたいものを、その手のレイヤーに置きます。レイヤーキーを押す親指と同じ手の指の下にカーソルキーを置けば、もう片方の手は空いたままです。",
-  "What that hand alone should type while the thumb holds the layer; or nothing yet.":
-    "親指でレイヤーキーを押している間に、その手だけで打ちたいもの。まだ決めないなら「なし」のままで構いません。",
   // Setup guide
   "A keymap is yours to decide, and the order of deciding matters: the keys you use most go where they are easiest to reach, and everything else finds a place after them.":
     "キーマップは自分で決めるものですが、決める順番が大事です。よく使うキーから、いちばん押しやすい場所に置いていき、残りはその後で居場所を決めます。",
@@ -154,8 +167,6 @@ const ja: Record<string, string> = {
   "Measuring where the thumb lands on a connected keyboard comes later; for now, choose the key.":
     "実機で親指が落ちる場所を計測する機能は後で入ります。いまはキーを選んでください。",
   "Nothing to change with this answer.": "この回答では変更はありません。",
-  "Numpad on the left, F keys on the right": "テンキーは左手、Fキーは右手",
-  "Numpad on the right, F keys on the left": "テンキーは右手、Fキーは左手",
   "Order these by how often you use them": "よく使う順に並べてください",
   "Sentences and symbols together, on the finished keymap.":
     "完成したキーマップで、文章と記号をまとめて練習します。",

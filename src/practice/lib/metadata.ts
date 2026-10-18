@@ -99,6 +99,17 @@ function rowOf(keys: TestKey[], label: string): number | null {
   return k ? k.cy : null;
 }
 
+/** Whether a key sits right after the period on its row. */
+function besidePeriod(keys: TestKey[], k: TestKey): boolean {
+  return keys.some(
+    (o) =>
+      o.trigger.kind === "key" &&
+      o.trigger.code === "Period" &&
+      Math.abs(o.cy - k.cy) < 0.3 &&
+      Math.abs(k.cx - o.cx - (k.w + o.w) / 2) < 0.3,
+  );
+}
+
 /** Keys on the same row as `y`, left to right. */
 function row(keys: TestKey[], y: number): TestKey[] {
   return keys
@@ -139,7 +150,7 @@ export function estimateMeta(board: TestBoard): KeyboardMeta {
   }
 
   // Thumbs: the Space keys of the bottom row and the keys touching them
-  // outward until a modifier or an arrow, at most six. A keyboard whose
+  // outward until a modifier or an arrow, at most seven. A keyboard whose
   // bottom row is Space on several keys is what the guide expects.
   const maxY = Math.max(...keys.map((k) => k.cy));
   const bottom = row(keys, maxY);
@@ -154,12 +165,12 @@ export function estimateMeta(board: TestBoard): KeyboardMeta {
   if (spaceIdx.length) {
     let lo = Math.min(...spaceIdx);
     let hi = Math.max(...spaceIdx);
-    while (lo > 0 && !stops(bottom[lo - 1]) && hi - lo + 1 < 6) lo--;
-    while (hi < bottom.length - 1 && !stops(bottom[hi + 1]) && hi - lo + 1 < 6)
+    while (lo > 0 && !stops(bottom[lo - 1]) && hi - lo + 1 < 7) lo--;
+    while (hi < bottom.length - 1 && !stops(bottom[hi + 1]) && hi - lo + 1 < 7)
       hi++;
     thumbs = bottom.slice(lo, hi + 1);
   } else if (sizeClass !== "pad") {
-    thumbs = bottom.filter((k) => k.w >= 1.25 && !stops(k)).slice(0, 6);
+    thumbs = bottom.filter((k) => k.w >= 1.25 && !stops(k)).slice(0, 7);
   }
 
   const byLabel = (label: string) =>
@@ -201,13 +212,16 @@ export function estimateMeta(board: TestBoard): KeyboardMeta {
       capslock: posOf(byLabel("Caps")),
     },
     // A symbol with or without Shift (a { on a 40%'s middle column is
-    // Shift+[) is a slot a symbol may take.
+    // Shift+[) is a slot a symbol may take. The slash right beside the
+    // period is kept as it is, being placed with care; a slash set apart
+    // from it by the arrow keys is a slot like any other.
     symbolSlots: keys
       .filter(
         (k) =>
           k.trigger.kind === "key" &&
           k.trigger.mods.every((m) => m === "shift") &&
-          SYMBOL_CODES.has(k.trigger.code),
+          SYMBOL_CODES.has(k.trigger.code) &&
+          !(k.trigger.code === "Slash" && besidePeriod(keys, k)),
       )
       .sort((a, b) => a.cy - b.cy || a.cx - b.cx)
       .map(pos),

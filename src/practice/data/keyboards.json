@@ -6,6 +6,10 @@
     "split": false,
     "thumbKeys": [
       {
+        "pos": 82,
+        "hand": "L"
+      },
+      {
         "pos": 83,
         "hand": "L"
       },
@@ -39,7 +43,7 @@
       "tab": 32,
       "capslock": 48
     },
-    "symbolSlots": [15, 28, 29, 30, 45, 46, 60, 61, 62, 75, 76],
+    "symbolSlots": [15, 28, 29, 30, 45, 46, 60, 61, 62, 76],
     "defaultLayerKeys": [
       {
         "pos": 78,
@@ -89,7 +93,7 @@
       "tab": 31,
       "capslock": 47
     },
-    "symbolSlots": [15, 28, 29, 44, 45, 46, 59, 60, 74],
+    "symbolSlots": [15, 28, 29, 44, 45, 46, 59, 60],
     "defaultLayerKeys": [
       {
         "pos": 77,
@@ -191,7 +195,7 @@
       "tab": null,
       "capslock": null
     },
-    "symbolSlots": [30, 40],
+    "symbolSlots": [30],
     "defaultLayerKeys": [],
     "reviewed": false
   },
@@ -210,7 +214,7 @@
       "tab": 0,
       "capslock": null
     },
-    "symbolSlots": [22, 34],
+    "symbolSlots": [22],
     "defaultLayerKeys": [
       {
         "pos": 35,
@@ -235,7 +239,7 @@
       "tab": 14,
       "capslock": null
     },
-    "symbolSlots": [36, 50],
+    "symbolSlots": [36],
     "defaultLayerKeys": [],
     "reviewed": false
   },
@@ -268,6 +272,10 @@
       {
         "pos": 54,
         "hand": "R"
+      },
+      {
+        "pos": 55,
+        "hand": "R"
       }
     ],
     "homeRow": {
@@ -279,7 +287,7 @@
       "tab": 7,
       "capslock": 20
     },
-    "symbolSlots": [13, 26, 31, 39, 44],
+    "symbolSlots": [13, 26, 31, 39],
     "defaultLayerKeys": [
       {
         "pos": 45,
@@ -474,7 +482,7 @@
       "tab": 15,
       "capslock": null
     },
-    "symbolSlots": [11, 12, 13, 14, 26, 27, 39, 40, 52],
+    "symbolSlots": [11, 12, 13, 14, 26, 27, 39, 40],
     "defaultLayerKeys": [
       {
         "pos": 54,
@@ -734,7 +742,7 @@
       "tab": 15,
       "capslock": null
     },
-    "symbolSlots": [11, 12, 13, 14, 26, 27, 39, 40, 52],
+    "symbolSlots": [11, 12, 13, 14, 26, 27, 39, 40],
     "defaultLayerKeys": [
       {
         "pos": 54,
@@ -773,6 +781,10 @@
       {
         "pos": 63,
         "hand": "R"
+      },
+      {
+        "pos": 64,
+        "hand": "R"
       }
     ],
     "homeRow": {
@@ -784,7 +796,7 @@
       "tab": 15,
       "capslock": null
     },
-    "symbolSlots": [11, 12, 13, 26, 27, 38, 39, 40, 52, 53],
+    "symbolSlots": [11, 12, 13, 26, 27, 38, 39, 40, 53],
     "defaultLayerKeys": [
       {
         "pos": 54,
@@ -830,7 +842,7 @@
       "tab": 15,
       "capslock": null
     },
-    "symbolSlots": [11, 12, 13, 26, 27, 39, 40, 41, 52, 53],
+    "symbolSlots": [11, 12, 13, 26, 27, 39, 40, 41, 53],
     "defaultLayerKeys": [
       {
         "pos": 55,
@@ -895,7 +907,7 @@
       "tab": 16,
       "capslock": 31
     },
-    "symbolSlots": [11, 12, 13, 27, 28, 41, 42, 43, 55, 56],
+    "symbolSlots": [11, 12, 13, 27, 28, 41, 42, 43, 56],
     "defaultLayerKeys": [
       {
         "pos": 69,
@@ -953,7 +965,7 @@
       "tab": 16,
       "capslock": 32
     },
-    "symbolSlots": [45, 61],
+    "symbolSlots": [45],
     "defaultLayerKeys": [
       {
         "pos": 74,
@@ -983,7 +995,7 @@
       "tab": 15,
       "capslock": 30
     },
-    "symbolSlots": [11, 12, 26, 27, 28, 40, 41, 54],
+    "symbolSlots": [11, 12, 26, 27, 28, 40, 41],
     "defaultLayerKeys": [
       {
         "pos": 63,

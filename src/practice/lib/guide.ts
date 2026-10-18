@@ -207,17 +207,18 @@ export interface Answers {
   thumbs: Record<string, ThumbAssign>;
   /** Thumb keys that get a layer on hold. */
   layerKeyPos: number[];
-  /** The hand whose thumb layer carries the cursor; "auto" picks the right. */
-  cursorHand: "auto" | Hand;
   /** How the cursor keys lie: an inverted T, or a row like Vim's hjkl. */
   cursorShape: CursorShape;
+  /** Home / End / PgUp / PgDn around the cursor keys, or not. */
+  navKeys: boolean;
   /**
-   * What each thumb layer holds, by layer number: under the hand whose
-   * thumb holds it ("same") and under the other hand ("other").
+   * Step 7: which thumb layer each kind of content goes on, under the
+   * hand whose thumb holds that layer. Missing means the default; null
+   * means nowhere.
    */
-  layerPlan: Record<string, { same: LayerContent; other: LayerContent }>;
-  /** Swap the numpad and the F keys between hands. */
-  otherMirror: boolean;
+  oneHand: Partial<Record<LayerContent, number | null>>;
+  /** Step 8: the same, under the other hand. */
+  otherHand: Partial<Record<LayerContent, number | null>>;
   /** Occasional keys to tuck into a layer, by code. */
   rare: string[];
 }
@@ -294,10 +295,10 @@ export const DEFAULT_ANSWERS: Answers = {
   replace: {},
   thumbs: {},
   layerKeyPos: [],
-  cursorHand: "auto",
   cursorShape: "t",
-  layerPlan: {},
-  otherMirror: false,
+  navKeys: false,
+  oneHand: {},
+  otherHand: {},
   rare: ["PrintScreen", "Insert"],
 };
 
@@ -762,28 +763,45 @@ export function proposeLayerKeys(
   return { changes: dedupe(km, changes) };
 }
 
-/** The thumb layers by role: the cursor layer, the one step 8 fills, and any extra. */
-export function layerRoles(
+/** The contents a layer may be given, in the order the steps list them. */
+export const CONTENTS: LayerContent[] = [
+  "cursor",
+  "digits",
+  "symbols",
+  "fkeys",
+];
+
+/**
+ * Which layer each content goes on by default: the cursor on the right
+ * thumb's layer (one-hand side), the numbers on the other thumb's layer
+ * (other-hand side), and nothing else until chosen.
+ */
+export function defaultContentLayers(
+  meta: KeyboardMeta,
+  km: WorkingKeymap,
+  side: "one" | "other",
+): Partial<Record<LayerContent, number | null>> {
+  const keys = thumbLayerKeys(meta, km);
+  if (!keys.length) return {};
+  const right = keys.find((k) => k.hand === "R") ?? keys[0];
+  const other = keys.find((k) => k.layer !== right.layer) ?? null;
+  if (side === "one") return { cursor: right.layer };
+  return other ? { digits: other.layer } : {};
+}
+
+/** The layer a content was given on a side, with the default filled in. */
+export function contentLayer(
   meta: KeyboardMeta,
   km: WorkingKeymap,
   answers: Answers,
-): {
-  primary: { layer: number; hand: Hand } | null;
-  secondary: { layer: number; hand: Hand } | null;
-  extras: Array<{ layer: number; hand: Hand }>;
-} {
-  const keys = thumbLayerKeys(meta, km);
-  if (!keys.length) return { primary: null, secondary: null, extras: [] };
-  const hand: Hand = answers.cursorHand === "auto" ? "R" : answers.cursorHand;
-  const first = keys.find((k) => k.hand === hand) ?? keys[0];
-  const primary = { layer: first.layer, hand };
-  const rest = keys.filter((k) => k.layer !== first.layer);
-  const second = rest.find((k) => k.hand !== first.hand) ?? rest[0] ?? null;
-  const secondary = second ? { layer: second.layer, hand: second.hand } : null;
-  const extras = rest
-    .filter((k) => k.layer !== second?.layer)
-    .map((k) => ({ layer: k.layer, hand: k.hand }));
-  return { primary, secondary, extras };
+  side: "one" | "other",
+  content: LayerContent,
+): number | null {
+  const chosen = (side === "one" ? answers.oneHand : answers.otherHand)[
+    content
+  ];
+  if (chosen !== undefined) return chosen;
+  return defaultContentLayers(meta, km, side)[content] ?? null;
 }
 
 /** Changes that put `content` under `hand` on `layer`. */
@@ -811,9 +829,10 @@ export function placeContent(
         ["ArrowLeft", "ArrowDown", "ArrowUp", "ArrowRight"].forEach((c, i) =>
           put(home[i], c),
         );
-        ["Home", "PageDown", "PageUp", "End"].forEach((c, i) =>
-          put(home[i] !== undefined ? above(board, home[i]) : null, c),
-        );
+        if (answers.navKeys)
+          ["Home", "PageDown", "PageUp", "End"].forEach((c, i) =>
+            put(home[i] !== undefined ? above(board, home[i]) : null, c),
+          );
       } else {
         // An inverted T under the three fingers nearest the middle, Home /
         // End at the ends, PgUp / PgDn above and below the middle.
@@ -822,10 +841,12 @@ export function placeContent(
         put(h2, "ArrowDown");
         put(h3, "ArrowRight");
         put(h2 !== undefined ? above(board, h2) : null, "ArrowUp");
-        put(h0, "Home");
-        put(h3 !== undefined ? above(board, h3) : null, "End");
-        put(h1 !== undefined ? above(board, h1) : null, "PageUp");
-        put(h2 !== undefined ? below(board, h2) : null, "PageDown");
+        if (answers.navKeys) {
+          put(h0, "Home");
+          put(h3 !== undefined ? above(board, h3) : null, "End");
+          put(h1 !== undefined ? above(board, h1) : null, "PageUp");
+          put(h2 !== undefined ? below(board, h2) : null, "PageDown");
+        }
       }
       return changes;
     }
@@ -887,24 +908,34 @@ export function placeContent(
   }
 }
 
-/** What a layer is planned to hold, with the cursor layer's default. */
-export function planFor(
+function placeSide(
+  board: TestBoard,
+  meta: KeyboardMeta,
+  km: WorkingKeymap,
   answers: Answers,
-  layer: number,
-  isPrimary: boolean,
-): { same: LayerContent; other: LayerContent } {
-  return (
-    answers.layerPlan[String(layer)] ?? {
-      same: isPrimary ? "cursor" : "none",
-      other: "none",
-    }
-  );
+  layout: LabelLayout,
+  side: "one" | "other",
+): Proposal {
+  const keys = thumbLayerKeys(meta, km);
+  if (!keys.length) return { changes: [], note: "one-layer" };
+  const changes: Change[] = [];
+  for (const content of CONTENTS) {
+    const layer = contentLayer(meta, km, answers, side, content);
+    if (layer === null) continue;
+    const key = keys.find((k) => k.layer === layer);
+    if (!key) continue;
+    const hand: Hand = side === "one" ? key.hand : key.hand === "L" ? "R" : "L";
+    changes.push(
+      ...placeContent(board, meta, km, layer, hand, content, answers, layout),
+    );
+  }
+  const deduped = dedupe(km, changes);
+  return { changes: deduped, ...(deduped.length ? {} : { note: "nothing" }) };
 }
 
 /**
- * Step 7: the cursor under the hand whose thumb holds the layer, and
- * whatever was chosen for the other hand; any extra thumb layer by its
- * own plan.
+ * Step 7: what one hand finishes on its own, each kind on the layer
+ * chosen for it, under the hand whose thumb holds that layer.
  */
 export function proposeOneHand(
   board: TestBoard,
@@ -913,41 +944,12 @@ export function proposeOneHand(
   answers: Answers,
   layout: LabelLayout,
 ): Proposal {
-  const { primary, extras } = layerRoles(meta, km, answers);
-  if (!primary) return { changes: [], note: "one-layer" };
-  const changes: Change[] = [];
-  const other = (h: Hand): Hand => (h === "L" ? "R" : "L");
-  for (const target of [primary, ...extras]) {
-    const plan = planFor(answers, target.layer, target.layer === primary.layer);
-    changes.push(
-      ...placeContent(
-        board,
-        meta,
-        km,
-        target.layer,
-        target.hand,
-        plan.same,
-        answers,
-        layout,
-      ),
-      ...placeContent(
-        board,
-        meta,
-        km,
-        target.layer,
-        other(target.hand),
-        plan.other,
-        answers,
-        layout,
-      ),
-    );
-  }
-  return { changes: dedupe(km, changes) };
+  return placeSide(board, meta, km, answers, layout, "one");
 }
 
 /**
- * Step 8: on the other thumb's layer, a numpad under one hand and the F
- * keys under the other.
+ * Step 8: what is typed with the other hand while a thumb holds a layer,
+ * each kind on the layer chosen for it.
  */
 export function proposeOther(
   board: TestBoard,
@@ -956,33 +958,7 @@ export function proposeOther(
   answers: Answers,
   layout: LabelLayout,
 ): Proposal {
-  const { secondary } = layerRoles(meta, km, answers);
-  if (!secondary) return { changes: [], note: "one-layer" };
-  const numHand: Hand = answers.otherMirror ? "L" : "R";
-  const fnHand: Hand = numHand === "L" ? "R" : "L";
-  const changes = [
-    ...placeContent(
-      board,
-      meta,
-      km,
-      secondary.layer,
-      numHand,
-      "digits",
-      answers,
-      layout,
-    ),
-    ...placeContent(
-      board,
-      meta,
-      km,
-      secondary.layer,
-      fnHand,
-      "fkeys",
-      answers,
-      layout,
-    ),
-  ];
-  return { changes: dedupe(km, changes) };
+  return placeSide(board, meta, km, answers, layout, "other");
 }
 
 /** Step 10: occasional keys go on free keys of the second layer, from the bottom. */

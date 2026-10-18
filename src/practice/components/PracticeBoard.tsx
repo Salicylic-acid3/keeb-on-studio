@@ -256,6 +256,7 @@ export function PracticeBoard({
   layer = 0,
   layout = "us",
   onKeyClick,
+  scroll = false,
 }: {
   board: TestBoard;
   marks: Map<string, Mark>;
@@ -265,6 +266,11 @@ export function PracticeBoard({
   layout?: LabelLayout;
   /** Makes the keys clickable, by their index in the keyboard's key list. */
   onKeyClick?: (pos: number) => void;
+  /**
+   * Draw at full size (1u = 54px) and scroll sideways when the keyboard
+   * is wider than the space, instead of shrinking the legends.
+   */
+  scroll?: boolean;
 }) {
   const box = useMemo(() => boundsOf(board.keys), [board]);
   const pad = 0.1;
@@ -274,13 +280,21 @@ export function PracticeBoard({
     (box.maxX - box.minX + pad * 2) * U,
     (box.maxY - box.minY + pad * 2) * U,
   ];
-  return (
+  const svg = (
     <svg
       viewBox={vb.join(" ")}
-      className="block w-full h-auto mx-auto"
+      className={scroll ? "block h-auto" : "block w-full h-auto mx-auto"}
       role="img"
       aria-label={board.name}
-      style={{ fontFamily: "inherit", maxWidth: `${vb[2]}px` }}
+      style={
+        scroll
+          ? {
+              fontFamily: "inherit",
+              width: `${vb[2]}px`,
+              minWidth: `${vb[2]}px`,
+            }
+          : { fontFamily: "inherit", maxWidth: `${vb[2]}px` }
+      }
     >
       {board.keys.map((k, i) => (
         <Key
@@ -294,4 +308,5 @@ export function PracticeBoard({
       ))}
     </svg>
   );
+  return scroll ? <div className="overflow-x-auto pb-2">{svg}</div> : svg;
 }
