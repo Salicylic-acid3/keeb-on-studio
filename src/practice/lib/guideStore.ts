@@ -5,7 +5,7 @@
  * proposals applied so far.
  */
 import type { Trigger } from "../../keyTest/lib/triggers";
-import type { Answers } from "./guide";
+import type { Answers, Change } from "./guide";
 
 export type StepStatus = "todo" | "applied" | "skipped" | "done";
 
@@ -16,6 +16,12 @@ export interface GuideProgress {
   answers: Answers;
   status: Record<number, StepStatus>;
   layers: Trigger[][];
+  /**
+   * What each applied step changed, and what those keys held before, so
+   * a step can be revisited: its proposal is made against the keymap as
+   * it was before the step, and re-applying first undoes the old changes.
+   */
+  applied?: Record<number, { changes: Change[]; previous: Change[] }>;
   savedAt: number;
 }
 

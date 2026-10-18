@@ -138,23 +138,28 @@ export function estimateMeta(board: TestBoard): KeyboardMeta {
     if (b.cx - b.w / 2 - (a.cx + a.w / 2) > 1.5) split = true;
   }
 
-  // Thumbs: the bottom row's Space keys and what sits within reach of them.
+  // Thumbs: the Space keys of the bottom row and the keys touching them
+  // outward until a modifier or an arrow, at most six. A keyboard whose
+  // bottom row is Space on several keys is what the guide expects.
   const maxY = Math.max(...keys.map((k) => k.cy));
-  const bottom = row(keys, maxY).filter((k) => !ARROW.has(k.label.main));
-  const spaces = bottom.filter((k) => k.label.main === "Space");
+  const bottom = row(keys, maxY);
+  const stops = (k: TestKey) =>
+    ARROW.has(k.label.main) ||
+    (k.trigger.kind === "key" &&
+      /^(Control|Shift|Alt|Meta)(Left|Right)$/.test(k.trigger.code));
+  const spaceIdx = bottom
+    .map((k, i) => (k.label.main === "Space" ? i : -1))
+    .filter((i) => i >= 0);
   let thumbs: TestKey[] = [];
-  if (spaces.length) {
-    const left = Math.min(...spaces.map((k) => k.cx - k.w / 2));
-    const right = Math.max(...spaces.map((k) => k.cx + k.w / 2));
-    // Keys right beside Space, and wider keys a little further out
-    // (an Enter or Backspace on the thumb row), but not the 1u modifiers
-    // at the corners.
-    thumbs = bottom.filter((k) => {
-      const gap = Math.max(left - k.cx, k.cx - right, 0);
-      return gap <= 1.75 || (gap <= 3.25 && k.w >= 1.25);
-    });
+  if (spaceIdx.length) {
+    let lo = Math.min(...spaceIdx);
+    let hi = Math.max(...spaceIdx);
+    while (lo > 0 && !stops(bottom[lo - 1]) && hi - lo + 1 < 6) lo--;
+    while (hi < bottom.length - 1 && !stops(bottom[hi + 1]) && hi - lo + 1 < 6)
+      hi++;
+    thumbs = bottom.slice(lo, hi + 1);
   } else if (sizeClass !== "pad") {
-    thumbs = bottom.filter((k) => k.w >= 1.25);
+    thumbs = bottom.filter((k) => k.w >= 1.25 && !stops(k)).slice(0, 6);
   }
 
   const byLabel = (label: string) =>
@@ -195,11 +200,13 @@ export function estimateMeta(board: TestBoard): KeyboardMeta {
       tab: posOf(byLabel("Tab")),
       capslock: posOf(byLabel("Caps")),
     },
+    // A symbol with or without Shift (a { on a 40%'s middle column is
+    // Shift+[) is a slot a symbol may take.
     symbolSlots: keys
       .filter(
         (k) =>
           k.trigger.kind === "key" &&
-          k.trigger.mods.length === 0 &&
+          k.trigger.mods.every((m) => m === "shift") &&
           SYMBOL_CODES.has(k.trigger.code),
       )
       .sort((a, b) => a.cy - b.cy || a.cx - b.cx)

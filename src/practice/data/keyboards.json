@@ -6,14 +6,6 @@
     "split": false,
     "thumbKeys": [
       {
-        "pos": 81,
-        "hand": "L"
-      },
-      {
-        "pos": 82,
-        "hand": "L"
-      },
-      {
         "pos": 83,
         "hand": "L"
       },
@@ -35,14 +27,6 @@
       },
       {
         "pos": 88,
-        "hand": "R"
-      },
-      {
-        "pos": 89,
-        "hand": "R"
-      },
-      {
-        "pos": 90,
         "hand": "R"
       }
     ],
@@ -72,18 +56,6 @@
     "split": false,
     "thumbKeys": [
       {
-        "pos": 78,
-        "hand": "L"
-      },
-      {
-        "pos": 79,
-        "hand": "L"
-      },
-      {
-        "pos": 80,
-        "hand": "L"
-      },
-      {
         "pos": 81,
         "hand": "L"
       },
@@ -105,14 +77,6 @@
       },
       {
         "pos": 86,
-        "hand": "R"
-      },
-      {
-        "pos": 87,
-        "hand": "R"
-      },
-      {
-        "pos": 88,
         "hand": "R"
       }
     ],
@@ -141,10 +105,6 @@
     "allowGuide": ["30"],
     "split": false,
     "thumbKeys": [
-      {
-        "pos": 32,
-        "hand": "L"
-      },
       {
         "pos": 33,
         "hand": "L"
@@ -178,35 +138,11 @@
     "split": false,
     "thumbKeys": [
       {
-        "pos": 28,
-        "hand": "L"
-      },
-      {
-        "pos": 29,
-        "hand": "L"
-      },
-      {
-        "pos": 30,
-        "hand": "L"
-      },
-      {
         "pos": 31,
         "hand": "L"
       },
       {
         "pos": 32,
-        "hand": "R"
-      },
-      {
-        "pos": 33,
-        "hand": "R"
-      },
-      {
-        "pos": 34,
-        "hand": "R"
-      },
-      {
-        "pos": 35,
         "hand": "R"
       }
     ],
@@ -310,10 +246,6 @@
     "split": false,
     "thumbKeys": [
       {
-        "pos": 48,
-        "hand": "L"
-      },
-      {
         "pos": 49,
         "hand": "L"
       },
@@ -336,10 +268,6 @@
       {
         "pos": 54,
         "hand": "R"
-      },
-      {
-        "pos": 55,
-        "hand": "R"
       }
     ],
     "homeRow": {
@@ -351,7 +279,7 @@
       "tab": 7,
       "capslock": 20
     },
-    "symbolSlots": [26, 31, 39, 44],
+    "symbolSlots": [13, 26, 31, 39, 44],
     "defaultLayerKeys": [
       {
         "pos": 45,
@@ -425,10 +353,6 @@
     "split": false,
     "thumbKeys": [
       {
-        "pos": 37,
-        "hand": "L"
-      },
-      {
         "pos": 38,
         "hand": "L"
       },
@@ -475,10 +399,6 @@
     "split": false,
     "thumbKeys": [
       {
-        "pos": 41,
-        "hand": "L"
-      },
-      {
         "pos": 42,
         "hand": "L"
       },
@@ -512,7 +432,7 @@
       "tab": 0,
       "capslock": 13
     },
-    "symbolSlots": [19, 24, 32],
+    "symbolSlots": [6, 19, 24, 32],
     "defaultLayerKeys": [
       {
         "pos": 38,
@@ -529,10 +449,6 @@
     "split": false,
     "thumbKeys": [
       {
-        "pos": 56,
-        "hand": "L"
-      },
-      {
         "pos": 57,
         "hand": "L"
       },
@@ -546,10 +462,6 @@
       },
       {
         "pos": 60,
-        "hand": "R"
-      },
-      {
-        "pos": 61,
         "hand": "R"
       }
     ],
@@ -578,10 +490,6 @@
     "allowGuide": ["30", "40"],
     "split": false,
     "thumbKeys": [
-      {
-        "pos": 37,
-        "hand": "L"
-      },
       {
         "pos": 38,
         "hand": "L"
@@ -629,10 +537,6 @@
     "split": false,
     "thumbKeys": [
       {
-        "pos": 41,
-        "hand": "L"
-      },
-      {
         "pos": 42,
         "hand": "L"
       },
@@ -666,7 +570,7 @@
       "tab": 0,
       "capslock": 13
     },
-    "symbolSlots": [19, 24, 32],
+    "symbolSlots": [6, 19, 24, 32],
     "defaultLayerKeys": [
       {
         "pos": 38,
@@ -683,18 +587,6 @@
     "split": false,
     "thumbKeys": [
       {
-        "pos": 37,
-        "hand": "L"
-      },
-      {
-        "pos": 38,
-        "hand": "L"
-      },
-      {
-        "pos": 39,
-        "hand": "L"
-      },
-      {
         "pos": 40,
         "hand": "L"
       },
@@ -704,10 +596,6 @@
       },
       {
         "pos": 42,
-        "hand": "R"
-      },
-      {
-        "pos": 43,
         "hand": "R"
       }
     ],
@@ -737,31 +625,7 @@
     "split": false,
     "thumbKeys": [
       {
-        "pos": 33,
-        "hand": "L"
-      },
-      {
-        "pos": 34,
-        "hand": "L"
-      },
-      {
-        "pos": 35,
-        "hand": "L"
-      },
-      {
         "pos": 36,
-        "hand": "R"
-      },
-      {
-        "pos": 37,
-        "hand": "R"
-      },
-      {
-        "pos": 38,
-        "hand": "R"
-      },
-      {
-        "pos": 39,
         "hand": "R"
       }
     ],
@@ -784,6 +648,10 @@
     "allowGuide": ["30", "40"],
     "split": false,
     "thumbKeys": [
+      {
+        "pos": 44,
+        "hand": "L"
+      },
       {
         "pos": 45,
         "hand": "L"
@@ -841,14 +709,6 @@
     "split": false,
     "thumbKeys": [
       {
-        "pos": 55,
-        "hand": "L"
-      },
-      {
-        "pos": 57,
-        "hand": "L"
-      },
-      {
         "pos": 58,
         "hand": "L"
       },
@@ -862,14 +722,6 @@
       },
       {
         "pos": 61,
-        "hand": "R"
-      },
-      {
-        "pos": 62,
-        "hand": "R"
-      },
-      {
-        "pos": 64,
         "hand": "R"
       }
     ],
@@ -898,10 +750,6 @@
     "allowGuide": ["60"],
     "split": false,
     "thumbKeys": [
-      {
-        "pos": 57,
-        "hand": "L"
-      },
       {
         "pos": 58,
         "hand": "L"
@@ -953,10 +801,6 @@
     "split": false,
     "thumbKeys": [
       {
-        "pos": 58,
-        "hand": "L"
-      },
-      {
         "pos": 59,
         "hand": "L"
       },
@@ -974,10 +818,6 @@
       },
       {
         "pos": 63,
-        "hand": "R"
-      },
-      {
-        "pos": 64,
         "hand": "R"
       }
     ],
@@ -1026,10 +866,6 @@
     "split": false,
     "thumbKeys": [
       {
-        "pos": 61,
-        "hand": "L"
-      },
-      {
         "pos": 62,
         "hand": "L"
       },
@@ -1047,10 +883,6 @@
       },
       {
         "pos": 66,
-        "hand": "R"
-      },
-      {
-        "pos": 67,
         "hand": "R"
       }
     ],
@@ -1079,14 +911,6 @@
     "allowGuide": ["60"],
     "split": false,
     "thumbKeys": [
-      {
-        "pos": 64,
-        "hand": "L"
-      },
-      {
-        "pos": 65,
-        "hand": "L"
-      },
       {
         "pos": 66,
         "hand": "L"
@@ -1118,10 +942,6 @@
       {
         "pos": 73,
         "hand": "R"
-      },
-      {
-        "pos": 74,
-        "hand": "R"
       }
     ],
     "homeRow": {
@@ -1150,28 +970,8 @@
     "split": false,
     "thumbKeys": [
       {
-        "pos": 57,
-        "hand": "L"
-      },
-      {
-        "pos": 58,
-        "hand": "L"
-      },
-      {
-        "pos": 59,
-        "hand": "L"
-      },
-      {
         "pos": 60,
         "hand": "L"
-      },
-      {
-        "pos": 61,
-        "hand": "R"
-      },
-      {
-        "pos": 62,
-        "hand": "R"
       }
     ],
     "homeRow": {

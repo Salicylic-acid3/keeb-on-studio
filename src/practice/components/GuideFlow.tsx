@@ -28,6 +28,8 @@ import {
   DEFAULT_ANSWERS,
   GUIDE_40,
   keymapOf,
+  layerRoles,
+  planFor,
   proposalLabels,
   proposeDuplicates,
   proposeLayerKeys,
@@ -48,6 +50,7 @@ import {
   currentThumb,
   type Answers,
   type HoldChoice,
+  type LayerContent,
   type Proposal,
   type ThumbAssign,
   type WorkingKeymap,
@@ -101,16 +104,22 @@ export function GuideFlow({
     writeProgress(board.id, progress);
   }, [board.id, progress]);
 
-  const km: WorkingKeymap = useMemo(
+  const kmNow: WorkingKeymap = useMemo(
     () => ({ layers: progress.layers }),
     [progress.layers],
   );
+  const { step: current, answers, status } = progress;
+  const step = GUIDE_40[current];
+  // A step already applied is shown against the keymap as it was before
+  // it, so its proposal reflects the answers rather than vanishing.
+  const km: WorkingKeymap = useMemo(() => {
+    const was = progress.applied?.[current];
+    return was ? applyChanges(kmNow, was.previous) : kmNow;
+  }, [kmNow, progress.applied, current]);
   const drawn = useMemo(
     () => boardWith(board, km, layout),
     [board, km, layout],
   );
-  const { step: current, answers, status } = progress;
-  const step = GUIDE_40[current];
 
   const update = (patch: Partial<GuideProgress>) =>
     setProgress((p) => ({ ...p, ...patch, savedAt: Date.now() }));
@@ -119,15 +128,32 @@ export function GuideFlow({
   const goTo = (i: number) =>
     update({ step: Math.max(0, Math.min(GUIDE_40.length - 1, i)) });
   const finish = (how: StepStatus, changes?: Proposal["changes"]) =>
-    setProgress((p) => ({
-      ...p,
-      status: { ...p.status, [p.step]: how },
-      layers: changes?.length
-        ? applyChanges({ layers: p.layers }, changes).layers
-        : p.layers,
-      step: Math.min(GUIDE_40.length - 1, p.step + 1),
-      savedAt: Date.now(),
-    }));
+    setProgress((p) => {
+      // Undo what this step applied before, then apply the new changes.
+      const was = p.applied?.[p.step];
+      let layers = was
+        ? applyChanges({ layers: p.layers }, was.previous).layers
+        : p.layers;
+      const applied = { ...(p.applied ?? {}) };
+      delete applied[p.step];
+      if (changes?.length) {
+        const previous: Proposal["changes"] = changes.map((c) => ({
+          layer: c.layer,
+          pos: c.pos,
+          trigger: layers[c.layer]?.[c.pos] ?? { kind: "none" },
+        }));
+        layers = applyChanges({ layers }, changes).layers;
+        applied[p.step] = { changes, previous };
+      }
+      return {
+        ...p,
+        status: { ...p.status, [p.step]: how },
+        layers,
+        applied,
+        step: Math.min(GUIDE_40.length - 1, p.step + 1),
+        savedAt: Date.now(),
+      };
+    });
   const restart = () => {
     clearProgress(board.id);
     setProgress(fresh(board));
@@ -147,7 +173,7 @@ export function GuideFlow({
       case "layer-one-hand":
         return proposeOneHand(board, meta, km, answers, layout);
       case "layer-other":
-        return proposeOther(board, meta, km, answers);
+        return proposeOther(board, meta, km, answers, layout);
       case "rare":
         return proposeRare(board, meta, km, answers);
       default:
@@ -166,6 +192,23 @@ export function GuideFlow({
   const marks = useMemo(() => {
     const m = new Map<string, Mark>();
     if (!proposal) return m;
+    if (step.id === "layer-keys") {
+      // Every thumb key as it will be: the layer keys stand out, the rest
+      // show what they keep.
+      const after = applyChanges(km, proposal.changes);
+      for (const th of thumbsLeftToRight(board, meta)) {
+        const t = after.layers[0]?.[th.pos];
+        if (t?.kind !== "key") continue;
+        const main = labelOf(t, layout).main;
+        const hasLayer = t.holdLayer !== undefined;
+        const k = board.keys[th.pos];
+        m.set(k.id, {
+          tone: hasLayer ? "set" : "hold",
+          label: hasLayer ? `${main} / L${t.holdLayer}` : main,
+        });
+      }
+      return m;
+    }
     for (const [pos, { layer, label }] of proposalLabels(
       proposal.changes,
       layout,
@@ -175,7 +218,7 @@ export function GuideFlow({
       if (k) m.set(k.id, { tone: "set", label });
     }
     return m;
-  }, [proposal, layout, board, shownLayer]);
+  }, [proposal, layout, board, shownLayer, step.id, km, meta]);
 
   // Layer keys are chosen once; the suggestion fills the answer the first time.
   useEffect(() => {
@@ -194,6 +237,22 @@ export function GuideFlow({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step.id]);
+
+  const roles = useMemo(
+    () => layerRoles(meta, km, answers),
+    [meta, km, answers],
+  );
+  const setPlan = (
+    layer: number,
+    isPrimary: boolean,
+    patch: Partial<{ same: LayerContent; other: LayerContent }>,
+  ) =>
+    answer({
+      layerPlan: {
+        ...answers.layerPlan,
+        [String(layer)]: { ...planFor(answers, layer, isPrimary), ...patch },
+      },
+    });
 
   const review = useMemo(
     () => (step.id === "duplicates" ? reviewKeys(km, answers, layout) : []),
@@ -633,7 +692,7 @@ export function GuideFlow({
               <>
                 <Para>
                   {t(
-                    "What one hand should finish on its own goes on that hand's layer: the cursor keys under the fingers of the hand whose thumb holds the layer, so the other hand is free; and on the other side of the same layer, the symbols that did not fit the base layer, each without a modifier.",
+                    "What one hand should finish on its own goes on that hand's layer: the cursor keys under the fingers of the hand whose thumb holds the layer, so the other hand stays free.",
                   )}
                 </Para>
                 <Choices
@@ -647,6 +706,62 @@ export function GuideFlow({
                     ["L", t("Cursor under the left hand (left thumb's layer)")],
                   ]}
                 />
+                <h3 className="text-sm font-medium text-[var(--color-text)]">
+                  {t("How the cursor keys lie")}
+                </h3>
+                <Choices
+                  value={answers.cursorShape}
+                  onChange={(v) => answer({ cursorShape: v })}
+                  options={[
+                    ["t", t("Inverted T: ↑ above, ← ↓ → on the home row")],
+                    ["row", t("One row, like Vim: ← ↓ ↑ → on the home row")],
+                  ]}
+                />
+                {roles.primary && (
+                  <>
+                    <h3 className="text-sm font-medium text-[var(--color-text)]">
+                      {t("Under the other hand of the same layer")}
+                    </h3>
+                    <Para muted>
+                      {t(
+                        "What that hand alone should type while the thumb holds the layer; or nothing yet.",
+                      )}
+                    </Para>
+                    <ContentChoice
+                      t={t}
+                      value={planFor(answers, roles.primary.layer, true).other}
+                      onChange={(v) =>
+                        setPlan(roles.primary!.layer, true, { other: v })
+                      }
+                      exclude={["cursor"]}
+                    />
+                  </>
+                )}
+                {roles.extras.map((x) => (
+                  <div
+                    key={x.layer}
+                    className="space-y-2 rounded-xl border border-[var(--color-border)] p-3"
+                  >
+                    <h3 className="text-sm font-medium text-[var(--color-text)]">
+                      {t("Layer {{n}} ({{hand}} thumb)", {
+                        n: x.layer,
+                        hand: x.hand === "L" ? t("left") : t("right"),
+                      })}
+                    </h3>
+                    <Para muted>{t("Under the same hand")}</Para>
+                    <ContentChoice
+                      t={t}
+                      value={planFor(answers, x.layer, false).same}
+                      onChange={(v) => setPlan(x.layer, false, { same: v })}
+                    />
+                    <Para muted>{t("Under the other hand")}</Para>
+                    <ContentChoice
+                      t={t}
+                      value={planFor(answers, x.layer, false).other}
+                      onChange={(v) => setPlan(x.layer, false, { other: v })}
+                    />
+                  </div>
+                ))}
                 {proposal?.note && <Para muted>{noteText(proposal.note)}</Para>}
                 {changeButtons}
               </>
@@ -656,7 +771,7 @@ export function GuideFlow({
               <>
                 <Para>
                   {t(
-                    "The other thumb's layer takes what is used with the opposite hand: a numpad under one hand, the F keys under the other.",
+                    "The hand that is not holding the layer key gets what you type with both hands in typing posture: the thumb holds the layer on one side, the fingers of the other side press the keys. A numpad and the F keys are the usual examples.",
                   )}
                 </Para>
                 <Choices
@@ -806,6 +921,46 @@ function Example({ children }: { children: ReactNode }) {
     <p className="rounded-xl border border-[var(--color-cyber)]/40 bg-[var(--color-cyber)]/10 px-4 py-3 text-xs leading-relaxed text-[var(--color-text-secondary)]">
       {children}
     </p>
+  );
+}
+
+const CONTENTS: Array<[LayerContent, string]> = [
+  ["none", "No content"],
+  ["cursor", "Cursor keys"],
+  ["digits", "Numbers (numpad)"],
+  ["symbols", "Symbols left over"],
+  ["fkeys", "F keys"],
+];
+
+function ContentChoice({
+  t,
+  value,
+  onChange,
+  exclude = [],
+}: {
+  t: T;
+  value: LayerContent;
+  onChange: (v: LayerContent) => void;
+  exclude?: LayerContent[];
+}) {
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {CONTENTS.filter(([v]) => !exclude.includes(v)).map(([v, label]) => (
+        <button
+          key={v}
+          type="button"
+          aria-pressed={value === v}
+          onClick={() => onChange(v)}
+          className={`h-8 rounded-full border px-3 text-xs transition-colors ${
+            value === v
+              ? "border-[var(--color-electric)] bg-[var(--color-electric)]/10 text-[var(--color-text)]"
+              : "border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+          }`}
+        >
+          {t(label)}
+        </button>
+      ))}
+    </div>
   );
 }
 

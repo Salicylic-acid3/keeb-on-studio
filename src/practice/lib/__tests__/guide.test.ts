@@ -135,6 +135,7 @@ describe("guide proposals on GoFortyMax Ortho", () => {
       "Backspace",
       "Delete",
       "Enter/L",
+      "Convert/AltLeft",
     ]);
   });
 
@@ -164,7 +165,14 @@ describe("guide proposals on GoFortyMax Ortho", () => {
         layerKeyPos: suggestedLayerKeys(meta, km),
       }).changes,
     );
-    const p = proposeOneHand(board, meta, km, DEFAULT_ANSWERS, "us");
+    // The row shape; the inverted T is the default.
+    const p = proposeOneHand(
+      board,
+      meta,
+      km,
+      { ...DEFAULT_ANSWERS, cursorShape: "row" },
+      "us",
+    );
     const right = thumbLayerKeys(meta, km).find((k) => k.hand === "R")!;
     const after = boardWith(board, applyChanges(km, p.changes), "us");
     const homeLabels = meta.homeRow.R.map(
@@ -188,7 +196,7 @@ describe("guide proposals on GoFortyMax Ortho", () => {
         layerKeyPos: suggestedLayerKeys(meta, km),
       }).changes,
     );
-    const other = proposeOther(board, meta, km, DEFAULT_ANSWERS);
+    const other = proposeOther(board, meta, km, DEFAULT_ANSWERS, "us");
     expect(
       other.changes.some(
         (c) => c.trigger.kind === "key" && c.trigger.code === "Digit5",

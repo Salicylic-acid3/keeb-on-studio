@@ -108,6 +108,25 @@ const ja: Record<string, string> = {
   "Characters not on the keymap": "入力不可文字",
   "None.": "なし",
   "Next text": "次の文章",
+  "No content": "なし",
+  "Cursor keys": "カーソルキー",
+  "How the cursor keys lie": "カーソルキーの並び",
+  "Inverted T: ↑ above, ← ↓ → on the home row":
+    "山型（逆T字）: ホームロウに ← ↓ →、その上に ↑",
+  "One row, like Vim: ← ↓ ↑ → on the home row":
+    "横一列（VIM型）: ホームロウに ← ↓ ↑ →",
+  "Layer {{n}} ({{hand}} thumb)": "レイヤー {{n}}（{{hand}}の親指）",
+  "Numbers (numpad)": "数字キー（テンキー配置）",
+  "Symbols left over": "ベースに入らなかった記号",
+  "The hand that is not holding the layer key gets what you type with both hands in typing posture: the thumb holds the layer on one side, the fingers of the other side press the keys. A numpad and the F keys are the usual examples.":
+    "レイヤーキーを押していない側の手には、両手を使って入力するものを置きます。片方の親指でレイヤーキーを押しながら、もう片方の手の指でキーを打つので、打鍵姿勢（両手をホームポジションに置いた状態）で使うキーを割り当てるとよいです。テンキーやFキーがその例です。",
+  "Under the other hand": "反対の手の下",
+  "Under the other hand of the same layer": "同じレイヤーの、反対の手の下",
+  "Under the same hand": "同じ手の下",
+  "What one hand should finish on its own goes on that hand's layer: the cursor keys under the fingers of the hand whose thumb holds the layer, so the other hand stays free.":
+    "片手で完結させたいものを、その手のレイヤーに置きます。レイヤーキーを押す親指と同じ手の指の下にカーソルキーを置けば、もう片方の手は空いたままです。",
+  "What that hand alone should type while the thumb holds the layer; or nothing yet.":
+    "親指でレイヤーキーを押している間に、その手だけで打ちたいもの。まだ決めないなら「なし」のままで構いません。",
   // Setup guide
   "A keymap is yours to decide, and the order of deciding matters: the keys you use most go where they are easiest to reach, and everything else finds a place after them.":
     "キーマップは自分で決めるものですが、決める順番が大事です。よく使うキーから、いちばん押しやすい場所に置いていき、残りはその後で居場所を決めます。",
@@ -168,8 +187,6 @@ const ja: Record<string, string> = {
     "ガイドを最初からやり直しますか？ 適用した配置案は作業中のキーマップから取り消されます。",
   "The cursor, numbers and F keys you just put on the layers, as tasks.":
     "レイヤーに置いたカーソル・数字・Fキーを課題で練習します。",
-  "The other thumb's layer takes what is used with the opposite hand: a numpad under one hand, the F keys under the other.":
-    "もう一方の親指のレイヤーには、反対の手で使うものを置きます。片手の下にテンキー、もう片手の下にFキーです。",
   "This keyboard has no CapsLock on its base layer.":
     "この機種のベースレイヤーには CapsLock がありません。",
   "This keyboard has no symbol slots on its base layer, so there is nothing to place here.":
@@ -180,8 +197,6 @@ const ja: Record<string, string> = {
     "2つ目のレイヤーキーが必要です。レイヤーキーのステップに戻って、親指キーを2つ選んでください。",
   "Two layer keys, one under each thumb, give the next steps a layer for each hand.":
     "左右の親指に1つずつ、2つのレイヤーキーがあると、次のステップで手ごとにレイヤーを割り当てられます。",
-  "What one hand should finish on its own goes on that hand's layer: the cursor keys under the fingers of the hand whose thumb holds the layer, so the other hand is free; and on the other side of the same layer, the symbols that did not fit the base layer, each without a modifier.":
-    "片手で完結させたいものを、その手のレイヤーに置きます。レイヤーキーを押す親指と同じ手の指の下にカーソルキーを置けば、もう片方の手は空きます。同じレイヤーの反対側には、ベースレイヤーに入らなかった記号を、修飾キー無しで打てるように置きます。",
   "Which thumb key is Space?": "どの親指キーをスペースにしますか？",
   "Which thumb keys open a layer when held?":
     "長押しでレイヤーになる親指キーはどれですか？",

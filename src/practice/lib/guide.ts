@@ -189,6 +189,8 @@ export function charOf(t: Trigger, layout: LabelLayout): string | null {
 /* ------------------------------------------------------------------ */
 
 export type HoldChoice = "none" | "shift" | "ctrl" | "alt" | "meta" | "layer";
+export type CursorShape = "t" | "row";
+export type LayerContent = "none" | "cursor" | "digits" | "symbols" | "fkeys";
 
 /** What a thumb key does: its tap (a code, or "keep" for what it has) and its hold. */
 export interface ThumbAssign {
@@ -207,6 +209,13 @@ export interface Answers {
   layerKeyPos: number[];
   /** The hand whose thumb layer carries the cursor; "auto" picks the right. */
   cursorHand: "auto" | Hand;
+  /** How the cursor keys lie: an inverted T, or a row like Vim's hjkl. */
+  cursorShape: CursorShape;
+  /**
+   * What each thumb layer holds, by layer number: under the hand whose
+   * thumb holds it ("same") and under the other hand ("other").
+   */
+  layerPlan: Record<string, { same: LayerContent; other: LayerContent }>;
   /** Swap the numpad and the F keys between hands. */
   otherMirror: boolean;
   /** Occasional keys to tuck into a layer, by code. */
@@ -286,6 +295,8 @@ export const DEFAULT_ANSWERS: Answers = {
   thumbs: {},
   layerKeyPos: [],
   cursorHand: "auto",
+  cursorShape: "t",
+  layerPlan: {},
   otherMirror: false,
   rare: ["PrintScreen", "Insert"],
 };
@@ -480,6 +491,14 @@ export function reviewKeys(
       if (out.some((r) => r.pos === pos)) continue;
       out.push({ pos, code: original(pos), reason: "doubled" });
     }
+  }
+  // A key given a replacement stays listed, so the choice can be undone.
+  for (const p of Object.keys(answers.replace)) {
+    const pos = Number(p);
+    if (answers.replace[p] === "keep" || out.some((r) => r.pos === pos))
+      continue;
+    if (km.layers[0]?.[pos])
+      out.push({ pos, code: original(pos), reason: "doubled" });
   }
   return out.sort((a, b) => a.pos - b.pos);
 }
@@ -743,23 +762,149 @@ export function proposeLayerKeys(
   return { changes: dedupe(km, changes) };
 }
 
-function cursorLayer(
+/** The thumb layers by role: the cursor layer, the one step 8 fills, and any extra. */
+export function layerRoles(
   meta: KeyboardMeta,
   km: WorkingKeymap,
   answers: Answers,
-): { layer: number; hand: Hand } | null {
+): {
+  primary: { layer: number; hand: Hand } | null;
+  secondary: { layer: number; hand: Hand } | null;
+  extras: Array<{ layer: number; hand: Hand }>;
+} {
   const keys = thumbLayerKeys(meta, km);
-  if (!keys.length) return null;
+  if (!keys.length) return { primary: null, secondary: null, extras: [] };
   const hand: Hand = answers.cursorHand === "auto" ? "R" : answers.cursorHand;
-  const same = keys.find((k) => k.hand === hand);
-  const k = same ?? keys[0];
-  return { layer: k.layer, hand };
+  const first = keys.find((k) => k.hand === hand) ?? keys[0];
+  const primary = { layer: first.layer, hand };
+  const rest = keys.filter((k) => k.layer !== first.layer);
+  const second = rest.find((k) => k.hand !== first.hand) ?? rest[0] ?? null;
+  const secondary = second ? { layer: second.layer, hand: second.hand } : null;
+  const extras = rest
+    .filter((k) => k.layer !== second?.layer)
+    .map((k) => ({ layer: k.layer, hand: k.hand }));
+  return { primary, secondary, extras };
+}
+
+/** Changes that put `content` under `hand` on `layer`. */
+export function placeContent(
+  board: TestBoard,
+  meta: KeyboardMeta,
+  km: WorkingKeymap,
+  layer: number,
+  hand: Hand,
+  content: LayerContent,
+  answers: Answers,
+  layout: LabelLayout,
+): Change[] {
+  const home = meta.homeRow[hand].filter((p) => p < board.keys.length);
+  const changes: Change[] = [];
+  const put = (pos: number | null | undefined, code: string) => {
+    if (pos !== null && pos !== undefined)
+      changes.push({ layer, pos, trigger: key(code) });
+  };
+  switch (content) {
+    case "none":
+      return [];
+    case "cursor": {
+      if (answers.cursorShape === "row") {
+        ["ArrowLeft", "ArrowDown", "ArrowUp", "ArrowRight"].forEach((c, i) =>
+          put(home[i], c),
+        );
+        ["Home", "PageDown", "PageUp", "End"].forEach((c, i) =>
+          put(home[i] !== undefined ? above(board, home[i]) : null, c),
+        );
+      } else {
+        // An inverted T under the three fingers nearest the middle, Home /
+        // End at the ends, PgUp / PgDn above and below the middle.
+        const [h0, h1, h2, h3] = home;
+        put(h1, "ArrowLeft");
+        put(h2, "ArrowDown");
+        put(h3, "ArrowRight");
+        put(h2 !== undefined ? above(board, h2) : null, "ArrowUp");
+        put(h0, "Home");
+        put(h3 !== undefined ? above(board, h3) : null, "End");
+        put(h1 !== undefined ? above(board, h1) : null, "PageUp");
+        put(h2 !== undefined ? below(board, h2) : null, "PageDown");
+      }
+      return changes;
+    }
+    case "digits": {
+      const three = home.slice(0, 3);
+      const row = (digits: string[], ps: (number | null | undefined)[]) =>
+        ps.forEach((p, i) => digits[i] && put(p, `Digit${digits[i]}`));
+      row(
+        ["7", "8", "9"],
+        three.map((p) => above(board, p)),
+      );
+      row(["4", "5", "6"], three);
+      row(
+        ["1", "2", "3"],
+        three.map((p) => below(board, p)),
+      );
+      put(home[3] !== undefined ? below(board, home[3]) : null, "Digit0");
+      return changes;
+    }
+    case "fkeys": {
+      const four = home.slice(0, 4);
+      const row = (from: number, ps: (number | null | undefined)[]) =>
+        ps.forEach((p, i) => put(p, `F${from + i}`));
+      row(
+        1,
+        four.map((p) => above(board, p)),
+      );
+      row(5, four);
+      row(
+        9,
+        four.map((p) => below(board, p)),
+      );
+      return changes;
+    }
+    case "symbols": {
+      // The symbols not on the base layer, most used first.
+      const onBase = new Set(
+        (km.layers[0] ?? [])
+          .map((t) => charOf(t, layout))
+          .filter((c): c is string => c !== null),
+      );
+      const left = answers.symbols.filter((ch) => !onBase.has(ch));
+      const slots = [
+        ...home,
+        ...home
+          .map((p) => above(board, p))
+          .filter((p): p is number => p !== null),
+        ...home
+          .map((p) => below(board, p))
+          .filter((p): p is number => p !== null),
+      ];
+      left.forEach((ch, i) => {
+        const t = triggerForChar(ch, layout);
+        const pos = slots[i];
+        if (t && pos !== undefined) changes.push({ layer, pos, trigger: t });
+      });
+      return changes;
+    }
+  }
+}
+
+/** What a layer is planned to hold, with the cursor layer's default. */
+export function planFor(
+  answers: Answers,
+  layer: number,
+  isPrimary: boolean,
+): { same: LayerContent; other: LayerContent } {
+  return (
+    answers.layerPlan[String(layer)] ?? {
+      same: isPrimary ? "cursor" : "none",
+      other: "none",
+    }
+  );
 }
 
 /**
- * Step 7: on the layer under one thumb, the cursor on that hand's home
- * row (with Home / End / PgUp / PgDn above) and the symbols that did not
- * fit the base layer on the other hand.
+ * Step 7: the cursor under the hand whose thumb holds the layer, and
+ * whatever was chosen for the other hand; any extra thumb layer by its
+ * own plan.
  */
 export function proposeOneHand(
   board: TestBoard,
@@ -768,42 +913,35 @@ export function proposeOneHand(
   answers: Answers,
   layout: LabelLayout,
 ): Proposal {
-  const target = cursorLayer(meta, km, answers);
-  if (!target) return { changes: [], note: "one-layer" };
-  const { layer, hand } = target;
-  const other: Hand = hand === "L" ? "R" : "L";
-  const home = meta.homeRow[hand].filter((p) => p < board.keys.length);
+  const { primary, extras } = layerRoles(meta, km, answers);
+  if (!primary) return { changes: [], note: "one-layer" };
   const changes: Change[] = [];
-  const arrows = ["ArrowLeft", "ArrowDown", "ArrowUp", "ArrowRight"];
-  const nav = ["Home", "PageDown", "PageUp", "End"];
-  home.slice(0, 4).forEach((pos, i) => {
-    changes.push({ layer, pos, trigger: key(arrows[i]) });
-    const up = above(board, pos);
-    if (up !== null) changes.push({ layer, pos: up, trigger: key(nav[i]) });
-  });
-
-  // Symbols not on the base layer, most used first.
-  const onBase = new Set(
-    (km.layers[0] ?? [])
-      .map((t) => charOf(t, layout))
-      .filter((c): c is string => c !== null),
-  );
-  const left = answers.symbols.filter((ch) => !onBase.has(ch));
-  const otherHome = meta.homeRow[other].filter((p) => p < board.keys.length);
-  const slots = [
-    ...otherHome,
-    ...otherHome
-      .map((p) => above(board, p))
-      .filter((p): p is number => p !== null),
-    ...otherHome
-      .map((p) => below(board, p))
-      .filter((p): p is number => p !== null),
-  ];
-  left.forEach((ch, i) => {
-    const t = triggerForChar(ch, layout);
-    const pos = slots[i];
-    if (t && pos !== undefined) changes.push({ layer, pos, trigger: t });
-  });
+  const other = (h: Hand): Hand => (h === "L" ? "R" : "L");
+  for (const target of [primary, ...extras]) {
+    const plan = planFor(answers, target.layer, target.layer === primary.layer);
+    changes.push(
+      ...placeContent(
+        board,
+        meta,
+        km,
+        target.layer,
+        target.hand,
+        plan.same,
+        answers,
+        layout,
+      ),
+      ...placeContent(
+        board,
+        meta,
+        km,
+        target.layer,
+        other(target.hand),
+        plan.other,
+        answers,
+        layout,
+      ),
+    );
+  }
   return { changes: dedupe(km, changes) };
 }
 
@@ -816,54 +954,34 @@ export function proposeOther(
   meta: KeyboardMeta,
   km: WorkingKeymap,
   answers: Answers,
+  layout: LabelLayout,
 ): Proposal {
-  const keys = thumbLayerKeys(meta, km);
-  const cursor = cursorLayer(meta, km, answers);
-  const otherKey = keys.find((k) => k.layer !== cursor?.layer);
-  if (!otherKey) return { changes: [], note: "one-layer" };
-  const layer = otherKey.layer;
+  const { secondary } = layerRoles(meta, km, answers);
+  if (!secondary) return { changes: [], note: "one-layer" };
   const numHand: Hand = answers.otherMirror ? "L" : "R";
   const fnHand: Hand = numHand === "L" ? "R" : "L";
-  const changes: Change[] = [];
-
-  const numHome = meta.homeRow[numHand]
-    .filter((p) => p < board.keys.length)
-    .slice(0, 3);
-  const pad = (digits: string[], row: (number | null)[]) =>
-    row.forEach((pos, i) => {
-      if (pos !== null && digits[i])
-        changes.push({ layer, pos, trigger: key(`Digit${digits[i]}`) });
-    });
-  pad(
-    ["7", "8", "9"],
-    numHome.map((p) => above(board, p)),
-  );
-  pad(["4", "5", "6"], numHome);
-  pad(
-    ["1", "2", "3"],
-    numHome.map((p) => below(board, p)),
-  );
-  const fourth = meta.homeRow[numHand][3];
-  const zero = fourth !== undefined ? below(board, fourth) : null;
-  if (zero !== null) changes.push({ layer, pos: zero, trigger: key("Digit0") });
-
-  const fnHome = meta.homeRow[fnHand]
-    .filter((p) => p < board.keys.length)
-    .slice(0, 4);
-  const fn = (from: number, row: (number | null)[]) =>
-    row.forEach((pos, i) => {
-      if (pos !== null)
-        changes.push({ layer, pos, trigger: key(`F${from + i}`) });
-    });
-  fn(
-    1,
-    fnHome.map((p) => above(board, p)),
-  );
-  fn(5, fnHome);
-  fn(
-    9,
-    fnHome.map((p) => below(board, p)),
-  );
+  const changes = [
+    ...placeContent(
+      board,
+      meta,
+      km,
+      secondary.layer,
+      numHand,
+      "digits",
+      answers,
+      layout,
+    ),
+    ...placeContent(
+      board,
+      meta,
+      km,
+      secondary.layer,
+      fnHand,
+      "fkeys",
+      answers,
+      layout,
+    ),
+  ];
   return { changes: dedupe(km, changes) };
 }
 
