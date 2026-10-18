@@ -113,6 +113,9 @@ const ja: Record<string, string> = {
   "Key {{key}}: put": "キー {{key}} に置くもの",
   "Back to the order": "順番どおりに戻す",
   Fit: "全体",
+  "All thumb layers": "親指レイヤーをすべて表示",
+  "Layer {{n}} ({{key}} held)": "レイヤー {{n}}（{{key}} 長押し）",
+  "Thumb key held": "押している親指キー",
   Enlarge: "拡大",
   "The guide ran into a problem, probably with progress saved by an earlier version. Starting over clears it.":
     "ガイドで問題が起きました。以前のバージョンで保存した進捗が原因の可能性があります。「最初から」で保存データを消してやり直せます。",

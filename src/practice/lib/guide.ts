@@ -625,9 +625,13 @@ export function recommendThumbs(
     .map((t) => t.pos)
     .filter((p) => p !== space && !inward(p))
     .sort(byDistance);
+  // With five thumb keys or fewer, Delete is left out: the row is usually
+  // built without it.
   const innerSeq: ThumbAssign[] = [
     { tap: "Backspace", hold: "none" },
-    { tap: "Delete", hold: "none" },
+    ...(thumbs.length >= 6
+      ? [{ tap: "Delete", hold: "none" } as ThumbAssign]
+      : []),
     { tap: "Enter", hold: "layer" },
     { tap: "Convert", hold: "alt" },
     { tap: "ShiftLeft", hold: "none" },
@@ -846,18 +850,19 @@ export function placeContent(
             put(home[i] !== undefined ? above(board, home[i]) : null, c),
           );
       } else {
-        // An inverted T under the three fingers nearest the middle, Home /
-        // End at the ends, PgUp / PgDn above and below the middle.
+        // An inverted T from the index finger: ← ↓ → on J K L (the home
+        // row's first three), ↑ above the middle one; Home / End above
+        // the ends and PgUp / PgDn on the fourth key and above it.
         const [h0, h1, h2, h3] = home;
-        put(h1, "ArrowLeft");
-        put(h2, "ArrowDown");
-        put(h3, "ArrowRight");
-        put(h2 !== undefined ? above(board, h2) : null, "ArrowUp");
+        put(h0, "ArrowLeft");
+        put(h1, "ArrowDown");
+        put(h2, "ArrowRight");
+        put(h1 !== undefined ? above(board, h1) : null, "ArrowUp");
         if (answers.navKeys) {
-          put(h0, "Home");
-          put(h3 !== undefined ? above(board, h3) : null, "End");
-          put(h1 !== undefined ? above(board, h1) : null, "PageUp");
-          put(h2 !== undefined ? below(board, h2) : null, "PageDown");
+          put(h0 !== undefined ? above(board, h0) : null, "Home");
+          put(h2 !== undefined ? above(board, h2) : null, "End");
+          put(h3 !== undefined ? above(board, h3) : null, "PageUp");
+          put(h3, "PageDown");
         }
       }
       return changes;

@@ -224,4 +224,15 @@ describe("guide proposals on GoFortyMax Ortho", () => {
       rare.changes.map((c) => c.trigger.kind === "key" && c.trigger.code),
     ).toEqual(["PrintScreen", "Insert"]);
   });
+
+  it("leaves Delete out of the recommended row on a five-thumb keyboard", () => {
+    const b = testBoard("goforty_jp")!;
+    const m = keyboardMeta(b);
+    const km = keymapOf(b);
+    const rec = recommendThumbs(b, m, km, null);
+    const taps = Object.values(rec).map((a) => a.tap);
+    expect(taps).toContain("Backspace");
+    expect(taps).toContain("Enter");
+    expect(taps).not.toContain("Delete");
+  });
 });

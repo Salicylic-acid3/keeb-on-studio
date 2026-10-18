@@ -244,6 +244,21 @@ export function GuideFlow({
     return m;
   }, [proposal, layout, board, shownLayer, step.id, km, meta, pickedSlot]);
 
+  const layerStep = step.id === "layer-one-hand" || step.id === "layer-other";
+  /** The proposal's marks on one layer, with the thumb key held for it lit. */
+  const marksForLayer = (layer: number, thumbPos: number) => {
+    const m = new Map<string, Mark>();
+    if (!proposal) return m;
+    for (const [pos, c] of proposalLabels(proposal.changes, layout)) {
+      if (c.layer !== layer) continue;
+      const k = board.keys[pos];
+      if (k) m.set(k.id, { tone: "set", label: c.label });
+    }
+    const held = board.keys[thumbPos];
+    if (held) m.set(held.id, { tone: "hint" });
+    return m;
+  };
+
   // Layer keys are chosen once; the suggestion fills the answer the first time.
   useEffect(() => {
     if (
@@ -929,9 +944,11 @@ export function GuideFlow({
                 {board.name}
               </span>
               <span className="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
-                {shownLayer === 0
-                  ? t("Base layer")
-                  : t("Layer {{n}}", { n: shownLayer })}
+                {layerStep
+                  ? t("All thumb layers")
+                  : shownLayer === 0
+                    ? t("Base layer")
+                    : t("Layer {{n}}", { n: shownLayer })}
                 <button
                   type="button"
                   aria-pressed={zoom}
@@ -943,24 +960,51 @@ export function GuideFlow({
                 </button>
               </span>
             </div>
-            <PracticeBoard
-              board={drawn}
-              marks={marks}
-              dimOthers={marks.size > 0}
-              layer={shownLayer}
-              layout={layout}
-              scroll={zoom}
-              onKeyClick={
-                step.id === "symbols" && manual
-                  ? (pos) =>
-                      setPickedSlot(
-                        orderedSymbolSlots(board, meta).includes(pos)
-                          ? pos
-                          : null,
-                      )
-                  : undefined
-              }
-            />
+            {layerStep ? (
+              // Every thumb layer, each with the thumb key held for it lit.
+              <div className="space-y-4">
+                {thumbLayers.map((k) => (
+                  <div key={k.layer} className="space-y-1.5">
+                    <div className="text-xs text-[var(--color-text-secondary)]">
+                      {t("Layer {{n}} ({{key}} held)", {
+                        n: k.layer,
+                        key: thumbLabel(k.pos),
+                      })}
+                    </div>
+                    <PracticeBoard
+                      board={drawn}
+                      marks={marksForLayer(k.layer, k.pos)}
+                      dimOthers={marksForLayer(k.layer, k.pos).size > 1}
+                      layer={k.layer}
+                      layout={layout}
+                      scroll={zoom}
+                    />
+                  </div>
+                ))}
+                {thumbLayers.length === 0 && (
+                  <Para muted>{noteText("one-layer")}</Para>
+                )}
+              </div>
+            ) : (
+              <PracticeBoard
+                board={drawn}
+                marks={marks}
+                dimOthers={marks.size > 0}
+                layer={shownLayer}
+                layout={layout}
+                scroll={zoom}
+                onKeyClick={
+                  step.id === "symbols" && manual
+                    ? (pos) =>
+                        setPickedSlot(
+                          orderedSymbolSlots(board, meta).includes(pos)
+                            ? pos
+                            : null,
+                        )
+                    : undefined
+                }
+              />
+            )}
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-[var(--color-text-muted)]">
               {step.id === "symbols" ? (
                 <>
@@ -974,10 +1018,18 @@ export function GuideFlow({
                   </span>
                 </>
               ) : (
-                <span className="inline-flex items-center gap-1.5">
-                  <span className="inline-block h-3.5 w-3.5 rounded border border-[var(--color-neon)] bg-[color-mix(in_srgb,var(--color-neon)_25%,var(--color-surface-elevated))]" />
-                  {t("Keys the proposal changes (old legend struck through)")}
-                </span>
+                <>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="inline-block h-3.5 w-3.5 rounded border border-[var(--color-neon)] bg-[color-mix(in_srgb,var(--color-neon)_25%,var(--color-surface-elevated))]" />
+                    {t("Keys the proposal changes (old legend struck through)")}
+                  </span>
+                  {layerStep && (
+                    <span className="inline-flex items-center gap-1.5">
+                      <span className="inline-block h-3.5 w-3.5 rounded border border-[var(--color-electric)] bg-[color-mix(in_srgb,var(--color-electric)_55%,var(--color-surface-elevated))]" />
+                      {t("Thumb key held")}
+                    </span>
+                  )}
+                </>
               )}
               {thumbLayerKeys(meta, km).length > 0 && (
                 <span>
@@ -1057,7 +1109,7 @@ function LayerPicker({
       {CONTENTS.map((c) => (
         <div
           key={c}
-          className="grid grid-cols-[8rem_1fr] items-center gap-2 rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-sm"
+          className="grid grid-cols-[7rem_minmax(0,1fr)] items-center gap-2 rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-sm"
         >
           <span className="text-[var(--color-text)]">{t(CONTENT_NAME[c])}</span>
           <select
@@ -1065,7 +1117,7 @@ function LayerPicker({
             onChange={(e) =>
               onChange(c, e.target.value === "" ? null : Number(e.target.value))
             }
-            className="h-8 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm text-[var(--color-text)]"
+            className="h-8 w-full min-w-0 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm text-[var(--color-text)]"
           >
             <option value="">{t("Not placed")}</option>
             {thumbLayers.map((k) => (
