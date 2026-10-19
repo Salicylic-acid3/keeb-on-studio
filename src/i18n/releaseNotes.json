@@ -10,6 +10,21 @@
       }
     },
     {
+      "version": "2026.10.18.1",
+      "date": "2026-10-18",
+      "changes": {
+        "major": [],
+        "minor": [],
+        "patch": [
+          {
+            "en": "Layout editor and key test: ClickBoard ErgoMini and ClickBoard Ortho are drawn as the real boards instead of a plain grid — the ErgoMini with its staggered columns, thumb keys turned towards each hand and half-height arrow keys; the Ortho with its 1.25u centre column, a top row on the left half only, its row of seven thumb keys set a little lower and its half-height arrow keys.",
+            "ja": "レイアウトエディタとキーテスト: ClickBoard ErgoMini と ClickBoard Ortho が単純な格子の配列で表示されていたのを直し、実機と同じ配列で表示するようにしました。ErgoMini は列ごとの段ずれ・手の向きに傾いた親指キー・半分の高さの矢印キー、Ortho は中央の 1.25u の列・左半分だけの最上段・少し下げた7つの親指キー・半分の高さの矢印キーです。",
+            "zh": "布局编辑器和按键测试：ClickBoard ErgoMini 和 ClickBoard Ortho 此前以简单的网格显示，现在按实物显示。ErgoMini 包括各列的错位、朝向双手倾斜的拇指键和半高的方向键；Ortho 包括中间的 1.25u 列、只在左半边的最上排、略微下沉的七个拇指键和半高的方向键。"
+          }
+        ]
+      }
+    },
+    {
       "version": "2026.10.17.1",
       "date": "2026-10-17",
       "changes": {

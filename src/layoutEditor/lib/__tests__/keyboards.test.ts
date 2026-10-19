@@ -73,6 +73,38 @@ describe("keyboard templates", () => {
     expect(mainAndSub(ergotrack.keys[1])).toEqual({ main: "1", sub: "!" });
   });
 
+  it("draws the ClickBoard ErgoMini as built, not as a plain grid", () => {
+    // Its vial.json on the older branches was the simplified grid of
+    // keyboard.json; the real board has staggered columns, four thumb keys
+    // turned to the hand and half-height up and down arrows.
+    const ergomini = keyboardProject("clickboard_ergomini")!;
+    expect(ergomini.keys).toHaveLength(50);
+    expect(ergomini.keys.filter((k) => k.angle !== 0)).toHaveLength(4);
+    expect(ergomini.keys.filter((k) => k.h === 0.5)).toHaveLength(4);
+    // As in the VIA definition, the left thumb keys touch at their corners
+    // by a few hundredths of a unit; nothing else overlaps.
+    const clashes = ergomini.keys.filter((k) =>
+      findOverlaps(ergomini.keys).has(k.id),
+    );
+    expect(
+      clashes.map((k) => `${k.matrix!.row},${k.matrix!.col}`).sort(),
+    ).toEqual(["3,3", "3,4", "3,5"]);
+  });
+
+  it("draws the ClickBoard Ortho as built, not as a plain grid", () => {
+    // Its vial.json was keyboard.json's grid too: the real board has a 1.25u
+    // centre column, a top row on the left half only, the thumb row set a
+    // little lower and half-height up and down arrows.
+    const ortho = keyboardProject("clickboard_ortho")!;
+    expect(ortho.keys).toHaveLength(60);
+    expect(ortho.keys.filter((k) => k.w === 1.25)).toHaveLength(4);
+    expect(ortho.keys.filter((k) => k.h === 0.5)).toHaveLength(2);
+    const topRow = ortho.keys.filter((k) => k.cy < 1);
+    expect(topRow).toHaveLength(7);
+    expect(Math.max(...topRow.map((k) => k.cx))).toBeLessThan(7);
+    expect(findOverlaps(ortho.keys).size).toBe(0);
+  });
+
   it("knows no keyboard by a wrong id", () => {
     expect(keyboardProject("nope")).toBeNull();
   });

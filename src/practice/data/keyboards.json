@@ -203,15 +203,40 @@
     "sizeClass": "40",
     "defaultGuide": "40",
     "allowGuide": ["30", "40"],
-    "split": false,
-    "thumbKeys": [],
+    "split": true,
+    "thumbKeys": [
+      {
+        "pos": 36,
+        "hand": "L"
+      },
+      {
+        "pos": 46,
+        "hand": "L"
+      },
+      {
+        "pos": 47,
+        "hand": "L"
+      },
+      {
+        "pos": 48,
+        "hand": "R"
+      },
+      {
+        "pos": 49,
+        "hand": "R"
+      },
+      {
+        "pos": 37,
+        "hand": "R"
+      }
+    ],
     "homeRow": {
-      "L": [13, 14, 15, 16],
-      "R": [19, 20, 21, 22]
+      "L": [21, 14, 12, 15],
+      "R": [16, 13, 17, 22]
     },
     "fixedKeys": {
       "esc": null,
-      "tab": 0,
+      "tab": 8,
       "capslock": null
     },
     "symbolSlots": [22],
@@ -250,31 +275,31 @@
     "split": false,
     "thumbKeys": [
       {
-        "pos": 49,
-        "hand": "L"
-      },
-      {
-        "pos": 50,
-        "hand": "L"
-      },
-      {
-        "pos": 51,
-        "hand": "L"
-      },
-      {
         "pos": 52,
         "hand": "L"
       },
       {
         "pos": 53,
-        "hand": "R"
+        "hand": "L"
       },
       {
         "pos": 54,
-        "hand": "R"
+        "hand": "L"
       },
       {
         "pos": 55,
+        "hand": "R"
+      },
+      {
+        "pos": 56,
+        "hand": "R"
+      },
+      {
+        "pos": 57,
+        "hand": "R"
+      },
+      {
+        "pos": 58,
         "hand": "R"
       }
     ],
