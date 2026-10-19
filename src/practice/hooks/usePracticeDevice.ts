@@ -13,6 +13,7 @@
  */
 import { useCallback, useMemo, useState } from "react";
 import { useConnection } from "../../hooks/useConnection";
+import { useDefaultLayer } from "../../hooks/useDefaultLayer";
 import { useKeymap } from "../../hooks/useKeymap";
 import type { LabelLayout } from "../../layoutEditor/lib/keyLabels";
 import { useVialKeyboardContext } from "../../qmk/hooks/useVialKeyboardContext";
@@ -25,7 +26,9 @@ import {
   bindingsFor,
   boardIdForDevice,
   liveKeyboard,
+  type LayerBlock,
   type Unwritable,
+  wholeBlock,
 } from "../lib/device";
 import type { Change, WorkingKeymap } from "../lib/guide";
 import { keycodesFor, liveQmkKeyboard } from "../lib/qmkDevice";
@@ -47,7 +50,7 @@ export interface PracticeDevice {
   deviceName: string | undefined;
   /** The registered board the device is, for metadata and progress; null for an unknown one. */
   boardId: string | null;
-  live: { board: TestBoard; keymap: WorkingKeymap } | null;
+  live: { board: TestBoard; keymap: WorkingKeymap; block: LayerBlock } | null;
   loading: boolean;
   error: string | null;
   hasUnsavedChanges: boolean;
@@ -65,6 +68,7 @@ export interface PracticeDevice {
 export function usePracticeDevice(labelLayout: LabelLayout): PracticeDevice {
   const connection = useConnection();
   const keymap = useKeymap();
+  const defaultLayer = useDefaultLayer();
   const vial = useVialKeyboardContext();
   const [lastWrite, setLastWrite] = useState<WriteOutcome | null>(null);
   const [writing, setWriting] = useState(false);
@@ -90,8 +94,28 @@ export function usePracticeDevice(labelLayout: LabelLayout): PracticeDevice {
     return null;
   }, [firmware, connection.deviceName, vial.info]);
 
+  // The block of layers the guide works in. ZMK: the default-layer module
+  // says which layer the current OS / endpoint lands on; the other OS base
+  // layers bound the block (at most four layers: the base and three). QMK:
+  // the OS-switch module's active block. Without either, the whole keymap.
+  const zmkBlock = useMemo((): LayerBlock | null => {
+    const km = keymap.keymap;
+    if (!km) return null;
+    const st = defaultLayer.state;
+    if (!st || st.resolvedLayer < 0) return wholeBlock(km.layers.length);
+    const bases = new Set<number>();
+    for (const o of st.osLayers) if (o.value >= 0) bases.add(o.value);
+    for (const e of st.endpoints) if (e.value >= 0) bases.add(e.value);
+    bases.add(st.resolvedLayer);
+    const sorted = [...bases].sort((a, b) => a - b);
+    if (sorted.length < 2) return wholeBlock(km.layers.length);
+    const start = st.resolvedLayer;
+    const next = sorted.find((b) => b > start) ?? km.layers.length;
+    return { start, size: Math.min(4, Math.max(1, next - start)) };
+  }, [keymap.keymap, defaultLayer.state]);
+
   const liveZmk = useMemo(() => {
-    if (firmware !== "zmk" || !keymap.isFullyLoaded) return null;
+    if (firmware !== "zmk" || !keymap.isFullyLoaded || !zmkBlock) return null;
     const layouts = keymap.physicalLayouts;
     const km = keymap.keymap;
     if (!layouts || !km) return null;
@@ -104,6 +128,7 @@ export function usePracticeDevice(labelLayout: LabelLayout): PracticeDevice {
       km,
       keymap.behaviors,
       labelLayout,
+      zmkBlock,
     );
   }, [
     firmware,
@@ -114,20 +139,37 @@ export function usePracticeDevice(labelLayout: LabelLayout): PracticeDevice {
     boardId,
     deviceName,
     labelLayout,
+    zmkBlock,
   ]);
 
   // The Vial board is built from the saved keymap, not the staged one, so
   // the guide's own working keymap stays the one source of its changes.
   const liveQmk = useMemo(() => {
     if (firmware !== "qmk" || !vial.info || !vial.saved) return null;
+    const os = vial.os;
+    const block: LayerBlock = os
+      ? {
+          start: (os.previewBlock ?? os.activeBlock) * os.layersPerBlock,
+          size: Math.min(4, os.layersPerBlock),
+        }
+      : { start: 0, size: Math.min(4, vial.saved.length) };
     return liveQmkKeyboard(
       boardId ?? `qmk:${vial.info.productName.toLowerCase()}`,
       vial.info.productName,
       vial.visible,
       vial.saved,
       labelLayout,
+      block,
     );
-  }, [firmware, vial.info, vial.saved, vial.visible, boardId, labelLayout]);
+  }, [
+    firmware,
+    vial.info,
+    vial.saved,
+    vial.visible,
+    vial.os,
+    boardId,
+    labelLayout,
+  ]);
 
   const live = liveZmk ?? liveQmk;
 
@@ -150,15 +192,19 @@ export function usePracticeDevice(labelLayout: LabelLayout): PracticeDevice {
       try {
         if (firmware === "zmk") {
           const km = keymap.keymap;
-          if (!km) return rejectAll();
-          // Layers the changes reach beyond the keymap are added first; the
-          // keyboard hands back a free slot, or null when it has none left.
-          const layerIds = km.layers.map((l) => l.id);
+          if (!km || !liveZmk) return rejectAll();
+          // Layers the changes reach beyond the block's existing layers are
+          // added first, while the block has room; the keyboard hands back
+          // a free slot, or null when it has none left.
+          const layerIds = [...liveZmk.layerIds];
           const highest = Math.max(-1, ...changes.map((c) => c.layer));
-          while (layerIds.length <= highest) {
+          while (
+            layerIds.length <= highest &&
+            layerIds.length < liveZmk.block.size
+          ) {
             const added = await keymap.addLayer();
             if (!added) break;
-            layerIds.splice(added.index, 0, added.layer.id);
+            layerIds.push(added.layer.id);
             outcome.addedLayers++;
           }
           const ids = behaviorIds(keymap.behaviors, km);
@@ -180,7 +226,7 @@ export function usePracticeDevice(labelLayout: LabelLayout): PracticeDevice {
           const { writes, unwritable } = keycodesFor(changes, liveQmk);
           outcome.unwritable.push(...unwritable);
           for (const w of writes) {
-            vial.setKeycode(w.change.layer, w.row, w.col, w.code);
+            vial.setKeycode(w.layer, w.row, w.col, w.code);
             outcome.written++;
           }
         } else {
@@ -192,7 +238,7 @@ export function usePracticeDevice(labelLayout: LabelLayout): PracticeDevice {
       setLastWrite(outcome);
       return outcome;
     },
-    [firmware, keymap, liveQmk, vial],
+    [firmware, keymap, liveZmk, liveQmk, vial],
   );
 
   const connectQmk = useCallback(async () => {

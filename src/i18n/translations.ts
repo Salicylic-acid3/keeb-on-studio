@@ -10,7 +10,7 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // Typing practice (phase 0 mock)
-  "Typing dojo": "タイピング道場",
+  "Keymap dojo": "キーマップ道場",
   "Screen mock": "画面モック",
   "Decide your keymap step by step, then practise on it with the real keymap in front of you. A wrong key points straight at the key you meant, so what you learn here feeds back into the layout.":
     "キーマップを段階的に決めて、そのキーマップを画面に出したまま練習します。誤打鍵は押すべきキーをそのまま示すので、練習の結果が配列の見直しにつながります。",
@@ -106,6 +106,16 @@ const ja: Record<string, string> = {
   "Characters not on the keymap": "入力不可文字",
   "None.": "なし",
   "Next text": "次の文章",
+  "A guide done in demo mode on this keyboard was found (step {{n}} of {{total}}). Write that keymap to the keyboard and carry on from there?":
+    "この機種でデモモードのまま進めたガイドがあります（ステップ {{n}} / {{total}}）。そのキーマップをキーボードに書き込んで、続きから進めますか？",
+  "Write it to the keyboard": "キーボードに書き込む",
+  "Start from the keyboard's own keymap": "実機のキーマップで最初から",
+  "There are changes written to the keyboard but not saved. Disconnect without saving? They will be lost.":
+    "キーボードに書き込んだまま保存していない変更があります。保存せずに切断しますか？ 変更は失われます。",
+  "The keymap from the guide is on the keyboard now. Press \"Save to keyboard\" to keep it.":
+    "ガイドのキーマップをキーボードに書き込みました。「キーボードに保存」を押すと確定します。",
+  "This keyboard has no layer left for another layer key: besides the base layer, it allows three per OS. A thumb key that could not get one keeps its tap only.":
+    "レイヤーキーに割り当てられるレイヤーが残っていません。このキーボードは OS ごとにベースレイヤーのほか3つまでです。割り当てられなかった親指キーは単押しのみになります。",
   "Demo mode: the keymap shown is this keyboard's default. Connect your keyboard to use the keymap read from it; the guide then writes each applied step to the keyboard.":
     "デモモード: 表示しているのはこの機種のデフォルトキーマップです。キーボードを接続すると実機から読んだキーマップで動き、ガイドで「適用」した内容はその都度キーボードに書き込まれます。",
   "Connect ZMK keyboard": "ZMK のキーボードを接続",
@@ -315,7 +325,7 @@ const ja: Record<string, string> = {
   "Where the misses were": "ミスした場所",
   "Each key is tinted by how often it was missed, with the count in its corner.":
     "ミスの多いキーほど濃く塗られ、角に回数が出ます。",
-  "Typing dojo result": "タイピング道場の結果",
+  "Keymap dojo result": "キーマップ道場の結果",
   "Chars/min": "文字/分",
   // Key test
   "When several keys are assigned the same function, all of them light up. To test the key matrix itself, connect the keyboard and use the key input display.":

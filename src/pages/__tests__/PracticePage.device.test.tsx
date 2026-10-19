@@ -25,6 +25,17 @@ jest.mock("../../hooks/useKeymap", () => ({
   ...jest.requireActual("../../hooks/useKeymap"),
   useKeymap: jest.fn(),
 }));
+jest.mock("../../hooks/useDefaultLayer", () => ({
+  useDefaultLayer: jest.fn(() => ({
+    isAvailable: false,
+    state: null,
+    isLoading: false,
+    error: null,
+    load: jest.fn(),
+    setEndpointLayer: jest.fn(),
+    setOsLayer: jest.fn(),
+  })),
+}));
 jest.mock("../../hooks/useLanguage", () => ({
   useLanguage: () => ({
     language: "en",
@@ -41,30 +52,51 @@ jest.mock("../../components/StandaloneFrame", () => ({
   ),
 }));
 import { useKeymap } from "../../hooks/useKeymap";
+import { useDefaultLayer } from "../../hooks/useDefaultLayer";
+import { writeProgress } from "../../practice/lib/guideStore";
+import { keymapOf } from "../../practice/lib/guide";
+import { testBoard } from "../../keyTest/lib/boards";
 
 const mockUseKeymap = useKeymap as jest.MockedFunction<typeof useKeymap>;
+const mockUseDefaultLayer = useDefaultLayer as jest.MockedFunction<
+  typeof useDefaultLayer
+>;
 
 const behaviors = new Map<number, BehaviorDefinition>(
   BEHAVIORS.map((b) => [b.id, b as unknown as BehaviorDefinition]),
 );
 const ids = behaviorIds(behaviors, null);
 
-/** GoFortyMax's default keymap as a keyboard would hold it. */
-function deviceKeymap(): Keymap {
+/** GoFortyMax's default keymap as a keyboard would hold it; `blocks` of four layers per OS. */
+function deviceKeymap(blocks = 1): Keymap {
   const def = keyboardBindings("goforty_max_ortho")!;
-  const textLayers = [def.bindings, ...def.layers];
+  const one = [def.bindings, ...def.layers];
+  const textLayers =
+    blocks === 1
+      ? one
+      : Array.from({ length: blocks }, () =>
+          [0, 1, 2, 3].map((i) => one[i] ?? one[0].map(() => "trans")),
+        ).flat();
   return {
     layers: textLayers.map((texts, i) => ({
       id: i,
       name: `L${i}`,
-      bindings: texts.map(
-        (text) =>
-          triggerToBinding(zmkTrigger(text), ids, (x) => x) ?? {
+      bindings: texts.map((text) => {
+        const t = zmkTrigger(text);
+        // A layer-tap in a block points into that block.
+        const base = Math.floor(i / 4) * 4;
+        const shifted =
+          blocks > 1 && t.kind === "key" && t.holdLayer !== undefined
+            ? { ...t, holdLayer: t.holdLayer + base }
+            : t;
+        return (
+          triggerToBinding(shifted, ids, (x) => x) ?? {
             behaviorId: ids.trans!,
             param1: 0,
             param2: 0,
-          },
-      ),
+          }
+        );
+      }),
     })),
     availableLayers: 8,
     maxLayerNameLength: 32,
@@ -142,14 +174,19 @@ function vialOf(connected: boolean): {
   };
 }
 
-function mount(opts: { connected: boolean; qmk?: boolean }) {
+function mount(opts: {
+  connected: boolean;
+  qmk?: boolean;
+  keepStorage?: boolean;
+  blocks?: number;
+}) {
   const { vial, setKeycode } = vialOf(!!opts.qmk);
   const setBinding = jest.fn().mockResolvedValue(true);
   const saveChanges = jest.fn().mockResolvedValue(true);
   const addLayer = jest.fn().mockResolvedValue(null);
   mockUseKeymap.mockReturnValue({
     physicalLayouts: { activeLayoutIndex: 0, layouts: [GOFORTY_MAX] },
-    keymap: deviceKeymap(),
+    keymap: deviceKeymap(opts.blocks ?? 1),
     behaviors,
     isFullyLoaded: opts.connected && !opts.qmk,
     isLoading: false,
@@ -173,7 +210,7 @@ function mount(opts: { connected: boolean; qmk?: boolean }) {
     unsupportedDevice: false,
     isDemo: false,
   };
-  window.localStorage.clear();
+  if (!opts.keepStorage) window.localStorage.clear();
   window.history.replaceState(null, "", "/practice");
   render(
     <ConnectionContext.Provider value={connection}>
@@ -270,5 +307,89 @@ describe("PracticePage with a keyboard", () => {
     expect(
       window.localStorage.getItem("keeb-on:practice-guide:live:goforty_jp"),
     ).not.toBeNull();
+  });
+
+  it("offers to write a demo-mode guide to the keyboard it was done for, then asks to save", async () => {
+    // A demo guide with one applied step on the registered GoFortyMax.
+    const b = testBoard("goforty_max_ortho")!;
+    const km = keymapOf(b);
+    const change = {
+      layer: 0,
+      pos: 1,
+      trigger: { kind: "key" as const, code: "KeyB", mods: [] },
+    };
+    writeProgress("goforty_max_ortho", {
+      version: 1,
+      guide: "40",
+      step: 3,
+      answers: {
+        ...(await import("../../practice/lib/guide")).DEFAULT_ANSWERS,
+      },
+      status: { 1: "applied" },
+      layers: km.layers,
+      applied: { 1: { changes: [change], previous: [] } },
+      savedAt: Date.now(),
+    });
+    const { setBinding } = mount({ connected: true, keepStorage: true });
+    expect(
+      screen.getByText(/A guide done in demo mode on this keyboard/),
+    ).toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Write it to the keyboard" }),
+    );
+    await waitFor(() => expect(setBinding).toHaveBeenCalledTimes(1));
+    expect(setBinding.mock.calls[0][1]).toBe(1);
+    await waitFor(() =>
+      expect(
+        window.localStorage.getItem(
+          "keeb-on:practice-guide:live:goforty_max_ortho",
+        ),
+      ).not.toBeNull(),
+    );
+    expect(
+      screen.queryByText(/A guide done in demo mode on this keyboard/),
+    ).toBeNull();
+  });
+
+  it("works in the OS's block of layers on a keyboard that has them", () => {
+    mockUseDefaultLayer.mockReturnValue({
+      isAvailable: true,
+      state: {
+        endpoints: [],
+        osLayers: [
+          { os: 1, value: 0 },
+          { os: 2, value: 4 },
+          { os: 3, value: 8 },
+        ],
+        activeEndpointIndex: 1,
+        currentOs: 2,
+        resolvedLayer: 4,
+        layerCount: 12,
+        osDetectionAvailable: true,
+      },
+      isLoading: false,
+      error: null,
+      load: jest.fn(),
+      setEndpointLayer: jest.fn(),
+      setOsLayer: jest.fn(),
+    });
+    mount({ connected: true, blocks: 3 });
+    fireEvent.click(screen.getByRole("button", { name: /Start the guide/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Begin" }));
+    // The guide's layer labels count from the block's base layer.
+    const applyOrSkip = () => {
+      const apply = screen.getByRole("button", { name: "Apply" });
+      if (!(apply as HTMLButtonElement).disabled) fireEvent.click(apply);
+      else
+        fireEvent.click(
+          screen.getByRole("button", { name: "Next without changing" }),
+        );
+    };
+    applyOrSkip();
+    applyOrSkip();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Use Salicylic_acid3's row" }),
+    );
+    expect(screen.getByText(/Layer keys: .*L[5-7]/)).toBeInTheDocument();
   });
 });

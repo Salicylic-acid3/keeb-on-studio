@@ -1,4 +1,5 @@
 import { testBoard } from "../../../keyTest/lib/boards";
+import type { Trigger } from "../../../keyTest/lib/triggers";
 import {
   applyChanges,
   orderedSymbolSlots,
@@ -437,5 +438,38 @@ describe("guide proposals on GoFortyMax Ortho", () => {
         (c) => c.trigger.kind === "key" && /^Digit/.test(c.trigger.code),
       ),
     ).toBe(false);
+  });
+
+  it("hands out empty layers first and stops at the keymap's layer limit", () => {
+    // A block of four: base and three more, all empty and unreached.
+    // No layer key on the base yet, so every hold needs a layer.
+    const base = keymapOf(board).layers[0].map((t): Trigger => {
+      if (t.kind !== "key" || t.holdLayer === undefined) return t;
+      const { holdLayer: _h, ...rest } = t;
+      void _h;
+      return rest;
+    });
+    const empty = () => base.map((): Trigger => ({ kind: "none" }));
+    const km = { layers: [base, empty(), empty(), empty()], maxLayers: 4 };
+    const thumbs = thumbsLeftToRight(board, meta);
+    const answers = {
+      ...DEFAULT_ANSWERS,
+      thumbs: Object.fromEntries(
+        thumbs.map((th, i) => [
+          String(th.pos),
+          {
+            tap: ["Space", "Enter", "Backspace", "Delete"][i % 4],
+            hold: "layer" as const,
+          },
+        ]),
+      ),
+    };
+    const p = proposeThumbs(board, meta, km, answers);
+    const holds = p.changes
+      .map((c) => (c.trigger.kind === "key" ? c.trigger.holdLayer : undefined))
+      .filter((l): l is number => l !== undefined);
+    // Three layers to give out, in the block, none beyond it.
+    expect(holds.sort()).toEqual([1, 2, 3]);
+    expect(p.note).toBe("layers-full");
   });
 });

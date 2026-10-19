@@ -90,3 +90,47 @@ export function savedGuides(): Array<{
   }
   return out.sort((a, b) => b.progress.savedAt - a.progress.savedAt);
 }
+
+/**
+ * Progress made on one drawing of a keyboard carried onto another drawing
+ * of it (the registered board's, then the connected keyboard's), with
+ * every key position mapped through `at`; what has no key there is dropped.
+ */
+export function remapProgress(
+  p: GuideProgress,
+  at: (pos: number) => number | null,
+): GuideProgress {
+  const mapChanges = (cs: Change[]) =>
+    cs.flatMap((c) => {
+      const pos = at(c.pos);
+      return pos === null ? [] : [{ ...c, pos }];
+    });
+  const mapRecord = <V>(r: Record<string, V>) =>
+    Object.fromEntries(
+      Object.entries(r).flatMap(([k, v]) => {
+        const pos = at(Number(k));
+        return pos === null ? [] : [[String(pos), v]];
+      }),
+    ) as Record<string, V>;
+  const applied = p.applied
+    ? Object.fromEntries(
+        Object.entries(p.applied).map(([step, a]) => [
+          step,
+          { changes: mapChanges(a.changes), previous: mapChanges(a.previous) },
+        ]),
+      )
+    : undefined;
+  return {
+    ...p,
+    answers: {
+      ...p.answers,
+      thumbs: mapRecord(p.answers.thumbs),
+      replace: mapRecord(p.answers.replace),
+      symbolOverride: mapRecord(p.answers.symbolOverride),
+      layerKeyPos: p.answers.layerKeyPos
+        .map(at)
+        .filter((x): x is number => x !== null),
+    },
+    ...(applied ? { applied } : {}),
+  };
+}

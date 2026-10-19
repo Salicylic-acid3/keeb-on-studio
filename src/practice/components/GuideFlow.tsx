@@ -102,6 +102,7 @@ export function GuideFlow({
   startKeymap,
   progressKey,
   onApply,
+  layerBase,
 }: {
   board: TestBoard;
   meta: KeyboardMeta;
@@ -117,8 +118,11 @@ export function GuideFlow({
    * applied, in order (what the step set before is put back first).
    */
   onApply?: (writes: Change[]) => void;
+  /** The device's number of the working keymap's layer 0, for the labels. */
+  layerBase?: number;
 }) {
   const storeKey = progressKey ?? board.id;
+  const ln = (layer: number) => layer + (layerBase ?? 0);
   const [progress, setProgress] = useState<GuideProgress>(
     () => readProgress(storeKey) ?? fresh(board, startKeymap),
   );
@@ -249,6 +253,7 @@ export function GuideFlow({
     for (const [pos, { layer, label }] of proposalLabels(
       proposal.changes,
       layout,
+      layerBase ?? 0,
     )) {
       if (layer !== shownLayer) continue;
       const k = board.keys[pos];
@@ -261,14 +266,28 @@ export function GuideFlow({
       if (k) m.set(k.id, { ...(prev ?? { tone: "hold" }), tone: "hold" });
     }
     return m;
-  }, [proposal, layout, board, shownLayer, step.id, km, meta, pickedSlot]);
+  }, [
+    proposal,
+    layout,
+    board,
+    shownLayer,
+    step.id,
+    km,
+    meta,
+    pickedSlot,
+    layerBase,
+  ]);
 
   const layerStep = step.id === "layer-one-hand" || step.id === "layer-other";
   /** The proposal's marks on one layer, with the thumb key held for it lit. */
   const marksForLayer = (layer: number, thumbPos: number) => {
     const m = new Map<string, Mark>();
     if (!proposal) return m;
-    for (const [pos, c] of proposalLabels(proposal.changes, layout)) {
+    for (const [pos, c] of proposalLabels(
+      proposal.changes,
+      layout,
+      layerBase ?? 0,
+    )) {
       if (c.layer !== layer) continue;
       const k = board.keys[pos];
       if (k) m.set(k.id, { tone: "set", label: c.label });
@@ -385,6 +404,10 @@ export function GuideFlow({
         );
       case "nothing":
         return t("Nothing to change with this answer.");
+      case "layers-full":
+        return t(
+          "This keyboard has no layer left for another layer key: besides the base layer, it allows three per OS. A thumb key that could not get one keeps its tap only.",
+        );
       default:
         return null;
     }
@@ -845,6 +868,7 @@ export function GuideFlow({
                   t={t}
                   side="one"
                   thumbLayers={thumbLayers}
+                  layerBase={layerBase ?? 0}
                   value={(c) => contentLayer(meta, km, answers, "one", c)}
                   label={(pos) => thumbLabel(pos)}
                   onChange={(c, layer) => setContent("one", c, layer)}
@@ -912,6 +936,7 @@ export function GuideFlow({
                   t={t}
                   side="other"
                   thumbLayers={thumbLayers}
+                  layerBase={layerBase ?? 0}
                   value={(c) => contentLayer(meta, km, answers, "other", c)}
                   label={(pos) => thumbLabel(pos)}
                   onChange={(c, layer) => setContent("other", c, layer)}
@@ -991,7 +1016,7 @@ export function GuideFlow({
                   ? t("All thumb layers")
                   : shownLayer === 0
                     ? t("Base layer")
-                    : t("Layer {{n}}", { n: shownLayer })}
+                    : t("Layer {{n}}", { n: ln(shownLayer) })}
                 <button
                   type="button"
                   aria-pressed={zoom}
@@ -1010,7 +1035,7 @@ export function GuideFlow({
                   <div key={k.layer} className="space-y-1.5">
                     <div className="text-xs text-[var(--color-text-secondary)]">
                       {t("Layer {{n}} ({{key}} held)", {
-                        n: k.layer,
+                        n: ln(k.layer),
                         key: thumbLabel(k.pos),
                       })}
                     </div>
@@ -1078,7 +1103,7 @@ export function GuideFlow({
                 <span>
                   {t("Layer keys: {{list}}", {
                     list: thumbLayerKeys(meta, km)
-                      .map((k) => `${thumbLabel(k.pos)} → L${k.layer}`)
+                      .map((k) => `${thumbLabel(k.pos)} → L${ln(k.layer)}`)
                       .join(", "),
                   })}
                 </span>
@@ -1196,6 +1221,7 @@ function LayerPicker({
   t,
   side,
   thumbLayers,
+  layerBase,
   value,
   label,
   onChange,
@@ -1203,6 +1229,7 @@ function LayerPicker({
   t: T;
   side: "one" | "other";
   thumbLayers: Array<{ pos: number; layer: number; hand: Hand }>;
+  layerBase: number;
   value: (content: LayerContent) => number | null;
   label: (pos: number) => string;
   onChange: (content: LayerContent, layer: number | null) => void;
@@ -1234,7 +1261,7 @@ function LayerPicker({
                 (o) => o !== c && value(o) === k.layer,
               );
               const name = t("Layer {{n}} ({{key}} held) → {{hand}}", {
-                n: k.layer,
+                n: layerBase + k.layer,
                 key: label(k.pos),
                 hand: handName(k),
               });

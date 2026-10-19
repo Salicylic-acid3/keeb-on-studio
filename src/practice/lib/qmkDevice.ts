@@ -29,7 +29,12 @@ import {
   MOD_LSFT,
   MOD_RIGHT,
 } from "../../qmk/lib/keycodes/qmkKeycode";
-import { HID_BY_CODE, type Unwritable } from "./device";
+import {
+  HID_BY_CODE,
+  type LayerBlock,
+  type Unwritable,
+  windowTrigger,
+} from "./device";
 import type { Change, WorkingKeymap } from "./guide";
 
 export interface LiveQmkKeyboard {
@@ -37,7 +42,9 @@ export interface LiveQmkKeyboard {
   keymap: WorkingKeymap;
   /** Matrix position of each board key, by key index. */
   matrix: Array<{ row: number; col: number }>;
+  /** Layers in the block (working-keymap layer i is device layer block.start + i). */
   layerCount: number;
+  block: LayerBlock;
 }
 
 /** A QMK keycode as a trigger, through the same text the key test reads. */
@@ -115,6 +122,7 @@ export function liveQmkKeyboard(
   visible: VialKey[],
   keymap: number[][][],
   labelLayout: LabelLayout,
+  block: LayerBlock = { start: 0, size: Math.min(4, keymap.length) },
 ): LiveQmkKeyboard {
   // Vial's key geometry uses the same units as a ZMK physical layout.
   const project = importKle(
@@ -132,10 +140,13 @@ export function liveQmkKeyboard(
     }),
   );
   const matrix = visible.map((k) => ({ row: k.row, col: k.col }));
-  const layers: Trigger[][] = keymap.map((layer) =>
+  const inBlock = keymap.slice(block.start, block.start + block.size);
+  const layers: Trigger[][] = inBlock.map((layer) =>
     matrix.map(({ row, col }) => {
       const code = layer[row]?.[col];
-      return code === undefined ? { kind: "none" } : keycodeToTrigger(code);
+      return code === undefined
+        ? { kind: "none" }
+        : windowTrigger(keycodeToTrigger(code), block);
     }),
   );
   const keys: TestKey[] = project.keys.map((key, pos) => {
@@ -164,22 +175,40 @@ export function liveQmkKeyboard(
   });
   return {
     board: { id, name, keys },
-    keymap: { layers },
+    keymap: { layers, maxLayers: inBlock.length },
     matrix,
-    layerCount: keymap.length,
+    layerCount: inBlock.length,
+    block,
   };
 }
 
 /** The keycodes to stage for a set of changes, with what cannot be. */
+/** A trigger's layer numbers moved back into the device's numbering. */
+export function absolute(t: Trigger, block: LayerBlock): Trigger {
+  if (t.kind === "key" && t.holdLayer !== undefined)
+    return { ...t, holdLayer: t.holdLayer + block.start };
+  if (t.kind === "layer" && t.layer !== undefined)
+    return { ...t, layer: t.layer + block.start };
+  return t;
+}
+
 export function keycodesFor(
   changes: Change[],
   live: LiveQmkKeyboard,
 ): {
-  writes: Array<{ change: Change; row: number; col: number; code: number }>;
+  /** `layer` is the device's layer index. */
+  writes: Array<{
+    change: Change;
+    layer: number;
+    row: number;
+    col: number;
+    code: number;
+  }>;
   unwritable: Unwritable[];
 } {
   const writes: Array<{
     change: Change;
+    layer: number;
     row: number;
     col: number;
     code: number;
@@ -191,12 +220,18 @@ export function keycodesFor(
       unwritable.push({ change, reason: "layer" });
       continue;
     }
-    const code = triggerToKeycode(change.trigger);
+    const code = triggerToKeycode(absolute(change.trigger, live.block));
     if (code === null) {
       unwritable.push({ change, reason: "keycode" });
       continue;
     }
-    writes.push({ change, row: at.row, col: at.col, code });
+    writes.push({
+      change,
+      layer: live.block.start + change.layer,
+      row: at.row,
+      col: at.col,
+      code,
+    });
   }
   return { writes, unwritable };
 }

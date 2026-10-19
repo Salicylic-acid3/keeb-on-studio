@@ -513,7 +513,7 @@ export function ResultPanel({
     layout,
     summary,
     text: {
-      title: t("Typing dojo result"),
+      title: t("Keymap dojo result"),
       boardName: board.name,
       text,
       date: new Date().toLocaleDateString(),

@@ -248,12 +248,15 @@ export function hasStoredMeta(id: string): boolean {
  * come in a different order: each position is matched by where its key
  * sits, and one with no key there is dropped.
  */
-export function metaForBoard(
-  meta: KeyboardMeta,
+/**
+ * Where each key of one drawing of a keyboard sits in another drawing of
+ * it, by position; null where the other has no key there.
+ */
+export function positionMap(
   from: TestBoard,
   to: TestBoard,
-): KeyboardMeta {
-  const at = (pos: number): number | null => {
+): (pos: number) => number | null {
+  return (pos: number): number | null => {
     const k = from.keys[pos];
     if (!k) return null;
     let best: number | null = null;
@@ -267,6 +270,14 @@ export function metaForBoard(
     });
     return best;
   };
+}
+
+export function metaForBoard(
+  meta: KeyboardMeta,
+  from: TestBoard,
+  to: TestBoard,
+): KeyboardMeta {
+  const at = positionMap(from, to);
   const list = (ps: number[]) =>
     ps.map(at).filter((p): p is number => p !== null);
   const one = (p: number | null) => (p === null ? null : at(p));

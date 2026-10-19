@@ -70,7 +70,8 @@ describe("QMK keycodes and triggers", () => {
   it("rebuilds GoForty JP from Vial's keys and keymap", () => {
     const { keys, keymap } = vialOf(entry);
     const live = liveQmkKeyboard("goforty_jp", entry.name, keys, keymap, "jis");
-    expect(live.layerCount).toBe(keymap.length);
+    // Without an OS-switch module the guide works in the first four layers.
+    expect(live.layerCount).toBe(Math.min(4, keymap.length));
     expect(live.matrix).toHaveLength(keys.length);
     const staticBoard = testBoard("goforty_jp")!;
     // Every live key that sends a key sits where the registered board has
@@ -109,5 +110,34 @@ describe("QMK keycodes and triggers", () => {
       code: 0x05,
     });
     expect(unwritable.map((u) => u.reason)).toEqual(["layer", "keycode"]);
+  });
+
+  it("stages into the OS's block of layers", () => {
+    const { keys, keymap } = vialOf(entry);
+    const live = liveQmkKeyboard(
+      "goforty_jp",
+      entry.name,
+      keys,
+      keymap,
+      "jis",
+      {
+        start: 4,
+        size: 4,
+      },
+    );
+    expect(live.layerCount).toBe(4);
+    expect(live.keymap.maxLayers).toBe(4);
+    const { writes } = keycodesFor(
+      [
+        {
+          layer: 1,
+          pos: 0,
+          trigger: { kind: "key", code: "Space", mods: [], holdLayer: 2 },
+        },
+      ],
+      live,
+    );
+    expect(writes[0].layer).toBe(5);
+    expect(keycodeToTrigger(writes[0].code)).toMatchObject({ holdLayer: 6 });
   });
 });

@@ -215,4 +215,69 @@ describe("the connected keyboard as a board", () => {
       }),
     );
   });
+
+  it("works in the OS's block of layers, numbering them from its base", () => {
+    const def = keyboardBindings("goforty_max_ortho")!;
+    const textLayers = [def.bindings, ...def.layers];
+    // Three OS blocks of four: the keymap three times over.
+    const blocks = [0, 1, 2].flatMap(() =>
+      [0, 1, 2, 3].map(
+        (i) => textLayers[i] ?? textLayers[0].map(() => "trans"),
+      ),
+    );
+    const keymap = {
+      layers: blocks.map((texts, i) => ({
+        id: i,
+        name: `L${i}`,
+        bindings: texts.map((text) => {
+          const t = zmkTrigger(text);
+          // Layer numbers inside a block point into that block.
+          const shifted =
+            t.kind === "key" && t.holdLayer !== undefined
+              ? { ...t, holdLayer: t.holdLayer + Math.floor(i / 4) * 4 }
+              : t;
+          return (
+            triggerToBinding(shifted, ids, (x) => x) ?? {
+              behaviorId: ids.trans!,
+              param1: 0,
+              param2: 0,
+            }
+          );
+        }),
+      })),
+      availableLayers: 12,
+      maxLayerNameLength: 32,
+    } as unknown as Keymap;
+    const live = liveKeyboard(
+      "goforty_max_ortho",
+      "GoFortyMax",
+      GOFORTY_MAX,
+      keymap,
+      behaviors,
+      "us",
+      { start: 4, size: 4 },
+    );
+    expect(live.keymap.layers).toHaveLength(4);
+    expect(live.keymap.maxLayers).toBe(4);
+    expect(live.layerIds).toEqual([4, 5, 6, 7]);
+    // A layer-tap into the block reads as a block-relative layer...
+    const lt = live.keymap.layers[0].find(
+      (t) => t.kind === "key" && t.holdLayer !== undefined,
+    )!;
+    expect(lt.kind === "key" && lt.holdLayer).toBeLessThan(4);
+    // ...and is written back with the device's layer id.
+    const { writes } = bindingsFor(
+      [
+        {
+          layer: 1,
+          pos: 0,
+          trigger: { kind: "key", code: "Space", mods: [], holdLayer: 2 },
+        },
+      ],
+      ids,
+      live.layerIds,
+    );
+    expect(writes[0].layerId).toBe(5);
+    expect(writes[0].binding.param1).toBe(6);
+  });
 });

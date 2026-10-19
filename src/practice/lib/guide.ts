@@ -28,6 +28,11 @@ import type { Hand, KeyboardMeta } from "./metadata";
 export interface WorkingKeymap {
   /** layers[l][pos]: what key `pos` sends on layer l; layers[0] is the base. */
   layers: Trigger[][];
+  /**
+   * How many layers there may be at most (a keyboard with a block of
+   * layers per OS allows the base and three more); unset means no limit.
+   */
+  maxLayers?: number;
 }
 
 const NONE: Trigger = { kind: "none" };
@@ -112,7 +117,7 @@ export interface Change {
 export interface Proposal {
   changes: Change[];
   /** Why the proposal is thin or empty, for the page to show. */
-  note?: "no-slots" | "no-thumbs" | "one-layer" | "nothing";
+  note?: "no-slots" | "no-thumbs" | "one-layer" | "nothing" | "layers-full";
 }
 
 export function applyChanges(
@@ -125,7 +130,43 @@ export function applyChanges(
     while (layers.length <= c.layer) layers.push(Array(width).fill(NONE));
     layers[c.layer][c.pos] = c.trigger;
   }
-  return { layers };
+  return {
+    layers,
+    ...(km.maxLayers !== undefined ? { maxLayers: km.maxLayers } : {}),
+  };
+}
+
+/**
+ * Hands out layers for new layer keys: first any layer above the base that
+ * is empty (every key transparent) and reached by no key, then new layers
+ * up to the keymap's limit; null once there is none left.
+ */
+function layerAllocator(km: WorkingKeymap): () => number | null {
+  const reached = new Set<number>();
+  for (const layer of km.layers)
+    for (const t of layer) {
+      if (t.kind === "key" && t.holdLayer !== undefined)
+        reached.add(t.holdLayer);
+      if (t.kind === "layer" && t.layer !== undefined) reached.add(t.layer);
+    }
+  const free: number[] = [];
+  km.layers.forEach((layer, i) => {
+    if (i === 0 || reached.has(i)) return;
+    if (layer.every((t) => t.kind === "none" && !t.blocked)) free.push(i);
+  });
+  let next = Math.max(1, km.layers.length);
+  const max = km.maxLayers ?? Infinity;
+  return () => {
+    const f = free.shift();
+    if (f !== undefined) {
+      reached.add(f);
+      return f;
+    }
+    while (reached.has(next)) next++;
+    if (next >= max) return null;
+    reached.add(next);
+    return next++;
+  };
 }
 
 /** Changes that would leave the keymap as it is are not worth proposing. */
@@ -660,10 +701,8 @@ export function proposeThumbs(
 ): Proposal {
   const thumbs = thumbsLeftToRight(board, meta);
   if (!thumbs.length) return { changes: [], note: "no-thumbs" };
-  const used = new Set<number>();
-  for (const t of km.layers[0] ?? [])
-    if (t.kind === "key" && t.holdLayer !== undefined) used.add(t.holdLayer);
-  let next = Math.max(1, km.layers.length);
+  const allocate = layerAllocator(km);
+  let layersFull = false;
   const changes: Change[] = [];
   for (const th of thumbs) {
     const a = answers.thumbs[String(th.pos)];
@@ -681,16 +720,20 @@ export function proposeThumbs(
       if (now?.kind === "key" && now.holdLayer !== undefined)
         t.holdLayer = now.holdLayer;
       else {
-        while (used.has(next)) next++;
-        used.add(next);
-        t.holdLayer = next++;
+        const layer = allocate();
+        // No layer left for it: the key keeps its tap and gets no hold.
+        if (layer === null) layersFull = true;
+        else t.holdLayer = layer;
       }
     } else if (a.hold !== "none") {
       t.hold = HOLD_CODE[a.hold];
     }
     changes.push({ layer: 0, pos: th.pos, trigger: t });
   }
-  return { changes: dedupe(km, changes) };
+  return {
+    changes: dedupe(km, changes),
+    ...(layersFull ? { note: "layers-full" as const } : {}),
+  };
 }
 
 /** The layer keys among the thumbs, with the layer each holds. */
@@ -748,20 +791,20 @@ export function proposeLayerKeys(
     meta.thumbKeys.some((t) => t.pos === p),
   );
   if (!chosen.length) return { changes: [], note: "nothing" };
-  let next = Math.max(1, km.layers.length);
-  const used = new Set<number>();
-  for (const t of km.layers[0] ?? [])
-    if (t.kind === "key" && t.holdLayer !== undefined) used.add(t.holdLayer);
+  const allocate = layerAllocator(km);
+  let layersFull = false;
   const changes: Change[] = [];
   for (const pos of chosen) {
     const now = km.layers[0]?.[pos] ?? NONE;
     if (now.kind === "key" && now.holdLayer !== undefined) continue;
-    while (used.has(next)) next++;
-    used.add(next);
+    const layer = allocate();
+    if (layer === null) {
+      layersFull = true;
+      continue;
+    }
     const tap: Extract<Trigger, { kind: "key" }> =
       now.kind === "key" ? now : { kind: "key", code: "Space", mods: [] };
-    changes.push({ layer: 0, pos, trigger: { ...tap, holdLayer: next } });
-    next++;
+    changes.push({ layer: 0, pos, trigger: { ...tap, holdLayer: layer } });
   }
   // Every thumb key not chosen loses its hold layer.
   for (const th of meta.thumbKeys) {
@@ -773,7 +816,10 @@ export function proposeLayerKeys(
       changes.push({ layer: 0, pos: th.pos, trigger: tap });
     }
   }
-  return { changes: dedupe(km, changes) };
+  return {
+    changes: dedupe(km, changes),
+    ...(layersFull ? { note: "layers-full" as const } : {}),
+  };
 }
 
 /** The contents a layer may be given, in the order the steps list them. */
@@ -1137,6 +1183,7 @@ export function proposeRare(
 export function proposalLabels(
   changes: Change[],
   layout: LabelLayout,
+  layerBase = 0,
 ): Map<number, { layer: number; label: string }> {
   const m = new Map<number, { layer: number; label: string }>();
   for (const c of changes) {
@@ -1147,7 +1194,7 @@ export function proposalLabels(
     }
     let hold = "";
     if (c.trigger.kind === "key" && c.trigger.holdLayer !== undefined)
-      hold = ` / L${c.trigger.holdLayer}`;
+      hold = ` / L${c.trigger.holdLayer + layerBase}`;
     else if (c.trigger.kind === "key" && c.trigger.hold)
       hold = ` / ${labelForCode(c.trigger.hold, layout)?.main ?? c.trigger.hold}`;
     m.set(c.pos, { layer: c.layer, label: `${l.main}${hold}` });

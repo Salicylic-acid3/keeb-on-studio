@@ -344,11 +344,48 @@ export function boardIdForDevice(
   return null;
 }
 
+/**
+ * The layers of the keymap the guide works in: on a keyboard with a block
+ * of layers per OS, the current OS's block (its base layer and the three
+ * after it); otherwise the whole keymap. Working-keymap layer i is device
+ * layer start + i.
+ */
+export interface LayerBlock {
+  start: number;
+  size: number;
+}
+
 export interface LiveKeyboard {
   board: TestBoard;
   keymap: WorkingKeymap;
-  /** Device layer id by working-keymap layer index. */
+  /** Device layer id by working-keymap layer index (the block's layers that exist). */
   layerIds: number[];
+  block: LayerBlock;
+}
+
+/**
+ * A trigger's layer numbers moved from the device's numbering into the
+ * block's: a layer outside the block is left alone, as "other", so the
+ * guide neither draws nor rewrites it.
+ */
+export function windowTrigger(t: Trigger, block: LayerBlock): Trigger {
+  const inside = (l: number) =>
+    l >= block.start && l < block.start + block.size;
+  if (t.kind === "key" && t.holdLayer !== undefined) {
+    if (inside(t.holdLayer))
+      return { ...t, holdLayer: t.holdLayer - block.start };
+    return { kind: "other", label: `L${t.holdLayer}` };
+  }
+  if (t.kind === "layer" && t.layer !== undefined) {
+    if (inside(t.layer)) return { ...t, layer: t.layer - block.start };
+    return { kind: "other", label: `L${t.layer}` };
+  }
+  return t;
+}
+
+/** The block of the whole keymap: base 0, and at least four layers allowed. */
+export function wholeBlock(layerCount: number): LayerBlock {
+  return { start: 0, size: Math.max(4, layerCount) };
 }
 
 /** The connected keyboard's layout and keymap as the guide uses them. */
@@ -359,18 +396,21 @@ export function liveKeyboard(
   keymap: Keymap,
   behaviors: Map<number, BehaviorDefinition>,
   labelLayout: LabelLayout,
+  block: LayerBlock = wholeBlock(keymap.layers.length),
 ): LiveKeyboard {
   const project = importKle(zmkToKle(layout));
-  const layerIds = keymap.layers.map((l) => l.id);
+  const allIds = keymap.layers.map((l) => l.id);
   const indexOf = (lid: number) => {
-    const i = layerIds.indexOf(lid);
+    const i = allIds.indexOf(lid);
     return i >= 0 ? i : undefined;
   };
-  const layers: Trigger[][] = keymap.layers.map((l) =>
+  const inBlock = keymap.layers.slice(block.start, block.start + block.size);
+  const layerIds = inBlock.map((l) => l.id);
+  const layers: Trigger[][] = inBlock.map((l) =>
     project.keys.map((_, pos) => {
       const b = l.bindings[pos];
       return b
-        ? bindingToTrigger(b, behaviors, indexOf)
+        ? windowTrigger(bindingToTrigger(b, behaviors, indexOf), block)
         : ({ kind: "none" } as Trigger);
     }),
   );
@@ -398,7 +438,12 @@ export function liveKeyboard(
       label: labelOf(trigger, labelLayout),
     };
   });
-  return { board: { id, name, keys }, keymap: { layers }, layerIds };
+  return {
+    board: { id, name, keys },
+    keymap: { layers, maxLayers: block.size },
+    layerIds,
+    block,
+  };
 }
 
 /** A change the keyboard could not take, and why. */
