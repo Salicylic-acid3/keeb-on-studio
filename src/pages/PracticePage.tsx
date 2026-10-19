@@ -1,5 +1,5 @@
 /**
- * Typing practice and the keymap setup guide, at /practice (SPEC: docs/
+ * The typing dojo: the keymap setup guide and typing practice, at /practice (SPEC: docs/
  * practice/SPEC.md): the page frame, the keyboard and OS layout choice,
  * and the switch between the guide, free practice (sentences or tasks)
  * and, with ?meta, the keyboard metadata editor.
@@ -114,7 +114,7 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
           <div className="space-y-2">
             <h1 className="flex items-center gap-2 text-2xl font-light tracking-wide text-[var(--color-text)]">
               <IconSchool size={26} className="text-[var(--color-electric)]" />
-              {t("Typing practice")}
+              {t("Typing dojo")}
             </h1>
             <p className="text-sm leading-relaxed text-[var(--color-text-secondary)] max-w-3xl">
               {t(

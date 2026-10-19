@@ -10,7 +10,7 @@ export const languageLabels: Record<Language, string> = {
 
 const ja: Record<string, string> = {
   // Typing practice (phase 0 mock)
-  "Typing practice": "タイピング練習",
+  "Typing dojo": "タイピング道場",
   "Screen mock": "画面モック",
   "Decide your keymap step by step, then practise on it with the real keymap in front of you. A wrong key points straight at the key you meant, so what you learn here feeds back into the layout.":
     "キーマップを段階的に決めて、そのキーマップを画面に出したまま練習します。誤打鍵は押すべきキーをそのまま示すので、練習の結果が配列の見直しにつながります。",
@@ -315,7 +315,7 @@ const ja: Record<string, string> = {
   "Where the misses were": "ミスした場所",
   "Each key is tinted by how often it was missed, with the count in its corner.":
     "ミスの多いキーほど濃く塗られ、角に回数が出ます。",
-  "Typing practice result": "タイピング練習の結果",
+  "Typing dojo result": "タイピング道場の結果",
   "Chars/min": "文字/分",
   // Key test
   "When several keys are assigned the same function, all of them light up. To test the key matrix itself, connect the keyboard and use the key input display.":
