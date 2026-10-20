@@ -4,6 +4,15 @@
       "version": "upcoming",
       "date": null,
       "changes": {
+        "major": [],
+        "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.20.0",
+      "date": "2026-10-20",
+      "changes": {
         "major": [
           {
             "en": "Keymap dojo (/practice, also from the top page): decide the keymap of a small keyboard step by step — the symbols you use most, the thumb keys and which of them open a layer, the cursor keys, numbers, symbols and F keys on each layer — with every answer drawn as a proposal on your keymap to apply or skip, then practise typing on it: a wrong key lights the key you meant, and the result shows where the misses were. Works without a keyboard on any supported model's default keymap, and ends by saving the keymap into My keymaps; with a ZMK or QMK keyboard connected it reads the keyboard's own keymap, writes each applied step to it, and asks to save before each practice.",
