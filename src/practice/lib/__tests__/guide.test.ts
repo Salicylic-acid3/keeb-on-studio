@@ -472,4 +472,25 @@ describe("guide proposals on GoFortyMax Ortho", () => {
     expect(holds.sort()).toEqual([1, 2, 3]);
     expect(p.note).toBe("layers-full");
   });
+
+  it("finds the keys above and below a staggered column (ClickBoard ErgoMini)", () => {
+    const b = testBoard("clickboard_ergomini")!;
+    const m = keyboardMeta(b);
+    const changes = placeContent(
+      b,
+      m,
+      2,
+      "L",
+      "symbols",
+      DEFAULT_ANSWERS,
+      "us",
+    );
+    const byLabel = (l: string) => b.keys.findIndex((k) => k.label.main === l);
+    const at = (l: string) =>
+      changes.find((c) => c.pos === byLabel(l))?.trigger;
+    // D's column sits higher than its neighbours; [ still lands on E and ; on C.
+    expect(at("E")).toMatchObject({ code: "BracketLeft" });
+    expect(at("C")).toMatchObject({ code: "Semicolon" });
+    expect(changes).toHaveLength(17);
+  });
 });

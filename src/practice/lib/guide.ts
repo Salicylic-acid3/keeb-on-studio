@@ -351,6 +351,15 @@ export const GUIDE_40: GuideStep[] = [
   { id: "practice-all", title: "Practice: everything", practice: true },
 ];
 
+/**
+ * The steps as shown: with a keyboard connected, practice follows every
+ * finished layer; in demo mode there is nothing to type on, so the
+ * practice steps are left out and the guide ends with saving the keymap.
+ */
+export function guideSteps(withPractice: boolean): GuideStep[] {
+  return withPractice ? GUIDE_40 : GUIDE_40.filter((s) => !s.practice);
+}
+
 export const RARE_CHOICES = [
   "PrintScreen",
   "Insert",
@@ -915,24 +924,24 @@ function rowBeside(
   cols: number[],
   dy: number,
 ): (number | null)[] {
-  if (!cols.length) return [];
-  const y = board.keys[cols[0]].cy + dy;
-  const row = board.keys
-    .map((k, i) => ({ k, i }))
-    .filter(({ k }) => Math.abs(k.cy - y) < 0.3 && k.w <= 2);
+  // Each column's own neighbour: on a column-staggered keyboard the rows
+  // do not line up, so the key above D is found from D, not from the row.
   const used = new Set<number>();
   return cols.map((p) => {
-    const cx = board.keys[p].cx;
+    const c = board.keys[p];
     let best: number | null = null;
-    let bestD = 0.75;
-    for (const { k, i } of row) {
-      if (used.has(i)) continue;
-      const d = Math.abs(k.cx - cx);
+    let bestD = Infinity;
+    board.keys.forEach((k, i) => {
+      if (i === p || used.has(i) || k.w > 2) return;
+      const dx = Math.abs(k.cx - c.cx);
+      const ddy = Math.abs(k.cy - (c.cy + dy));
+      if (dx >= 0.6 || ddy >= 0.5) return;
+      const d = Math.hypot(dx, ddy);
       if (d < bestD) {
         bestD = d;
         best = i;
       }
-    }
+    });
     if (best !== null) used.add(best);
     return best;
   });

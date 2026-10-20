@@ -41,7 +41,13 @@ import { TaskSession } from "../practice/components/TaskSession";
 import { MetaEditor } from "../practice/components/MetaEditor";
 import { Notice } from "../practice/components/bits";
 import { GuideBoundary, GuideFlow } from "../practice/components/GuideFlow";
-import { applyChanges, GUIDE_40, type Change } from "../practice/lib/guide";
+import {
+  applyChanges,
+  guideSteps,
+  type Change,
+  type GuideStep,
+} from "../practice/lib/guide";
+import { saveDojoKeymap } from "../practice/lib/dojoKeymap";
 import {
   readProgress,
   remapProgress,
@@ -128,20 +134,54 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
       metaBoard === board
         ? demoToCarry
         : remapProgress(demoToCarry, positionMap(metaBoard, board));
+    // Demo progress counts steps without the practice ones; the live
+    // guide has them, so step numbers and applied steps are moved over.
+    const demoSteps = guideSteps(false);
+    const liveSteps = guideSteps(true);
+    const toLive = (i: number) =>
+      Math.max(
+        0,
+        liveSteps.findIndex((st) => st.id === demoSteps[i]?.id),
+      );
     const changes: Change[] = [];
-    GUIDE_40.forEach((_, i) => {
+    const applied: NonNullable<GuideProgress["applied"]> = {};
+    const status: GuideProgress["status"] = {};
+    demoSteps.forEach((_, i) => {
       const a = demo.applied?.[i];
-      if (a) changes.push(...a.changes);
+      if (a) {
+        changes.push(...a.changes);
+        applied[toLive(i)] = a;
+      }
+      const st = demo.status[i];
+      if (st) status[toLive(i)] = st;
     });
     await device.write(changes);
     writeProgress(progressKey, {
       ...demo,
+      step: toLive(demo.step),
+      status,
+      applied,
       layers: applyChanges(live.keymap, changes).layers,
       savedAt: Date.now(),
     });
     setCarried(true);
     setMode("guide");
   };
+  // Demo mode ends with the result kept in the remapper's keymaps, as
+  // キーマップ道場, one per keyboard, to load once the keyboard is here.
+  const [savedToLibrary, setSavedToLibrary] = useState<{
+    firmware: "zmk" | "qmk";
+    board: string;
+  } | null>(null);
+  const saveToLibrary = useCallback(
+    async (changes: Change[]) => {
+      const r = await saveDojoKeymap(board, changes);
+      if (!r) return false;
+      setSavedToLibrary({ firmware: r.firmware, board: board.name });
+      return true;
+    },
+    [board],
+  );
   // Unsaved changes on the keyboard are lost with the page or the
   // connection; both ask first.
   useEffect(() => {
@@ -252,7 +292,7 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
               <span>
                 {t(
                   "A guide done in demo mode on this keyboard was found (step {{n}} of {{total}}). Write that keymap to the keyboard and carry on from there?",
-                  { n: demoToCarry.step + 1, total: GUIDE_40.length },
+                  { n: demoToCarry.step + 1, total: guideSteps(false).length },
                 )}
               </span>
               <span className="flex items-center gap-2">
@@ -277,12 +317,24 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
         )}
 
         {mode === "meta" && <MetaEditor key={board.id} board={board} t={t} />}
+        {mode === "pick" && savedToLibrary && (
+          <Notice>
+            {t(
+              'Saved as "キーマップ道場" in the {{firmware}} remapper\'s My keymaps for {{board}}. Connect the keyboard there and load it to write it to the keyboard.',
+              {
+                firmware: savedToLibrary.firmware === "qmk" ? "QMK" : "ZMK",
+                board: savedToLibrary.board,
+              },
+            )}
+          </Notice>
+        )}
         {mode === "pick" && (
           <ModePicker
             t={t}
             board={board}
             metaBoard={metaBoard}
             progressKey={progressKey}
+            steps={guideSteps(!!live)}
             onPick={setMode}
           />
         )}
@@ -302,6 +354,17 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
               progressKey={progressKey}
               onApply={live ? onApply : undefined}
               layerBase={live?.block.start ?? 0}
+              steps={guideSteps(!!live)}
+              device={
+                live
+                  ? {
+                      hasUnsavedChanges: device.hasUnsavedChanges,
+                      saving: device.writing,
+                      save: device.save,
+                    }
+                  : undefined
+              }
+              onSaveAndFinish={live ? undefined : saveToLibrary}
             />
           </GuideBoundary>
         )}
@@ -522,12 +585,14 @@ function ModePicker({
   board,
   metaBoard,
   progressKey,
+  steps,
   onPick,
 }: {
   t: T;
   board: TestBoard;
   metaBoard: TestBoard;
   progressKey: string;
+  steps: GuideStep[];
   onPick: (mode: PracticeMode) => void;
 }) {
   const saved = readProgress(progressKey);
@@ -572,8 +637,8 @@ function ModePicker({
             {t("Last time: {{keyboard}}, step {{n}} of {{total}} ({{step}})", {
               keyboard: board.name,
               n: saved.step + 1,
-              total: GUIDE_40.length,
-              step: t(GUIDE_40[saved.step]?.title ?? ""),
+              total: steps.length,
+              step: t(steps[saved.step]?.title ?? ""),
             })}
           </span>
         </section>

@@ -392,4 +392,37 @@ describe("PracticePage with a keyboard", () => {
     );
     expect(screen.getByText(/Layer keys: .*L[5-7]/)).toBeInTheDocument();
   });
+
+  it("in demo mode, ends with the keymap saved to the remapper's keymaps", async () => {
+    mount({ connected: false });
+    fireEvent.click(screen.getByRole("button", { name: /Start the guide/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Begin" }));
+    // No practice steps without a keyboard: 7 steps, the last one saves.
+    expect(screen.getByText(/Step 2 of 7/)).toBeInTheDocument();
+    const next = () => {
+      const apply = screen.getByRole("button", { name: "Apply" });
+      if (!(apply as HTMLButtonElement).disabled) fireEvent.click(apply);
+      else
+        fireEvent.click(
+          screen.getByRole("button", { name: "Next without changing" }),
+        );
+    };
+    next(); // symbols
+    next(); // duplicates
+    fireEvent.click(
+      screen.getByRole("button", { name: "Use Salicylic_acid3's row" }),
+    );
+    next(); // thumbs
+    next(); // one hand
+    next(); // other side
+    expect(screen.getByText(/Step 7 of 7/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Save and finish/ }));
+    await waitFor(() =>
+      expect(screen.getByText(/Saved as "キーマップ道場"/)).toBeInTheDocument(),
+    );
+    // Back on the top, with the guide's progress kept for next time.
+    expect(
+      screen.getByRole("button", { name: /Continue where you left off/ }),
+    ).toBeInTheDocument();
+  });
 });

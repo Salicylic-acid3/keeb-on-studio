@@ -38,6 +38,7 @@ import {
   contentLayer,
   CONTENTS,
   GUIDE_40,
+  type GuideStep,
   keymapOf,
   orderedSymbolSlots,
   proposalLabels,
@@ -101,6 +102,9 @@ export function GuideFlow({
   progressKey,
   onApply,
   layerBase,
+  steps: stepsProp,
+  device,
+  onSaveAndFinish,
 }: {
   board: TestBoard;
   meta: KeyboardMeta;
@@ -118,8 +122,26 @@ export function GuideFlow({
   onApply?: (writes: Change[]) => void;
   /** The device's number of the working keymap's layer 0, for the labels. */
   layerBase?: number;
+  /** The steps to run; the practice ones only with a keyboard to type on. */
+  steps?: GuideStep[];
+  /**
+   * With a keyboard connected: whether what the guide wrote is still
+   * unsaved, and how to save it. Practice waits for a save, since the
+   * typing has to happen on the keymap as decided so far.
+   */
+  device?: {
+    hasUnsavedChanges: boolean;
+    saving: boolean;
+    save: () => Promise<boolean>;
+  };
+  /**
+   * Demo mode: keep the result as a keymap in the remapper's own list
+   * (all applied changes, in step order) when the guide ends.
+   */
+  onSaveAndFinish?: (changes: Change[]) => Promise<boolean>;
 }) {
   const storeKey = progressKey ?? board.id;
+  const steps = stepsProp ?? GUIDE_40;
   const ln = (layer: number) => layer + (layerBase ?? 0);
   const [progress, setProgress] = useState<GuideProgress>(
     () => readProgress(storeKey) ?? fresh(board, startKeymap),
@@ -138,7 +160,7 @@ export function GuideFlow({
     [progress.layers],
   );
   const { step: current, answers, status } = progress;
-  const step = GUIDE_40[current];
+  const step = steps[current] ?? steps[0];
   // A step already applied is shown against the keymap as it was before
   // it, so its proposal reflects the answers rather than vanishing.
   const km: WorkingKeymap = useMemo(() => {
@@ -155,7 +177,7 @@ export function GuideFlow({
   const answer = (patch: Partial<Answers>) =>
     update({ answers: { ...answers, ...patch } });
   const goTo = (i: number) =>
-    update({ step: Math.max(0, Math.min(GUIDE_40.length - 1, i)) });
+    update({ step: Math.max(0, Math.min(steps.length - 1, i)) });
   const finish = (how: StepStatus, changes?: Proposal["changes"]) => {
     // Undo what this step applied before, then apply the new changes.
     const p = progress;
@@ -181,7 +203,7 @@ export function GuideFlow({
       status: { ...p.status, [p.step]: how },
       layers,
       applied,
-      step: Math.min(GUIDE_40.length - 1, p.step + 1),
+      step: Math.min(steps.length - 1, p.step + 1),
       savedAt: Date.now(),
     });
     if (writes.length) onApply?.(writes);
@@ -322,26 +344,87 @@ export function GuideFlow({
     return tr ? labelOf(tr, layout).main || "—" : "—";
   };
 
-  const changeButtons = (
-    <div className="flex flex-wrap gap-2 pt-1">
-      <button
-        type="button"
-        onClick={() => finish("applied", proposal?.changes)}
-        disabled={!proposal?.changes.length}
-        className="btn-electric h-10 px-4 text-sm flex items-center gap-2 disabled:opacity-50"
-      >
-        <IconCheck size={16} />
-        {t("Apply")}
-      </button>
-      <button
-        type="button"
-        onClick={() => finish("skipped")}
-        className="btn-ghost h-10 border border-[var(--color-border)] px-4 text-sm"
-      >
-        {t("Next without changing")}
-      </button>
-    </div>
-  );
+  const practiceStep = step.practice;
+  const isLast = current === steps.length - 1;
+  const [finishing, setFinishing] = useState(false);
+  /** Every applied change so far, in step order. */
+  const appliedChanges = (): Change[] => {
+    const out: Change[] = [];
+    steps.forEach((_, i) => {
+      const a = progress.applied?.[i];
+      if (a) out.push(...a.changes);
+    });
+    return out;
+  };
+  // The end of the guide: with a keyboard, save what was written to it;
+  // in demo mode, keep the result in the remapper's keymaps. Then back
+  // to the top.
+  const finishGuide = async (changes?: Proposal["changes"]) => {
+    setFinishing(true);
+    try {
+      let applied = appliedChanges();
+      if (changes?.length) {
+        finish("applied", changes);
+        applied = [...applied, ...changes];
+      } else {
+        finish("done");
+      }
+      if (device?.hasUnsavedChanges) {
+        if (!(await device.save())) return;
+      } else if (onSaveAndFinish) {
+        if (!(await onSaveAndFinish(applied))) return;
+      }
+      onExit();
+    } finally {
+      setFinishing(false);
+    }
+  };
+
+  const changeButtons =
+    current === steps.length - 1 ? (
+      <div className="flex flex-wrap gap-2 pt-1">
+        <button
+          type="button"
+          onClick={() => void finishGuide(proposal?.changes)}
+          disabled={finishing}
+          className="btn-electric h-10 px-4 text-sm flex items-center gap-2 disabled:opacity-50"
+        >
+          <IconCheck size={16} />
+          {proposal?.changes.length
+            ? t("Apply, save and finish")
+            : t("Save and finish")}
+        </button>
+        {proposal?.changes.length ? (
+          <button
+            type="button"
+            onClick={() => void finishGuide()}
+            disabled={finishing}
+            className="btn-ghost h-10 border border-[var(--color-border)] px-4 text-sm"
+          >
+            {t("Save and finish without this")}
+          </button>
+        ) : null}
+      </div>
+    ) : (
+      <div className="flex flex-wrap gap-2 pt-1">
+        <button
+          type="button"
+          onClick={() => finish("applied", proposal?.changes)}
+          disabled={!proposal?.changes.length}
+          className="btn-electric h-10 px-4 text-sm flex items-center gap-2 disabled:opacity-50"
+        >
+          <IconCheck size={16} />
+          {t("Apply")}
+        </button>
+        <button
+          type="button"
+          onClick={() => finish("skipped")}
+          className="btn-ghost h-10 border border-[var(--color-border)] px-4 text-sm"
+        >
+          {t("Next without changing")}
+        </button>
+      </div>
+    );
 
   const noteText = (note: Proposal["note"]) => {
     switch (note) {
@@ -368,12 +451,11 @@ export function GuideFlow({
     }
   };
 
-  const practiceStep = step.practice;
-
   return (
     <div className="space-y-4">
       <StepBar
         t={t}
+        steps={steps}
         current={current}
         status={status}
         onSelect={goTo}
@@ -388,7 +470,7 @@ export function GuideFlow({
               <div className="text-xs text-[var(--color-text-muted)]">
                 {t("Step {{n}} of {{total}}", {
                   n: current + 1,
-                  total: GUIDE_40.length,
+                  total: steps.length,
                 })}
               </div>
               <h2 className="text-lg font-medium text-[var(--color-text)]">
@@ -410,15 +492,32 @@ export function GuideFlow({
             </div>
             <button
               type="button"
-              onClick={() => finish("done")}
-              className="btn-electric h-10 px-4 text-sm flex items-center gap-2"
+              onClick={() => (isLast ? void finishGuide() : finish("done"))}
+              disabled={finishing}
+              className="btn-electric h-10 px-4 text-sm flex items-center gap-2 disabled:opacity-50"
             >
-              {current === GUIDE_40.length - 1
-                ? t("Finish the guide")
-                : t("Done, next step")}
+              {isLast ? t("Finish the guide") : t("Done, next step")}
             </button>
           </div>
-          {step.id === "practice-layers" ? (
+          {device?.hasUnsavedChanges ? (
+            // The typing has to happen on the keymap as decided so far, so
+            // what was written to the keyboard is saved first.
+            <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-[var(--color-electric)]/60 bg-[var(--color-electric)]/10 px-5 py-4 text-sm text-[var(--color-text)]">
+              <span>
+                {t(
+                  "The keymap so far is on the keyboard but not saved. Save it to practise on it.",
+                )}
+              </span>
+              <button
+                type="button"
+                onClick={() => void device.save()}
+                disabled={device.saving}
+                className="btn-electric h-9 px-4 text-sm disabled:opacity-50"
+              >
+                {t("Save to keyboard and practise")}
+              </button>
+            </div>
+          ) : step.id === "practice-layers" ? (
             <TaskSession
               board={drawn}
               layout={layout}
@@ -445,7 +544,7 @@ export function GuideFlow({
             <div className="text-xs text-[var(--color-text-muted)]">
               {t("Step {{n}} of {{total}}", {
                 n: current + 1,
-                total: GUIDE_40.length,
+                total: steps.length,
               })}
             </div>
             <h2 className="text-lg font-medium text-[var(--color-text)]">
@@ -1346,6 +1445,7 @@ function OrderList<I extends string>({
 
 function StepBar({
   t,
+  steps,
   current,
   status,
   onSelect,
@@ -1353,6 +1453,7 @@ function StepBar({
   onRestart,
 }: {
   t: T;
+  steps: GuideStep[];
   current: number;
   status: Record<number, StepStatus>;
   onSelect: (i: number) => void;
@@ -1366,7 +1467,7 @@ function StepBar({
     >
       <div className="flex items-center justify-between gap-3">
         <ol className="flex flex-1 flex-wrap items-center gap-1.5">
-          {GUIDE_40.map((s, i) => {
+          {steps.map((s, i) => {
             const st = status[i] ?? "todo";
             const active = i === current;
             return (
@@ -1396,7 +1497,7 @@ function StepBar({
                     {t(s.title)}
                   </span>
                 </button>
-                {i < GUIDE_40.length - 1 && (
+                {i < steps.length - 1 && (
                   <span className="h-px w-2 bg-[var(--color-border-hover)]" />
                 )}
               </li>

@@ -58,8 +58,7 @@ if (rnd(2)) {
     .nth(1)
     .selectOption({ label: "レイヤー" });
 }
-await applyOrSkip(); // thumbs (the layer keys come from their holds)
-await page.getByRole("button", { name: "終わったので次へ" }).click();
+await applyOrSkip(); // thumbs; in demo mode the layer steps follow at once
 await page.waitForTimeout(100);
 const stepName = async () =>
   await page
@@ -83,7 +82,7 @@ async function check(i, what) {
 }
 for (let i = 0; i < 120; i++) {
   const step = await stepName();
-  const inLayerStep = /ステップ (6|7) /.test(step);
+  const inLayerStep = /ステップ (5|6) /.test(step);
   const r = rnd(10);
   let what = "";
   try {

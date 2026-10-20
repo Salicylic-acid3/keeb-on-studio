@@ -106,6 +106,14 @@ const ja: Record<string, string> = {
   "Characters not on the keymap": "入力不可文字",
   "None.": "なし",
   "Next text": "次の文章",
+  "Saved as \"キーマップ道場\" in the {{firmware}} remapper's My keymaps for {{board}}. Connect the keyboard there and load it to write it to the keyboard.":
+    "{{board}} 用のキーマップを「キーマップ道場」として {{firmware}} のキーリマッパーのマイキーマップに保存しました。キーボードをつないだら、キーリマッパーでそのキーマップを読み込むと書き込めます。",
+  "Apply, save and finish": "適用して保存して終える",
+  "Save and finish": "保存して終える",
+  "Save and finish without this": "これは設定せずに保存して終える",
+  "The keymap so far is on the keyboard but not saved. Save it to practise on it.":
+    "ここまでのキーマップはキーボードに書き込んだだけで、まだ保存していません。保存してから、そのキーマップで練習します。",
+  "Save to keyboard and practise": "キーボードに保存して練習する",
   "Up to three thumb keys can open a layer on hold (a keyboard has the base layer and three per OS). Space and Enter are hardly ever held, so their hold suits a layer; Backspace and Delete are held to erase, so they stay as they are.":
     "長押しでレイヤーにできる親指キーは3つまでです（キーボードは OS ごとにベースレイヤーと3レイヤーを持ちます）。スペースと Enter は長押しすることがほとんど無いので長押しをレイヤーにでき、Backspace と Delete は長押しで連続削除するのでそのままにします。",
   "A guide done in demo mode on this keyboard was found (step {{n}} of {{total}}). Write that keymap to the keyboard and carry on from there?":
