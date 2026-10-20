@@ -106,6 +106,9 @@ const ja: Record<string, string> = {
   "Characters not on the keymap": "入力不可文字",
   "None.": "なし",
   "Next text": "次の文章",
+  "Decide the keymap of a small keyboard step by step -- which symbols you use most, the thumb keys, what goes on each layer -- and practise typing on it. Works without a keyboard too; with one connected, the result is written to it.":
+    "小さなキーボードのキーマップを、よく使う記号・親指キー・各レイヤーの中身の順に質問に答えて決め、そのキーマップで練習します。キーボードが無くても試せて、接続していれば結果をそのまま書き込めます。",
+  "Open the keymap dojo": "キーマップ道場を開く",
   "Saved as \"キーマップ道場\" in the {{firmware}} remapper's My keymaps for {{board}}. Connect the keyboard there and load it to write it to the keyboard.":
     "{{board}} 用のキーマップを「キーマップ道場」として {{firmware}} のキーリマッパーのマイキーマップに保存しました。キーボードをつないだら、キーリマッパーでそのキーマップを読み込むと書き込めます。",
   "Apply, save and finish": "適用して保存して終える",

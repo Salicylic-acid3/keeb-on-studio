@@ -4,9 +4,21 @@
       "version": "upcoming",
       "date": null,
       "changes": {
-        "major": [],
+        "major": [
+          {
+            "en": "Keymap dojo (/practice, also from the top page): decide the keymap of a small keyboard step by step — the symbols you use most, the thumb keys and which of them open a layer, the cursor keys, numbers, symbols and F keys on each layer — with every answer drawn as a proposal on your keymap to apply or skip, then practise typing on it: a wrong key lights the key you meant, and the result shows where the misses were. Works without a keyboard on any supported model's default keymap, and ends by saving the keymap into My keymaps; with a ZMK or QMK keyboard connected it reads the keyboard's own keymap, writes each applied step to it, and asks to save before each practice.",
+            "ja": "キーマップ道場（/practice、トップ画面からも開けます）: 小さなキーボードのキーマップを、よく使う記号・親指キーとその長押しレイヤー・各レイヤーに置くカーソルキー／数字／記号／Fキーの順に質問に答えて決めます。回答はキーマップ上の配置案として描かれ、適用するか飛ばすかを選べます。決めたキーマップでタイピング練習ができ、誤打鍵すると押すべきキーが光り、結果にはミスした場所が出ます。キーボードが無くても対応機種のデフォルトキーマップで試せて、最後にマイキーマップへ保存します。ZMK／QMK のキーボードを接続すると実機のキーマップを読み込み、適用したステップをその都度キーボードに書き込み、練習の前に保存を促します。",
+            "zh": "键位道场（/practice，也可从首页打开）：按顺序回答问题来决定小型键盘的键位——常用的符号、拇指键及其长按层、各层上的光标键／数字／符号／F 键。每个回答都会在键位图上画出方案，可应用或跳过；然后在该键位上练习打字，按错时会点亮应按的键，结果会显示失误的位置。没有键盘也可用任一受支持型号的默认键位试用，最后保存到我的键位；连接 ZMK 或 QMK 键盘后会读取键盘自身的键位，把应用的每一步写入键盘，并在练习前提示保存。"
+          }
+        ],
         "minor": [],
-        "patch": []
+        "patch": [
+          {
+            "en": "QMK: the keyboard stays connected when moving between the QMK pages and the keymap dojo.",
+            "ja": "QMK: QMK の画面とキーマップ道場を行き来してもキーボードの接続が切れなくなりました。",
+            "zh": "QMK：在 QMK 页面与键位道场之间切换时，键盘保持连接。"
+          }
+        ]
       }
     },
     {

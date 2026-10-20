@@ -20,24 +20,26 @@ import {
   IconExternalLink,
   IconKeyboard,
   IconMessages,
+  IconSchool,
 } from "@tabler/icons-react";
 import type { MouseEvent as ReactMouseEvent, ReactNode } from "react";
 import { useLanguage } from "../hooks/useLanguage";
 import { GUIDE_ARTICLES, DISCORD_URL } from "../lib/guideLinks";
 import { KEY_TEST_PATH } from "../pages/KeyTestPage";
+import { PRACTICE_PATH } from "../pages/PracticePage";
 
-/** Opens the key test in place, the way the app's own routes change. */
-function openKeyTest(e: ReactMouseEvent<HTMLAnchorElement>) {
-  if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
-  e.preventDefault();
-  // Back returns to the top page it was opened from (ZMK or QMK).
-  window.history.pushState(
-    { from: window.location.pathname },
-    "",
-    KEY_TEST_PATH,
-  );
-  window.dispatchEvent(new PopStateEvent("popstate"));
+/** Opens one of the app's own pages in place, the way its routes change. */
+function openInPlace(path: string) {
+  return (e: ReactMouseEvent<HTMLAnchorElement>) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    // Back returns to the top page it was opened from (ZMK or QMK).
+    window.history.pushState({ from: window.location.pathname }, "", path);
+    window.dispatchEvent(new PopStateEvent("popstate"));
+  };
 }
+const openKeyTest = openInPlace(KEY_TEST_PATH);
+const openPractice = openInPlace(PRACTICE_PATH);
 
 interface SplashGuideProps {
   /** Open the supported-keyboards / Q&A page (the Home tab's content). */
@@ -151,6 +153,22 @@ export function SplashGuide({
         >
           <IconKeyboard size={14} />
           {t("Open the key test")}
+        </a>
+      </Card>
+
+      <Card icon={<IconSchool size={18} />} title={t("Keymap dojo")}>
+        <p className="text-sm text-[var(--color-text-secondary)]">
+          {t(
+            "Decide the keymap of a small keyboard step by step -- which symbols you use most, the thumb keys, what goes on each layer -- and practise typing on it. Works without a keyboard too; with one connected, the result is written to it.",
+          )}
+        </p>
+        <a
+          href={PRACTICE_PATH}
+          onClick={openPractice}
+          className={`${buttonClass} mt-3`}
+        >
+          <IconSchool size={14} />
+          {t("Open the keymap dojo")}
         </a>
       </Card>
 
