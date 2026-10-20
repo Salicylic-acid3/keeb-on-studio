@@ -326,7 +326,6 @@ export interface GuideStep {
     | "symbols"
     | "duplicates"
     | "thumbs"
-    | "layer-keys"
     | "practice-base"
     | "layer-one-hand"
     | "layer-other"
@@ -344,7 +343,6 @@ export const GUIDE_40: GuideStep[] = [
   { id: "symbols", title: "Symbol priority" },
   { id: "duplicates", title: "Rarely used keys" },
   { id: "thumbs", title: "Thumb keys" },
-  { id: "layer-keys", title: "Layer keys" },
   { id: "practice-base", title: "Practice: base layer", practice: true },
   { id: "layer-one-hand", title: "Layer contents: one hand" },
   { id: "layer-other", title: "Layer contents: other side" },
@@ -663,6 +661,9 @@ export function currentThumb(km: WorkingKeymap, pos: number): ThumbAssign {
   return { tap: t.code, hold };
 }
 
+/** How many thumb keys may open a layer: a keyboard with a block per OS has the base and three. */
+export const MAX_LAYER_KEYS = 3;
+
 /** The author's thumb row, left to right, as a starting point. */
 export function recommendThumbs(
   board: TestBoard,
@@ -703,6 +704,9 @@ export function proposeThumbs(
   if (!thumbs.length) return { changes: [], note: "no-thumbs" };
   const allocate = layerAllocator(km);
   let layersFull = false;
+  // At most three thumb keys open a layer: the base and three layers is
+  // what a keyboard with a block per OS has.
+  let layerKeys = 0;
   const changes: Change[] = [];
   for (const th of thumbs) {
     const a = answers.thumbs[String(th.pos)];
@@ -717,13 +721,18 @@ export function proposeThumbs(
       mods: [],
     };
     if (a.hold === "layer") {
-      if (now?.kind === "key" && now.holdLayer !== undefined)
+      if (layerKeys >= MAX_LAYER_KEYS) layersFull = true;
+      else if (now?.kind === "key" && now.holdLayer !== undefined) {
         t.holdLayer = now.holdLayer;
-      else {
+        layerKeys++;
+      } else {
         const layer = allocate();
         // No layer left for it: the key keeps its tap and gets no hold.
         if (layer === null) layersFull = true;
-        else t.holdLayer = layer;
+        else {
+          t.holdLayer = layer;
+          layerKeys++;
+        }
       }
     } else if (a.hold !== "none") {
       t.hold = HOLD_CODE[a.hold];
@@ -976,8 +985,11 @@ export function placeContent(
       } else {
         // An inverted T from the index finger: ← ↓ → on J K L (the home
         // row's first three), ↑ above the middle one; Home / End above
-        // the ends and PgUp / PgDn on the fourth key and above it.
-        const [h0, h1, h2, h3] = home;
+        // the ends and PgUp / PgDn on the fourth key and above it. Under
+        // the left hand it is mirrored: ← ↓ → on S D F, ↑ on E, the
+        // fourth key is A.
+        const [h0, h1, h2, h3] =
+          hand === "L" ? [home[1], home[2], home[3], home[0]] : home;
         put(h0, "ArrowLeft");
         put(h1, "ArrowDown");
         put(h2, "ArrowRight");
@@ -1184,20 +1196,17 @@ export function proposalLabels(
   changes: Change[],
   layout: LabelLayout,
   layerBase = 0,
-): Map<number, { layer: number; label: string }> {
-  const m = new Map<number, { layer: number; label: string }>();
-  for (const c of changes) {
+): Array<{ pos: number; layer: number; label: string }> {
+  // One entry per change: a key changed on two layers keeps both labels.
+  return changes.map((c) => {
+    if (c.trigger.kind === "none")
+      return { pos: c.pos, layer: c.layer, label: "None" };
     const l = labelOf(c.trigger, layout);
-    if (c.trigger.kind === "none") {
-      m.set(c.pos, { layer: c.layer, label: "None" });
-      continue;
-    }
     let hold = "";
     if (c.trigger.kind === "key" && c.trigger.holdLayer !== undefined)
       hold = ` / L${c.trigger.holdLayer + layerBase}`;
     else if (c.trigger.kind === "key" && c.trigger.hold)
       hold = ` / ${labelForCode(c.trigger.hold, layout)?.main ?? c.trigger.hold}`;
-    m.set(c.pos, { layer: c.layer, label: `${l.main}${hold}` });
-  }
-  return m;
+    return { pos: c.pos, layer: c.layer, label: `${l.main}${hold}` };
+  });
 }

@@ -44,9 +44,8 @@ function toLayerStep() {
     screen.getByRole("button", { name: "Use Salicylic_acid3's row" }),
   );
   applyOrSkip(); // thumbs
-  applyOrSkip(); // layer keys
   fireEvent.click(screen.getByRole("button", { name: "Done, next step" })); // practice
-  expect(screen.getByText(/Step 7 of/)).toBeInTheDocument();
+  expect(screen.getByText(/Step 6 of/)).toBeInTheDocument();
 }
 
 /** The content pulldowns of the layer step, in CONTENTS order. */
@@ -136,10 +135,10 @@ describe("GuideFlow layer contents", () => {
       .filter(Boolean);
     fireEvent.change(digits, { target: { value: l3 } });
     applyOrSkip(); // step 7 applied
-    expect(screen.getByText(/Step 8 of/)).toBeInTheDocument();
+    expect(screen.getByText(/Step 7 of/)).toBeInTheDocument();
     expect(boards()).toBeGreaterThan(0);
 
-    // Step 8 offers both layers; the other hand gets the numbers by default.
+    // Step 7 offers both layers; the other hand gets the numbers by default.
     const [, digits8] = pickers();
     expect(digits8.value).toBe(l3);
     applyOrSkip(); // step 8 applied
@@ -148,7 +147,7 @@ describe("GuideFlow layer contents", () => {
     fireEvent.click(
       screen.getByRole("button", { name: "Layer contents: one hand" }),
     );
-    expect(screen.getByText(/Step 7 of/)).toBeInTheDocument();
+    expect(screen.getByText(/Step 6 of/)).toBeInTheDocument();
     [cursor, digits] = pickers();
     expect(cursor.value).toBe(l2);
     expect(digits.value).toBe(l3);

@@ -42,7 +42,6 @@ import {
   orderedSymbolSlots,
   proposalLabels,
   proposeDuplicates,
-  proposeLayerKeys,
   proposeOneHand,
   proposeOther,
   proposeRare,
@@ -53,7 +52,6 @@ import {
   SALICYLIC_SYMBOL_GRID,
   REPLACE_CHOICES,
   reviewKeys,
-  suggestedLayerKeys,
   symbolColumns,
   SYMBOL_NAMES,
   THUMB_TAPS,
@@ -202,8 +200,6 @@ export function GuideFlow({
         return proposeDuplicates(km, answers);
       case "thumbs":
         return proposeThumbs(board, meta, km, answers);
-      case "layer-keys":
-        return proposeLayerKeys(meta, km, answers);
       case "layer-one-hand":
         return proposeOneHand(board, meta, km, answers, layout);
       case "layer-other":
@@ -226,23 +222,6 @@ export function GuideFlow({
   const marks = useMemo(() => {
     const m = new Map<string, Mark>();
     if (!proposal) return m;
-    if (step.id === "layer-keys") {
-      // Every thumb key as it will be: the layer keys stand out, the rest
-      // show what they keep.
-      const after = applyChanges(km, proposal.changes);
-      for (const th of thumbsLeftToRight(board, meta)) {
-        const t = after.layers[0]?.[th.pos];
-        if (t?.kind !== "key") continue;
-        const main = labelOf(t, layout).main;
-        const hasLayer = t.holdLayer !== undefined;
-        const k = board.keys[th.pos];
-        m.set(k.id, {
-          tone: hasLayer ? "set" : "hold",
-          label: hasLayer ? `${main} / L${t.holdLayer}` : main,
-        });
-      }
-      return m;
-    }
     if (step.id === "symbols") {
       // The slots a symbol may take, and in vermillion the ones that change.
       for (const pos of orderedSymbolSlots(board, meta)) {
@@ -250,7 +229,7 @@ export function GuideFlow({
         if (k) m.set(k.id, { tone: pos === pickedSlot ? "hold" : "set" });
       }
     }
-    for (const [pos, { layer, label }] of proposalLabels(
+    for (const { pos, layer, label } of proposalLabels(
       proposal.changes,
       layout,
       layerBase ?? 0,
@@ -272,7 +251,6 @@ export function GuideFlow({
     board,
     shownLayer,
     step.id,
-    km,
     meta,
     pickedSlot,
     layerBase,
@@ -283,38 +261,15 @@ export function GuideFlow({
   const marksForLayer = (layer: number, thumbPos: number) => {
     const m = new Map<string, Mark>();
     if (!proposal) return m;
-    for (const [pos, c] of proposalLabels(
-      proposal.changes,
-      layout,
-      layerBase ?? 0,
-    )) {
+    for (const c of proposalLabels(proposal.changes, layout, layerBase ?? 0)) {
       if (c.layer !== layer) continue;
-      const k = board.keys[pos];
+      const k = board.keys[c.pos];
       if (k) m.set(k.id, { tone: "set", label: c.label });
     }
     const held = board.keys[thumbPos];
     if (held) m.set(held.id, { tone: "hint" });
     return m;
   };
-
-  // The layer keys start from what step 4 set: every thumb key that holds
-  // a layer in the keymap as it is before this step. Coming back here after
-  // changing the thumbs keeps the two steps in agreement; the suggestion
-  // fills in only when no thumb key holds a layer yet.
-  useEffect(() => {
-    if (step.id !== "layer-keys") return;
-    const holding = thumbLayerKeys(meta, km).map((k) => k.pos);
-    const next = holding.length
-      ? holding
-      : answers.layerKeyPos.length
-        ? answers.layerKeyPos
-        : suggestedLayerKeys(meta, km);
-    const same =
-      next.length === answers.layerKeyPos.length &&
-      next.every((p) => answers.layerKeyPos.includes(p));
-    if (!same) answer({ layerKeyPos: next });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step.id]);
 
   // The columns the symbol grid covers on this keyboard (the two hands
   // match on any keyboard the guide is for; the left one is drawn).
@@ -400,7 +355,7 @@ export function GuideFlow({
         );
       case "one-layer":
         return t(
-          "This needs a second layer key. Go back to the layer key step and choose two thumb keys.",
+          "This needs a second layer key. Go back to the thumb key step and give a thumb key on each side a layer on hold.",
         );
       case "nothing":
         return t("Nothing to change with this answer.");
@@ -715,6 +670,11 @@ export function GuideFlow({
                     "Keys tapped on their own -- Backspace, Delete, 変換, 無変換 -- make long Japanese text easier; Shift, Ctrl, Alt and Win on the thumbs make the letter combinations easier. With a tap and a hold on the same key, one thumb key can carry two of them.",
                   )}
                 </Para>
+                <Para>
+                  {t(
+                    "Up to three thumb keys can open a layer on hold (a keyboard has the base layer and three per OS). Space and Enter are hardly ever held, so their hold suits a layer; Backspace and Delete are held to erase, so they stay as they are.",
+                  )}
+                </Para>
                 <Example>
                   {t(
                     "The author, Salicylic_acid3, goes left to right: on the left thumbs 無変換 / Win, Space / layer, Backspace; on the right thumbs Delete, Enter / layer, 変換 / Alt.",
@@ -804,51 +764,6 @@ export function GuideFlow({
               </>
             )}
 
-            {step.id === "layer-keys" && (
-              <>
-                <Para>
-                  {t(
-                    "A thumb key can do two things: one on a tap, another while held. Space and Enter are hardly ever held, so their hold can open a layer. Backspace and Delete are held to erase, so they stay as they are.",
-                  )}
-                </Para>
-                <h3 className="text-sm font-medium text-[var(--color-text)]">
-                  {t("Which thumb keys open a layer when held?")}
-                </h3>
-                <div className="flex flex-wrap gap-1.5">
-                  {meta.thumbKeys.map((th) => {
-                    const on = answers.layerKeyPos.includes(th.pos);
-                    return (
-                      <button
-                        key={th.pos}
-                        type="button"
-                        aria-pressed={on}
-                        onClick={() =>
-                          answer({
-                            layerKeyPos: on
-                              ? answers.layerKeyPos.filter((p) => p !== th.pos)
-                              : [...answers.layerKeyPos, th.pos],
-                          })
-                        }
-                        className={`h-9 rounded-lg border px-3 font-mono text-sm transition-colors ${
-                          on
-                            ? "border-[var(--color-electric)] bg-[var(--color-electric)]/10 text-[var(--color-text)]"
-                            : "border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
-                        }`}
-                      >
-                        {th.hand} · {thumbLabel(th.pos)}
-                      </button>
-                    );
-                  })}
-                </div>
-                <Para muted>
-                  {t(
-                    "Two layer keys, one under each thumb, give the next steps a layer for each hand.",
-                  )}
-                </Para>
-                {changeButtons}
-              </>
-            )}
-
             {step.id === "layer-one-hand" && (
               <>
                 <Para>
@@ -861,7 +776,7 @@ export function GuideFlow({
                 </h3>
                 <Para muted>
                   {t(
-                    "The layers are the ones given to thumb keys in the layer key step. Besides the cursor keys, anything else one hand should finish goes here too.",
+                    "The layers are the ones given to thumb keys in the thumb key step. Besides the cursor keys, anything else one hand should finish goes here too.",
                   )}
                 </Para>
                 <LayerPicker

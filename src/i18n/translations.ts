@@ -106,6 +106,8 @@ const ja: Record<string, string> = {
   "Characters not on the keymap": "入力不可文字",
   "None.": "なし",
   "Next text": "次の文章",
+  "Up to three thumb keys can open a layer on hold (a keyboard has the base layer and three per OS). Space and Enter are hardly ever held, so their hold suits a layer; Backspace and Delete are held to erase, so they stay as they are.":
+    "長押しでレイヤーにできる親指キーは3つまでです（キーボードは OS ごとにベースレイヤーと3レイヤーを持ちます）。スペースと Enter は長押しすることがほとんど無いので長押しをレイヤーにでき、Backspace と Delete は長押しで連続削除するのでそのままにします。",
   "A guide done in demo mode on this keyboard was found (step {{n}} of {{total}}). Write that keymap to the keyboard and carry on from there?":
     "この機種でデモモードのまま進めたガイドがあります（ステップ {{n}} / {{total}}）。そのキーマップをキーボードに書き込んで、続きから進めますか？",
   "Write it to the keyboard": "キーボードに書き込む",
@@ -165,8 +167,8 @@ const ja: Record<string, string> = {
   "Not placed": "置かない",
   "The hand that is not holding the layer key gets what you type with both hands in typing posture: the thumb holds the layer on one side, the fingers of the other side press the keys.":
     "レイヤーキーを押していない側の手には、両手を使って入力するものを置きます。片方の親指でレイヤーキーを押しながら、もう片方の手の指でキーを打つので、打鍵姿勢で使うキーを割り当てるとよいです。",
-  "The layers are the ones given to thumb keys in the layer key step. Besides the cursor keys, anything else one hand should finish goes here too.":
-    "選べるレイヤーは、レイヤーキーのステップで親指キーに入れたものです。カーソルキー以外にも片手で完結したいキーがあれば、ここで設定してください。",
+  "The layers are the ones given to thumb keys in the thumb key step. Besides the cursor keys, anything else one hand should finish goes here too.":
+    "選べるレイヤーは、親指キーのステップで長押しに入れたものです。カーソルキー以外にも片手で完結したいキーがあれば、ここで設定してください。",
   "Unlike the base layer, a key may appear more than once here: put each where it feels easiest to type.":
     "デフォルトレイヤーと違い、重複してもいいので、自分が打ちやすいと思う場所に入れていけばいいです。",
   "left hand": "左手",
@@ -246,8 +248,8 @@ const ja: Record<string, string> = {
     "この機種のベースレイヤーには記号スロットが無いので、ここで置くものはありません。",
   "This keyboard has no thumb keys recorded, so the thumb steps have nothing to propose.":
     "この機種には親指キーが登録されていないので、親指のステップでは提案できません。",
-  "This needs a second layer key. Go back to the layer key step and choose two thumb keys.":
-    "2つ目のレイヤーキーが必要です。レイヤーキーのステップに戻って、親指キーを2つ選んでください。",
+  "This needs a second layer key. Go back to the thumb key step and give a thumb key on each side a layer on hold.":
+    "2つ目のレイヤーキーが必要です。親指キーのステップに戻って、左右の親指キーに1つずつ長押しレイヤーを設定してください。",
   "Two layer keys, one under each thumb, give the next steps a layer for each hand.":
     "左右の親指に1つずつ、2つのレイヤーキーがあると、次のステップで手ごとにレイヤーを割り当てられます。",
   "Which thumb key is Space?": "どの親指キーをスペースにしますか？",
