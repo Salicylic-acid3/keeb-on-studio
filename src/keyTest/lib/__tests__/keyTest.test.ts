@@ -71,7 +71,8 @@ describe("triggers", () => {
     expect(zmkTrigger("mo 1")).toEqual({ kind: "layer", layer: 1 });
     expect(zmkTrigger("lt_mid 2 SPACE")).toMatchObject({ holdLayer: 2 });
     expect(zmkTrigger("bt BT_NXT").kind).toBe("other");
-    expect(zmkTrigger("none")).toEqual({ kind: "none" });
+    expect(zmkTrigger("none")).toEqual({ kind: "none", blocked: true });
+    expect(zmkTrigger("trans")).toEqual({ kind: "none" });
   });
 });
 

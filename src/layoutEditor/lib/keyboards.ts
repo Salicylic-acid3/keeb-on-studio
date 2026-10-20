@@ -20,7 +20,7 @@ export interface KeyboardTemplate {
   name: string;
 }
 
-interface ZmkLayout {
+export interface ZmkLayout {
   name: string;
   keys: Array<{
     width: number;
@@ -119,7 +119,7 @@ export function keyboardTemplates(): KeyboardTemplate[] {
 }
 
 /** A ZMK physical layout (1/100 u, 1/100 degree) as a KLE document. */
-function zmkToKle(layout: ZmkLayout): KleDocument {
+export function zmkToKle(layout: ZmkLayout): KleDocument {
   return layout.keys.map((k) => {
     const rx = (k.rx ?? 0) / 100;
     const ry = (k.ry ?? 0) / 100;

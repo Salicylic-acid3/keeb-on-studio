@@ -4,9 +4,36 @@
       "version": "upcoming",
       "date": null,
       "changes": {
+        "major": [
+          {
+            "en": "Keymap dojo (/practice, also from the top page): decide the keymap of a small keyboard step by step — the symbols you use most, the thumb keys and which of them open a layer, the cursor keys, numbers, symbols and F keys on each layer — with every answer drawn as a proposal on your keymap to apply or skip, then practise typing on it: a wrong key lights the key you meant, and the result shows where the misses were. Works without a keyboard on any supported model's default keymap, and ends by saving the keymap into My keymaps; with a ZMK or QMK keyboard connected it reads the keyboard's own keymap, writes each applied step to it, and asks to save before each practice.",
+            "ja": "キーマップ道場（/practice、トップ画面からも開けます）: 小さなキーボードのキーマップを、よく使う記号・親指キーとその長押しレイヤー・各レイヤーに置くカーソルキー／数字／記号／Fキーの順に質問に答えて決めます。回答はキーマップ上の配置案として描かれ、適用するか飛ばすかを選べます。決めたキーマップでタイピング練習ができ、誤打鍵すると押すべきキーが光り、結果にはミスした場所が出ます。キーボードが無くても対応機種のデフォルトキーマップで試せて、最後にマイキーマップへ保存します。ZMK／QMK のキーボードを接続すると実機のキーマップを読み込み、適用したステップをその都度キーボードに書き込み、練習の前に保存を促します。",
+            "zh": "键位道场（/practice，也可从首页打开）：按顺序回答问题来决定小型键盘的键位——常用的符号、拇指键及其长按层、各层上的光标键／数字／符号／F 键。每个回答都会在键位图上画出方案，可应用或跳过；然后在该键位上练习打字，按错时会点亮应按的键，结果会显示失误的位置。没有键盘也可用任一受支持型号的默认键位试用，最后保存到我的键位；连接 ZMK 或 QMK 键盘后会读取键盘自身的键位，把应用的每一步写入键盘，并在练习前提示保存。"
+          }
+        ],
+        "minor": [],
+        "patch": [
+          {
+            "en": "QMK: the keyboard stays connected when moving between the QMK pages and the keymap dojo.",
+            "ja": "QMK: QMK の画面とキーマップ道場を行き来してもキーボードの接続が切れなくなりました。",
+            "zh": "QMK：在 QMK 页面与键位道场之间切换时，键盘保持连接。"
+          }
+        ]
+      }
+    },
+    {
+      "version": "2026.10.18.1",
+      "date": "2026-10-18",
+      "changes": {
         "major": [],
         "minor": [],
-        "patch": []
+        "patch": [
+          {
+            "en": "Layout editor and key test: ClickBoard ErgoMini and ClickBoard Ortho are drawn as the real boards instead of a plain grid — the ErgoMini with its staggered columns, thumb keys turned towards each hand and half-height arrow keys; the Ortho with its 1.25u centre column, a top row on the left half only, its row of seven thumb keys set a little lower and its half-height arrow keys.",
+            "ja": "レイアウトエディタとキーテスト: ClickBoard ErgoMini と ClickBoard Ortho が単純な格子の配列で表示されていたのを直し、実機と同じ配列で表示するようにしました。ErgoMini は列ごとの段ずれ・手の向きに傾いた親指キー・半分の高さの矢印キー、Ortho は中央の 1.25u の列・左半分だけの最上段・少し下げた7つの親指キー・半分の高さの矢印キーです。",
+            "zh": "布局编辑器和按键测试：ClickBoard ErgoMini 和 ClickBoard Ortho 此前以简单的网格显示，现在按实物显示。ErgoMini 包括各列的错位、朝向双手倾斜的拇指键和半高的方向键；Ortho 包括中间的 1.25u 列、只在左半边的最上排、略微下沉的七个拇指键和半高的方向键。"
+          }
+        ]
       }
     },
     {

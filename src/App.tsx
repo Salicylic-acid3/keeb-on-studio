@@ -17,6 +17,7 @@ import { ReleaseNotesPage, RELEASE_NOTES_PATH } from "./pages/ReleaseNotesPage";
 import { AboutPage, ABOUT_PATH } from "./pages/AboutPage";
 import { LayoutEditorPage, LAYOUT_PATH } from "./pages/LayoutEditorPage";
 import { KeyTestPage, KEY_TEST_PATH } from "./pages/KeyTestPage";
+import { PracticePage, PRACTICE_PATH } from "./pages/PracticePage";
 import {
   DownloadsPage,
   DOWNLOADS_PATH,
@@ -31,6 +32,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { KeyboardLayoutProvider } from "./contexts/KeyboardLayoutProvider";
 import { StudioUnlockProvider } from "./contexts/StudioUnlockContext";
+import { VialKeyboardProvider } from "./qmk/VialKeyboardProvider";
 import { TabNavigation } from "./components/TabNavigation";
 import type { TabItem } from "./components/TabNavigation";
 import { AppLayout } from "./layouts/AppLayout";
@@ -150,7 +152,9 @@ function AppRouter() {
     <KeyboardLayoutProvider>
       <DeviceConnectionProvider>
         <StudioUnlockProvider>
-          <AppContent />
+          <VialKeyboardProvider>
+            <AppContent />
+          </VialKeyboardProvider>
         </StudioUnlockProvider>
       </DeviceConnectionProvider>
     </KeyboardLayoutProvider>
@@ -205,6 +209,7 @@ function AppContent() {
   const onAbout = pathname === ABOUT_PATH;
   const onLayout = pathname === LAYOUT_PATH;
   const onKeyTest = pathname === KEY_TEST_PATH;
+  const onPractice = pathname === PRACTICE_PATH;
   const onDownloads = pathname === DOWNLOADS_PATH;
   const onQmkDownloads = pathname === QMK_DOWNLOADS_PATH;
   const onOauthCallback = pathname === OAUTH_CALLBACK_PATH;
@@ -220,6 +225,7 @@ function AppContent() {
       !onAbout &&
       !onLayout &&
       !onKeyTest &&
+      !onPractice &&
       !onDownloads &&
       !onOauthCallback &&
       urlTab !== activeTab &&
@@ -235,6 +241,7 @@ function AppContent() {
     onAbout,
     onLayout,
     onKeyTest,
+    onPractice,
     onDownloads,
     onOauthCallback,
   ]);
@@ -279,6 +286,22 @@ function AppContent() {
   if (onKeyTest) {
     return (
       <KeyTestPage
+        onBack={() =>
+          navigatePath(
+            firmwareFromPathname(window.history.state?.from ?? "/") === "qmk"
+              ? QMK_PATH
+              : "/",
+          )
+        }
+      />
+    );
+  }
+
+  // Typing practice and the setup guide (phase 0: a screen mock). Works
+  // on the default keymap without a keyboard, like the key test.
+  if (onPractice) {
+    return (
+      <PracticePage
         onBack={() =>
           navigatePath(
             firmwareFromPathname(window.history.state?.from ?? "/") === "qmk"

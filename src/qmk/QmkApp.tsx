@@ -3,8 +3,7 @@
  * the top page, theme, language and keycap drawing with the ZMK half; owns
  * its own connection (WebHID), keymap model and tabs.
  */
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { KeyboardLayoutContext } from "../contexts/KeyboardLayoutContext";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   IconDeviceDesktop,
@@ -20,7 +19,7 @@ import { useLanguage } from "../hooks/useLanguage";
 import { trackPageView } from "../lib/analytics";
 import { QMK_PATH, type Firmware } from "../lib/firmware";
 import { QMK_MODELS } from "./lib/models";
-import { useVialKeyboard } from "./hooks/useVialKeyboard";
+import { useVialKeyboardContext } from "./hooks/useVialKeyboardContext";
 import {
   isWebHidAvailable,
   requestWebHidTransport,
@@ -32,9 +31,6 @@ import { QmkSettingsPage } from "./pages/QmkSettingsPage";
 import { useQmkFirmwareUpdate } from "./hooks/useQmkFirmwareUpdate";
 import { QmkFirmwareUpdateDialog } from "./components/QmkFirmwareUpdateDialog";
 import { hasQmkSettingsTab } from "./lib/qmkSettings";
-import { QmkUnlockDialog } from "./components/QmkUnlockDialog";
-import { qmkKeyLabel } from "./lib/keyLabel";
-import { qmkBehaviors } from "./lib/zmkBridge";
 
 interface QmkAppProps {
   /** Replace the URL and let the ZMK side take over. */
@@ -64,8 +60,7 @@ export function QmkApp({
   onShowDownloads,
 }: QmkAppProps) {
   const { t } = useLanguage();
-  const keyboard = useVialKeyboard();
-  const { layout: keyboardLayout } = useContext(KeyboardLayoutContext);
+  const keyboard = useVialKeyboardContext();
   const firmwareUpdate = useQmkFirmwareUpdate(keyboard);
   const [connectHint, setConnectHint] = useState<string | null>(null);
   const [tab, setTab] = useState<TabId>(() =>
@@ -200,20 +195,6 @@ export function QmkApp({
         )}
       </AnimatePresence>
       <QmkFirmwareUpdateDialog update={firmwareUpdate} />
-      {keyboard.unlock && (
-        <QmkUnlockDialog
-          open
-          keyNames={keyboard.unlock.keys.map((k) =>
-            qmkKeyLabel(keyboard.keymap?.[0]?.[k.row]?.[k.col] ?? 0, {
-              behaviors: qmkBehaviors({ tapDanceCount: 0, macroCount: 0 }),
-              layers: [],
-              keyboardLayout: keyboardLayout,
-            }),
-          )}
-          progress={keyboard.unlock.progress}
-          onCancel={keyboard.cancelUnlock}
-        />
-      )}
       {connected && (
         <motion.div
           initial={{ opacity: 0 }}

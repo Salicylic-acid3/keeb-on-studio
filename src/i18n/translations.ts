@@ -9,6 +9,337 @@ export const languageLabels: Record<Language, string> = {
 };
 
 const ja: Record<string, string> = {
+  // Typing practice (phase 0 mock)
+  "Keymap dojo": "キーマップ道場",
+  "Screen mock": "画面モック",
+  "Decide your keymap step by step, then practise on it with the real keymap in front of you. A wrong key points straight at the key you meant, so what you learn here feeds back into the layout.":
+    "キーマップを段階的に決めて、そのキーマップを画面に出したまま練習します。誤打鍵は押すべきキーをそのまま示すので、練習の結果が配列の見直しにつながります。",
+  "Keyboard to practise on": "練習するキーボード",
+  "OS keyboard layout": "OS のキーボード配列",
+  "Setup guide": "セットアップガイド",
+  "Questions in order: which symbols you use most, where your thumb lands for Space, which thumb key becomes a layer key, what goes on each layer. Each answer becomes a proposal drawn on your keymap, to apply or skip. Practice follows every finished layer.":
+    "よく使う記号、スペースを押す親指の位置、レイヤーキーにする親指キー、各レイヤーの中身を順に問いかけます。回答はキーマップ上の配置案になり、適用するか飛ばすかを選べます。レイヤーが1つ完成するごとに練習を挟みます。",
+  "Start the guide": "ガイドを始める",
+  "Free practice": "自由練習",
+  "Practise sentences and tasks on the keymap as it is now. Stop at a wrong key and see which key you meant, or keep going and read the misses at the end.":
+    "今のキーマップのまま、文章と課題で練習します。誤打鍵で止まって押すべきキーを確かめるか、止まらず進んで最後にミスを振り返るかを選べます。",
+  "Start practising": "練習を始める",
+  "Last time: {{keyboard}}, step {{n}} of {{total}} ({{step}})":
+    "前回: {{keyboard}} ステップ {{n}} / {{total}}（{{step}}）",
+  "Saved progress comes in phase 4": "進捗の保存はフェーズ4で実装",
+  "Continue where you left off": "続きから",
+  // Guide steps
+  Introduction: "導入",
+  "Symbol priority": "記号の優先順位",
+  "Rarely used keys": "重複キーの整理",
+  "Thumb keys": "親指キー",
+  "Practice: base layer": "練習: ベースレイヤー",
+  "Layer contents: one hand": "レイヤーの中身（片手で完結）",
+  "Layer contents: other side": "レイヤーの中身（反対側）",
+  "Practice: layer tasks": "練習: レイヤー課題",
+  "Occasional keys": "たまに使うキー",
+  "Practice: everything": "練習: 総合",
+  "Step {{n}} of {{total}}": "ステップ {{n}} / {{total}}",
+  "Guide steps": "ガイドのステップ",
+  "Leave the guide": "ガイドを終える",
+  "On a small keyboard not every symbol fits on the base layer. Put the ones you type most where a symbol already sits, and let the rest move to a layer.":
+    "小さなキーボードでは、すべての記号をベースレイヤーに置けません。よく打つ記号を、いま記号が入っている位置に優先して置き、残りはレイヤーに回します。",
+  "For example: I type a hyphen far more often than a colon, so the hyphen took the colon's place.":
+    "例: 私はコロンよりハイフンをよく使うので、コロンの位置にハイフンを置いています。",
+  "Drag the rows, or use the arrows, to order them by how often you type them":
+    "よく打つ順に並べてください（ドラッグまたは矢印ボタン）",
+  "Top {{n}} go on the base layer": "上位 {{n}} 個がベースレイヤーに入ります",
+  Hyphen: "ハイフン",
+  Colon: "コロン",
+  Semicolon: "セミコロン",
+  Quote: "クォート",
+  Slash: "スラッシュ",
+  Backslash: "バックスラッシュ",
+  "Left bracket": "角括弧（開き）",
+  "Right bracket": "角括弧（閉じ）",
+  Equals: "イコール",
+  Backquote: "バッククォート",
+  "Show the proposal": "配置案を見る",
+  "Next without changing": "設定せずに次へ",
+  "Skip to the next step": "スキップして次へ",
+  "Applied to the keymap (demo mode: kept in the browser only).":
+    "キーマップに適用しました（デモモード: ブラウザ上の編集状態にのみ反映）",
+  "The proposal is a starting point. To move a single key, open the keymap editor; the guide resumes at this step when you come back.":
+    "配置案はたたき台です。個別のキーを直したいときはキー設定画面を開いてください。戻ってくると、このステップから再開します。",
+  "Open the keymap editor": "キー設定画面を開く",
+  "A layer is finished: practise on it before the next one. The practice screen opens with sentences that need only the keys decided so far.":
+    "レイヤーが1つ完成しました。次に進む前に練習します。練習画面では、ここまでに決めたキーだけで打てる文章が出ます。",
+  "This step is built in phase 4. Only the symbol step is mocked here.":
+    "このステップはフェーズ4で実装します。モックでは記号のステップだけ動きます。",
+  "Base layer": "ベースレイヤー",
+  "Keys the proposal changes (old legend struck through)":
+    "配置案で変わるキー（元のキーは取り消し線）",
+  // Practice
+  Text: "文章",
+  "Stop at a miss": "止まる",
+  "Keep going": "進む",
+  "A wrong key stops the text and lights the key you meant.":
+    "誤打鍵でその文字に止まり、押すべきキーを光らせます。",
+  "A wrong key is counted and the text moves on.":
+    "誤打鍵を数えて次の文字へ進みます。",
+  "Back to the start": "最初の画面へ",
+  "Turn your IME off before practising: the browser must receive the characters themselves. Japanese text is typed in romaji; every usual spelling (si / shi, tu / tsu, nn / n) counts as correct.":
+    "練習の前に IME をオフにしてください。ブラウザが文字そのものを受け取る必要があります。日本語の文章はローマ字で打ちます。表記揺れ（si / shi、tu / tsu、nn / n など）はすべて正解です。",
+  "Click here to start": "ここをクリックして開始",
+  "Not that one: the lit key types this character.":
+    "違うキーです。光っているキーがこの文字です。",
+  "Counted as a miss; the lit key was the one.":
+    "ミスとして数えました。光っていたキーが正解です。",
+  "Hold the layer key (blue) with it.":
+    "レイヤーキー（青）を押しながら打ちます。",
+  "Hold Shift (blue) with it.": "Shift（青）を押しながら打ちます。",
+  "Your keymap, base layer": "現在のキーマップ（ベースレイヤー）",
+  "Key to press": "押すキー",
+  "Hold with it (layer / Shift)": "一緒に押すキー（レイヤー / Shift）",
+  "Pressed by mistake": "間違って押したキー",
+  "So far": "ここまで",
+  Accuracy: "正確率",
+  Speed: "速度",
+  "{{n}} chars/min": "{{n}} 文字/分",
+  "Most missed": "ミスの多いキー",
+  "No misses yet.": "ミスはまだありません。",
+  "Characters not on the keymap": "入力不可文字",
+  "None.": "なし",
+  "Next text": "次の文章",
+  "Decide the keymap of a small keyboard step by step -- which symbols you use most, the thumb keys, what goes on each layer -- and practise typing on it. Works without a keyboard too; with one connected, the result is written to it.":
+    "小さなキーボードのキーマップを、よく使う記号・親指キー・各レイヤーの中身の順に質問に答えて決め、そのキーマップで練習します。キーボードが無くても試せて、接続していれば結果をそのまま書き込めます。",
+  "Open the keymap dojo": "キーマップ道場を開く",
+  "Saved as \"キーマップ道場\" in the {{firmware}} remapper's My keymaps for {{board}}. Connect the keyboard there and load it to write it to the keyboard.":
+    "{{board}} 用のキーマップを「キーマップ道場」として {{firmware}} のキーリマッパーのマイキーマップに保存しました。キーボードをつないだら、キーリマッパーでそのキーマップを読み込むと書き込めます。",
+  "Apply, save and finish": "適用して保存して終える",
+  "Save and finish": "保存して終える",
+  "Save and finish without this": "これは設定せずに保存して終える",
+  "The keymap so far is on the keyboard but not saved. Save it to practise on it.":
+    "ここまでのキーマップはキーボードに書き込んだだけで、まだ保存していません。保存してから、そのキーマップで練習します。",
+  "Save to keyboard and practise": "キーボードに保存して練習する",
+  "Up to three thumb keys can open a layer on hold (a keyboard has the base layer and three per OS). Space and Enter are hardly ever held, so their hold suits a layer; Backspace and Delete are held to erase, so they stay as they are.":
+    "長押しでレイヤーにできる親指キーは3つまでです（キーボードは OS ごとにベースレイヤーと3レイヤーを持ちます）。スペースと Enter は長押しすることがほとんど無いので長押しをレイヤーにでき、Backspace と Delete は長押しで連続削除するのでそのままにします。",
+  "A guide done in demo mode on this keyboard was found (step {{n}} of {{total}}). Write that keymap to the keyboard and carry on from there?":
+    "この機種でデモモードのまま進めたガイドがあります（ステップ {{n}} / {{total}}）。そのキーマップをキーボードに書き込んで、続きから進めますか？",
+  "Write it to the keyboard": "キーボードに書き込む",
+  "Start from the keyboard's own keymap": "実機のキーマップで最初から",
+  "There are changes written to the keyboard but not saved. Disconnect without saving? They will be lost.":
+    "キーボードに書き込んだまま保存していない変更があります。保存せずに切断しますか？ 変更は失われます。",
+  "The keymap from the guide is on the keyboard now. Press \"Save to keyboard\" to keep it.":
+    "ガイドのキーマップをキーボードに書き込みました。「キーボードに保存」を押すと確定します。",
+  "This keyboard has no layer left for another layer key: besides the base layer, it allows three per OS. A thumb key that could not get one keeps its tap only.":
+    "レイヤーキーに割り当てられるレイヤーが残っていません。このキーボードは OS ごとにベースレイヤーのほか3つまでです。割り当てられなかった親指キーは単押しのみになります。",
+  "Demo mode: the keymap shown is this keyboard's default. Connect your keyboard to use the keymap read from it; the guide then writes each applied step to the keyboard.":
+    "デモモード: 表示しているのはこの機種のデフォルトキーマップです。キーボードを接続すると実機から読んだキーマップで動き、ガイドで「適用」した内容はその都度キーボードに書き込まれます。",
+  "Connect ZMK keyboard": "ZMK のキーボードを接続",
+  "Connect QMK keyboard": "QMK のキーボードを接続",
+  "Connected ({{firmware}}): the guide and the practice use the keymap read from {{name}}.":
+    "接続中（{{firmware}}）: ガイドと練習は {{name}} から読んだキーマップで動いています。",
+  "Reading the keymap from {{name}}...": "{{name}} からキーマップを読み込んでいます…",
+  "Written to the keyboard, not yet saved.": "キーボードに書き込み済み（まだ保存していません）",
+  "{{n}} of the changes could not be written to the keyboard.":
+    "変更のうち {{n}} 件はキーボードに書き込めませんでした。",
+  "Save to keyboard": "キーボードに保存",
+  "Discard unsaved": "未保存の変更を破棄",
+  "{{name}} — taken by {{content}}": "{{name}}（{{content}}で使用中）",
+  "No column here on this keyboard": "このキーボードにはこの列がありません",
+  "Around the cursor keys": "カーソルキーの周り",
+  "Home / End / PgUp / PgDn around them": "Home / End / PgUp / PgDn を入れる",
+  "Keys around the cursor keys get pressed by mistake, so Home / End / PgUp / PgDn there are not recommended.":
+    "カーソルキーの周りは誤打鍵しやすいので、Home / End / PgUp / PgDn を入れるのはおすすめしません。",
+  "Leave the keys around them as they are": "周りのキーはそのまま",
+  "Set the keys around them to nothing (a slip presses nothing)":
+    "周りのキーは None にする（押し間違えても何も起きない）",
+  "Symbols on the layer": "レイヤーに置く記号",
+  "Symbols you type often should be a layer key plus one key: a modifier on top of a layer is hard to press. Pairs go side by side, ! beside ?, and the rows follow the number row where they can. Rows: above the home row, on it, below it; columns from the hand's outer edge (the modifier column) to the key inward of the index finger.":
+    "よく使う記号は、レイヤーキー＋1キーで打てるようにします（レイヤーの上にさらにモディファイアを重ねるのは押しにくいため）。対になる記号は隣同士に、! と ? も隣に、並びはできるだけ数字キーの順に。行は上から「ホームポジションの上の段・ホームポジションの段・下の段」、列は手の外側（モディファイアの列）から人差し指の内側のキーまでです。",
+  "Use Salicylic_acid3's symbols": "サリチル酸の記号配置を反映",
+  "Click a candidate key on the drawing, then pick the symbol it should hold.":
+    "描画上の候補キーをクリックして、置く記号を選んでください。",
+  "Key {{key}}: put": "キー {{key}} に置くもの",
+  "Back to the order": "順番どおりに戻す",
+  Fit: "全体",
+  "All thumb layers": "親指レイヤーをすべて表示",
+  "Layer {{n}} ({{key}} held)": "レイヤー {{n}}（{{key}} 長押し）",
+  "Thumb key held": "押している親指キー",
+  Enlarge: "拡大",
+  "The guide ran into a problem, probably with progress saved by an earlier version. Starting over clears it.":
+    "ガイドで問題が起きました。以前のバージョンで保存した進捗が原因の可能性があります。「最初から」で保存データを消してやり直せます。",
+  "Also Home / End / PgUp / PgDn around the cursor keys":
+    "カーソルキーの周りに Home / End / PgUp / PgDn も入れる",
+  "Change by hand": "手動で変更",
+  "Slots a symbol may take": "記号を置ける候補のキー",
+  "Keys that change (old legend struck through)":
+    "変わるキー（元のキーは取り消し線）",
+  "Keys to finish with one hand": "片手で完結したいキー",
+  "Keys under the other hand": "反対の手に置くキー",
+  "Layer {{n}} ({{key}} held) → {{hand}}":
+    "レイヤー {{n}}（{{key}} 長押し）→ {{hand}}",
+  "Not placed": "置かない",
+  "The hand that is not holding the layer key gets what you type with both hands in typing posture: the thumb holds the layer on one side, the fingers of the other side press the keys.":
+    "レイヤーキーを押していない側の手には、両手を使って入力するものを置きます。片方の親指でレイヤーキーを押しながら、もう片方の手の指でキーを打つので、打鍵姿勢で使うキーを割り当てるとよいです。",
+  "The layers are the ones given to thumb keys in the thumb key step. Besides the cursor keys, anything else one hand should finish goes here too.":
+    "選べるレイヤーは、親指キーのステップで長押しに入れたものです。カーソルキー以外にも片手で完結したいキーがあれば、ここで設定してください。",
+  "Unlike the base layer, a key may appear more than once here: put each where it feels easiest to type.":
+    "デフォルトレイヤーと違い、重複してもいいので、自分が打ちやすいと思う場所に入れていけばいいです。",
+  "left hand": "左手",
+  "right hand": "右手",
+  "No content": "なし",
+  "Cursor keys": "カーソルキー",
+  "How the cursor keys lie": "カーソルキーの並び",
+  "Inverted T: ↑ above, ← ↓ → on the home row":
+    "山型（逆T字）: ホームロウに ← ↓ →、その上に ↑",
+  "One row, like Vim: ← ↓ ↑ → on the home row":
+    "横一列（VIM型）: ホームロウに ← ↓ ↑ →",
+  "Numbers (numpad)": "数字キー（テンキー配置）",
+  "Symbols (the grid below)": "記号（下の表の並び）",
+  "What one hand should finish on its own goes on that hand's layer: the cursor keys under the fingers of the hand whose thumb holds the layer, so the other hand stays free.":
+    "片手で完結させたいものを、その手のレイヤーに置きます。レイヤーキーを押す親指と同じ手の指の下にカーソルキーを置けば、もう片方の手は空いたままです。",
+  // Setup guide
+  "A keymap is yours to decide, and the order of deciding matters: the keys you use most go where they are easiest to reach, and everything else finds a place after them.":
+    "キーマップは自分で決めるものですが、決める順番が大事です。よく使うキーから、いちばん押しやすい場所に置いていき、残りはその後で居場所を決めます。",
+  "This guide asks a few questions in that order -- symbols, thumbs, layer keys, what each layer holds -- and turns each answer into a proposal drawn on your keymap. Apply it, skip it, or fix a key by hand in the keymap editor and come back.":
+    "このガイドはその順番で質問します。記号、親指キー、レイヤーキー、各レイヤーの中身。回答はキーマップ上の配置案になります。適用するか、飛ばすか、キー設定画面で個別に直して戻ってくるかを選べます。",
+  "A layer is practised as soon as it is complete, so a change you do not like shows up at once.":
+    "レイヤーが1つ完成するごとに練習するので、合わない変更はすぐに分かります。",
+  Begin: "始める",
+  "A pad has no guide: its keys are decided by what it is for. Free practice still works.":
+    "テンキーやマクロパッドにはガイドがありません。キーは用途で決まるためです。自由練習は使えます。",
+  "A thumb key can do two things: one on a tap, another while held. Space and Enter are hardly ever held, so their hold can open a layer. Backspace and Delete are held to erase, so they stay as they are.":
+    "親指キーには、単押しと長押しで別の役割を持たせられます。スペースと Enter は長押しすることがほとんど無いので、長押しをレイヤーにできます。Backspace と Delete は長押しで連続削除するので、そのままにします。",
+  "Cursor under the left hand (left thumb's layer)":
+    "カーソルは左手（左親指のレイヤー）",
+  "Cursor under the right hand (right thumb's layer)":
+    "カーソルは右手（右親指のレイヤー）",
+  "Done, next step": "終わったので次へ",
+  "Finish the guide": "ガイドを終える",
+  "Keep CapsLock": "CapsLock のまま残す",
+  "Make CapsLock a Ctrl": "CapsLock を Ctrl にする",
+  "Make CapsLock an Esc": "CapsLock を Esc にする",
+  "Keys used now and then need no place of their own, and nothing is suggested here. Pick any you want on the keyboard, and they go on free keys of a layer, away from the home row.":
+    "たまにしか使わないキーは、無理に置き場所を決めなくて大丈夫です。ここでは何もおすすめしません。キーボードに欲しいものがあれば選んでください。レイヤーの空いているキーのうち、ホームポジションから遠いところに置く案を出します。",
+  "Layer keys: {{list}}": "レイヤーキー: {{list}}",
+  "Measuring where the thumb lands on a connected keyboard comes later; for now, choose the key.":
+    "実機で親指が落ちる場所を計測する機能は後で入ります。いまはキーを選んでください。",
+  "Nothing to change with this answer.": "この回答では変更はありません。",
+  "Order these by how often you use them": "よく使う順に並べてください",
+  "Sentences and symbols together, on the finished keymap.":
+    "完成したキーマップで、文章と記号をまとめて練習します。",
+  "Sentences typed on the base layer alone. When it feels settled, go on to the layers.":
+    "ベースレイヤーだけで打てる文章です。手に馴染んだらレイヤーへ進みます。",
+  "Some keys earn their place less than others. The CapsLock beside A is hardly used when Japanese is what you mostly type, yet it sits in an easy spot under the left little finger. The same goes for a modifier that appears twice once CapsLock has become a Ctrl.":
+    "キーには、その場所に見合うだけ使われていないものがあります。A の隣にある CapsLock は、日本語入力がメインの場合はほとんど使わないのに、左小指のすぐ横という押しやすい場所にあります。CapsLock を Ctrl にして Ctrl が2つになったときも同じで、そのキーもここで整理します。",
+  "Nothing on the base layer needs a second look.":
+    "ベースレイヤーに見直すキーはありません。",
+  "rarely used": "ほとんど使わない",
+  "IME toggle": "IME 切り替え",
+  doubled: "重複",
+  "row {{row}}, {{side}}": "{{side}}・上から{{row}}段目",
+  left: "左",
+  right: "右",
+  "Keep as it is": "そのまま",
+  "If only the part your thumb presses without thinking when it goes for the space bar is Space, the rest of the thumb row is free for other keys. From the thumb's natural position outward, the more useful a key the nearer it goes.":
+    "スペースバーを押そうとして無意識に親指で押す部分だけをスペースキーにすると、他の部分に色々なキーを割り当てられて便利です。親指の自然な位置から順番に、優先順位の高いものを置いていきます。",
+  "Keys tapped on their own -- Backspace, Delete, 変換, 無変換 -- make long Japanese text easier; Shift, Ctrl, Alt and Win on the thumbs make the letter combinations easier. With a tap and a hold on the same key, one thumb key can carry two of them.":
+    "単体で押す Backspace・Delete・変換・無変換は長文の日本語入力が楽になり、組み合わせて押す Shift・Ctrl・Alt・Win を親指に置くとアルファベットとの組み合わせが楽になります。単押しと長押しを組み合わせれば、1つの親指キーに多くの機能を持たせられます。",
+  "The author, Salicylic_acid3, goes left to right: on the left thumbs 無変換 / Win, Space / layer, Backspace; on the right thumbs Delete, Enter / layer, 変換 / Alt.":
+    "作者のサリチル酸は左側から順番に、左側の親指キーに 無変換/Win、スペース/レイヤー、Backspace、右側の親指キーに Delete、Enter/レイヤー、変換/Alt の順で設定しています。",
+  "Use Salicylic_acid3's row": "サリチル酸のおすすめを反映",
+  Key: "キー",
+  Hold: "長押し",
+  "No hold": "なし",
+  "Start over": "最初から",
+  "Start the guide over? The applied proposals are dropped from the working keymap.":
+    "ガイドを最初からやり直しますか？ 適用した配置案は作業中のキーマップから取り消されます。",
+  "The cursor, numbers and F keys you just put on the layers, as tasks.":
+    "レイヤーに置いたカーソル・数字・Fキーを課題で練習します。",
+  "This keyboard has no CapsLock on its base layer.":
+    "この機種のベースレイヤーには CapsLock がありません。",
+  "This keyboard has no symbol slots on its base layer, so there is nothing to place here.":
+    "この機種のベースレイヤーには記号スロットが無いので、ここで置くものはありません。",
+  "This keyboard has no thumb keys recorded, so the thumb steps have nothing to propose.":
+    "この機種には親指キーが登録されていないので、親指のステップでは提案できません。",
+  "This needs a second layer key. Go back to the thumb key step and give a thumb key on each side a layer on hold.":
+    "2つ目のレイヤーキーが必要です。親指キーのステップに戻って、左右の親指キーに1つずつ長押しレイヤーを設定してください。",
+  "Two layer keys, one under each thumb, give the next steps a layer for each hand.":
+    "左右の親指に1つずつ、2つのレイヤーキーがあると、次のステップで手ごとにレイヤーを割り当てられます。",
+  "Which thumb key is Space?": "どの親指キーをスペースにしますか？",
+  "Which thumb keys open a layer when held?":
+    "長押しでレイヤーになる親指キーはどれですか？",
+  "Keyboard metadata for the setup guide. Pick a role, then click keys on the drawing to give or take it. Paste the JSON into src/practice/data/keyboards.json.":
+    "セットアップガイド用の機種メタデータです。役割を選んでから描画上のキーをクリックすると、その役割を付け外しできます。JSON を src/practice/data/keyboards.json に貼り付けてください。",
+  "This keyboard has stored values.": "この機種は保存済みの値があります。",
+  "This keyboard is not in the file yet: these are estimates.":
+    "この機種はまだファイルに無いので、推定値を表示しています。",
+  "Size class": "サイズクラス",
+  "Pad (no guide)": "パッド（ガイドなし）",
+  "Default guide": "最初のガイド",
+  "Offer the 30% guide": "「30%に挑戦」を出す",
+  "Split keyboard": "分割キーボード",
+  Reviewed: "確認済み",
+  "Role to give by clicking": "クリックで付ける役割",
+  "Thumb (left)": "親指キー（左）",
+  "Thumb (right)": "親指キー（右）",
+  "Home row (left)": "ホームロウ（左）",
+  "Home row (right)": "ホームロウ（右）",
+  "Symbol slot": "記号スロット",
+  "Layer key (left)": "レイヤーキー（左）",
+  "Layer key (right)": "レイヤーキー（右）",
+  "Layer keys": "レイヤーキー",
+  layer: "レイヤー",
+  "Estimate again": "推定し直す",
+  "Copy JSON": "JSON をコピー",
+  "T: thumb, H: home row, Sym: symbol slot, Ly: layer key (with its layer number); L / R is the hand.":
+    "T: 親指キー、H: ホームロウ、Sym: 記号スロット、Ly: レイヤーキー（数字はレイヤー番号）。L / R は手の左右。",
+  "Practise with": "練習の種類",
+  Sentences: "文章",
+  Tasks: "課題",
+  Task: "課題",
+  Cursor: "カーソル",
+  "F keys": "Fキー",
+  Shortcuts: "ショートカット",
+  "Another task": "別の課題",
+  "Next task": "次の課題",
+  "Shortcuts are shown for this computer: Ctrl on Windows, ⌘ on a Mac. Shortcuts the browser itself handles (closing the tab, a new window) cannot be practised here.":
+    "ショートカットはこのパソコンに合わせて表示します（Windows は Ctrl、Mac は ⌘）。ブラウザ自身が処理するショートカット（タブを閉じる・新しいウィンドウなど）はここでは練習できません。",
+  "Move the cursor": "カーソル移動",
+  "Move three characters to the right on this line.":
+    "この行で3文字右へ移動してください。",
+  "Go to the start of the line above.": "上の行の行頭へ移動してください。",
+  "Go to the end of the last line.": "最後の行の行末へ移動してください。",
+  "Type this.": "次を入力してください。",
+  "Press F5.": "F5 を押してください。",
+  "Press F2 (rename).": "F2（名前の変更）を押してください。",
+  "Type the new name.": "新しい名前を入力してください。",
+  "Press Enter.": "Enter を押してください。",
+  "Press F12.": "F12 を押してください。",
+  Paste: "貼り付け",
+  "Not that one: the lit key is the one.":
+    "違うキーです。光っているキーを押してください。",
+  "Hold the modifier (blue) with it.": "修飾キー（青）を押しながら押します。",
+  "This key is not set anywhere on the keymap. Skip the step with Escape.":
+    "このキーはキーマップのどこにも設定されていません。Escape でこのステップを飛ばせます。",
+  "Hold with it (layer / modifier)": "一緒に押すキー（レイヤー / 修飾キー）",
+  cursor: "カーソル",
+  target: "目標",
+  "Letters only": "文字だけ",
+  "With symbols": "記号あり",
+  "With digits": "数字あり",
+  English: "英文",
+  "Another text": "別の文章",
+  "{{n}} texts to choose from": "{{n}} 本の文章から選びます",
+  "The IME seems to be on: turn it off, then type again.":
+    "IME がオンになっているようです。オフにしてからもう一度打ってください。",
+  "Not on the keymap, skipped: {{chars}}":
+    "キーマップに無いので飛ばしました: {{chars}}",
+  "Your keymap, layer {{n}}": "現在のキーマップ（レイヤー {{n}}）",
+  Misses: "ミス",
+  "No misses.": "ミスはありませんでした。",
+  "Where the misses were": "ミスした場所",
+  "Each key is tinted by how often it was missed, with the count in its corner.":
+    "ミスの多いキーほど濃く塗られ、角に回数が出ます。",
+  "Keymap dojo result": "キーマップ道場の結果",
+  "Chars/min": "文字/分",
   // Key test
   "When several keys are assigned the same function, all of them light up. To test the key matrix itself, connect the keyboard and use the key input display.":
     "同じ機能のキーが複数登録されている場合、複数個所が光るようになっています。キーマトリクスのテストをしたい場合は、キーボードを接続してキー入力表示機能を使用してください。",

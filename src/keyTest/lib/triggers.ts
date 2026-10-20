@@ -32,8 +32,11 @@ export type Trigger =
   | { kind: "layer"; layer?: number }
   /** Sends something a page cannot see (Bluetooth, lighting, a reset...). */
   | { kind: "other"; label: string }
-  /** Unassigned or transparent. */
-  | { kind: "none" };
+  /**
+   * Transparent (the layer below shows through), or with `blocked`, a key
+   * that does nothing at all (&none, KC_NO).
+   */
+  | { kind: "none"; blocked?: boolean };
 
 const MOD_CODE: Record<Mod, string> = {
   shift: "ShiftLeft",
@@ -133,8 +136,8 @@ const QMK_MOUSE: Record<string, number> = {
 export function qmkTrigger(keycode: string | undefined): Trigger {
   if (!keycode) return { kind: "none" };
   const text = keycode.replace(/\s+/g, "");
-  if (/^(KC_NO|XXXXXXX|KC_TRNS|KC_TRANSPARENT|_______)$/.test(text))
-    return { kind: "none" };
+  if (/^(KC_NO|XXXXXXX)$/.test(text)) return { kind: "none", blocked: true };
+  if (/^(KC_TRNS|KC_TRANSPARENT|_______)$/.test(text)) return { kind: "none" };
   const layerKey = /^(?:MO|TG|TO|TT|OSL|DF|PDF)\((\d+)\)$/.exec(text);
   if (layerKey) return { kind: "layer", layer: Number(layerKey[1]) };
   if (/^(MO|TG|TO|TT|OSL|DF|PDF)\(/.test(text)) return { kind: "layer" };
@@ -192,7 +195,8 @@ const ZMK_MOUSE: Record<string, number> = {
 export function zmkTrigger(binding: string | undefined): Trigger {
   if (!binding) return { kind: "none" };
   const [behavior, ...params] = binding.trim().split(/\s+/);
-  if (behavior === "none" || behavior === "trans") return { kind: "none" };
+  if (behavior === "none") return { kind: "none", blocked: true };
+  if (behavior === "trans") return { kind: "none" };
   if (behavior === "kp" && params[0]) {
     const key = keyWithMods(params[0]);
     return key ? { kind: "key", ...key } : { kind: "other", label: params[0] };

@@ -1,0 +1,1071 @@
+{
+  "ateighty_jp": {
+    "sizeClass": "80",
+    "defaultGuide": "60",
+    "allowGuide": ["60"],
+    "split": false,
+    "thumbKeys": [
+      {
+        "pos": 82,
+        "hand": "L"
+      },
+      {
+        "pos": 83,
+        "hand": "L"
+      },
+      {
+        "pos": 84,
+        "hand": "L"
+      },
+      {
+        "pos": 85,
+        "hand": "L"
+      },
+      {
+        "pos": 86,
+        "hand": "R"
+      },
+      {
+        "pos": 87,
+        "hand": "R"
+      },
+      {
+        "pos": 88,
+        "hand": "R"
+      }
+    ],
+    "homeRow": {
+      "L": [49, 50, 51, 52],
+      "R": [57, 58, 59, 60]
+    },
+    "fixedKeys": {
+      "esc": 0,
+      "tab": 32,
+      "capslock": 48
+    },
+    "symbolSlots": [15, 28, 29, 30, 45, 46, 60, 61, 62, 76],
+    "defaultLayerKeys": [
+      {
+        "pos": 78,
+        "layer": 1,
+        "hand": "R"
+      }
+    ],
+    "reviewed": false
+  },
+  "ateighty_us": {
+    "sizeClass": "80",
+    "defaultGuide": "60",
+    "allowGuide": ["60"],
+    "split": false,
+    "thumbKeys": [
+      {
+        "pos": 81,
+        "hand": "L"
+      },
+      {
+        "pos": 82,
+        "hand": "L"
+      },
+      {
+        "pos": 83,
+        "hand": "L"
+      },
+      {
+        "pos": 84,
+        "hand": "R"
+      },
+      {
+        "pos": 85,
+        "hand": "R"
+      },
+      {
+        "pos": 86,
+        "hand": "R"
+      }
+    ],
+    "homeRow": {
+      "L": [48, 49, 50, 51],
+      "R": [56, 57, 58, 59]
+    },
+    "fixedKeys": {
+      "esc": 0,
+      "tab": 31,
+      "capslock": 47
+    },
+    "symbolSlots": [15, 28, 29, 44, 45, 46, 59, 60],
+    "defaultLayerKeys": [
+      {
+        "pos": 77,
+        "layer": 1,
+        "hand": "R"
+      }
+    ],
+    "reviewed": false
+  },
+  "bethirty_ortho": {
+    "sizeClass": "30",
+    "defaultGuide": "30",
+    "allowGuide": ["30"],
+    "split": false,
+    "thumbKeys": [
+      {
+        "pos": 33,
+        "hand": "L"
+      },
+      {
+        "pos": 34,
+        "hand": "R"
+      },
+      {
+        "pos": 35,
+        "hand": "R"
+      }
+    ],
+    "homeRow": {
+      "L": [10, 11, 12, 13],
+      "R": [16, 17, 18, 19]
+    },
+    "fixedKeys": {
+      "esc": null,
+      "tab": null,
+      "capslock": null
+    },
+    "symbolSlots": [19],
+    "defaultLayerKeys": [],
+    "reviewed": false
+  },
+  "bethirty_qaz": {
+    "sizeClass": "30",
+    "defaultGuide": "30",
+    "allowGuide": ["30"],
+    "split": false,
+    "thumbKeys": [
+      {
+        "pos": 31,
+        "hand": "L"
+      },
+      {
+        "pos": 32,
+        "hand": "R"
+      }
+    ],
+    "homeRow": {
+      "L": [10, 11, 12, 13],
+      "R": [16, 17, 18]
+    },
+    "fixedKeys": {
+      "esc": null,
+      "tab": null,
+      "capslock": null
+    },
+    "symbolSlots": [],
+    "defaultLayerKeys": [],
+    "reviewed": false
+  },
+  "clickboard_cybermini": {
+    "sizeClass": "40",
+    "defaultGuide": "40",
+    "allowGuide": ["30", "40"],
+    "split": false,
+    "thumbKeys": [
+      {
+        "pos": 51,
+        "hand": "L"
+      },
+      {
+        "pos": 54,
+        "hand": "L"
+      },
+      {
+        "pos": 55,
+        "hand": "R"
+      },
+      {
+        "pos": 52,
+        "hand": "R"
+      }
+    ],
+    "homeRow": {
+      "L": [25, 26, 27, 31],
+      "R": [32, 28, 29, 30]
+    },
+    "fixedKeys": {
+      "esc": 0,
+      "tab": null,
+      "capslock": null
+    },
+    "symbolSlots": [30],
+    "defaultLayerKeys": [],
+    "reviewed": false
+  },
+  "clickboard_ergomini": {
+    "sizeClass": "40",
+    "defaultGuide": "40",
+    "allowGuide": ["30", "40"],
+    "split": true,
+    "thumbKeys": [
+      {
+        "pos": 36,
+        "hand": "L"
+      },
+      {
+        "pos": 46,
+        "hand": "L"
+      },
+      {
+        "pos": 47,
+        "hand": "L"
+      },
+      {
+        "pos": 48,
+        "hand": "R"
+      },
+      {
+        "pos": 49,
+        "hand": "R"
+      },
+      {
+        "pos": 37,
+        "hand": "R"
+      }
+    ],
+    "homeRow": {
+      "L": [21, 14, 12, 15],
+      "R": [16, 13, 17, 22]
+    },
+    "fixedKeys": {
+      "esc": null,
+      "tab": 8,
+      "capslock": null
+    },
+    "symbolSlots": [22],
+    "defaultLayerKeys": [
+      {
+        "pos": 35,
+        "layer": 1,
+        "hand": "R"
+      }
+    ],
+    "reviewed": false
+  },
+  "clickboard_ergotrack": {
+    "sizeClass": "60",
+    "defaultGuide": "60",
+    "allowGuide": ["60"],
+    "split": true,
+    "thumbKeys": [],
+    "homeRow": {
+      "L": [27, 28, 29, 30],
+      "R": [33, 34, 35, 36]
+    },
+    "fixedKeys": {
+      "esc": 0,
+      "tab": 14,
+      "capslock": null
+    },
+    "symbolSlots": [36],
+    "defaultLayerKeys": [],
+    "reviewed": false
+  },
+  "clickboard_ortho": {
+    "sizeClass": "40",
+    "defaultGuide": "40",
+    "allowGuide": ["30", "40"],
+    "split": false,
+    "thumbKeys": [
+      {
+        "pos": 52,
+        "hand": "L"
+      },
+      {
+        "pos": 53,
+        "hand": "L"
+      },
+      {
+        "pos": 54,
+        "hand": "L"
+      },
+      {
+        "pos": 55,
+        "hand": "R"
+      },
+      {
+        "pos": 56,
+        "hand": "R"
+      },
+      {
+        "pos": 57,
+        "hand": "R"
+      },
+      {
+        "pos": 58,
+        "hand": "R"
+      }
+    ],
+    "homeRow": {
+      "L": [21, 22, 23, 24],
+      "R": [28, 29, 30, 31]
+    },
+    "fixedKeys": {
+      "esc": 0,
+      "tab": 7,
+      "capslock": 20
+    },
+    "symbolSlots": [13, 26, 31, 39],
+    "defaultLayerKeys": [
+      {
+        "pos": 45,
+        "layer": 1,
+        "hand": "R"
+      }
+    ],
+    "reviewed": false
+  },
+  "clickboard_tenkey": {
+    "sizeClass": "pad",
+    "defaultGuide": null,
+    "allowGuide": [],
+    "split": false,
+    "thumbKeys": [],
+    "homeRow": {
+      "L": [],
+      "R": []
+    },
+    "fixedKeys": {
+      "esc": null,
+      "tab": null,
+      "capslock": null
+    },
+    "symbolSlots": [],
+    "defaultLayerKeys": [],
+    "reviewed": false
+  },
+  "eztenkey": {
+    "sizeClass": "pad",
+    "defaultGuide": null,
+    "allowGuide": [],
+    "split": false,
+    "thumbKeys": [],
+    "homeRow": {
+      "L": [],
+      "R": []
+    },
+    "fixedKeys": {
+      "esc": null,
+      "tab": null,
+      "capslock": null
+    },
+    "symbolSlots": [],
+    "defaultLayerKeys": [],
+    "reviewed": false
+  },
+  "eztenkey_mx": {
+    "sizeClass": "pad",
+    "defaultGuide": null,
+    "allowGuide": [],
+    "split": false,
+    "thumbKeys": [],
+    "homeRow": {
+      "L": [],
+      "R": []
+    },
+    "fixedKeys": {
+      "esc": null,
+      "tab": null,
+      "capslock": null
+    },
+    "symbolSlots": [],
+    "defaultLayerKeys": [],
+    "reviewed": false
+  },
+  "focus40_jp": {
+    "sizeClass": "40",
+    "defaultGuide": "40",
+    "allowGuide": ["30", "40"],
+    "split": false,
+    "thumbKeys": [
+      {
+        "pos": 38,
+        "hand": "L"
+      },
+      {
+        "pos": 39,
+        "hand": "L"
+      },
+      {
+        "pos": 40,
+        "hand": "R"
+      },
+      {
+        "pos": 41,
+        "hand": "R"
+      },
+      {
+        "pos": 42,
+        "hand": "R"
+      }
+    ],
+    "homeRow": {
+      "L": [13, 14, 15, 16],
+      "R": [19, 20, 21, 22]
+    },
+    "fixedKeys": {
+      "esc": null,
+      "tab": 0,
+      "capslock": 12
+    },
+    "symbolSlots": [22],
+    "defaultLayerKeys": [
+      {
+        "pos": 34,
+        "layer": 1,
+        "hand": "R"
+      }
+    ],
+    "reviewed": false
+  },
+  "focus40_ortho": {
+    "sizeClass": "40",
+    "defaultGuide": "40",
+    "allowGuide": ["30", "40"],
+    "split": false,
+    "thumbKeys": [
+      {
+        "pos": 42,
+        "hand": "L"
+      },
+      {
+        "pos": 43,
+        "hand": "L"
+      },
+      {
+        "pos": 44,
+        "hand": "L"
+      },
+      {
+        "pos": 45,
+        "hand": "R"
+      },
+      {
+        "pos": 46,
+        "hand": "R"
+      },
+      {
+        "pos": 47,
+        "hand": "R"
+      }
+    ],
+    "homeRow": {
+      "L": [14, 15, 16, 17],
+      "R": [21, 22, 23, 24]
+    },
+    "fixedKeys": {
+      "esc": null,
+      "tab": 0,
+      "capslock": 13
+    },
+    "symbolSlots": [6, 19, 24, 32],
+    "defaultLayerKeys": [
+      {
+        "pos": 38,
+        "layer": 1,
+        "hand": "R"
+      }
+    ],
+    "reviewed": false
+  },
+  "focus60_en": {
+    "sizeClass": "60",
+    "defaultGuide": "60",
+    "allowGuide": ["60"],
+    "split": false,
+    "thumbKeys": [
+      {
+        "pos": 57,
+        "hand": "L"
+      },
+      {
+        "pos": 58,
+        "hand": "L"
+      },
+      {
+        "pos": 59,
+        "hand": "R"
+      },
+      {
+        "pos": 60,
+        "hand": "R"
+      }
+    ],
+    "homeRow": {
+      "L": [30, 31, 32, 33],
+      "R": [36, 37, 38, 39]
+    },
+    "fixedKeys": {
+      "esc": 0,
+      "tab": 15,
+      "capslock": null
+    },
+    "symbolSlots": [11, 12, 13, 14, 26, 27, 39, 40],
+    "defaultLayerKeys": [
+      {
+        "pos": 54,
+        "layer": 1,
+        "hand": "R"
+      }
+    ],
+    "reviewed": false
+  },
+  "goforty_jp": {
+    "sizeClass": "40",
+    "defaultGuide": "40",
+    "allowGuide": ["30", "40"],
+    "split": false,
+    "thumbKeys": [
+      {
+        "pos": 38,
+        "hand": "L"
+      },
+      {
+        "pos": 39,
+        "hand": "L"
+      },
+      {
+        "pos": 40,
+        "hand": "R"
+      },
+      {
+        "pos": 41,
+        "hand": "R"
+      },
+      {
+        "pos": 42,
+        "hand": "R"
+      }
+    ],
+    "homeRow": {
+      "L": [13, 14, 15, 16],
+      "R": [19, 20, 21, 22]
+    },
+    "fixedKeys": {
+      "esc": null,
+      "tab": 0,
+      "capslock": 12
+    },
+    "symbolSlots": [22],
+    "defaultLayerKeys": [
+      {
+        "pos": 34,
+        "layer": 1,
+        "hand": "R"
+      }
+    ],
+    "reviewed": false
+  },
+  "goforty_ortho": {
+    "sizeClass": "40",
+    "defaultGuide": "40",
+    "allowGuide": ["30", "40"],
+    "split": false,
+    "thumbKeys": [
+      {
+        "pos": 42,
+        "hand": "L"
+      },
+      {
+        "pos": 43,
+        "hand": "L"
+      },
+      {
+        "pos": 44,
+        "hand": "L"
+      },
+      {
+        "pos": 45,
+        "hand": "R"
+      },
+      {
+        "pos": 46,
+        "hand": "R"
+      },
+      {
+        "pos": 47,
+        "hand": "R"
+      }
+    ],
+    "homeRow": {
+      "L": [14, 15, 16, 17],
+      "R": [21, 22, 23, 24]
+    },
+    "fixedKeys": {
+      "esc": null,
+      "tab": 0,
+      "capslock": 13
+    },
+    "symbolSlots": [6, 19, 24, 32],
+    "defaultLayerKeys": [
+      {
+        "pos": 38,
+        "layer": 1,
+        "hand": "R"
+      }
+    ],
+    "reviewed": false
+  },
+  "goforty_rs": {
+    "sizeClass": "40",
+    "defaultGuide": "40",
+    "allowGuide": ["30", "40"],
+    "split": false,
+    "thumbKeys": [
+      {
+        "pos": 40,
+        "hand": "L"
+      },
+      {
+        "pos": 41,
+        "hand": "L"
+      },
+      {
+        "pos": 42,
+        "hand": "R"
+      }
+    ],
+    "homeRow": {
+      "L": [14, 15, 16, 17],
+      "R": [20, 21, 22, 23]
+    },
+    "fixedKeys": {
+      "esc": null,
+      "tab": 0,
+      "capslock": 13
+    },
+    "symbolSlots": [11, 23],
+    "defaultLayerKeys": [
+      {
+        "pos": 36,
+        "layer": 1,
+        "hand": "R"
+      }
+    ],
+    "reviewed": false
+  },
+  "goforty_us": {
+    "sizeClass": "40",
+    "defaultGuide": "40",
+    "allowGuide": ["30", "40"],
+    "split": false,
+    "thumbKeys": [
+      {
+        "pos": 36,
+        "hand": "R"
+      }
+    ],
+    "homeRow": {
+      "L": [13, 14, 15, 16],
+      "R": [19, 20, 21, 22]
+    },
+    "fixedKeys": {
+      "esc": null,
+      "tab": 0,
+      "capslock": 12
+    },
+    "symbolSlots": [11],
+    "defaultLayerKeys": [],
+    "reviewed": false
+  },
+  "goforty_max_ortho": {
+    "sizeClass": "40",
+    "defaultGuide": "40",
+    "allowGuide": ["30", "40"],
+    "split": false,
+    "thumbKeys": [
+      {
+        "pos": 44,
+        "hand": "L"
+      },
+      {
+        "pos": 45,
+        "hand": "L"
+      },
+      {
+        "pos": 46,
+        "hand": "L"
+      },
+      {
+        "pos": 47,
+        "hand": "R"
+      },
+      {
+        "pos": 48,
+        "hand": "R"
+      },
+      {
+        "pos": 49,
+        "hand": "R"
+      }
+    ],
+    "homeRow": {
+      "L": [16, 17, 18, 19],
+      "R": [23, 24, 25, 26]
+    },
+    "fixedKeys": {
+      "esc": null,
+      "tab": 2,
+      "capslock": null
+    },
+    "symbolSlots": [8, 21, 26, 34, 40],
+    "defaultLayerKeys": [
+      {
+        "pos": 40,
+        "layer": 2,
+        "hand": "R"
+      },
+      {
+        "pos": 45,
+        "layer": 3,
+        "hand": "L"
+      },
+      {
+        "pos": 48,
+        "layer": 2,
+        "hand": "R"
+      }
+    ],
+    "reviewed": false
+  },
+  "insixty_en": {
+    "sizeClass": "60",
+    "defaultGuide": "60",
+    "allowGuide": ["60"],
+    "split": false,
+    "thumbKeys": [
+      {
+        "pos": 58,
+        "hand": "L"
+      },
+      {
+        "pos": 59,
+        "hand": "L"
+      },
+      {
+        "pos": 60,
+        "hand": "R"
+      },
+      {
+        "pos": 61,
+        "hand": "R"
+      }
+    ],
+    "homeRow": {
+      "L": [30, 31, 32, 33],
+      "R": [36, 37, 38, 39]
+    },
+    "fixedKeys": {
+      "esc": 0,
+      "tab": 15,
+      "capslock": null
+    },
+    "symbolSlots": [11, 12, 13, 14, 26, 27, 39, 40],
+    "defaultLayerKeys": [
+      {
+        "pos": 54,
+        "layer": 1,
+        "hand": "R"
+      }
+    ],
+    "reviewed": false
+  },
+  "insixty_jp": {
+    "sizeClass": "60",
+    "defaultGuide": "60",
+    "allowGuide": ["60"],
+    "split": false,
+    "thumbKeys": [
+      {
+        "pos": 58,
+        "hand": "L"
+      },
+      {
+        "pos": 59,
+        "hand": "L"
+      },
+      {
+        "pos": 60,
+        "hand": "L"
+      },
+      {
+        "pos": 61,
+        "hand": "R"
+      },
+      {
+        "pos": 62,
+        "hand": "R"
+      },
+      {
+        "pos": 63,
+        "hand": "R"
+      },
+      {
+        "pos": 64,
+        "hand": "R"
+      }
+    ],
+    "homeRow": {
+      "L": [29, 30, 31, 32],
+      "R": [35, 36, 37, 38]
+    },
+    "fixedKeys": {
+      "esc": 0,
+      "tab": 15,
+      "capslock": null
+    },
+    "symbolSlots": [11, 12, 13, 26, 27, 38, 39, 40, 53],
+    "defaultLayerKeys": [
+      {
+        "pos": 54,
+        "layer": 1,
+        "hand": "R"
+      }
+    ],
+    "reviewed": false
+  },
+  "insixty_mxjp": {
+    "sizeClass": "60",
+    "defaultGuide": "60",
+    "allowGuide": ["60"],
+    "split": false,
+    "thumbKeys": [
+      {
+        "pos": 59,
+        "hand": "L"
+      },
+      {
+        "pos": 60,
+        "hand": "L"
+      },
+      {
+        "pos": 61,
+        "hand": "L"
+      },
+      {
+        "pos": 62,
+        "hand": "R"
+      },
+      {
+        "pos": 63,
+        "hand": "R"
+      }
+    ],
+    "homeRow": {
+      "L": [30, 31, 32, 33],
+      "R": [36, 37, 38, 39]
+    },
+    "fixedKeys": {
+      "esc": 0,
+      "tab": 15,
+      "capslock": null
+    },
+    "symbolSlots": [11, 12, 13, 26, 27, 39, 40, 41, 53],
+    "defaultLayerKeys": [
+      {
+        "pos": 55,
+        "layer": 1,
+        "hand": "R"
+      }
+    ],
+    "reviewed": false
+  },
+  "tenkey_of_tenkey": {
+    "sizeClass": "pad",
+    "defaultGuide": null,
+    "allowGuide": [],
+    "split": false,
+    "thumbKeys": [],
+    "homeRow": {
+      "L": [],
+      "R": []
+    },
+    "fixedKeys": {
+      "esc": null,
+      "tab": null,
+      "capslock": null
+    },
+    "symbolSlots": [],
+    "defaultLayerKeys": [],
+    "reviewed": false
+  },
+  "toseventy_jp": {
+    "sizeClass": "75",
+    "defaultGuide": "60",
+    "allowGuide": ["60"],
+    "split": false,
+    "thumbKeys": [
+      {
+        "pos": 62,
+        "hand": "L"
+      },
+      {
+        "pos": 63,
+        "hand": "L"
+      },
+      {
+        "pos": 64,
+        "hand": "L"
+      },
+      {
+        "pos": 65,
+        "hand": "R"
+      },
+      {
+        "pos": 66,
+        "hand": "R"
+      }
+    ],
+    "homeRow": {
+      "L": [32, 33, 34, 35],
+      "R": [38, 39, 40, 41]
+    },
+    "fixedKeys": {
+      "esc": 0,
+      "tab": 16,
+      "capslock": 31
+    },
+    "symbolSlots": [11, 12, 13, 27, 28, 41, 42, 43, 56],
+    "defaultLayerKeys": [
+      {
+        "pos": 69,
+        "layer": 1,
+        "hand": "R"
+      }
+    ],
+    "reviewed": false
+  },
+  "toseventy_ortho": {
+    "sizeClass": "75",
+    "defaultGuide": "60",
+    "allowGuide": ["60"],
+    "split": false,
+    "thumbKeys": [
+      {
+        "pos": 66,
+        "hand": "L"
+      },
+      {
+        "pos": 67,
+        "hand": "L"
+      },
+      {
+        "pos": 68,
+        "hand": "L"
+      },
+      {
+        "pos": 69,
+        "hand": "L"
+      },
+      {
+        "pos": 70,
+        "hand": "L"
+      },
+      {
+        "pos": 71,
+        "hand": "R"
+      },
+      {
+        "pos": 72,
+        "hand": "R"
+      },
+      {
+        "pos": 73,
+        "hand": "R"
+      }
+    ],
+    "homeRow": {
+      "L": [33, 34, 35, 36],
+      "R": [42, 43, 44, 45]
+    },
+    "fixedKeys": {
+      "esc": 0,
+      "tab": 16,
+      "capslock": 32
+    },
+    "symbolSlots": [45],
+    "defaultLayerKeys": [
+      {
+        "pos": 74,
+        "layer": 1,
+        "hand": "R"
+      }
+    ],
+    "reviewed": false
+  },
+  "toseventy_us": {
+    "sizeClass": "75",
+    "defaultGuide": "60",
+    "allowGuide": ["60"],
+    "split": false,
+    "thumbKeys": [
+      {
+        "pos": 60,
+        "hand": "L"
+      }
+    ],
+    "homeRow": {
+      "L": [31, 32, 33, 34],
+      "R": [37, 38, 39, 40]
+    },
+    "fixedKeys": {
+      "esc": 0,
+      "tab": 15,
+      "capslock": 30
+    },
+    "symbolSlots": [11, 12, 26, 27, 28, 40, 41],
+    "defaultLayerKeys": [
+      {
+        "pos": 63,
+        "layer": 1,
+        "hand": "R"
+      }
+    ],
+    "reviewed": false
+  },
+  "wztwenty": {
+    "sizeClass": "pad",
+    "defaultGuide": null,
+    "allowGuide": [],
+    "split": false,
+    "thumbKeys": [],
+    "homeRow": {
+      "L": [],
+      "R": []
+    },
+    "fixedKeys": {
+      "esc": null,
+      "tab": null,
+      "capslock": null
+    },
+    "symbolSlots": [],
+    "defaultLayerKeys": [],
+    "reviewed": false
+  },
+  "wztwenty_stm": {
+    "sizeClass": "pad",
+    "defaultGuide": null,
+    "allowGuide": [],
+    "split": false,
+    "thumbKeys": [],
+    "homeRow": {
+      "L": [],
+      "R": []
+    },
+    "fixedKeys": {
+      "esc": null,
+      "tab": null,
+      "capslock": null
+    },
+    "symbolSlots": [],
+    "defaultLayerKeys": [],
+    "reviewed": false
+  }
+}
