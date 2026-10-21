@@ -14,7 +14,7 @@ import {
 
 import { SplashScreen } from "./components/SplashScreen";
 import { ReleaseNotesPage, RELEASE_NOTES_PATH } from "./pages/ReleaseNotesPage";
-import { AboutPage, ABOUT_PATH } from "./pages/AboutPage";
+import { AboutPage, ABOUT_PATH, QMK_ABOUT_PATH } from "./pages/AboutPage";
 import { LayoutEditorPage, LAYOUT_PATH } from "./pages/LayoutEditorPage";
 import { KeyTestPage, KEY_TEST_PATH } from "./pages/KeyTestPage";
 import { PracticePage, PRACTICE_PATH } from "./pages/PracticePage";
@@ -207,6 +207,7 @@ function AppContent() {
   );
   const onReleaseNotes = pathname === RELEASE_NOTES_PATH;
   const onAbout = pathname === ABOUT_PATH;
+  const onQmkAbout = pathname === QMK_ABOUT_PATH;
   const onLayout = pathname === LAYOUT_PATH;
   const onKeyTest = pathname === KEY_TEST_PATH;
   const onPractice = pathname === PRACTICE_PATH;
@@ -271,8 +272,18 @@ function AppContent() {
     return <ReleaseNotesPage onBack={() => navigatePath("/")} />;
   }
 
-  if (onAbout) {
-    return <AboutPage onBack={() => navigatePath("/")} />;
+  // ZMK and QMK each have their own About page, switched like the top page.
+  if (onAbout || onQmkAbout) {
+    return (
+      <AboutPage
+        firmware={onQmkAbout ? "qmk" : "zmk"}
+        onBack={() => navigatePath(onQmkAbout ? QMK_PATH : "/")}
+        onFirmwareChange={(fw) =>
+          navigatePath(fw === "qmk" ? QMK_ABOUT_PATH : ABOUT_PATH)
+        }
+        onShowDownloads={() => navigatePath(QMK_DOWNLOADS_PATH)}
+      />
+    );
   }
 
   // The layout editor needs no keyboard: it draws layouts, it does not talk
@@ -333,7 +344,7 @@ function AppContent() {
       <QmkApp
         onFirmwareChange={navigateFirmware}
         onShowReleaseNotes={() => navigatePath(RELEASE_NOTES_PATH)}
-        onShowAbout={() => navigatePath(ABOUT_PATH)}
+        onShowAbout={() => navigatePath(QMK_ABOUT_PATH)}
         onShowDownloads={() => navigatePath(QMK_DOWNLOADS_PATH)}
       />
     );

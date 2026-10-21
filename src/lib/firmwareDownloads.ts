@@ -188,6 +188,20 @@ export const QMK_FIRMWARE: QmkFirmware[] = [
   g0("WzTwenty STM", "wztwenty_stm", "WzTwenty"),
 ];
 
+/** Series in the order the firmware list has them, each with its models. */
+export function qmkSeries(): { series: string; models: string[] }[] {
+  const out: { series: string; models: string[] }[] = [];
+  for (const fw of QMK_FIRMWARE) {
+    let entry = out.find((s) => s.series === fw.series);
+    if (!entry) {
+      entry = { series: fw.series, models: [] };
+      out.push(entry);
+    }
+    entry.models.push(fw.name);
+  }
+  return out;
+}
+
 /** The firmware for a keyboard, by its vial.json name (= folder name). */
 export function qmkFirmwareFor(board: string): QmkFirmware | undefined {
   return QMK_FIRMWARE.find((f) => f.asset === board);

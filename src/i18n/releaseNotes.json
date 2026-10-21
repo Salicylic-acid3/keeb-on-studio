@@ -5,7 +5,13 @@
       "date": null,
       "changes": {
         "major": [],
-        "minor": [],
+        "minor": [
+          {
+            "en": "QMK: \"Supported keyboards and Q&A\" on the QMK top page now opens a page of its own (/qmk/about): what the QMK side can do, every supported QMK keyboard, and a Q&A on Vial firmware and the Keeb-On! Studio firmware, connecting and unlocking. It works mainly with keyboards that have Vial firmware written on them; with the Keeb-On! Studio firmware more of it works. The ZMK and QMK pages switch with ZMK / QMK at the top right.",
+            "ja": "QMK: QMK版トップ画面の「対応キーボードと Q&A」が、QMK版専用のページ（/qmk/about）を開くようになりました。QMK版でできること、対応している QMK キーボードの一覧、Vial と Keeb-On! Studio 用のファームウェアの違い・接続・ロック解除についての Q&A を載せています。対応しているのは主に Vial のファームウェアを書き込んだキーボードで、Keeb-On! Studio 用のファームウェアならより多くの機能を使えます。ZMK版とQMK版のページは右上の「ZMK / QMK」で切り替えられます。",
+            "zh": "QMK：QMK 版首页的“支持的键盘与问答”现在会打开 QMK 版专用页面（/qmk/about），介绍 QMK 版的功能、支持的 QMK 键盘列表，以及关于 Vial 固件与 Keeb-On! Studio 专用固件的区别、连接和解锁的问答。主要支持写入了 Vial 固件的键盘，使用 Keeb-On! Studio 专用固件可以使用更多功能。ZMK 版与 QMK 版页面可通过右上角的“ZMK / QMK”切换。"
+          }
+        ],
         "patch": []
       }
     },

@@ -61,7 +61,48 @@ const AUTHOR_LINKS: {
   },
 ];
 
-export function HomePage() {
+/** Salicylic_acid3's channels, at the foot of both About pages. */
+export function AuthorLinks() {
+  const { t } = useLanguage();
+  return (
+    <div className="glass-card p-6 mt-6">
+      <h2 className="text-sm font-medium text-[var(--color-text-secondary)] mb-4">
+        {t("Links by Salicylic_acid3")}
+      </h2>
+      <ul className="grid gap-2 sm:grid-cols-2">
+        {AUTHOR_LINKS.map((link) => (
+          <li key={link.href}>
+            <a
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 p-3 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-electric)] transition-colors group"
+            >
+              <span className="text-[var(--color-electric)] shrink-0">
+                {link.icon}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm text-[var(--color-text-secondary)] truncate group-hover:text-[var(--color-text)] transition-colors">
+                  {link.name}
+                </span>
+                <span className="block text-xs text-[var(--color-text-muted)]">
+                  {t(link.category)}
+                </span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export function HomePage({
+  headerAside,
+}: {
+  /** The ZMK / QMK switch, at the right of the title. */
+  headerAside?: ReactNode;
+} = {}) {
   const { language, t } = useLanguage();
 
   return (
@@ -140,6 +181,11 @@ export function HomePage() {
               </p>
             </div>
           </div>
+          {headerAside && (
+            <div className="flex justify-center tablet:justify-end">
+              {headerAside}
+            </div>
+          )}
         </div>
 
         {/* Guide */}
@@ -362,36 +408,7 @@ export function HomePage() {
           </div>
         </div>
 
-        {/* Salicylic_acid3's channels */}
-        <div className="glass-card p-6 mt-6">
-          <h2 className="text-sm font-medium text-[var(--color-text-secondary)] mb-4">
-            {t("Links by Salicylic_acid3")}
-          </h2>
-          <ul className="grid gap-2 sm:grid-cols-2">
-            {AUTHOR_LINKS.map((link) => (
-              <li key={link.href}>
-                <a
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-3 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-electric)] transition-colors group"
-                >
-                  <span className="text-[var(--color-electric)] shrink-0">
-                    {link.icon}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-sm text-[var(--color-text-secondary)] truncate group-hover:text-[var(--color-text)] transition-colors">
-                      {link.name}
-                    </span>
-                    <span className="block text-xs text-[var(--color-text-muted)]">
-                      {t(link.category)}
-                    </span>
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <AuthorLinks />
       </div>
     </div>
   );
