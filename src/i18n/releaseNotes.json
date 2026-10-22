@@ -5,6 +5,15 @@
       "date": null,
       "changes": {
         "major": [],
+        "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.22.0",
+      "date": "2026-10-22",
+      "changes": {
+        "major": [],
         "minor": [
           {
             "en": "QMK: \"Supported keyboards and Q&A\" on the QMK top page now opens a page of its own (/qmk/about): what the QMK side can do, every supported QMK keyboard, and a Q&A on Vial firmware and the Keeb-On! Studio firmware, connecting and unlocking. It works mainly with keyboards that have Vial firmware written on them; with the Keeb-On! Studio firmware more of it works. The ZMK and QMK pages switch with ZMK / QMK at the top right.",
