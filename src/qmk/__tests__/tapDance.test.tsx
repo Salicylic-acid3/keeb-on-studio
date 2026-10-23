@@ -7,6 +7,10 @@ Object.assign(globalThis, {
 
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { useVialKeyboard, createDemoTransport } from "../hooks/useVialKeyboard";
+import boards from "../demo/boards.json";
+import type { DemoBoard } from "../demo/demoBoards";
+
+const ERGOMINI = boards.clickboard_ergomini as DemoBoard;
 import { useVialTapDance } from "../hooks/useVialTapDance";
 import { bindingToKeycode, keycodeToBinding } from "../lib/zmkBridge";
 import { keycodeToText, parseKeycode } from "../lib/keycodes/qmkKeycode";
@@ -20,7 +24,7 @@ import {
 } from "../lib/qmkSettings";
 
 function setup() {
-  const transport = createDemoTransport();
+  const transport = createDemoTransport(ERGOMINI);
   const hook = renderHook(() => {
     const keyboard = useVialKeyboard();
     const tapDance = useVialTapDance(keyboard);

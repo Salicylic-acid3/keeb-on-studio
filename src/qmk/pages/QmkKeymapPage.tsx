@@ -87,6 +87,7 @@ import {
   type QmkKeymapPayload,
 } from "../lib/savedQmkKeymap";
 import { parseQmkShareCode, qmkShareCodeFromHash } from "../lib/qmkShare";
+import { demoBoardChoices } from "../demo/demoBoards";
 
 interface QmkKeymapPageProps {
   keyboard: UseVialKeyboard;
@@ -786,6 +787,41 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
 
         {/* Layout selectors */}
         <div className="relative flex items-center gap-2 justify-between flex-wrap mb-4">
+          {/* Demo mode only: which keyboard to lay a keymap out for, as the
+              ZMK side's demo offers its keyboards. Kept in My keymaps, the
+              keymap loads onto that keyboard once it is connected. */}
+          {keyboard.demoBoard && (
+            <div className="flex items-center gap-2">
+              <label
+                htmlFor="qmk-demo-board"
+                className="text-xs text-[var(--color-text-muted)]"
+              >
+                {t("Keyboard to lay out")}:
+              </label>
+              <select
+                id="qmk-demo-board"
+                value={keyboard.demoBoard}
+                disabled={keyboard.hasUnsavedChanges || keyboard.isSaving}
+                title={
+                  keyboard.hasUnsavedChanges
+                    ? t(
+                        "Save or discard the changes before switching keyboards.",
+                      )
+                    : t(
+                        "Pick the keyboard to lay a keymap out for. Keep it in My keymaps, and load it once that keyboard is connected.",
+                      )
+                }
+                onChange={(e) => void keyboard.switchDemoBoard(e.target.value)}
+                className="px-2 py-1 rounded bg-[var(--color-surface)] border border-[var(--color-border)] text-sm text-[var(--color-text)] disabled:opacity-50"
+              >
+                {demoBoardChoices().map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           {info.definition.layoutLabels.length > 0 && (
             <div className="flex items-center gap-2">
               <span className="text-xs text-[var(--color-text-muted)]">

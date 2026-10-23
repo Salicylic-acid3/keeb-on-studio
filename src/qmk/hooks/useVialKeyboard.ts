@@ -33,9 +33,11 @@ import { parseKleLayout, visibleKeys, type VialKey } from "../lib/vial/kle";
 import type { VialTransport } from "../lib/vial/transport";
 import { DemoTransport, base64ToBytes } from "../lib/vial/demoTransport";
 import {
-  DEMO_DEFINITION_XZ_BASE64,
-  DEMO_KEYMAP,
-} from "../demo/clickboardErgoMini";
+  loadDemoBoard,
+  rememberDemoBoard,
+  rememberedDemoBoard,
+  type DemoBoard,
+} from "../demo/demoBoards";
 
 export type VialConnectionMethod = "hid" | "demo";
 
@@ -112,7 +114,12 @@ export interface UseVialKeyboard {
     transport: VialTransport,
     method: VialConnectionMethod,
   ): Promise<void>;
-  connectDemo(): Promise<void>;
+  /** Demo mode as one of the QMK keyboards (the one picked last time if none is given). */
+  connectDemo(board?: string): Promise<void>;
+  /** In demo mode: which keyboard the demo stands in for, else null. */
+  demoBoard: string | null;
+  /** In demo mode: become another keyboard, its default keymap and all. */
+  switchDemoBoard(board: string): Promise<void>;
   disconnect(): Promise<void>;
   /** Stage an edit; nothing reaches the keyboard until saveChanges(). */
   setKeycode(layer: number, row: number, col: number, code: number): void;
@@ -143,19 +150,20 @@ export class UnlockCancelledError extends Error {}
 /** The keyboard went away (unplugged, or restarted) while we waited on it. */
 export class KeyboardGoneError extends Error {}
 
-export function createDemoTransport(): DemoTransport {
+export function createDemoTransport(board: DemoBoard): DemoTransport {
   return new DemoTransport({
-    productName: "ClickBoard ErgoMini (demo)",
-    definition: base64ToBytes(DEMO_DEFINITION_XZ_BASE64),
-    rows: 10,
-    cols: 6,
-    keymap: DEMO_KEYMAP,
-    keebOnOs: { layersPerBlock: 4, blockCount: 3, detectedOs: guessHostOs() },
-    unlockKeys: [
-      { row: 0, col: 6 },
-      { row: 0, col: 5 },
-    ],
-    dynamicEntries: { tapDance: 32, combo: 32, keyOverride: 32 },
+    productName: `${board.name} (demo)`,
+    definition: base64ToBytes(board.definitionXzBase64),
+    rows: board.rows,
+    cols: board.cols,
+    keymap: board.keymap,
+    keebOnOs: {
+      layersPerBlock: board.layersPerBlock,
+      blockCount: board.blockCount,
+      detectedOs: guessHostOs(),
+    },
+    unlockKeys: board.unlockKeys,
+    dynamicEntries: board.entries,
   });
 }
 
@@ -269,6 +277,7 @@ export function useVialKeyboard(): UseVialKeyboard {
   const [error, setError] = useState<string | null>(null);
 
   const [liveKeysOn, setLiveKeysOn] = useState(false);
+  const [demoBoard, setDemoBoard] = useState<string | null>(null);
   const [pressed, setPressed] = useState<ReadonlySet<string>>(new Set());
 
   const clear = useCallback(() => {
@@ -330,6 +339,9 @@ export function useVialKeyboard(): UseVialKeyboard {
           ? await client.getKeebOnOs()
           : null;
         transport.onDisconnect(() => {
+          // Only for the keyboard still on screen: a demo switching to
+          // another keyboard closes the old one after the new one is up.
+          if (clientRef.current !== client) return;
           clear();
           setError(null);
         });
@@ -366,9 +378,33 @@ export function useVialKeyboard(): UseVialKeyboard {
     [clear, applyEntries],
   );
 
-  const connectDemo = useCallback(async () => {
-    await connect(createDemoTransport(), "demo");
-  }, [connect]);
+  const connectDemo = useCallback(
+    async (board?: string) => {
+      const { id, board: data } = await loadDemoBoard(
+        board ?? rememberedDemoBoard(),
+      );
+      await connect(createDemoTransport(data), "demo");
+      rememberDemoBoard(id);
+      setDemoBoard(id);
+    },
+    [connect],
+  );
+
+  const switchDemoBoard = useCallback(
+    async (board: string) => {
+      const old = clientRef.current;
+      if (!old || !info?.isDemo) return;
+      // The new keyboard first, then the old one closed: the screen goes
+      // from one keyboard to the other without dropping to the top page.
+      await connectDemo(board);
+      try {
+        await old.transport.close();
+      } catch {
+        // Already gone.
+      }
+    },
+    [connectDemo, info?.isDemo],
+  );
 
   const setKeycode = useCallback(
     (layer: number, row: number, col: number, code: number) => {
@@ -804,6 +840,8 @@ export function useVialKeyboard(): UseVialKeyboard {
     error,
     connect,
     connectDemo,
+    demoBoard: info?.isDemo ? demoBoard : null,
+    switchDemoBoard,
     disconnect,
     setKeycode,
     resetKey,

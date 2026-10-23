@@ -5,12 +5,23 @@
       "date": null,
       "changes": {
         "major": [],
-        "minor": [],
+        "minor": [
+          {
+            "en": "QMK: Demo mode can now be any QMK keyboard, as on the ZMK side. Pick it with \"Keyboard to lay out\" on the keymap page: it opens with that keyboard's layout, default keymap and OS blocks as its firmware has them. Keep the keymap you make in My keymaps, and load it once that keyboard is connected. The demo opens on the keyboard picked last time.",
+            "ja": "QMK: ZMK版と同じように、デモモードでどの QMK キーボードでも選べるようになりました。キーマップ画面の「キーボード」で選ぶと、そのキーボードの配置・初期キーマップ・OSごとのブロックがファームウェアと同じ状態で開きます。作ったキーマップをマイキーマップに保存しておけば、そのキーボードをつないだときに読み込めます。次にデモを開くと、前回選んだキーボードで始まります。",
+            "zh": "QMK：与 ZMK 版一样，演示模式现在可以选择任意 QMK 键盘。在键位映射页面的“键盘”中选择后，会以与固件相同的布局、默认键位映射和各操作系统的层块打开。把做好的键位映射保存到“我的键映射”，连接该键盘时即可读取。下次打开演示时，会从上次选择的键盘开始。"
+          }
+        ],
         "patch": [
           {
             "en": "Keymap dojo: the number and macro pads (ClickBoard Tenkey, EzTenkey, EzTenkeyMX, WzTwenty, WzTwenty STM, Tenkey of Tenkey) are left out of the keyboard list; they are not keyboards for typing text. A connected pad leaves the dojo in demo mode and says why.",
             "ja": "キーマップ道場: テンキーやマクロパッド（ClickBoard Tenkey、EzTenkey、EzTenkeyMX、WzTwenty、WzTwenty STM、Tenkey of Tenkey）は文字入力用のキーボードではないので、機種一覧から外しました。接続していても道場はデモモードのままで、その旨を表示します。",
             "zh": "键位道场：数字键盘和宏键盘（ClickBoard Tenkey、EzTenkey、EzTenkeyMX、WzTwenty、WzTwenty STM、Tenkey of Tenkey）不是用于输入文字的键盘，已从型号列表中去除。即使已连接，道场也保持演示模式并说明原因。"
+          },
+          {
+            "en": "QMK: The demo's unlock prompt names the keyboard's real unlock keys (ClickBoard ErgoMini: the top-left key and Enter) instead of a single key. Shifted symbol names such as KC_LCBR and mod-tap names such as SFT_T(...) are now read in keymaps, as in .vil files.",
+            "ja": "QMK: デモのロック解除画面で、押すキーが1つだけ表示されていたのを直し、そのキーボードの実際のロック解除キー（ClickBoard ErgoMini なら左上のキーと Enter）を表示するようにしました。また、.vil ファイルなどのキーマップに含まれる KC_LCBR などの記号の別名や、SFT_T(...) などの長押しの書き方を読めるようにしました。",
+            "zh": "QMK：演示中的解锁画面此前只显示一个按键，现在会显示该键盘实际的解锁按键（ClickBoard ErgoMini 为左上角的键和 Enter）。另外，现在可以读取 .vil 文件等键位映射中的 KC_LCBR 等符号别名，以及 SFT_T(...) 等长按写法。"
           }
         ]
       }

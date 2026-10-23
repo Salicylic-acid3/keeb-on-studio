@@ -162,3 +162,41 @@ describe("QmkApp demo mode", () => {
     expect(await screen.findByText("Select Key Binding")).toBeInTheDocument();
   });
 });
+
+describe("QmkApp demo mode, any QMK keyboard", () => {
+  beforeEach(() => localStorage.clear());
+
+  test("switches the demo to another keyboard, its default keymap and OS blocks with it", async () => {
+    renderApp();
+    fireEvent.click(screen.getByLabelText("Try Demo Mode"));
+    await waitFor(() =>
+      expect(
+        screen.getByText("ClickBoard ErgoMini (demo)"),
+      ).toBeInTheDocument(),
+    );
+    const picker = screen.getByRole("combobox", {
+      name: "Keyboard to lay out:",
+    });
+    expect(picker).toHaveValue("clickboard_ergomini");
+
+    fireEvent.change(picker, { target: { value: "bethirty_ortho" } });
+    await waitFor(() =>
+      expect(screen.getByText("BeThirty Ortho (demo)")).toBeInTheDocument(),
+    );
+    // BeThirty has five layers to each OS block, and 40 keys.
+    const layers = screen.getByRole("group", { name: "Keymap layers" });
+    expect(within(layers).getAllByRole("button")).toHaveLength(5);
+    const board = screen.getByRole("group", {
+      name: /Keyboard layout for/,
+    });
+    const keys = within(board).getAllByRole("button", {
+      name: /Key position \d+:/,
+    });
+    expect(keys.length).toBeGreaterThanOrEqual(36);
+    // Picked again next time.
+    expect(localStorage.getItem("keebon.qmk.demoBoard")).toBe("bethirty_ortho");
+    expect(
+      screen.getByRole("combobox", { name: "Keyboard to lay out:" }),
+    ).not.toBeDisabled();
+  });
+});

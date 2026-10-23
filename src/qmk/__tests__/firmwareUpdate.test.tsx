@@ -7,6 +7,10 @@ Object.assign(globalThis, {
 
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { createDemoTransport, useVialKeyboard } from "../hooks/useVialKeyboard";
+import boards from "../demo/boards.json";
+import type { DemoBoard } from "../demo/demoBoards";
+
+const ERGOMINI = boards.clickboard_ergomini as DemoBoard;
 import { useQmkFirmwareUpdate } from "../hooks/useQmkFirmwareUpdate";
 
 function uf2(family: number, blocks = 2): Uint8Array {
@@ -55,7 +59,7 @@ function fakeDrive(boardId: string) {
 
 describe("Update firmware", () => {
   test("downloads, sends the keyboard to its bootloader, writes onto the picked drive", async () => {
-    const transport = createDemoTransport();
+    const transport = createDemoTransport(ERGOMINI);
     const firmware = uf2(0xe48bff56); // the demo is an ErgoMini: RP2040
     globalThis.fetch = jest.fn(async () => ({
       ok: true,
@@ -97,7 +101,7 @@ describe("Update firmware", () => {
   });
 
   test("refuses a drive that is not the bootloader, and a file for another chip", async () => {
-    const transport = createDemoTransport();
+    const transport = createDemoTransport(ERGOMINI);
     globalThis.fetch = jest.fn(async () => ({
       ok: true,
       arrayBuffer: async () => uf2(0x300f5633).buffer, // STM32G0, not RP2040
@@ -136,7 +140,7 @@ describe("Update firmware", () => {
   });
 
   test("unplugging while it waits for the unlock ends in a message, not a spinner", async () => {
-    const transport = createDemoTransport();
+    const transport = createDemoTransport(ERGOMINI);
     globalThis.fetch = jest.fn(async () => ({
       ok: true,
       arrayBuffer: async () => uf2(0xe48bff56).buffer,

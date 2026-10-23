@@ -1673,6 +1673,11 @@ const ja: Record<string, string> = {
     "削除したレイヤーをすべて復元（{{count}} 件）",
   "No deleted layers to restore": "復元できる削除済みレイヤーはありません",
   "Physical Layout": "物理レイアウト",
+  "Keyboard to lay out": "キーボード",
+  "Save or discard the changes before switching keyboards.":
+    "キーボードを切り替える前に、変更を保存するか破棄してください。",
+  "Pick the keyboard to lay a keymap out for. Keep it in My keymaps, and load it once that keyboard is connected.":
+    "キーマップを作るキーボードを選びます。マイキーマップに保存しておけば、そのキーボードをつないだときに読み込めます。",
   "Layout {{id}}": "レイアウト {{id}}",
   "OS Layout": "OS 配列",
   "Choose OS's keyboard layout setting": "OS のキーボード配列設定を選択",
@@ -3566,6 +3571,11 @@ const zh: Record<string, string> = {
     "恢复所有已删除的层（{{count}} 个）",
   "No deleted layers to restore": "没有可恢复的已删除层",
   "Physical Layout": "物理布局",
+  "Keyboard to lay out": "键盘",
+  "Save or discard the changes before switching keyboards.":
+    "切换键盘前，请先保存或放弃更改。",
+  "Pick the keyboard to lay a keymap out for. Keep it in My keymaps, and load it once that keyboard is connected.":
+    "选择要制作键位映射的键盘。保存到“我的键映射”后，连接该键盘时即可读取。",
   "Layout {{id}}": "布局 {{id}}",
   "OS Layout": "操作系统布局",
   "Choose OS's keyboard layout setting": "选择操作系统的键盘布局设置",
