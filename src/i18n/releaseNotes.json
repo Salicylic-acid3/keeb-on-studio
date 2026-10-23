@@ -5,7 +5,13 @@
       "date": null,
       "changes": {
         "major": [],
-        "minor": [],
+        "minor": [
+          {
+            "en": "Top page: a Layout editor card, on both the ZMK and the QMK page, opens the layout editor; Back returns to the page it was opened from.",
+            "ja": "トップ画面: ZMK と QMK の両方のトップ画面に「レイアウトエディタ」のカードを追加しました。「戻る」で開いたほうのトップ画面に戻ります。",
+            "zh": "首页：ZMK 和 QMK 首页均新增“布局编辑器”卡片，可打开布局编辑器；“返回”回到打开它的那个首页。"
+          }
+        ],
         "patch": []
       }
     },

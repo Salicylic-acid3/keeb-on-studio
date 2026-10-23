@@ -289,7 +289,17 @@ function AppContent() {
   // The layout editor needs no keyboard: it draws layouts, it does not talk
   // to one.
   if (onLayout) {
-    return <LayoutEditorPage onBack={() => navigatePath("/")} />;
+    return (
+      <LayoutEditorPage
+        onBack={() =>
+          navigatePath(
+            firmwareFromPathname(window.history.state?.from ?? "/") === "qmk"
+              ? QMK_PATH
+              : "/",
+          )
+        }
+      />
+    );
   }
 
   // The key test listens to what the keyboard types, so it needs no

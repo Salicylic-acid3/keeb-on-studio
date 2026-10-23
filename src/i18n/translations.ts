@@ -109,7 +109,7 @@ const ja: Record<string, string> = {
   "Decide the keymap of a small keyboard step by step -- which symbols you use most, the thumb keys, what goes on each layer -- and practise typing on it. Works without a keyboard too; with one connected, the result is written to it.":
     "小さなキーボードのキーマップを、よく使う記号・親指キー・各レイヤーの中身の順に質問に答えて決め、そのキーマップで練習します。キーボードが無くても試せて、接続していれば結果をそのまま書き込めます。",
   "Open the keymap dojo": "キーマップ道場を開く",
-  "Saved as \"キーマップ道場\" in the {{firmware}} remapper's My keymaps for {{board}}. Connect the keyboard there and load it to write it to the keyboard.":
+  'Saved as "キーマップ道場" in the {{firmware}} remapper\'s My keymaps for {{board}}. Connect the keyboard there and load it to write it to the keyboard.':
     "{{board}} 用のキーマップを「キーマップ道場」として {{firmware}} のキーリマッパーのマイキーマップに保存しました。キーボードをつないだら、キーリマッパーでそのキーマップを読み込むと書き込めます。",
   "Apply, save and finish": "適用して保存して終える",
   "Save and finish": "保存して終える",
@@ -125,7 +125,7 @@ const ja: Record<string, string> = {
   "Start from the keyboard's own keymap": "実機のキーマップで最初から",
   "There are changes written to the keyboard but not saved. Disconnect without saving? They will be lost.":
     "キーボードに書き込んだまま保存していない変更があります。保存せずに切断しますか？ 変更は失われます。",
-  "The keymap from the guide is on the keyboard now. Press \"Save to keyboard\" to keep it.":
+  'The keymap from the guide is on the keyboard now. Press "Save to keyboard" to keep it.':
     "ガイドのキーマップをキーボードに書き込みました。「キーボードに保存」を押すと確定します。",
   "This keyboard has no layer left for another layer key: besides the base layer, it allows three per OS. A thumb key that could not get one keeps its tap only.":
     "レイヤーキーに割り当てられるレイヤーが残っていません。このキーボードは OS ごとにベースレイヤーのほか3つまでです。割り当てられなかった親指キーは単押しのみになります。",
@@ -135,8 +135,10 @@ const ja: Record<string, string> = {
   "Connect QMK keyboard": "QMK のキーボードを接続",
   "Connected ({{firmware}}): the guide and the practice use the keymap read from {{name}}.":
     "接続中（{{firmware}}）: ガイドと練習は {{name}} から読んだキーマップで動いています。",
-  "Reading the keymap from {{name}}...": "{{name}} からキーマップを読み込んでいます…",
-  "Written to the keyboard, not yet saved.": "キーボードに書き込み済み（まだ保存していません）",
+  "Reading the keymap from {{name}}...":
+    "{{name}} からキーマップを読み込んでいます…",
+  "Written to the keyboard, not yet saved.":
+    "キーボードに書き込み済み（まだ保存していません）",
   "{{n}} of the changes could not be written to the keyboard.":
     "変更のうち {{n}} 件はキーボードに書き込めませんでした。",
   "Save to keyboard": "キーボードに保存",
@@ -382,6 +384,10 @@ const ja: Record<string, string> = {
   "ANSI (US) Full size": "ANSI（US）フルサイズ",
   "JIS Full size": "JIS フルサイズ",
   // Layout editor
+  "Layout editor": "レイアウトエディタ",
+  "Open the layout editor": "レイアウトエディタを開く",
+  "Draw a keyboard layout on a PC or a phone, with legends and matrix numbers, and see whether Acid Caps or GoForty Caps cover it. Reads and writes Keyboard Layout Editor data and the layouts.keymap rows for VIA and Vial, and saves to your own GitHub Gists.":
+    "キーボードのレイアウトを PC でもスマホでも描けます。レジェンドとマトリクス番号を入れて、Acid Caps や GoForty Caps が足りるかも確かめられます。Keyboard Layout Editor のデータと VIA / Vial 用の layouts.keymap を読み書きでき、自分の GitHub Gist に保存できます。",
   "Move the layout to the origin": "レイアウトを原点に合わせる",
   "To origin": "原点に合わせる",
   "The top left of the layout is at {{x}}, {{y}}. Move the whole layout so that it starts at 0, 0.":

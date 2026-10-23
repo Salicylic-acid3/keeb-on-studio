@@ -19,6 +19,7 @@ import {
   IconDownload,
   IconExternalLink,
   IconKeyboard,
+  IconLayoutGrid,
   IconMessages,
   IconSchool,
 } from "@tabler/icons-react";
@@ -26,6 +27,7 @@ import type { MouseEvent as ReactMouseEvent, ReactNode } from "react";
 import { useLanguage } from "../hooks/useLanguage";
 import { GUIDE_ARTICLES, DISCORD_URL } from "../lib/guideLinks";
 import { KEY_TEST_PATH } from "../pages/KeyTestPage";
+import { LAYOUT_PATH } from "../pages/LayoutEditorPage";
 import { PRACTICE_PATH } from "../pages/PracticePage";
 
 /** Opens one of the app's own pages in place, the way its routes change. */
@@ -40,6 +42,7 @@ function openInPlace(path: string) {
 }
 const openKeyTest = openInPlace(KEY_TEST_PATH);
 const openPractice = openInPlace(PRACTICE_PATH);
+const openLayout = openInPlace(LAYOUT_PATH);
 
 interface SplashGuideProps {
   /** Open the supported-keyboards / Q&A page (the Home tab's content). */
@@ -169,6 +172,22 @@ export function SplashGuide({
         >
           <IconSchool size={14} />
           {t("Open the keymap dojo")}
+        </a>
+      </Card>
+
+      <Card icon={<IconLayoutGrid size={18} />} title={t("Layout editor")}>
+        <p className="text-sm text-[var(--color-text-secondary)]">
+          {t(
+            "Draw a keyboard layout on a PC or a phone, with legends and matrix numbers, and see whether Acid Caps or GoForty Caps cover it. Reads and writes Keyboard Layout Editor data and the layouts.keymap rows for VIA and Vial, and saves to your own GitHub Gists.",
+          )}
+        </p>
+        <a
+          href={LAYOUT_PATH}
+          onClick={openLayout}
+          className={`${buttonClass} mt-3`}
+        >
+          <IconLayoutGrid size={14} />
+          {t("Open the layout editor")}
         </a>
       </Card>
 
