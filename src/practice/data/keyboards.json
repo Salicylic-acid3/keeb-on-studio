@@ -1067,5 +1067,33 @@
     "symbolSlots": [],
     "defaultLayerKeys": [],
     "reviewed": false
+  },
+  "bethirtymax_qaz": {
+    "sizeClass": "30",
+    "defaultGuide": "30",
+    "allowGuide": ["30"],
+    "split": false,
+    "thumbKeys": [
+      {
+        "pos": 32,
+        "hand": "L"
+      },
+      {
+        "pos": 33,
+        "hand": "R"
+      }
+    ],
+    "homeRow": {
+      "L": [11, 12, 13, 14],
+      "R": [17, 18, 19]
+    },
+    "fixedKeys": {
+      "esc": null,
+      "tab": null,
+      "capslock": null
+    },
+    "symbolSlots": [],
+    "defaultLayerKeys": [],
+    "reviewed": false
   }
 }

@@ -82,6 +82,19 @@ export const FIRMWARE_BOARDS: FirmwareBoard[] = [
       SETTINGS_RESET,
     ],
   },
+  {
+    name: "BeThirtyMax QAZ",
+    repo: "Salicylic-acid3/zmk-keyboard-bethirtymax-qaz",
+    split: false,
+    files: [
+      {
+        asset: "bethirtymax_qaz",
+        label: "Firmware",
+        description: "Flash this to the keyboard.",
+      },
+      SETTINGS_RESET,
+    ],
+  },
 ];
 
 /** Permalink to `asset` in the newest release of `repo`. */

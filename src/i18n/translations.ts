@@ -1387,8 +1387,8 @@ const ja: Record<string, string> = {
     "このサーバーではギャラリーがまだ有効になっていません。",
   "You already have {{count}} keymaps in the gallery.":
     "ギャラリーに公開できるのは{{count}}件までです。",
-  "The gallery is for ClickBoard ErgoTrack and GoFortyMax.":
-    "ギャラリーは ClickBoard ErgoTrack と GoFortyMax 向けです。",
+  "The gallery is for ClickBoard ErgoTrack, GoFortyMax and BeThirtyMax.":
+    "ギャラリーは ClickBoard ErgoTrack、GoFortyMax、BeThirtyMax 向けです。",
   "That keymap is too big to publish.":
     "このキーマップは大きすぎて公開できません。",
   "That keymap could not be read.": "このキーマップを読み取れませんでした。",
@@ -1610,6 +1610,8 @@ const ja: Record<string, string> = {
     "マウス用スイッチを採用した、ClickBoard シリーズの極薄キーボード。",
   "From the GoForty small-form-factor keyboard line.":
     "小型キーボードの GoForty シリーズから。",
+  "The wireless BeThirty: a 30% keyboard.":
+    "BeThirty の無線版。30% キーボード。",
   "Q: Can my keyboard support Keeb-On! Studio?":
     "Q: 自分のキーボードは Keeb-On! Studio に対応できますか？",
   "Warning: cormoran's ZMK fork is very experimental, optimized for DYA keyboards and may contain unstable or breaking changes. Use at your own risk. In rare cases, it may cause malfunction or damage to your keyboard hardware.":
@@ -3296,8 +3298,8 @@ const zh: Record<string, string> = {
   "The gallery is not set up on this server yet.": "此服务器尚未启用图库。",
   "You already have {{count}} keymaps in the gallery.":
     "图库中最多只能发布 {{count}} 个键映射。",
-  "The gallery is for ClickBoard ErgoTrack and GoFortyMax.":
-    "图库面向 ClickBoard ErgoTrack 与 GoFortyMax。",
+  "The gallery is for ClickBoard ErgoTrack, GoFortyMax and BeThirtyMax.":
+    "图库面向 ClickBoard ErgoTrack、GoFortyMax 与 BeThirtyMax。",
   "That keymap is too big to publish.": "该键映射过大，无法发布。",
   "That keymap could not be read.": "无法读取该键映射。",
   "That keymap was published from another browser.":
@@ -3507,6 +3509,7 @@ const zh: Record<string, string> = {
     "采用鼠标微动开关的 ClickBoard 系列超薄键盘。",
   "From the GoForty small-form-factor keyboard line.":
     "来自小型键盘系列 GoForty。",
+  "The wireless BeThirty: a 30% keyboard.": "BeThirty 的无线版，30% 键盘。",
   "Q: Can my keyboard support Keeb-On! Studio?":
     "Q: 我的键盘可以使用 Keeb-On! Studio 吗？",
   "Warning: cormoran's ZMK fork is very experimental, optimized for DYA keyboards and may contain unstable or breaking changes. Use at your own risk. In rare cases, it may cause malfunction or damage to your keyboard hardware.":

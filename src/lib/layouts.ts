@@ -180,3 +180,51 @@ export const GOFORTY_MAX: PhysicalLayout = {
     { width: 100, height: 100, x: 1200, y: 400 },
   ].map(attr),
 };
+
+/**
+ * BeThirtyMax QAZ: 37 keys. The Vial BeThirty QAZ's 36 (QAZ layout, four
+ * rows of 10u) with a half-width key above the top row, which is first in
+ * the firmware's transform.
+ */
+export const BETHIRTYMAX_QAZ: PhysicalLayout = {
+  name: "BeThirtyMax QAZ",
+  keys: [
+    { width: 50, height: 100, x: 50, y: 0 },
+    { width: 100, height: 100, x: 0, y: 100 },
+    { width: 100, height: 100, x: 100, y: 100 },
+    { width: 100, height: 100, x: 200, y: 100 },
+    { width: 100, height: 100, x: 300, y: 100 },
+    { width: 100, height: 100, x: 400, y: 100 },
+    { width: 100, height: 100, x: 500, y: 100 },
+    { width: 100, height: 100, x: 600, y: 100 },
+    { width: 100, height: 100, x: 700, y: 100 },
+    { width: 100, height: 100, x: 800, y: 100 },
+    { width: 100, height: 100, x: 900, y: 100 },
+    { width: 125, height: 100, x: 0, y: 200 },
+    { width: 100, height: 100, x: 125, y: 200 },
+    { width: 100, height: 100, x: 225, y: 200 },
+    { width: 100, height: 100, x: 325, y: 200 },
+    { width: 100, height: 100, x: 425, y: 200 },
+    { width: 100, height: 100, x: 525, y: 200 },
+    { width: 100, height: 100, x: 625, y: 200 },
+    { width: 100, height: 100, x: 725, y: 200 },
+    { width: 175, height: 100, x: 825, y: 200 },
+    { width: 175, height: 100, x: 0, y: 300 },
+    { width: 100, height: 100, x: 175, y: 300 },
+    { width: 100, height: 100, x: 275, y: 300 },
+    { width: 100, height: 100, x: 375, y: 300 },
+    { width: 100, height: 100, x: 475, y: 300 },
+    { width: 100, height: 100, x: 575, y: 300 },
+    { width: 100, height: 100, x: 675, y: 300 },
+    { width: 125, height: 100, x: 775, y: 300 },
+    { width: 100, height: 100, x: 900, y: 300 },
+    { width: 125, height: 100, x: 0, y: 400 },
+    { width: 100, height: 100, x: 125, y: 400 },
+    { width: 125, height: 100, x: 225, y: 400 },
+    { width: 150, height: 100, x: 350, y: 400 },
+    { width: 150, height: 100, x: 500, y: 400 },
+    { width: 125, height: 100, x: 650, y: 400 },
+    { width: 100, height: 100, x: 775, y: 400 },
+    { width: 125, height: 100, x: 875, y: 400 },
+  ].map(attr),
+};

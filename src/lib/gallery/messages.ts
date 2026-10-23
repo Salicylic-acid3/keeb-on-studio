@@ -23,7 +23,9 @@ export function galleryErrorMessage(
         count: limit ?? 10,
       });
     case "unsupported-board":
-      return t("The gallery is for ClickBoard ErgoTrack and GoFortyMax.");
+      return t(
+        "The gallery is for ClickBoard ErgoTrack, GoFortyMax and BeThirtyMax.",
+      );
     case "too-large":
       return t("That keymap is too big to publish.");
     case "not-a-keymap":

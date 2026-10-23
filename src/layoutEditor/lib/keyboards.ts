@@ -7,7 +7,7 @@
  * ZMK ones are the physical layouts the demo mode draws. Each opens with
  * the legends of its default keymap's base layer.
  */
-import { ERGOTRACK, GOFORTY_MAX } from "../../lib/layouts";
+import { BETHIRTYMAX_QAZ, ERGOTRACK, GOFORTY_MAX } from "../../lib/layouts";
 import data from "../data/keyboards.json";
 import { importKle, type KleDocument } from "./kle";
 import { makeIsoEnter, setMainAndSub } from "./edit";
@@ -108,6 +108,7 @@ function tidied(layout: ZmkLayout, moves: typeof ERGOTRACK_TIDY): ZmkLayout {
 const ZMK: Record<string, ZmkLayout> = {
   clickboard_ergotrack: tidied(ERGOTRACK, ERGOTRACK_TIDY),
   goforty_max_ortho: GOFORTY_MAX,
+  bethirtymax_qaz: BETHIRTYMAX_QAZ,
 };
 
 /** Every keyboard, by name. */

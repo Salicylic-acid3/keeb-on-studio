@@ -5,7 +5,13 @@
       "date": null,
       "changes": {
         "major": [],
-        "minor": [],
+        "minor": [
+          {
+            "en": "BeThirtyMax QAZ, the wireless BeThirty, is a supported keyboard: on the firmware download page, in the key test and layout editor, in demo mode, and in the keymap dojo with its 30% guide.",
+            "ja": "BeThirty の無線版 BeThirtyMax QAZ に対応しました。ファームウェアのダウンロード、キーテストとレイアウトエディタ、デモモード、キーマップ道場（30% ガイド）で選べます。",
+            "zh": "新增支持 BeThirty 的无线版 BeThirtyMax QAZ：固件下载页、按键测试与布局编辑器、演示模式，以及键位道场（30% 指南）。"
+          }
+        ],
         "patch": []
       }
     },

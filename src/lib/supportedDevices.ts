@@ -97,6 +97,8 @@ export const SUPPORTED_DEVICE_NAMES = [
   "ergotrack",
   // Salicylic-acid3/zmk-keyboard-gofortymax-ortho
   "goforty-max",
+  // Salicylic-acid3/zmk-keyboard-bethirtymax-qaz
+  "bethirtymax-qaz",
 ] as const;
 
 /**
@@ -117,4 +119,8 @@ export function isKnownDeviceName(name: string | undefined | null): boolean {
  * the top page. Separate from the roster above because that one is keyed by
  * firmware identifier and must never be renamed.
  */
-export const ZMK_MODELS = ["ClickBoard ErgoTrack", "GoFortyMax Ortho"];
+export const ZMK_MODELS = [
+  "ClickBoard ErgoTrack",
+  "GoFortyMax Ortho",
+  "BeThirtyMax QAZ",
+];

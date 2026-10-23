@@ -126,7 +126,7 @@ import {
   SETTING_EXPOSE_UI_URL,
   isDemoSubsystemEnabled,
 } from "./demo-subsystems";
-import { ERGOTRACK, GOFORTY_MAX } from "../layouts";
+import { BETHIRTYMAX_QAZ, ERGOTRACK, GOFORTY_MAX } from "../layouts";
 import { ErrorConditions } from "@zmkfirmware/zmk-studio-ts-client/meta";
 import {
   KEYBOARD_KEYCODES,
@@ -152,7 +152,7 @@ const ESC = 0xac;
 // Only the keyboards this app supports: the connection guard turns anything
 // else away, so offering a generic layout here would advertise something the
 // app will not actually talk to.
-const LAYOUTS = [ERGOTRACK, GOFORTY_MAX];
+const LAYOUTS = [ERGOTRACK, GOFORTY_MAX, BETHIRTYMAX_QAZ];
 const maxKeys = LAYOUTS.reduce(
   (max, layout) => (layout.keys.length > max ? layout.keys.length : max),
   0,
