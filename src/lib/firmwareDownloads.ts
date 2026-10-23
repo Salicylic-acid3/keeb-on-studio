@@ -95,6 +95,19 @@ export const FIRMWARE_BOARDS: FirmwareBoard[] = [
       SETTINGS_RESET,
     ],
   },
+  {
+    name: "BeThirtyMax Ortho",
+    repo: "Salicylic-acid3/zmk-keyboard-bethirtymax-ortho",
+    split: false,
+    files: [
+      {
+        asset: "bethirtymax_ortho",
+        label: "Firmware",
+        description: "Flash this to the keyboard.",
+      },
+      SETTINGS_RESET,
+    ],
+  },
 ];
 
 /** Permalink to `asset` in the newest release of `repo`. */

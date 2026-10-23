@@ -99,6 +99,8 @@ export const SUPPORTED_DEVICE_NAMES = [
   "goforty-max",
   // Salicylic-acid3/zmk-keyboard-bethirtymax-qaz
   "bethirtymax-qaz",
+  // Salicylic-acid3/zmk-keyboard-bethirtymax-ortho
+  "bethirtymax-ortho",
 ] as const;
 
 /**
@@ -123,4 +125,5 @@ export const ZMK_MODELS = [
   "ClickBoard ErgoTrack",
   "GoFortyMax Ortho",
   "BeThirtyMax QAZ",
+  "BeThirtyMax Ortho",
 ];

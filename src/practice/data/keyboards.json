@@ -1095,5 +1095,37 @@
     "symbolSlots": [],
     "defaultLayerKeys": [],
     "reviewed": false
+  },
+  "bethirtymax_ortho": {
+    "sizeClass": "30",
+    "defaultGuide": "30",
+    "allowGuide": ["30"],
+    "split": false,
+    "thumbKeys": [
+      {
+        "pos": 34,
+        "hand": "L"
+      },
+      {
+        "pos": 35,
+        "hand": "R"
+      },
+      {
+        "pos": 36,
+        "hand": "R"
+      }
+    ],
+    "homeRow": {
+      "L": [11, 12, 13, 14],
+      "R": [17, 18, 19, 20]
+    },
+    "fixedKeys": {
+      "esc": null,
+      "tab": null,
+      "capslock": null
+    },
+    "symbolSlots": [20],
+    "defaultLayerKeys": [],
+    "reviewed": false
   }
 }

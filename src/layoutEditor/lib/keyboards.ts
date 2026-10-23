@@ -7,7 +7,12 @@
  * ZMK ones are the physical layouts the demo mode draws. Each opens with
  * the legends of its default keymap's base layer.
  */
-import { BETHIRTYMAX_QAZ, ERGOTRACK, GOFORTY_MAX } from "../../lib/layouts";
+import {
+  BETHIRTYMAX_ORTHO,
+  BETHIRTYMAX_QAZ,
+  ERGOTRACK,
+  GOFORTY_MAX,
+} from "../../lib/layouts";
 import data from "../data/keyboards.json";
 import { importKle, type KleDocument } from "./kle";
 import { makeIsoEnter, setMainAndSub } from "./edit";
@@ -109,6 +114,7 @@ const ZMK: Record<string, ZmkLayout> = {
   clickboard_ergotrack: tidied(ERGOTRACK, ERGOTRACK_TIDY),
   goforty_max_ortho: GOFORTY_MAX,
   bethirtymax_qaz: BETHIRTYMAX_QAZ,
+  bethirtymax_ortho: BETHIRTYMAX_ORTHO,
 };
 
 /** Every keyboard, by name. */

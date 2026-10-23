@@ -186,6 +186,58 @@ export const GOFORTY_MAX: PhysicalLayout = {
  * rows of 10u) with a half-width key above the top row, which is first in
  * the firmware's transform.
  */
+/**
+ * BeThirtyMax Ortho: 40 keys. The Vial BeThirty Ortho's 39 (a 4 x 10 grid
+ * whose bottom row is 1.25u, six 1u, 1.5u in the middle, 1.25u) with the
+ * same half-width key above the top row as the QAZ, first in the firmware's
+ * transform.
+ */
+export const BETHIRTYMAX_ORTHO: PhysicalLayout = {
+  name: "BeThirtyMax Ortho",
+  keys: [
+    { width: 50, height: 100, x: 50, y: 0 },
+    { width: 100, height: 100, x: 0, y: 100 },
+    { width: 100, height: 100, x: 100, y: 100 },
+    { width: 100, height: 100, x: 200, y: 100 },
+    { width: 100, height: 100, x: 300, y: 100 },
+    { width: 100, height: 100, x: 400, y: 100 },
+    { width: 100, height: 100, x: 500, y: 100 },
+    { width: 100, height: 100, x: 600, y: 100 },
+    { width: 100, height: 100, x: 700, y: 100 },
+    { width: 100, height: 100, x: 800, y: 100 },
+    { width: 100, height: 100, x: 900, y: 100 },
+    { width: 100, height: 100, x: 0, y: 200 },
+    { width: 100, height: 100, x: 100, y: 200 },
+    { width: 100, height: 100, x: 200, y: 200 },
+    { width: 100, height: 100, x: 300, y: 200 },
+    { width: 100, height: 100, x: 400, y: 200 },
+    { width: 100, height: 100, x: 500, y: 200 },
+    { width: 100, height: 100, x: 600, y: 200 },
+    { width: 100, height: 100, x: 700, y: 200 },
+    { width: 100, height: 100, x: 800, y: 200 },
+    { width: 100, height: 100, x: 900, y: 200 },
+    { width: 100, height: 100, x: 0, y: 300 },
+    { width: 100, height: 100, x: 100, y: 300 },
+    { width: 100, height: 100, x: 200, y: 300 },
+    { width: 100, height: 100, x: 300, y: 300 },
+    { width: 100, height: 100, x: 400, y: 300 },
+    { width: 100, height: 100, x: 500, y: 300 },
+    { width: 100, height: 100, x: 600, y: 300 },
+    { width: 100, height: 100, x: 700, y: 300 },
+    { width: 100, height: 100, x: 800, y: 300 },
+    { width: 100, height: 100, x: 900, y: 300 },
+    { width: 125, height: 100, x: 0, y: 400 },
+    { width: 100, height: 100, x: 125, y: 400 },
+    { width: 100, height: 100, x: 225, y: 400 },
+    { width: 100, height: 100, x: 325, y: 400 },
+    { width: 150, height: 100, x: 425, y: 400 },
+    { width: 100, height: 100, x: 575, y: 400 },
+    { width: 100, height: 100, x: 675, y: 400 },
+    { width: 100, height: 100, x: 775, y: 400 },
+    { width: 125, height: 100, x: 875, y: 400 },
+  ].map(attr),
+};
+
 export const BETHIRTYMAX_QAZ: PhysicalLayout = {
   name: "BeThirtyMax QAZ",
   keys: [

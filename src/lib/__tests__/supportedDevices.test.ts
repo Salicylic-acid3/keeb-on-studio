@@ -57,6 +57,7 @@ describe("the roster of keyboards known by name", () => {
       "ergotrack",
       "goforty-max",
       "bethirtymax-qaz",
+      "bethirtymax-ortho",
     ]);
   });
 

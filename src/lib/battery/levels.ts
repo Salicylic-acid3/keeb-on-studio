@@ -97,6 +97,7 @@ const BATTERY_GUIDES: Record<string, BatteryGuide> = {
   },
 };
 BATTERY_GUIDES["bethirtymax-qaz"] = BATTERY_GUIDES["goforty-max"];
+BATTERY_GUIDES["bethirtymax-ortho"] = BATTERY_GUIDES["goforty-max"];
 BATTERY_GUIDES["keeb-on! demo keyboard"] = BATTERY_GUIDES.ergotrack;
 
 export function batteryGuideFor(
