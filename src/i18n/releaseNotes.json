@@ -5,6 +5,15 @@
       "date": null,
       "changes": {
         "major": [],
+        "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.23.1",
+      "date": "2026-10-23",
+      "changes": {
+        "major": [],
         "minor": [
           {
             "en": "QMK: Demo mode can now be any QMK keyboard, as on the ZMK side. Pick it with \"Keyboard to lay out\" on the keymap page: it opens with that keyboard's layout, default keymap and OS blocks as its firmware has them. Keep the keymap you make in My keymaps, and load it once that keyboard is connected. The demo opens on the keyboard picked last time.",
