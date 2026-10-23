@@ -5,6 +5,15 @@
       "date": null,
       "changes": {
         "major": [],
+        "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.23.0",
+      "date": "2026-10-23",
+      "changes": {
+        "major": [],
         "minor": [
           {
             "en": "Top page: a Layout editor card, on both the ZMK and the QMK page, opens the layout editor; Back returns to the page it was opened from.",
