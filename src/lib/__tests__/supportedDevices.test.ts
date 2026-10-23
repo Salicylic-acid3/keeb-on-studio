@@ -52,12 +52,12 @@ describe("the roster of keyboards known by name", () => {
   it("holds the names the firmware actually reports", () => {
     expect(isKnownDeviceName("ergotrack")).toBe(true);
     expect(isKnownDeviceName("goforty-max")).toBe(true);
-    expect(isKnownDeviceName("bethirtymax-qaz")).toBe(true);
+    expect(isKnownDeviceName("be30max-qaz")).toBe(true);
     expect([...SUPPORTED_DEVICE_NAMES]).toEqual([
       "ergotrack",
       "goforty-max",
-      "bethirtymax-qaz",
-      "bethirtymax-ortho",
+      "be30max-qaz",
+      "be30max-ortho",
     ]);
   });
 

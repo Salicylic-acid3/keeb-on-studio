@@ -96,8 +96,8 @@ const BATTERY_GUIDES: Record<string, BatteryGuide> = {
     note: "Two AAA cells in series: new alkaline cells read 3.0 to 3.2 V and are used up at about 2.0 V. NiMH cells sit at 2.4 to 2.6 V almost until the end; that is normal, not a fault.",
   },
 };
-BATTERY_GUIDES["bethirtymax-qaz"] = BATTERY_GUIDES["goforty-max"];
-BATTERY_GUIDES["bethirtymax-ortho"] = BATTERY_GUIDES["goforty-max"];
+BATTERY_GUIDES["be30max-qaz"] = BATTERY_GUIDES["goforty-max"];
+BATTERY_GUIDES["be30max-ortho"] = BATTERY_GUIDES["goforty-max"];
 BATTERY_GUIDES["keeb-on! demo keyboard"] = BATTERY_GUIDES.ergotrack;
 
 export function batteryGuideFor(

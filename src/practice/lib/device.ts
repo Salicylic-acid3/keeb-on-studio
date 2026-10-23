@@ -341,8 +341,8 @@ export function boardIdForDevice(
   if (n.includes("ergotrack")) return "clickboard_ergotrack";
   if (n.includes("goforty-max") || n.includes("gofortymax"))
     return "goforty_max_ortho";
-  if (n.includes("bethirtymax-ortho")) return "bethirtymax_ortho";
-  if (n.includes("bethirtymax")) return "bethirtymax_qaz";
+  if (n.includes("be30max-ortho")) return "bethirtymax_ortho";
+  if (n.includes("be30max")) return "bethirtymax_qaz";
   return null;
 }
 

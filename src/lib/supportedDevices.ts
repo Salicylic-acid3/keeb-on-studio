@@ -97,10 +97,11 @@ export const SUPPORTED_DEVICE_NAMES = [
   "ergotrack",
   // Salicylic-acid3/zmk-keyboard-gofortymax-ortho
   "goforty-max",
-  // Salicylic-acid3/zmk-keyboard-bethirtymax-qaz
-  "bethirtymax-qaz",
+  // Salicylic-acid3/zmk-keyboard-bethirtymax-qaz. "be30" because a BLE
+  // name is 16 characters at most, and "bethirtymax-ortho" is 17.
+  "be30max-qaz",
   // Salicylic-acid3/zmk-keyboard-bethirtymax-ortho
-  "bethirtymax-ortho",
+  "be30max-ortho",
 ] as const;
 
 /**
