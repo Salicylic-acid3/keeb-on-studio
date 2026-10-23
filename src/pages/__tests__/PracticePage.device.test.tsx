@@ -223,6 +223,27 @@ function mount(opts: {
 }
 
 describe("PracticePage with a keyboard", () => {
+  it("lists only keyboards for typing text, not the number and macro pads", () => {
+    mount({ connected: false });
+    const picker = screen.getByRole("combobox", {
+      name: /Keyboard to practise on/,
+    });
+    const names = Array.from(picker.querySelectorAll("option")).map(
+      (o) => o.textContent,
+    );
+    expect(names).toContain("GoFortyMax Ortho");
+    expect(names).toContain("GoForty JP");
+    for (const pad of [
+      "ClickBoard Tenkey",
+      "EzTenkey",
+      "EzTenkeyMX",
+      "WzTwenty",
+      "WzTwenty STM",
+      "Tenkey of Tenkey",
+    ])
+      expect(names).not.toContain(pad);
+  });
+
   it("offers to connect in demo mode and keeps the board picker", () => {
     const { connection } = mount({ connected: false });
     expect(screen.getByText(/Demo mode/)).toBeInTheDocument();

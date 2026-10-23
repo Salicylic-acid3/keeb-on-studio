@@ -300,3 +300,13 @@ export function metaForBoard(
     }),
   };
 }
+
+/**
+ * Whether a keyboard is one the dojo is for: a keyboard for typing text.
+ * Number pads and macro pads (ClickBoard Tenkey, EzTenkey, WzTwenty,
+ * Tenkey of Tenkey...) are left out: there is no keymap to decide the
+ * dojo's way, and nothing to type sentences on.
+ */
+export function isDojoBoard(board: TestBoard): boolean {
+  return keyboardMeta(board).sizeClass !== "pad";
+}

@@ -106,6 +106,8 @@ const ja: Record<string, string> = {
   "Characters not on the keymap": "入力不可文字",
   "None.": "なし",
   "Next text": "次の文章",
+  "{{name}} is connected, but a number or macro pad is not what the keymap dojo is for: it has no keymap to decide this way and nothing to type sentences on. Pick a keyboard above to use the dojo in demo mode.":
+    "{{name}} が接続されていますが、テンキーやマクロパッドは文字入力用のキーボードではないので、キーマップ道場の対象外です。上で機種を選ぶと、デモモードで道場を使えます。",
   "Decide the keymap of a small keyboard step by step -- which symbols you use most, the thumb keys, what goes on each layer -- and practise typing on it. Works without a keyboard too; with one connected, the result is written to it.":
     "小さなキーボードのキーマップを、よく使う記号・親指キー・各レイヤーの中身の順に質問に答えて決め、そのキーマップで練習します。キーボードが無くても試せて、接続していれば結果をそのまま書き込めます。",
   "Open the keymap dojo": "キーマップ道場を開く",

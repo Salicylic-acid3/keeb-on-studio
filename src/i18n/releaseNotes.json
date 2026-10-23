@@ -6,7 +6,13 @@
       "changes": {
         "major": [],
         "minor": [],
-        "patch": []
+        "patch": [
+          {
+            "en": "Keymap dojo: the number and macro pads (ClickBoard Tenkey, EzTenkey, EzTenkeyMX, WzTwenty, WzTwenty STM, Tenkey of Tenkey) are left out of the keyboard list; they are not keyboards for typing text. A connected pad leaves the dojo in demo mode and says why.",
+            "ja": "キーマップ道場: テンキーやマクロパッド（ClickBoard Tenkey、EzTenkey、EzTenkeyMX、WzTwenty、WzTwenty STM、Tenkey of Tenkey）は文字入力用のキーボードではないので、機種一覧から外しました。接続していても道場はデモモードのままで、その旨を表示します。",
+            "zh": "键位道场：数字键盘和宏键盘（ClickBoard Tenkey、EzTenkey、EzTenkeyMX、WzTwenty、WzTwenty STM、Tenkey of Tenkey）不是用于输入文字的键盘，已从型号列表中去除。即使已连接，道场也保持演示模式并说明原因。"
+          }
+        ]
       }
     },
     {
