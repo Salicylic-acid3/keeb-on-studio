@@ -5,6 +5,15 @@
       "date": null,
       "changes": {
         "major": [],
+        "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.10.26.0",
+      "date": "2026-10-26",
+      "changes": {
+        "major": [],
         "minor": [
           {
             "en": "Keymap dojo: a 30% course for the BeThirty QAZ / Ortho and BeThirtyMax QAZ / Ortho, following Salicylic_acid3's BeThirty keymap step by step — the thumb row, letters with a hold (Tab on the Q key with Q on a double tap), layer 1 with the cursor and F keys, layer 2 with symbols and a numpad, layers 3 and 4 for occasional keys and shortcuts, and the tapping terms. Each step comes in groups that can be left out. On Vial the double tap and the terms are written as tap dance entries; on ZMK as runtime tap dance slots.",
