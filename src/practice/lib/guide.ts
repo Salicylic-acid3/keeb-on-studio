@@ -63,7 +63,9 @@ export function sameTrigger(a: Trigger, b: Trigger): boolean {
       a.mods.length === b.mods.length &&
       a.mods.every((m) => b.mods.includes(m)) &&
       a.hold === b.hold &&
-      a.holdLayer === b.holdLayer
+      a.holdLayer === b.holdLayer &&
+      a.doubleTap === b.doubleTap &&
+      a.term === b.term
     );
   if (a.kind === "mouse" && b.kind === "mouse") return a.button === b.button;
   if (a.kind === "layer" && b.kind === "layer") return a.layer === b.layer;
@@ -293,6 +295,8 @@ export interface Answers {
   otherHand: Partial<Record<LayerContent, number | null>>;
   /** Occasional keys to tuck into a layer, by code. */
   rare: string[];
+  /** The 30% guide's answers. */
+  thirty: Answers30;
 }
 
 export const SYMBOL_CHOICES = [
@@ -320,6 +324,19 @@ export const SYMBOL_NAMES: Record<string, string> = {
   "`": "Backquote",
 };
 
+/** The 30% guide's own answers (guide30.ts): groups turned off, and the tapping terms. */
+export interface Answers30 {
+  /** Group ids ("layer1:cursor") left out of the proposals. */
+  off: string[];
+  /** Tapping terms in ms for the two tap-dance keys. */
+  terms: { tab: number; a: number };
+}
+
+export const DEFAULT_ANSWERS_30: Answers30 = {
+  off: [],
+  terms: { tab: 220, a: 180 },
+};
+
 export interface GuideStep {
   id:
     | "intro"
@@ -331,11 +348,20 @@ export interface GuideStep {
     | "layer-other"
     | "practice-layers"
     | "rare"
-    | "practice-all";
+    | "practice-all"
+    // The 30% guide's steps (guide30.ts).
+    | "thumbs30"
+    | "alpha30"
+    | "layer1"
+    | "layer2"
+    | "extra30"
+    | "terms30";
   title: string;
   /** A practice step, not a question. */
   practice?: boolean;
 }
+
+export type GuideKind = "30" | "40";
 
 /** The 40%-and-under guide, one entry per step of SPEC §5.2. */
 export const GUIDE_40: GuideStep[] = [
@@ -352,12 +378,34 @@ export const GUIDE_40: GuideStep[] = [
 ];
 
 /**
+ * The 30% guide (SPEC §5.2, 30%): the author's BeThirty keymap as steps,
+ * for a keyboard with no modifier keys of its own. The steps' contents
+ * are in guide30.ts.
+ */
+export const GUIDE_30: GuideStep[] = [
+  { id: "intro", title: "Introduction" },
+  { id: "thumbs30", title: "Thumb keys and the bottom row" },
+  { id: "alpha30", title: "Letters with a hold" },
+  { id: "practice-base", title: "Practice: base layer", practice: true },
+  { id: "layer1", title: "Layer 1: cursor and F keys" },
+  { id: "layer2", title: "Layer 2: symbols and numbers" },
+  { id: "practice-layers", title: "Practice: layer tasks", practice: true },
+  { id: "extra30", title: "Layers 3 and 4: occasional keys and shortcuts" },
+  { id: "terms30", title: "Tapping term" },
+  { id: "practice-all", title: "Practice: everything", practice: true },
+];
+
+/**
  * The steps as shown: with a keyboard connected, practice follows every
  * finished layer; in demo mode there is nothing to type on, so the
  * practice steps are left out and the guide ends with saving the keymap.
  */
-export function guideSteps(withPractice: boolean): GuideStep[] {
-  return withPractice ? GUIDE_40 : GUIDE_40.filter((s) => !s.practice);
+export function guideSteps(
+  withPractice: boolean,
+  kind: GuideKind = "40",
+): GuideStep[] {
+  const all = kind === "30" ? GUIDE_30 : GUIDE_40;
+  return withPractice ? all : all.filter((s) => !s.practice);
 }
 
 export const RARE_CHOICES = [
@@ -381,6 +429,7 @@ export const DEFAULT_ANSWERS: Answers = {
   oneHand: {},
   otherHand: {},
   rare: [],
+  thirty: DEFAULT_ANSWERS_30,
 };
 
 /* ------------------------------------------------------------------ */
@@ -1216,6 +1265,8 @@ export function proposalLabels(
       hold = ` / L${c.trigger.holdLayer + layerBase}`;
     else if (c.trigger.kind === "key" && c.trigger.hold)
       hold = ` / ${labelForCode(c.trigger.hold, layout)?.main ?? c.trigger.hold}`;
+    if (c.trigger.kind === "key" && c.trigger.doubleTap)
+      hold += ` / ×2 ${labelForCode(c.trigger.doubleTap, layout)?.main ?? c.trigger.doubleTap}`;
     return { pos: c.pos, layer: c.layer, label: `${l.main}${hold}` };
   });
 }

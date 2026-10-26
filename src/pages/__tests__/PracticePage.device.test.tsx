@@ -36,16 +36,17 @@ jest.mock("../../hooks/useDefaultLayer", () => ({
     setOsLayer: jest.fn(),
   })),
 }));
-jest.mock("../../hooks/useLanguage", () => ({
-  useLanguage: () => ({
-    language: "en",
-    t: (key: string, params?: Record<string, string | number>) =>
-      Object.entries(params ?? {}).reduce(
-        (s, [k, v]) => s.replace(`{{${k}}}`, String(v)),
-        key,
-      ),
-  }),
-}));
+jest.mock("../../hooks/useLanguage", () => {
+  // One `t` for the whole test: hooks that depend on it (the custom
+  // settings behind the tap dance slots) would otherwise reload forever.
+  const t = (key: string, params?: Record<string, string | number>) =>
+    Object.entries(params ?? {}).reduce(
+      (s, [k, v]) => s.replace(`{{${k}}}`, String(v)),
+      key,
+    );
+  const value = { language: "en", t };
+  return { useLanguage: () => value };
+});
 jest.mock("../../components/StandaloneFrame", () => ({
   StandaloneFrame: ({ children }: { children: React.ReactNode }) => (
     <div>{children}</div>
@@ -258,6 +259,27 @@ describe("PracticePage with a keyboard", () => {
     );
     // The notice has not been accepted, so the dialog comes first.
     expect(connection.onConnect).not.toHaveBeenCalled();
+  });
+
+  it("runs the 30% guide on a BeThirty, with steps of its own", () => {
+    mount({ connected: false });
+    const picker = screen.getByRole("combobox", {
+      name: /Keyboard to practise on/,
+    });
+    fireEvent.change(picker, { target: { value: "bethirty_ortho" } });
+    fireEvent.click(screen.getByRole("button", { name: /Start the guide/ }));
+    expect(
+      screen.getByText(/A 30% keyboard has three rows/),
+    ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Begin" }));
+    expect(
+      screen.getByRole("heading", {
+        level: 2,
+        name: "Thumb keys and the bottom row",
+      }),
+    ).toBeInTheDocument();
+    // Demo mode: no practice steps, so seven steps in all.
+    expect(screen.getByText("Step 2 of 7")).toBeInTheDocument();
   });
 
   it("uses the connected keyboard's keymap and writes applied steps to it", async () => {

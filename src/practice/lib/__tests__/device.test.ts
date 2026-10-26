@@ -17,7 +17,9 @@ import {
   CODE_BY_HID,
   HID_BY_CODE,
   liveKeyboard,
+  sameDance,
   triggerToBinding,
+  triggerToDance,
 } from "../device";
 import { keymapOf, sameTrigger } from "../guide";
 
@@ -101,6 +103,62 @@ describe("triggers and bindings", () => {
       expect(back).not.toBeNull();
       expect(sameTrigger(back!, t)).toBe(true);
     }
+  });
+
+  it("binds a tap dance to a runtime tap dance slot, and reads one back", () => {
+    const td: Trigger = {
+      kind: "key",
+      code: "Tab",
+      mods: [],
+      hold: "ControlLeft",
+      doubleTap: "KeyQ",
+      term: 220,
+    };
+    // Without a slot set up for it there is nothing to bind it to.
+    expect(triggerToBinding(td, ids, idOf)).toBeNull();
+    expect(ids.rtd).toBeDefined();
+    const dance = triggerToDance(td, ids)!;
+    expect(dance.taps).toHaveLength(2);
+    expect(dance.holds[0]).toMatchObject({ behaviorId: ids.kp });
+    expect(dance.holds[1]).toBeNull();
+    expect(dance.term).toBe(220);
+    expect(triggerToBinding(td, ids, idOf, 3)).toEqual({
+      behaviorId: ids.rtd,
+      param1: 3,
+      param2: 0,
+    });
+    // The slot's contents read back as the trigger.
+    const dances = new Map([[3, dance]]);
+    const back = bindingToTrigger(
+      { behaviorId: ids.rtd!, param1: 3, param2: 0 },
+      behaviors,
+      indexOf,
+      dances,
+    );
+    expect(sameTrigger(back, td)).toBe(true);
+    expect(sameDance(dance, triggerToDance(td, ids)!)).toBe(true);
+    // A tapping term alone: a one-tap dance with its hold.
+    const short: Trigger = {
+      kind: "key",
+      code: "KeyA",
+      mods: [],
+      hold: "ControlLeft",
+      term: 180,
+    };
+    const d2 = triggerToDance(short, ids)!;
+    expect(d2.taps).toHaveLength(1);
+    expect(sameDance(dance, d2)).toBe(false);
+    // Without the slot contents the binding reads as something else.
+    expect(
+      bindingToTrigger(
+        { behaviorId: ids.rtd!, param1: 9, param2: 0 },
+        behaviors,
+        indexOf,
+      ),
+    ).toEqual({ kind: "other", label: "TD 9" });
+    // Volume keys travel as consumer-page usages.
+    const vol = roundTrip({ kind: "key", code: "AudioVolumeUp", mods: [] });
+    expect(vol).toEqual({ kind: "key", code: "AudioVolumeUp", mods: [] });
   });
 
   it("writes a key press as a full HID usage with its modifier flags", () => {

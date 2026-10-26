@@ -12,6 +12,7 @@
  * registered keyboard's default keymap (demo mode).
  */
 import { useCallback, useMemo, useState } from "react";
+import { tapBinding, useTapDance } from "../../components/tapDance/useTapDance";
 import { useConnection } from "../../hooks/useConnection";
 import { useDefaultLayer } from "../../hooks/useDefaultLayer";
 import { useKeymap } from "../../hooks/useKeymap";
@@ -25,8 +26,12 @@ import {
   behaviorIds,
   bindingsFor,
   boardIdForDevice,
+  type Dance,
   liveKeyboard,
   type LayerBlock,
+  needsTapDance,
+  sameDance,
+  triggerToDance,
   type Unwritable,
   wholeBlock,
 } from "../lib/device";
@@ -114,6 +119,27 @@ export function usePracticeDevice(labelLayout: LabelLayout): PracticeDevice {
     return { start, size: Math.min(4, Math.max(1, next - start)) };
   }, [keymap.keymap, defaultLayer.state]);
 
+  // The runtime tap dance module's slots (zmk-feature-runtime-tap-dance),
+  // where a key's double tap or its own tapping term lives on ZMK.
+  const tapDance = useTapDance(keymap.behaviors);
+  const dances = useMemo(() => {
+    const out = new Map<number, Dance>();
+    for (const slot of tapDance.slots)
+      out.set(slot.index, {
+        taps: slot.taps.map(
+          (t) => tapBinding(t) ?? { behaviorId: 0, param1: 0, param2: 0 },
+        ),
+        holds: slot.holds.map((h) => {
+          const b = tapBinding(h);
+          return b && b.behaviorId !== tapDance.noneBehaviorId ? b : null;
+        }),
+        ...(slot.term?.value?.int32Value !== undefined
+          ? { term: slot.term.value.int32Value }
+          : {}),
+      });
+    return out;
+  }, [tapDance.slots, tapDance.noneBehaviorId]);
+
   const liveZmk = useMemo(() => {
     if (firmware !== "zmk" || !keymap.isFullyLoaded || !zmkBlock) return null;
     const layouts = keymap.physicalLayouts;
@@ -129,6 +155,7 @@ export function usePracticeDevice(labelLayout: LabelLayout): PracticeDevice {
       keymap.behaviors,
       labelLayout,
       zmkBlock,
+      dances,
     );
   }, [
     firmware,
@@ -140,6 +167,7 @@ export function usePracticeDevice(labelLayout: LabelLayout): PracticeDevice {
     deviceName,
     labelLayout,
     zmkBlock,
+    dances,
   ]);
 
   // The Vial board is built from the saved keymap, not the staged one, so
@@ -147,12 +175,15 @@ export function usePracticeDevice(labelLayout: LabelLayout): PracticeDevice {
   const liveQmk = useMemo(() => {
     if (firmware !== "qmk" || !vial.info || !vial.saved) return null;
     const os = vial.os;
+    // With a block of layers per OS, the guide works in the current OS's
+    // block (base and three); otherwise in the whole keymap, whose layer
+    // count the firmware fixes.
     const block: LayerBlock = os
       ? {
           start: (os.previewBlock ?? os.activeBlock) * os.layersPerBlock,
           size: Math.min(4, os.layersPerBlock),
         }
-      : { start: 0, size: Math.min(4, vial.saved.length) };
+      : { start: 0, size: vial.saved.length };
     return liveQmkKeyboard(
       boardId ?? `qmk:${vial.info.productName.toLowerCase()}`,
       vial.info.productName,
@@ -160,6 +191,7 @@ export function usePracticeDevice(labelLayout: LabelLayout): PracticeDevice {
       vial.saved,
       labelLayout,
       block,
+      vial.savedTapDances,
     );
   }, [
     firmware,
@@ -167,6 +199,7 @@ export function usePracticeDevice(labelLayout: LabelLayout): PracticeDevice {
     vial.saved,
     vial.visible,
     vial.os,
+    vial.savedTapDances,
     boardId,
     labelLayout,
   ]);
@@ -208,7 +241,38 @@ export function usePracticeDevice(labelLayout: LabelLayout): PracticeDevice {
             outcome.addedLayers++;
           }
           const ids = behaviorIds(keymap.behaviors, km);
-          const { writes, unwritable } = bindingsFor(changes, ids, layerIds);
+          // A key with a double tap or its own tapping term is a tap dance
+          // slot: one already holding that dance, else a free one set up
+          // for it. Without the module (or a free slot) the key is set aside.
+          const slotOf = new Map<Change, number>();
+          const taken = new Set<number>();
+          for (const change of changes) {
+            if (!needsTapDance(change.trigger) || ids.rtd === undefined)
+              continue;
+            const dance = triggerToDance(change.trigger, ids);
+            if (!dance) continue;
+            let slot = tapDance.slots.find((sl) => {
+              const d = dances.get(sl.index);
+              return d && sameDance(d, dance);
+            });
+            if (!slot) {
+              slot = tapDance.slots.find(
+                (sl) => sl.taps.length === 0 && !taken.has(sl.index),
+              );
+              if (slot && !(await tapDance.setDance(slot, dance)))
+                slot = undefined;
+            }
+            if (slot) {
+              taken.add(slot.index);
+              slotOf.set(change, slot.index);
+            }
+          }
+          const { writes, unwritable } = bindingsFor(
+            changes,
+            ids,
+            layerIds,
+            (c) => slotOf.get(c),
+          );
           outcome.unwritable.push(...unwritable);
           for (const w of writes) {
             const ok = await keymap.setBinding(
@@ -223,8 +287,13 @@ export function usePracticeDevice(labelLayout: LabelLayout): PracticeDevice {
         } else if (firmware === "qmk") {
           if (!liveQmk) return rejectAll();
           // QMK's layer count is fixed by the firmware; nothing can be added.
-          const { writes, unwritable } = keycodesFor(changes, liveQmk);
+          const { writes, tapDanceWrites, unwritable } = keycodesFor(
+            changes,
+            liveQmk,
+            vial.tapDances,
+          );
           outcome.unwritable.push(...unwritable);
+          for (const td of tapDanceWrites) vial.setTapDance(td.index, td.entry);
           for (const w of writes) {
             vial.setKeycode(w.layer, w.row, w.col, w.code);
             outcome.written++;
@@ -238,7 +307,7 @@ export function usePracticeDevice(labelLayout: LabelLayout): PracticeDevice {
       setLastWrite(outcome);
       return outcome;
     },
-    [firmware, keymap, liveZmk, liveQmk, vial],
+    [firmware, keymap, liveZmk, liveQmk, vial, tapDance, dances],
   );
 
   const connectQmk = useCallback(async () => {
@@ -273,22 +342,30 @@ export function usePracticeDevice(labelLayout: LabelLayout): PracticeDevice {
   }, [firmware, connection, vial]);
 
   const save = useCallback(async () => {
-    if (firmware === "zmk") return keymap.saveChanges();
+    if (firmware === "zmk") {
+      // The tap dance slots the guide set up are settings of their own,
+      // saved beside the keymap.
+      if (tapDance.hasUnsavedChanges) await tapDance.save();
+      return keymap.saveChanges();
+    }
     if (firmware === "qmk") {
       await vial.saveChanges();
       return true;
     }
     return false;
-  }, [firmware, keymap, vial]);
+  }, [firmware, keymap, vial, tapDance]);
 
   const discard = useCallback(async () => {
-    if (firmware === "zmk") return keymap.discardChanges();
+    if (firmware === "zmk") {
+      if (tapDance.hasUnsavedChanges) await tapDance.discard();
+      return keymap.discardChanges();
+    }
     if (firmware === "qmk") {
       vial.discardChanges();
       return true;
     }
     return false;
-  }, [firmware, keymap, vial]);
+  }, [firmware, keymap, vial, tapDance]);
 
   return {
     ready: live !== null,
@@ -305,7 +382,7 @@ export function usePracticeDevice(labelLayout: LabelLayout): PracticeDevice {
     error: connection.error ?? keymap.error ?? qmkError ?? vial.error,
     hasUnsavedChanges:
       firmware === "zmk"
-        ? keymap.hasUnsavedChanges
+        ? keymap.hasUnsavedChanges || tapDance.hasUnsavedChanges
         : firmware === "qmk"
           ? vial.hasUnsavedChanges
           : false,

@@ -30,10 +30,17 @@ import {
 } from "../../qmk/lib/savedQmkKeymap";
 import { SUPPORTED_VIAL_PROTOCOL } from "../../qmk/lib/vial/protocol";
 import { exportVil } from "../../qmk/lib/vil";
-import { triggerToBinding, type BehaviorRole } from "./device";
+import {
+  needsTapDance,
+  triggerToBinding,
+  type BehaviorIds,
+  type BehaviorRole,
+} from "./device";
 import { applyChanges, type Change, type WorkingKeymap } from "./guide";
 import { positionMap } from "./metadata";
-import { triggerToKeycode } from "./qmkDevice";
+import { triggerToKeycode, triggerToTapDance } from "./qmkDevice";
+import type { VialTapDanceEntry } from "../../qmk/lib/vial/protocol";
+import { encodeKeycode } from "../../qmk/lib/keycodes/qmkKeycode";
 
 export const DOJO_KEYMAP_NAME = "キーマップ道場";
 
@@ -48,6 +55,7 @@ const ROLE_NAME: Record<BehaviorRole, string> = {
   mkp: "Mouse Key Press",
   to: "To Layer",
   tog: "Toggle Layer",
+  rtd: "Tap Dance",
 };
 
 /**
@@ -148,7 +156,7 @@ export function dojoRecord(
       }
       return i;
     };
-    const ids: Partial<Record<BehaviorRole, number>> = {};
+    const ids: BehaviorIds = {};
     for (const role of Object.keys(ROLE_NAME) as BehaviorRole[])
       ids[role] = idOf(ROLE_NAME[role]);
     const layers = km.layers.map((layer, l) => ({
@@ -201,13 +209,31 @@ export function dojoRecord(
     });
     return layer;
   });
+  // A key with a double tap or a tapping term of its own is a tap dance
+  // entry, one per distinct key, numbered from the first entry.
+  const tapDances: VialTapDanceEntry[] = [];
+  const tapDanceCode = (entry: VialTapDanceEntry): number => {
+    let i = tapDances.findIndex(
+      (e) =>
+        e.onTap === entry.onTap &&
+        e.onHold === entry.onHold &&
+        e.onDoubleTap === entry.onDoubleTap &&
+        e.tappingTerm === entry.tappingTerm,
+    );
+    if (i < 0) i = tapDances.push(entry) - 1;
+    return encodeKeycode({ kind: "tapDance", index: i });
+  };
   km.layers.forEach((layer, l) => {
     if (!keymap[l]) return;
     layer.forEach((t, pos) => {
       const pi = d.toProject(pos);
       const m = pi === null ? undefined : keys[pi]?.matrix;
       if (!m) return;
-      const code = triggerToKeycode(t);
+      let code: number | null;
+      if (needsTapDance(t)) {
+        const entry = triggerToTapDance(t);
+        code = entry ? tapDanceCode(entry) : null;
+      } else code = triggerToKeycode(t);
       if (code === null) {
         if (t.kind === "other") skipped++;
         return;
@@ -220,7 +246,7 @@ export function dojoRecord(
     keymap,
     layoutOptions: 0,
     macros: [],
-    tapDances: [],
+    tapDances,
     combos: [],
     keyOverrides: [],
     settings: {},

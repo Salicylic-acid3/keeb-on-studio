@@ -5,7 +5,13 @@
       "date": null,
       "changes": {
         "major": [],
-        "minor": [],
+        "minor": [
+          {
+            "en": "Keymap dojo: a 30% course for the BeThirty QAZ / Ortho and BeThirtyMax QAZ / Ortho, following Salicylic_acid3's BeThirty keymap step by step — the thumb row, letters with a hold (Tab on the Q key with Q on a double tap), layer 1 with the cursor and F keys, layer 2 with symbols and a numpad, layers 3 and 4 for occasional keys and shortcuts, and the tapping terms. Each step comes in groups that can be left out. On Vial the double tap and the terms are written as tap dance entries; on ZMK as runtime tap dance slots.",
+            "ja": "キーマップ道場: BeThirty QAZ / Ortho と BeThirtyMax QAZ / Ortho 向けの30%コースを追加。サリチル酸のBeThirtyキーマップを、親指キーと最下段、アルファベットの長押し（Qの位置にTab、Qは2回押し）、レイヤー1（カーソルキーとFキー）、レイヤー2（記号とテンキー）、レイヤー3・4（たまに使うキーとショートカット）、タッピング間隔の順に設定していきます。各ステップはグループ単位で外せます。2回押しや個別のタッピング間隔は、Vialではタップダンスのエントリに、ZMKではランタイムタップダンスのスロットに書き込みます。",
+            "zh": "键位道场：为 BeThirty QAZ / Ortho 和 BeThirtyMax QAZ / Ortho 新增 30% 课程，按步骤还原 Salicylic_acid3 的 BeThirty 键位：拇指键与最下排、带长按的字母键（Q 位置为 Tab，双击为 Q）、层1（光标键与F键）、层2（符号与数字小键盘）、层3・4（偶尔使用的键与快捷键）以及点击判定时间。每一步按组可单独排除。双击和单独的判定时间在 Vial 中写入 Tap Dance 条目，在 ZMK 中写入运行时 Tap Dance 槽位。"
+          }
+        ],
         "patch": []
       }
     },

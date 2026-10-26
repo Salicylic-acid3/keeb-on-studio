@@ -105,6 +105,86 @@ const ja: Record<string, string> = {
   "No misses yet.": "ミスはまだありません。",
   "Characters not on the keymap": "入力不可文字",
   "None.": "なし",
+  "Thumb keys and the bottom row": "親指キーと最下段",
+  "Letters with a hold": "アルファベットの長押し",
+  "Layer 1: cursor and F keys": "レイヤー1: カーソルキーとFキー",
+  "Layer 2: symbols and numbers": "レイヤー2: 記号とテンキー",
+  "Layers 3 and 4: occasional keys and shortcuts":
+    "レイヤー3・4: たまに使うキーとショートカット",
+  "A 30% keyboard has three rows of letters, a bottom row, and no modifier keys of its own: no Shift, Ctrl, Tab or Esc with a key to itself. They still have to come from somewhere, so the letters carry them: a letter tapped types the letter, held it is a modifier. Two thumb keys, held, open the layers that hold everything else.":
+    "30%キーボードにはアルファベット3段と最下段しかなく、Shift・Ctrl・Tab・Escといった修飾キーに専用のキーがありません。それでも必要なものなので、アルファベットキーに持たせます。単押しすれば文字、長押しすれば修飾キーです。残りは2つの親指キーを長押しして開くレイヤーに置きます。",
+  "This guide walks through the keymap Salicylic_acid3 uses on the BeThirty, a step at a time: the thumb keys, the letters with a hold, then each layer. Every step comes in groups of keys; leave a group out if it is not for you, apply the rest, and fix single keys later in the keymap editor.":
+    "このガイドでは、サリチル酸がBeThirtyで使っているキーマップを、親指キー、アルファベットの長押し、各レイヤーの順にひとつずつ設定していきます。各ステップはキーのグループに分かれているので、自分に合わないグループは外して残りを適用し、個別のキーは後からキーマップエディタで直してください。",
+  "A letter with a hold has to tell a tap from a hold by time, so a key held a little too long sends the modifier instead of the letter. The last step tunes that time for the two keys where it matters most.":
+    "長押しの役割を持ったアルファベットキーは、単押しか長押しかを時間で判定します。そのため少し長く押してしまうと、文字ではなく修飾キーが送られます。最後のステップで、特に影響の大きい2つのキーについてこの時間を調整します。",
+  "The bottom row is the one row with no letters, so it carries the keys a thumb presses on its own and the two layer keys. Space and Enter are hardly ever held, so their hold opens a layer each; Backspace sits between them where either thumb reaches it.":
+    "最下段はアルファベットのない唯一の段なので、親指で単体で押すキーと2つのレイヤーキーをここに集めます。スペースとEnterは長押しすることがほとんどないので、長押しにレイヤーを割り当てます。Backspaceは両手の親指から届く真ん中に置きます。",
+  "With no modifier keys, the letters carry the modifiers: tapped, a letter types itself; held, it is Shift or Ctrl. The little fingers' keys take them, where a modifier usually sits. The Q key goes further: Tab is typed far more often than Q, so Tab takes the tap and Q moves to a double tap.":
+    "修飾キーがないので、アルファベットキーに修飾キーを持たせます。単押しでは文字、長押しではShiftやCtrlになります。普通のキーボードで修飾キーがある小指の列のキーに割り当てます。Qキーはさらに一歩進めて、Qよりずっと多く使うTabを単押しにし、Qは2回押しに移します。",
+  "Space held opens layer 1. What one hand finishes on its own goes under that hand: the cursor keys under the right, whose thumb holds the layer; the F keys under the left, with Ctrl and Shift beside them for Ctrl+arrow and Shift+arrow. Esc and Delete are on every layer in the same place.":
+    "スペースの長押しでレイヤー1が開きます。片手で完結させたいものをその手の下に置きます。レイヤーキーを押している右手の下にカーソルキー、左手の下にFキーと、カーソルキーと組み合わせるためのCtrl・Shiftです。EscとDeleteはどのレイヤーでも同じ位置にあります。",
+  "Enter held opens layer 2. Symbols go under the left hand, every one a single key with no Shift, in the author's grid: pairs side by side, rows following the number row where they can. A numpad goes under the right hand.":
+    "Enterの長押しでレイヤー2が開きます。左手の下には記号を、どれもShiftなしの1キーで打てるように、サリチル酸の並びで置きます。ペアになる括弧は隣同士、数字キーの段の順序になるべく合わせています。右手の下にはテンキーを置きます。",
+  "Two more layers for what is used now and then. Layer 3 opens from the ろ key at the bottom right and holds PrintScreen and the volume; layer 4 opens with both thumbs down and puts the common Ctrl shortcuts on single keys. Leave either out if you will not use it.":
+    "たまに使うもののためのレイヤーをさらに2つ用意します。レイヤー3は右下の「ろ」キーの長押しで開き、PrintScreenと音量を置きます。レイヤー4は両方の親指を同時に押して開き、よく使うCtrlのショートカットを1キーで打てるようにします。使わないものは外してください。",
+  "The time that tells a tap from a hold, for the two keys that get it wrong most often. Q is hard to tap quickly, so its term is longer; A has to be tapped short or it turns into Ctrl, so its term is shorter. Set the values and apply to write them.":
+    "単押しと長押しを分ける時間を、特に誤判定しやすい2つのキーについて設定します。Qは素早く押しにくいので長めに、Aは短く押さないとCtrlになってしまうので短めにしています。値を決めて適用すると書き込まれます。",
+  "Thumb home keys": "親指のホームポジション",
+  "Space under the right thumb, Enter under the left, Backspace between them where either thumb reaches it. Space held opens layer 1, Enter held opens layer 2.":
+    "右親指にスペース、左親指にEnter、その間の両手から届く位置にBackspaceです。スペースの長押しでレイヤー1、Enterの長押しでレイヤー2が開きます。",
+  "Space under the right thumb and Enter under the left; held, they open layer 1 and layer 2. This keyboard has no key between them, so Backspace is not on the base layer: Delete sits on both layers instead.":
+    "右親指にスペース、左親指にEnterで、長押しするとそれぞれレイヤー1とレイヤー2が開きます。このキーボードには2つの間のキーがないので、Backspaceはデフォルトレイヤーに置かず、代わりに両方のレイヤーにDeleteを置きます。",
+  "Left of the thumbs": "親指の左側",
+  "Win+Tab (the task view), 半角/全角 with Shift on hold, 無変換 with Win on hold.":
+    "Win+Tab（タスクビュー）、半角/全角（長押しでShift）、無変換（長押しでWin）です。",
+  "Right of the thumbs": "親指の右側",
+  "変換 with Alt on hold, the menu key, and ろ (\\) whose hold opens layer 3 for keys used now and then.":
+    "変換（長押しでAlt）、メニューキー、ろ（\\）です。ろの長押しで、たまに使うキーを置くレイヤー3が開きます。",
+  "Shift on Z": "ZにShift",
+  "Z held is Shift: a tap types z, a hold with another key gives its capital or shifted symbol.":
+    "Zの長押しをShiftにします。単押しならzが入力され、他のキーと一緒に長押しすれば大文字やShift側の記号になります。",
+  "The right little finger": "右手の小指",
+  "The key right of L types a hyphen and holds Ctrl; the key below it types a slash and holds Shift, so the right hand has a Shift too.":
+    "Lの右隣のキーは単押しでハイフン、長押しでCtrlに。その下のキーは単押しでスラッシュ、長押しでShiftにして、右手にもShiftを持たせます。",
+  "With no key right of L, L itself holds Ctrl and the period holds Shift, so the right hand has both.":
+    "Lの右隣にキーがないので、L自体の長押しをCtrl、ピリオドの長押しをShiftにして、右手にも両方を持たせます。",
+  "Ctrl on A, and Tab where Q was": "AにCtrl、Qの位置にTab",
+  "A held is Ctrl. The Q key types Tab on a tap, Ctrl on a hold and Q on two quick taps: Tab is typed far more often than Q. The timing is tuned in the tapping term step.":
+    "Aの長押しをCtrlにします。Qキーは単押しでTab、長押しでCtrl、素早く2回押すとQです。TabはQよりずっと多く使うからです。判定時間はタッピング間隔のステップで調整します。",
+  "Cursor keys under the right hand": "右手の下にカーソルキー",
+  "An inverted T on the home row: ← ↓ → on J K L and ↑ on I, so the right hand moves the cursor while its thumb holds Space. The keys around them do nothing on this layer, so a slip presses nothing.":
+    "ホームポジションに山型で並べます。J K Lに← ↓ →、Iに↑です。右親指でスペースを押したまま右手だけでカーソルを動かせます。周りのキーはこのレイヤーでは何もしないようにして、誤って押しても何も起きないようにします。",
+  "F keys under the left hand": "左手の下にFキー",
+  "F2 to F5 on S D F G and F7 to F10 on X C V B, from the home position outward; F11 and F12 on R and T, F6 at the bottom left. F1 is left out: it is seldom wanted.":
+    "ホームポジションからF2〜F5をS D F Gに、F7〜F10をX C V Bに並べます。F11とF12はRとT、F6は左下です。F1はほとんど使わないので置きません。",
+  "Esc, Tab, Delete and modifiers": "Esc・Tab・Deleteと修飾キー",
+  "Esc at the top left (the same key on every layer), Tab on W and P, Ctrl and Shift on the left for Ctrl+arrow and Shift+arrow, Delete under the thumb where Backspace is on the base layer. Enter held on this layer opens layer 4: both thumbs down.":
+    "Escは左上（どのレイヤーも同じ位置）、TabはWとP、左手にはCtrl+矢印やShift+矢印のためのCtrlとShift、親指のBackspaceの位置にDeleteです。このレイヤーでEnterを長押しするとレイヤー4が開きます（両親指同時押し）。",
+  "Symbols under the left hand": "左手の下に記号",
+  "Every symbol is the layer key plus one key, no Shift: ? [ ] ~ on W E R T, # $ ( ) @ on the home row, % & ; : | below it, and ! \" ' on the three keys at the bottom left. Pairs sit side by side. Esc stays at the top left.":
+    "記号はすべてレイヤーキー+1キーで、Shiftは不要です。W E R Tに? [ ] ~、ホームポジションに# $ ( ) @、その下に% & ; : |、左下の3キーに! \" 'を置きます。ペアになる括弧は隣同士です。Escは左上のままです。",
+  "Numbers under the right hand": "右手の下にテンキー",
+  "A numpad: 7 8 9 on U I O, 4 5 6 on J K L, 1 2 3 on M , . with 0 on N; / * - + in the outer column, _ on H, and . Enter NumLock at the bottom right.":
+    "テンキーです。U I Oに7 8 9、J K Lに4 5 6、M , .に1 2 3、Nに0。外側の列に/ * - +、Hに_、右下に. Enter NumLockを置きます。",
+  "Delete, and layer 4 on Space": "Deleteと、スペースにレイヤー4",
+  "Delete under the thumb, as on layer 1. Space held on this layer opens layer 4: both thumbs down.":
+    "レイヤー1と同じく親指にDeleteです。このレイヤーでスペースを長押しするとレイヤー4が開きます（両親指同時押し）。",
+  "Layer 3: keys used now and then": "レイヤー3: たまに使うキー",
+  "Held ろ at the bottom right: PrintScreen on T and Alt+PrintScreen (the active window) on R, volume up and down on G and B, Ctrl+A and Ctrl+Z on A and Z, Esc and Tab at the top left. Every other letter does nothing here.":
+    "右下の「ろ」を長押し。TにPrintScreen、RにAlt+PrintScreen（アクティブウィンドウ）、GとBに音量の上げ下げ、AとZにCtrl+AとCtrl+Z、左上にEscとTabです。他のアルファベットキーはここでは何もしません。",
+  "Layer 4: shortcuts on single keys": "レイヤー4: ショートカットを1キーで",
+  "Both thumbs held: Ctrl with the same letter on A S D F G H J, Z X C V B N M, Y and P, so copy, paste, undo and the rest are one key each; Ctrl+Shift+T on T reopens a closed browser tab.":
+    "両方の親指を長押し。A S D F G H J、Z X C V B N M、Y、Pには同じ文字のCtrl+文字を置き、コピー・貼り付け・元に戻すなどを1キーにします。TのCtrl+Shift+Tは閉じたブラウザのタブを開き直します。",
+  "Tapping term of Q and A": "QとAのタッピング間隔",
+  "A letter with a hold has to tell a tap from a hold by time. Q is hard to tap quickly, so its term is longer; A must be tapped short or it turns into Ctrl, so its term is shorter. Vial keeps a term per tap dance; ZMK keeps it in the firmware, so there the values here are a note only.":
+    "長押しのあるアルファベットキーは、時間で単押しと長押しを判定します。Qは素早く押しにくいので長めに、Aは短く押さないとCtrlになるので短めにします。Vialではタップダンスごとに時間を持ち、ZMKではランタイムタップダンスのスロットに書き込みます。",
+  "{{n}} keys": "{{n}}キー",
+  "This keyboard has no layer left for it, so the keys that would open it keep their tap only.":
+    "このキーボードにはそのためのレイヤーが残っていないので、レイヤーを開くはずのキーは単押しだけになります。",
+  "A key with a double tap or its own tapping term needs the runtime tap dance module in the firmware, with a free slot.":
+    "2回押しや専用のタッピング間隔を持つキーには、ファームウェアのランタイムタップダンスモジュールと空きスロットが必要です。",
+  "A key with a double tap or its own tapping term needs a free tap dance entry in Vial.":
+    "2回押しや専用のタッピング間隔を持つキーには、Vialのタップダンスの空きエントリが必要です。",
   "Next text": "次の文章",
   "{{name}} is connected, but a number or macro pad is not what the keymap dojo is for: it has no keymap to decide this way and nothing to type sentences on. Pick a keyboard above to use the dojo in demo mode.":
     "{{name}} が接続されていますが、テンキーやマクロパッドは文字入力用のキーボードではないので、キーマップ道場の対象外です。上で機種を選ぶと、デモモードで道場を使えます。",

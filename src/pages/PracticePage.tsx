@@ -44,6 +44,7 @@ import { GuideBoundary, GuideFlow } from "../practice/components/GuideFlow";
 import {
   applyChanges,
   guideSteps,
+  type GuideKind,
   type Change,
   type GuideStep,
 } from "../practice/lib/guide";
@@ -120,6 +121,8 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
         : metaForBoard(keyboardMeta(metaBoard), metaBoard, board),
     [metaBoard, board],
   );
+  // BeThirty-class keyboards run the 30% guide; everything else the 40%.
+  const guideKind: GuideKind = meta.defaultGuide === "30" ? "30" : "40";
   const progressKey = live ? `live:${board.id}` : board.id;
   const onApply = useCallback(
     (writes: Parameters<PracticeDevice["write"]>[0]) => {
@@ -151,8 +154,8 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
         : remapProgress(demoToCarry, positionMap(metaBoard, board));
     // Demo progress counts steps without the practice ones; the live
     // guide has them, so step numbers and applied steps are moved over.
-    const demoSteps = guideSteps(false);
-    const liveSteps = guideSteps(true);
+    const demoSteps = guideSteps(false, guideKind);
+    const liveSteps = guideSteps(true, guideKind);
     const toLive = (i: number) =>
       Math.max(
         0,
@@ -316,7 +319,10 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
               <span>
                 {t(
                   "A guide done in demo mode on this keyboard was found (step {{n}} of {{total}}). Write that keymap to the keyboard and carry on from there?",
-                  { n: demoToCarry.step + 1, total: guideSteps(false).length },
+                  {
+                    n: demoToCarry.step + 1,
+                    total: guideSteps(false, guideKind).length,
+                  },
                 )}
               </span>
               <span className="flex items-center gap-2">
@@ -358,7 +364,7 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
             board={board}
             metaBoard={metaBoard}
             progressKey={progressKey}
-            steps={guideSteps(!!live)}
+            steps={guideSteps(!!live, guideKind)}
             onPick={setMode}
           />
         )}
@@ -378,7 +384,7 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
               progressKey={progressKey}
               onApply={live ? onApply : undefined}
               layerBase={live?.block.start ?? 0}
-              steps={guideSteps(!!live)}
+              steps={guideSteps(!!live, guideKind)}
               device={
                 live
                   ? {
@@ -566,6 +572,15 @@ function DeviceBar({
             {t("{{n}} of the changes could not be written to the keyboard.", {
               n: failed,
             })}
+            {outcome.unwritable.some((u) => u.reason === "tapdance") &&
+              " " +
+                (device.firmware === "zmk"
+                  ? t(
+                      "A key with a double tap or its own tapping term needs the runtime tap dance module in the firmware, with a free slot.",
+                    )
+                  : t(
+                      "A key with a double tap or its own tapping term needs a free tap dance entry in Vial.",
+                    ))}
           </span>
         )}
         <span className="ml-auto flex items-center gap-2">

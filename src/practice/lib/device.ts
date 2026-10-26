@@ -21,9 +21,11 @@ import type { LabelLayout } from "../../layoutEditor/lib/keyLabels";
 import { getBehaviorMetadata } from "../../lib/behaviorMetadata";
 import {
   combineWithModifiers,
+  createHidUsage,
   extractModifierFlags,
   getHidUsageCode,
   getHidUsagePage,
+  HID_USAGE_PAGE_CONSUMER,
   HID_USAGE_PAGE_KEYBOARD,
 } from "../../lib/keycodes";
 import {
@@ -122,6 +124,16 @@ export const CODE_BY_HID: Record<number, string> = Object.fromEntries(
 // The ISO # key (0x32) types what Backslash does on such a layout.
 CODE_BY_HID[0x32] = "Backslash";
 
+/** KeyboardEvent.code → HID consumer-page usage id (volume and the like). */
+export const CONSUMER_BY_CODE: Record<string, number> = {
+  AudioVolumeUp: 0xe9,
+  AudioVolumeDown: 0xea,
+  AudioVolumeMute: 0xe2,
+};
+const CODE_BY_CONSUMER: Record<number, string> = Object.fromEntries(
+  Object.entries(CONSUMER_BY_CODE).map(([code, id]) => [id, code]),
+);
+
 const FLAG: Record<Mod, number> = {
   ctrl: 0x01,
   shift: 0x02,
@@ -144,14 +156,24 @@ function flagsOfMods(mods: Mod[]): number {
 /** The HID usage (with page and modifier flags) a key trigger sends. */
 function usageOf(code: string, mods: Mod[]): number | null {
   const id = HID_BY_CODE[code];
-  if (id === undefined) return null;
-  return combineWithModifiers(id, flagsOfMods(mods));
+  if (id !== undefined) return combineWithModifiers(id, flagsOfMods(mods));
+  const consumer = CONSUMER_BY_CODE[code];
+  if (consumer === undefined) return null;
+  return combineWithModifiers(
+    createHidUsage(HID_USAGE_PAGE_CONSUMER, consumer),
+    flagsOfMods(mods),
+  );
 }
 
-/** The key code of a HID usage on the keyboard page, with its modifiers. */
+/** The key code of a HID usage on the keyboard or consumer page, with its modifiers. */
 function keyOfUsage(usage: number): { code: string; mods: Mod[] } | null {
-  if (getHidUsagePage(usage) !== HID_USAGE_PAGE_KEYBOARD) return null;
-  const code = CODE_BY_HID[getHidUsageCode(usage)];
+  const page = getHidUsagePage(usage);
+  const code =
+    page === HID_USAGE_PAGE_KEYBOARD
+      ? CODE_BY_HID[getHidUsageCode(usage)]
+      : page === HID_USAGE_PAGE_CONSUMER
+        ? CODE_BY_CONSUMER[getHidUsageCode(usage)]
+        : undefined;
   if (!code) return null;
   return { code, mods: modsOfFlags(extractModifierFlags(usage)) };
 }
@@ -169,7 +191,9 @@ export type BehaviorRole =
   | "none"
   | "mkp"
   | "to"
-  | "tog";
+  | "tog"
+  /** zmk-feature-runtime-tap-dance's &rtd: a tap dance slot, set up in the keyboard's settings. */
+  | "rtd";
 
 const ROLE_NAMES: Record<BehaviorRole, string> = {
   kp: "Key Press",
@@ -181,7 +205,28 @@ const ROLE_NAMES: Record<BehaviorRole, string> = {
   mkp: "Mouse Key Press",
   to: "To Layer",
   tog: "Toggle Layer",
+  rtd: "Tap Dance",
 };
+
+/** Whether a key needs a tap dance: two taps for another key, or a tapping term of its own. */
+export function needsTapDance(t: Trigger): boolean {
+  return (
+    t.kind === "key" && (t.doubleTap !== undefined || t.term !== undefined)
+  );
+}
+
+/**
+ * A runtime tap dance slot's contents, as the guide reads and writes them:
+ * what one, two (and three) taps do, what each count does when held, and
+ * the wait between taps.
+ */
+export interface Dance {
+  taps: BehaviorBinding[];
+  holds: Array<BehaviorBinding | null>;
+  term?: number;
+}
+
+export type BehaviorIds = Partial<Record<BehaviorRole, number>>;
 
 /** What a device behavior is, by its name, or null for one the guide does not use. */
 export function behaviorRole(displayName: string): BehaviorRole | null {
@@ -201,8 +246,8 @@ export function behaviorRole(displayName: string): BehaviorRole | null {
 export function behaviorIds(
   behaviors: Map<number, BehaviorDefinition>,
   keymap: Keymap | null,
-): Partial<Record<BehaviorRole, number>> {
-  const out: Partial<Record<BehaviorRole, number>> = {};
+): BehaviorIds {
+  const out: BehaviorIds = {};
   const roleOf = new Map<number, BehaviorRole | null>();
   for (const [id, b] of behaviors) roleOf.set(id, behaviorRole(b.displayName));
   for (const layer of keymap?.layers ?? [])
@@ -224,6 +269,89 @@ export function behaviorIds(
   return out;
 }
 
+/** The trigger a tap dance slot stands for, or null for one the guide does not describe. */
+export function danceToTrigger(
+  dance: Dance,
+  behaviors: Map<number, BehaviorDefinition>,
+  layerIndexOf: (id: number) => number | undefined,
+): Trigger | null {
+  const plain = (b: BehaviorBinding | null | undefined) => {
+    if (!b) return null;
+    const t = bindingToTrigger(b, behaviors, layerIndexOf);
+    return t.kind === "key" && !t.hold && t.holdLayer === undefined ? t : null;
+  };
+  const tap = plain(dance.taps[0]);
+  if (!tap || dance.taps.length > 2) return null;
+  const out: Extract<Trigger, { kind: "key" }> = {
+    kind: "key",
+    code: tap.code,
+    mods: tap.mods,
+  };
+  const hold = dance.holds[0];
+  if (hold) {
+    const h = bindingToTrigger(hold, behaviors, layerIndexOf);
+    if (h.kind === "key" && !h.mods.length && MODIFIER.test(h.code))
+      out.hold = h.code;
+    else if (!(h.kind === "none")) return null;
+  }
+  if (dance.taps[1]) {
+    const d = plain(dance.taps[1]);
+    if (!d || d.mods.length) return null;
+    out.doubleTap = d.code;
+  }
+  if (dance.holds[1]) {
+    const h2 = bindingToTrigger(dance.holds[1], behaviors, layerIndexOf);
+    if (h2.kind !== "none") return null;
+  }
+  if (dance.term) out.term = dance.term;
+  return out;
+}
+
+const MODIFIER = /^(Control|Shift|Alt|Meta)(Left|Right)$/;
+
+/** The slot contents for a key that needs a tap dance, or null when the keyboard cannot express it. */
+export function triggerToDance(
+  trigger: Trigger,
+  ids: BehaviorIds,
+): Dance | null {
+  if (trigger.kind !== "key" || trigger.holdLayer !== undefined) return null;
+  const kp = ids.kp;
+  if (kp === undefined) return null;
+  const tap = usageOf(trigger.code, trigger.mods);
+  if (tap === null) return null;
+  const taps: BehaviorBinding[] = [{ behaviorId: kp, param1: tap, param2: 0 }];
+  const holds: Array<BehaviorBinding | null> = [null];
+  if (trigger.hold) {
+    const h = usageOf(trigger.hold, []);
+    if (h === null) return null;
+    holds[0] = { behaviorId: kp, param1: h, param2: 0 };
+  }
+  if (trigger.doubleTap) {
+    const d = usageOf(trigger.doubleTap, []);
+    if (d === null) return null;
+    taps.push({ behaviorId: kp, param1: d, param2: 0 });
+    holds.push(null);
+  }
+  return { taps, holds, ...(trigger.term ? { term: trigger.term } : {}) };
+}
+
+/** Whether two slot contents are the same dance. */
+export function sameDance(a: Dance, b: Dance): boolean {
+  const same = (x: BehaviorBinding | null, y: BehaviorBinding | null) =>
+    (x === null && y === null) ||
+    (x !== null &&
+      y !== null &&
+      x.behaviorId === y.behaviorId &&
+      x.param1 === y.param1 &&
+      x.param2 === y.param2);
+  return (
+    a.taps.length === b.taps.length &&
+    a.taps.every((t, i) => same(t, b.taps[i])) &&
+    a.taps.every((_, i) => same(a.holds[i] ?? null, b.holds[i] ?? null)) &&
+    (a.term ?? 200) === (b.term ?? 200)
+  );
+}
+
 const MOUSE_MASK = [1, 4, 2, 8, 16]; // Trigger.button 0..4 = L, M, R, B4, B5
 
 /** A device binding as a trigger. `layerIndexOf` turns a layer id into its index. */
@@ -231,12 +359,18 @@ export function bindingToTrigger(
   binding: BehaviorBinding,
   behaviors: Map<number, BehaviorDefinition>,
   layerIndexOf: (id: number) => number | undefined,
+  dances?: Map<number, Dance>,
 ): Trigger {
   const def = behaviors.get(binding.behaviorId);
   const name = def?.displayName ?? `#${binding.behaviorId}`;
   const role = behaviorRole(name);
   const layer = (id: number) => layerIndexOf(id) ?? id;
   switch (role) {
+    case "rtd": {
+      const dance = dances?.get(binding.param1);
+      const t = dance ? danceToTrigger(dance, behaviors, layerIndexOf) : null;
+      return t ?? { kind: "other", label: `TD ${binding.param1}` };
+    }
     case "trans":
       return { kind: "none" };
     case "none":
@@ -288,8 +422,10 @@ export function bindingToTrigger(
  */
 export function triggerToBinding(
   trigger: Trigger,
-  ids: Partial<Record<BehaviorRole, number>>,
+  ids: BehaviorIds,
   layerIdOf: (index: number) => number | undefined,
+  /** The tap dance slot set up for a key that needs one. */
+  slot?: number,
 ): BehaviorBinding | null {
   const make = (
     role: BehaviorRole,
@@ -314,6 +450,10 @@ export function triggerToBinding(
     case "key": {
       const tap = usageOf(trigger.code, trigger.mods);
       if (tap === null) return null;
+      // A tap dance is a slot of the runtime tap dance module, set up
+      // beforehand; the key binds the slot.
+      if (needsTapDance(trigger))
+        return slot === undefined ? null : make("rtd", slot);
       if (trigger.holdLayer !== undefined) {
         const id = layerIdOf(trigger.holdLayer);
         return id === undefined ? null : make("lt", id, tap);
@@ -397,6 +537,7 @@ export function liveKeyboard(
   behaviors: Map<number, BehaviorDefinition>,
   labelLayout: LabelLayout,
   block: LayerBlock = wholeBlock(keymap.layers.length),
+  dances?: Map<number, Dance>,
 ): LiveKeyboard {
   const project = importKle(zmkToKle(layout));
   const allIds = keymap.layers.map((l) => l.id);
@@ -410,7 +551,7 @@ export function liveKeyboard(
     project.keys.map((_, pos) => {
       const b = l.bindings[pos];
       return b
-        ? windowTrigger(bindingToTrigger(b, behaviors, indexOf), block)
+        ? windowTrigger(bindingToTrigger(b, behaviors, indexOf, dances), block)
         : ({ kind: "none" } as Trigger);
     }),
   );
@@ -449,7 +590,8 @@ export function liveKeyboard(
 /** A change the keyboard could not take, and why. */
 export interface Unwritable {
   change: Change;
-  reason: "behavior" | "keycode" | "layer" | "rejected";
+  /** "tapdance": the key needs a tap dance and the keyboard has no slot or entry for it. */
+  reason: "behavior" | "keycode" | "layer" | "rejected" | "tapdance";
 }
 
 /**
@@ -459,8 +601,10 @@ export interface Unwritable {
  */
 export function bindingsFor(
   changes: Change[],
-  ids: Partial<Record<BehaviorRole, number>>,
+  ids: BehaviorIds,
   layerIds: number[],
+  /** The tap dance slot set up for a change that needs one. */
+  slotOf: (change: Change) => number | undefined = () => undefined,
 ): {
   writes: Array<{ change: Change; layerId: number; binding: BehaviorBinding }>;
   unwritable: Unwritable[];
@@ -478,9 +622,17 @@ export function bindingsFor(
       unwritable.push({ change, reason: "layer" });
       continue;
     }
-    const binding = triggerToBinding(change.trigger, ids, layerIdOf);
+    const binding = triggerToBinding(
+      change.trigger,
+      ids,
+      layerIdOf,
+      slotOf(change),
+    );
     if (!binding) {
-      unwritable.push({ change, reason: "behavior" });
+      unwritable.push({
+        change,
+        reason: needsTapDance(change.trigger) ? "tapdance" : "behavior",
+      });
       continue;
     }
     writes.push({ change, layerId, binding });
