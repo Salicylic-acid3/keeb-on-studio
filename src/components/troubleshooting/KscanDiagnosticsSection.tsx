@@ -99,9 +99,13 @@ export function KscanDiagnosticsSection({
   );
   // Which half measured each position. On a split keyboard the central's
   // table also counts the other half's keys, but timed as their events come
-  // over the link, so for the positions a peripheral reports, its own
-  // numbers (taken at the switch) replace the central's. `measuredOn` keeps
-  // the source for the table: 0 is this half, otherwise the peripheral.
+  // over the link, so where a peripheral has seen a key itself, its own
+  // numbers (taken at the switch) replace the central's. A peripheral's
+  // table has a row for every position of the keymap -- its transform is
+  // the whole keyboard's -- so only the rows it has actually counted a
+  // press or release at are its; the rest stay the central's. `measuredOn`
+  // keeps the source for the table: 0 is this half, otherwise the
+  // peripheral.
   const stats = useMemo(() => {
     const own = rawStats.filter((s) => !pseudoKeys.has(s.position));
     const merged = new Map<
@@ -110,34 +114,14 @@ export function KscanDiagnosticsSection({
     >();
     for (const s of own) merged.set(s.position, { ...s, measuredOn: 0 });
     for (const [source, entries] of peripheralStats) {
-      const periph = peripheralTopologies.get(source);
-      const layout = periph
-        ? (periph.layouts.find(
-            (l) => l.layoutIndex === periph.selectedLayout,
-          ) ??
-          periph.layouts[0] ??
-          null)
-        : null;
-      const wired = layout
-        ? new Set(
-            layout.positionMap.filter(
-              (pos): pos is number => pos !== null && pos !== undefined,
-            ),
-          )
-        : null;
       for (const s of entries) {
         if (pseudoKeys.has(s.position)) continue;
-        // Without the wiring, a peripheral's entry counts only where it saw
-        // a press: its table has a row for every position of the keymap.
-        if (
-          wired ? !wired.has(s.position) : s.presses === 0 && s.releases === 0
-        )
-          continue;
+        if (s.presses === 0 && s.releases === 0) continue;
         merged.set(s.position, { ...s, measuredOn: source });
       }
     }
     return [...merged.values()].sort((a, b) => a.position - b.position);
-  }, [rawStats, pseudoKeys, peripheralStats, peripheralTopologies]);
+  }, [rawStats, pseudoKeys, peripheralStats]);
 
   const suspectKeys = findSuspectKeys(stats) as typeof stats;
   const halvesMeasured = peripheralStats.size > 0;

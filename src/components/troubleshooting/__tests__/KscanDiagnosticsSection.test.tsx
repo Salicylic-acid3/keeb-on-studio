@@ -159,6 +159,42 @@ describe("KscanDiagnosticsSection", () => {
     expect(screen.queryByText(/suspect keys/)).not.toBeInTheDocument();
   });
 
+  it("keeps the central's numbers where the peripheral never saw the key", () => {
+    // A peripheral's table has a row for every position of the keymap,
+    // including the other half's keys, at zero. Those rows must not replace
+    // the central's own counts for its own keys.
+    const untouched = {
+      position: 0,
+      presses: 0,
+      releases: 0,
+      minPressDurationMs: 65535,
+      minRepressGapMs: 65535,
+      repressLt5: 0,
+      repressLt10: 0,
+      repressLt20: 0,
+      repressLt50: 0,
+      lastSource: 0,
+    };
+    render(
+      <KscanDiagnosticsSection
+        kscan={baseKscan({
+          stats: [
+            {
+              ...untouched,
+              presses: 5,
+              releases: 5,
+              minPressDurationMs: 20,
+              minRepressGapMs: 3,
+              repressLt10: 2,
+            },
+          ],
+          peripheralStats: new Map([[1, [untouched]]]),
+        })}
+      />,
+    );
+    expect(screen.getByText("1 suspect keys")).toBeInTheDocument();
+  });
+
   it("does not call loadTopology before the section is expanded", () => {
     const loadTopology = jest.fn();
     render(<KscanDiagnosticsSection kscan={baseKscan({ loadTopology })} />);
