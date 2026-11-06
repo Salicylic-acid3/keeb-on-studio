@@ -3,6 +3,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { ZMKAppContext } from "@cormoran/zmk-studio-react-hook";
@@ -77,6 +78,18 @@ export interface UseKscanDiagnosticsReturn {
   peripheralDiscoveryError: string | null;
   /** Discover peripherals and fetch their topologies via QueryPeripheral. */
   loadPeripheralTopologies: () => Promise<void>;
+  /**
+   * Each split peripheral's own per-key statistics, keyed by source index.
+   *
+   * These are counted on that half, at its own switches. The central's
+   * `stats` above also hold entries for the peripheral's positions, but
+   * those are timed as the events arrive over the split link, so a gap
+   * between two presses there is the link's timing as much as the switch's:
+   * with the link idling at 60 ms, a clean double tap can land 20 ms apart
+   * and a chattering contact can look clean. For the question "is this
+   * switch chattering", only the half that holds the switch can answer.
+   */
+  peripheralStats: Map<number, PositionStats[]>;
 }
 
 async function callRpc(call: Caller, request: Request): Promise<Response> {
@@ -342,6 +355,35 @@ async function queryPeripheral(
   return { responses, supported };
 }
 
+/** A peripheral's own per-key statistics, paged like the central's. */
+async function fetchPeripheralStats(
+  call: Caller,
+  zmkApp: ZmkApp,
+  subsystemIndex: number,
+  source: number,
+): Promise<PositionStats[]> {
+  const entries: PositionStats[] = [];
+  let offset = 0;
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const { responses } = await queryPeripheral(
+      call,
+      zmkApp,
+      subsystemIndex,
+      Request.create({ getStats: { offset } }),
+      source,
+      PERIPHERAL_RESPONSE_TIMEOUT_MS,
+    );
+    const chunk = responses.get(source)?.stats;
+    if (!chunk) {
+      throw new Error(`No Stats from peripheral ${source}`);
+    }
+    entries.push(...chunk.entries);
+    offset = chunk.offset + chunk.entries.length;
+    if (chunk.entries.length === 0 || offset >= chunk.total) break;
+  }
+  return entries;
+}
+
 /**
  * Fetch full topology for one split peripheral by relaying each inner request
  * via QueryPeripheral and awaiting the matching PeripheralEvent notification.
@@ -547,6 +589,33 @@ export function useKscanDiagnostics(): UseKscanDiagnosticsReturn {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [peripheralStats, setPeripheralStats] = useState<
+    Map<number, PositionStats[]>
+  >(() => new Map());
+  // The peripherals that answered discovery, so a later refresh or reset
+  // can reach them without discovering again.
+  const knownSources = useRef<number[]>([]);
+
+  const subsystemIndex = subsystem?.index;
+
+  const refreshPeripheralStats = useCallback(async () => {
+    if (!zmkApp || subsystemIndex === undefined) return;
+    for (const source of knownSources.current) {
+      try {
+        const s = await fetchPeripheralStats(
+          call,
+          zmkApp,
+          subsystemIndex,
+          source,
+        );
+        setPeripheralStats((prev) => new Map(prev).set(source, s));
+      } catch {
+        // Left as it was: the half may be asleep or out of range, and the
+        // topology (which it did answer) is still worth showing.
+      }
+    }
+  }, [zmkApp, subsystemIndex, call]);
+
   const refresh = useCallback(async () => {
     if (!ready) return;
     setIsLoading(true);
@@ -571,12 +640,13 @@ export function useKscanDiagnostics(): UseKscanDiagnosticsReturn {
       setInfo(nextInfo);
       setDevices(nextDevices);
       setStats(nextStats);
+      await refreshPeripheralStats();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setIsLoading(false);
     }
-  }, [ready, call]);
+  }, [ready, call, refreshPeripheralStats]);
 
   const resetStats = useCallback(async () => {
     if (!ready) return;
@@ -584,13 +654,28 @@ export function useKscanDiagnostics(): UseKscanDiagnosticsReturn {
     setError(null);
     try {
       await callRpc(call, Request.create({ resetStats: {} }));
+      // The halves keep their own counters; a reset that left the
+      // peripheral's standing would keep flagging a key that was fixed.
+      if (zmkApp && subsystemIndex !== undefined) {
+        for (const source of knownSources.current) {
+          await queryPeripheral(
+            call,
+            zmkApp,
+            subsystemIndex,
+            Request.create({ resetStats: {} }),
+            source,
+            PERIPHERAL_RESPONSE_TIMEOUT_MS,
+          );
+        }
+      }
       setStats(await fetchStats(call));
+      await refreshPeripheralStats();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setIsLoading(false);
     }
-  }, [ready, call]);
+  }, [ready, call, zmkApp, subsystemIndex, refreshPeripheralStats]);
 
   // Auto-fetch when the subsystem becomes available.
   useEffect(() => {
@@ -628,15 +713,14 @@ export function useKscanDiagnostics(): UseKscanDiagnosticsReturn {
   const [peripheralDiscoveryError, setPeripheralDiscoveryError] = useState<
     string | null
   >(null);
-
-  const subsystemIndex = subsystem?.index;
-
   const loadPeripheralTopologies = useCallback(async () => {
     if (!ready || !zmkApp || subsystemIndex === undefined) return;
     setIsLoadingPeripheralTopologies(true);
     setPeripheralTopologies(new Map());
     setPeripheralTopologyErrors(new Map());
     setPeripheralDiscoveryError(null);
+    setPeripheralStats(new Map());
+    knownSources.current = [];
 
     // Discovery: send GetInfo to all peripherals, collect responses within timeout.
     let discoveredSources: number[];
@@ -653,6 +737,7 @@ export function useKscanDiagnostics(): UseKscanDiagnosticsReturn {
         return;
       }
       discoveredSources = [...infoMap.keys()];
+      knownSources.current = discoveredSources;
       if (discoveredSources.length === 0) {
         setPeripheralDiscoveryError(
           "No peripheral responded within the discovery timeout.",
@@ -678,9 +763,10 @@ export function useKscanDiagnostics(): UseKscanDiagnosticsReturn {
         setPeripheralTopologyErrors((prev) => new Map(prev).set(source, msg));
       }
     }
+    await refreshPeripheralStats();
 
     setIsLoadingPeripheralTopologies(false);
-  }, [ready, zmkApp, subsystemIndex, call]);
+  }, [ready, zmkApp, subsystemIndex, call, refreshPeripheralStats]);
 
   return {
     isAvailable: subsystem !== null,
@@ -700,5 +786,6 @@ export function useKscanDiagnostics(): UseKscanDiagnosticsReturn {
     peripheralTopologyErrors,
     peripheralDiscoveryError,
     loadPeripheralTopologies,
+    peripheralStats,
   };
 }

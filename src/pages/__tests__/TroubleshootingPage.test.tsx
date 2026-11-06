@@ -63,6 +63,12 @@ function mockAllUnavailable() {
     isLoadingTopology: false,
     topologyError: null,
     loadTopology: jest.fn(),
+    peripheralTopologies: new Map(),
+    isLoadingPeripheralTopologies: false,
+    peripheralTopologyErrors: new Map(),
+    peripheralDiscoveryError: null,
+    loadPeripheralTopologies: jest.fn(),
+    peripheralStats: new Map(),
   });
 }
 

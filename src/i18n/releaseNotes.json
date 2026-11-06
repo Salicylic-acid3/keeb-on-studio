@@ -5,7 +5,13 @@
       "date": null,
       "changes": {
         "major": [],
-        "minor": [],
+        "minor": [
+          {
+            "en": "Troubleshooting: on a split keyboard, the key-switch statistics now show each half's keys as measured on that half, at the switch. The other half's keys used to be timed as their events arrived over the link, which could flag a clean key or hide a chattering one; resetting the statistics now resets both halves.",
+            "ja": "トラブルシューティング: 分割キーボードのキースイッチ統計で、それぞれの半身のキーをその半身でスイッチの時点で計測した数字で表示するようにしました。これまで反対側のキーは左右間の無線を渡ってきた時刻で数えていたため、正常なキーが疑わしく見えたり、チャタリングが隠れたりしていました。統計のリセットも両半身に効きます。",
+            "zh": "故障排查：分体键盘的按键统计现在按每一半在开关处的计量显示。此前另一半的按键按事件经无线到达的时刻计数，可能误报正常按键或掩盖抖动；重置统计现在对两半都生效。"
+          }
+        ],
         "patch": []
       }
     },

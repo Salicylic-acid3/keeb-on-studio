@@ -57,6 +57,7 @@ function baseKscan(
     isLoadingPeripheralTopologies: false,
     peripheralTopologyErrors: new Map(),
     peripheralDiscoveryError: null,
+    peripheralStats: new Map(),
     loadPeripheralTopologies: jest.fn(),
     ...overrides,
   };
@@ -126,6 +127,36 @@ describe("KscanDiagnosticsSection", () => {
       />,
     );
     expect(screen.getByText("1 suspect keys")).toBeInTheDocument();
+  });
+
+  it("judges a peripheral's keys by the peripheral's own statistics", () => {
+    // The central timed position 5 (a key on the other half) as it arrived
+    // over the link and saw a 3 ms re-press; the half that holds the switch
+    // saw nothing closer than 80 ms. The switch is fine.
+    const clean = {
+      position: 5,
+      presses: 40,
+      releases: 40,
+      minPressDurationMs: 30,
+      minRepressGapMs: 80,
+      repressLt5: 0,
+      repressLt10: 0,
+      repressLt20: 0,
+      repressLt50: 0,
+      lastSource: 1,
+    };
+    render(
+      <KscanDiagnosticsSection
+        kscan={baseKscan({
+          stats: [
+            { ...clean, minRepressGapMs: 3, repressLt10: 2, lastSource: 0 },
+          ],
+          peripheralStats: new Map([[1, [clean]]]),
+        })}
+      />,
+    );
+    expect(screen.getByText("OK")).toBeInTheDocument();
+    expect(screen.queryByText(/suspect keys/)).not.toBeInTheDocument();
   });
 
   it("does not call loadTopology before the section is expanded", () => {

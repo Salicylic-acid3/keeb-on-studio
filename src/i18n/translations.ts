@@ -2597,6 +2597,10 @@ const ja: Record<string, string> = {
     "チャタリングや異常は検出されませんでした。",
   "Suspect keys (possible chatter or stuck switch) — position numbers follow the keymap order.":
     "疑わしいキー（チャタリングまたはスイッチの固着の可能性）— 位置番号はキーマップの順序に従います。",
+  "Each half's keys are measured on that half, at the switch, so the link between the halves does not enter these numbers.":
+    "それぞれの半身のキーはその半身でスイッチの時点で計測しているので、左右間の無線の遅れはこの数字に入りません。",
+  Half: "半身",
+  "This half": "この半身",
   Position: "位置",
   Presses: "押下回数",
   Releases: "離した回数",
@@ -4449,6 +4453,10 @@ const zh: Record<string, string> = {
   "No chatter or anomalies detected.": "未检测到抖动或异常。",
   "Suspect keys (possible chatter or stuck switch) — position numbers follow the keymap order.":
     "可疑按键（可能存在抖动或卡键）— 位置编号遵循键位顺序。",
+  "Each half's keys are measured on that half, at the switch, so the link between the halves does not enter these numbers.":
+    "每一半的按键都在该半边的开关处计量，两半之间的无线延迟不会进入这些数字。",
+  Half: "半边",
+  "This half": "本半边",
   Position: "位置",
   Presses: "按压次数",
   Releases: "释放次数",
