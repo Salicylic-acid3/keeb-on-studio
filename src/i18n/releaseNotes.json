@@ -5,6 +5,15 @@
       "date": null,
       "changes": {
         "major": [],
+        "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.11.06.0",
+      "date": "2026-11-06",
+      "changes": {
+        "major": [],
         "minor": [
           {
             "en": "Troubleshooting: on a split keyboard, the key-switch statistics now show each half's keys as measured on that half, at the switch. The other half's keys used to be timed as their events arrived over the link, which could flag a clean key or hide a chattering one; resetting the statistics now resets both halves.",
