@@ -112,7 +112,17 @@ export class RuntimeMacroHandler {
   // here on any memory-mode (persist=false) mutation and is cleared by
   // Save/Discard. Mirrors the firmware's per-slot unsaved flag.
   private readonly unsavedSlots = new Set<number>();
-  private nextSlot = SEED_MACROS.length;
+
+  /**
+   * The slot a new macro gets: the lowest one not in use, as on the firmware
+   * (a deleted macro's slot is handed out again). The app names a new macro
+   * after the slot it expects, so the demo has to allocate the same way.
+   */
+  private freeSlot(): number {
+    let slot = 0;
+    while (this.macros.some((m) => m.slot === slot)) slot++;
+    return slot;
+  }
 
   constructor(customSettings?: CustomSettingsHandler) {
     // Fall back to an owned instance so this handler stays constructible on
@@ -233,7 +243,7 @@ export class RuntimeMacroHandler {
       if (this.macros.some((m) => m.name === name)) {
         return { error: { message: `Macro already exists: ${name}` } };
       }
-      const slot = this.nextSlot++;
+      const slot = this.freeSlot();
       this.macros.push(createMacro(slot, name));
       this.refreshPoolUsage();
       this.markChanged(persist, slot);
@@ -350,7 +360,7 @@ export class RuntimeMacroHandler {
     // yet (created). A newly created slot is unsaved until saved.
     for (const name of namesInKeyspace) {
       if (!this.macros.some((macro) => macro.name === name)) {
-        const slot = this.nextSlot++;
+        const slot = this.freeSlot();
         this.macros.push(createMacro(slot, name));
         this.unsavedSlots.add(slot);
       }

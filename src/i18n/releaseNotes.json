@@ -6,7 +6,13 @@
       "changes": {
         "major": [],
         "minor": [],
-        "patch": []
+        "patch": [
+          {
+            "en": "Macros: a new macro is now named after its slot, starting from \"Macro 0\". The list used to start at \"Macro 1\" while the keymap called the same macro \"Macro 0\". Macros you already have keep their names; rename them if you want them to match.",
+            "ja": "マクロ: 新しく追加したマクロの名前を、スロット番号に合わせて「Macro 0」から付けるようにしました。これまで一覧では「Macro 1」から始まるのに、キーマップでは同じマクロが「Macro 0」と表示されていました。作成済みのマクロの名前はそのままです。揃えたい場合は名前を変更してください。",
+            "zh": "宏：新建的宏现在按槽位编号命名，从“Macro 0”开始。此前列表从“Macro 1”开始，而键位图把同一个宏显示为“Macro 0”。已有的宏保持原名，如需一致请重命名。"
+          }
+        ]
       }
     },
     {
