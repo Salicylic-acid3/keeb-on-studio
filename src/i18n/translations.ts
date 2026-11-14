@@ -2199,6 +2199,8 @@ const ja: Record<string, string> = {
   "Failed to save settings": "設定の保存に失敗しました",
   "Failed to discard settings": "設定の破棄に失敗しました",
   "Failed to reset settings": "設定のリセットに失敗しました",
+  "Failed to process request": "キーボードが要求を処理できませんでした",
+  "Tap dance: {{message}}": "タップダンス: {{message}}",
 
   "Custom Subsystems": "カスタムサブシステム",
   "Available custom firmware subsystems and their web interfaces":
@@ -4072,6 +4074,8 @@ const zh: Record<string, string> = {
   "Failed to save settings": "保存设置失败",
   "Failed to discard settings": "放弃设置失败",
   "Failed to reset settings": "重置设置失败",
+  "Failed to process request": "键盘无法处理该请求",
+  "Tap dance: {{message}}": "Tap Dance：{{message}}",
 
   "Custom Subsystems": "自定义子系统",
   "Available custom firmware subsystems and their web interfaces":

@@ -30,6 +30,8 @@ export interface TapDanceEditorCardProps {
   behaviors: Map<number, BehaviorDefinition>;
   layers: Array<{ id: number; name: string }>;
   keyboardLayout: KeyboardLayoutType;
+  /** The keyboard's macros, so a tap that plays one is picked by name. */
+  runtimeMacros?: Array<{ slot: number; name?: string }>;
   disabled?: boolean;
 }
 
@@ -39,6 +41,7 @@ export function TapDanceEditorCard({
   behaviors,
   layers,
   keyboardLayout,
+  runtimeMacros,
   disabled = false,
 }: TapDanceEditorCardProps) {
   const { t } = useLanguage();
@@ -55,7 +58,11 @@ export function TapDanceEditorCard({
     if (!binding || tapDance.isUnset(binding)) return "";
     const behavior = behaviors.get(binding.behaviorId);
     if (!behavior) return "";
-    return formatBehaviorBinding(binding, behavior, { layers, keyboardLayout });
+    return formatBehaviorBinding(binding, behavior, {
+      layers,
+      keyboardLayout,
+      runtimeMacros,
+    });
   };
 
   const full = slot.maxTaps > 0 && slot.taps.length >= slot.maxTaps;
@@ -213,7 +220,8 @@ export function TapDanceEditorCard({
       </div>
 
       {/* The same picker the keymap uses, so a tap is chosen exactly the way
-          a key is. */}
+          a key is -- which includes the OS layout: without it the picker
+          falls back to the US keyboard while the rows above show JIS. */}
       <KeycodeSelector
         open={editing !== null}
         onClose={() => setEditing(null)}
@@ -243,6 +251,8 @@ export function TapDanceEditorCard({
         }
         behaviors={behaviors}
         layers={layers}
+        keyboardLayout={keyboardLayout}
+        runtimeMacros={runtimeMacros}
       />
     </section>
   );

@@ -11,6 +11,16 @@
             "en": "Macros: a new macro is now named after its slot, starting from \"Macro 0\". The list used to start at \"Macro 1\" while the keymap called the same macro \"Macro 0\". Macros you already have keep their names; rename them if you want them to match.",
             "ja": "マクロ: 新しく追加したマクロの名前を、スロット番号に合わせて「Macro 0」から付けるようにしました。これまで一覧では「Macro 1」から始まるのに、キーマップでは同じマクロが「Macro 0」と表示されていました。作成済みのマクロの名前はそのままです。揃えたい場合は名前を変更してください。",
             "zh": "宏：新建的宏现在按槽位编号命名，从“Macro 0”开始。此前列表从“Macro 1”开始，而键位图把同一个宏显示为“Macro 0”。已有的宏保持原名，如需一致请重命名。"
+          },
+          {
+            "en": "Tap dance: the key picker now opens on the OS layout you have selected. With the Japanese layout chosen it still drew the US keyboard. Macros in the picker are listed by name, as in the keymap.",
+            "ja": "タップダンス: キーを選ぶ画面が、選択中の OS 配列で表示されるようになりました。日本語配列を選んでいても英語配列のキーボードが表示されていました。マクロもキーマップと同じく名前で選べます。",
+            "zh": "Tap Dance：选择按键的界面现在按所选的系统布局显示。此前即使选择了日语布局，也显示美式键盘。宏也和键位图一样按名称列出。"
+          },
+          {
+            "en": "Macros & combos: Save and Discard no longer report \"N runtime combo changes\" when no combo was edited (after a tap dance edit, for example), and an error from the tap dance section now says so. Saving a tap dance that has a tap in it failed with \"Failed to process request\"; that was a firmware bug and is fixed by updating the keyboard's firmware.",
+            "ja": "マクロ・コンボ: コンボを編集していないとき(タップダンスだけ変更したときなど)に、保存・破棄で「ランタイムコンボの変更を N 件…」と表示しないようにしました。タップダンス側のエラーにはその旨を付けて表示します。タップを設定したタップダンスの保存が「Failed to process request」で失敗していたのはファームウェア側の不具合で、キーボードのファームウェアを更新すると直ります。",
+            "zh": "宏与组合键：未编辑组合键时（例如只修改了 Tap Dance），保存和放弃不再显示“N 项运行时组合键更改”；来自 Tap Dance 的错误会注明来源。保存设置了点击的 Tap Dance 时以“Failed to process request”失败是固件问题，更新键盘固件即可解决。"
           }
         ]
       }
