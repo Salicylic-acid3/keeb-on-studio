@@ -100,3 +100,18 @@ describe("qmkKeycode", () => {
     });
   });
 });
+
+describe("qmkKeycode: names keymap.c files use", () => {
+  it("reads the shifted symbol aliases as Shift + the key", () => {
+    expect(parseKeycode("KC_LCBR")).toBe(parseKeycode("LSFT(KC_LBRC)"));
+    expect(parseKeycode("KC_TILD")).toBe(parseKeycode("LSFT(KC_GRV)"));
+    expect(parseKeycode("KC_PIPE")).toBe(parseKeycode("LSFT(KC_BSLS)"));
+  });
+
+  it("reads the _T-only mod-tap names as their left-hand forms", () => {
+    expect(parseKeycode("SFT_T(KC_DOT)")).toBe(parseKeycode("LSFT_T(KC_DOT)"));
+    expect(parseKeycode("CTL_T(KC_ESC)")).toBe(parseKeycode("LCTL_T(KC_ESC)"));
+    expect(parseKeycode("GUI_T(KC_A)")).toBe(parseKeycode("LGUI_T(KC_A)"));
+    expect(parseKeycode("ALL_T(KC_A)")).toBe(parseKeycode("HYPR_T(KC_A)"));
+  });
+});

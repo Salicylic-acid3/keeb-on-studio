@@ -11,6 +11,7 @@
  * future QMK renumbering must not silently change what a saved keymap means.
  */
 import { QMK_KEYCODES, QMK_KEYCODE_ALIASES } from "./qmkKeycodesV6.generated";
+import { VIAL_ALL_NAMES } from "./vialNames.generated";
 
 export const KC_NO = 0x0000;
 export const KC_TRANSPARENT = 0x0001;
@@ -68,6 +69,12 @@ for (const [name, code] of QMK_KEYCODES) {
 for (const [alias, name] of QMK_KEYCODE_ALIASES) {
   const code = CODE_BY_NAME.get(name);
   if (code !== undefined) CODE_BY_NAME.set(alias, code);
+}
+// Vial's own names, for what QMK's table leaves out -- the shifted symbol
+// aliases above all (KC_LCBR, KC_TILD, KC_PIPE ...), which keymap.c files
+// and .vil files both use. QMK's names win where both have one.
+for (const [name, code] of VIAL_ALL_NAMES) {
+  if (!CODE_BY_NAME.has(name)) CODE_BY_NAME.set(name, code);
 }
 
 /** The short alias QMK users write (KC_SPC rather than KC_SPACE). */
@@ -304,6 +311,22 @@ const WRAPPER_MODS: Record<string, number> = {
   RCAG: MOD_LCTL | MOD_LALT | MOD_LGUI | MOD_RIGHT,
 };
 
+/**
+ * Mod-tap names that only exist with `_T` (SFT_T(KC_A) is LSFT_T(KC_A)):
+ * QMK defines these as aliases of the left-hand forms.
+ */
+const MOD_TAP_ONLY: Record<string, number> = {
+  CTL: MOD_LCTL,
+  SFT: MOD_LSFT,
+  ALT: MOD_LALT,
+  OPT: MOD_LALT,
+  GUI: MOD_LGUI,
+  CMD: MOD_LGUI,
+  WIN: MOD_LGUI,
+  C_S: MOD_LCTL | MOD_LSFT,
+  ALL: MOD_LCTL | MOD_LSFT | MOD_LALT | MOD_LGUI,
+};
+
 function splitArgs(inner: string): string[] {
   // Split on top-level commas only, so LT(1,LCTL(KC_A)) keeps its nesting.
   const out: string[] = [];
@@ -394,7 +417,7 @@ export function parseKeycode(text: string): number | undefined {
       : encodeKeycode({ kind: "macro", index });
   }
   if (fn.endsWith("_T") && args.length === 1) {
-    const mods = WRAPPER_MODS[fn.slice(0, -2)];
+    const mods = WRAPPER_MODS[fn.slice(0, -2)] ?? MOD_TAP_ONLY[fn.slice(0, -2)];
     const code = basicArg(0);
     if (mods === undefined || code === undefined) return undefined;
     return encodeKeycode({ kind: "modTap", mods, code });

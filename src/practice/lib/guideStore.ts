@@ -5,13 +5,18 @@
  * proposals applied so far.
  */
 import type { Trigger } from "../../keyTest/lib/triggers";
-import { DEFAULT_ANSWERS, type Answers, type Change } from "./guide";
+import {
+  DEFAULT_ANSWERS,
+  type Answers,
+  type Change,
+  type GuideKind,
+} from "./guide";
 
 export type StepStatus = "todo" | "applied" | "skipped" | "done";
 
 export interface GuideProgress {
   version: 1;
-  guide: "40";
+  guide: GuideKind;
   step: number;
   answers: Answers;
   status: Record<number, StepStatus>;

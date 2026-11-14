@@ -44,6 +44,7 @@ import { GuideBoundary, GuideFlow } from "../practice/components/GuideFlow";
 import {
   applyChanges,
   guideSteps,
+  type GuideKind,
   type Change,
   type GuideStep,
 } from "../practice/lib/guide";
@@ -55,6 +56,7 @@ import {
   type GuideProgress,
 } from "../practice/lib/guideStore";
 import {
+  isDojoBoard,
   keyboardMeta,
   metaForBoard,
   positionMap,
@@ -70,8 +72,15 @@ type T = (key: string, params?: Record<string, string | number>) => string;
 
 export function PracticePage({ onBack }: { onBack: () => void }) {
   const { t } = useLanguage();
+  // The keyboards the dojo is for: no standard full-size boards, and no
+  // number or macro pads.
   const entries = useMemo(
-    () => testBoardEntries().filter((e) => e.group !== "standard"),
+    () =>
+      testBoardEntries().filter((e) => {
+        if (e.group === "standard") return false;
+        const b = testBoard(e.id);
+        return b ? isDojoBoard(b) : false;
+      }),
     [],
   );
   const [boardId, setBoardId] = useState(() => {
@@ -86,7 +95,14 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
   // the registered keyboard's defaults, and the guide's steps are written
   // to it as they are applied.
   const device = usePracticeDevice(layout);
-  const live = device.live;
+  // A connected pad is not the dojo's: the page stays in demo mode on a
+  // keyboard chosen from the list, and says why.
+  const padConnected = useMemo(() => {
+    if (!device.live) return null;
+    const registered = device.boardId ? testBoard(device.boardId) : null;
+    return registered && !isDojoBoard(registered) ? registered.name : null;
+  }, [device.live, device.boardId]);
+  const live = padConnected ? null : device.live;
   const board = useMemo(
     () => live?.board ?? testBoard(boardId) ?? testBoard(entries[0].id)!,
     [live, boardId, entries],
@@ -105,6 +121,8 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
         : metaForBoard(keyboardMeta(metaBoard), metaBoard, board),
     [metaBoard, board],
   );
+  // BeThirty-class keyboards run the 30% guide; everything else the 40%.
+  const guideKind: GuideKind = meta.defaultGuide === "30" ? "30" : "40";
   const progressKey = live ? `live:${board.id}` : board.id;
   const onApply = useCallback(
     (writes: Parameters<PracticeDevice["write"]>[0]) => {
@@ -136,8 +154,8 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
         : remapProgress(demoToCarry, positionMap(metaBoard, board));
     // Demo progress counts steps without the practice ones; the live
     // guide has them, so step numbers and applied steps are moved over.
-    const demoSteps = guideSteps(false);
-    const liveSteps = guideSteps(true);
+    const demoSteps = guideSteps(false, guideKind);
+    const liveSteps = guideSteps(true, guideKind);
     const toLive = (i: number) =>
       Math.max(
         0,
@@ -285,14 +303,26 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
           </div>
         </div>
 
-        <DeviceBar t={t} device={device} carried={carried} />
+        {padConnected ? (
+          <Notice>
+            {t(
+              "{{name}} is connected, but a number or macro pad is not what the keymap dojo is for: it has no keymap to decide this way and nothing to type sentences on. Pick a keyboard above to use the dojo in demo mode.",
+              { name: padConnected },
+            )}
+          </Notice>
+        ) : (
+          <DeviceBar t={t} device={device} carried={carried} />
+        )}
         {demoToCarry && (
           <Notice>
             <span className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <span>
                 {t(
                   "A guide done in demo mode on this keyboard was found (step {{n}} of {{total}}). Write that keymap to the keyboard and carry on from there?",
-                  { n: demoToCarry.step + 1, total: guideSteps(false).length },
+                  {
+                    n: demoToCarry.step + 1,
+                    total: guideSteps(false, guideKind).length,
+                  },
                 )}
               </span>
               <span className="flex items-center gap-2">
@@ -334,7 +364,7 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
             board={board}
             metaBoard={metaBoard}
             progressKey={progressKey}
-            steps={guideSteps(!!live)}
+            steps={guideSteps(!!live, guideKind)}
             onPick={setMode}
           />
         )}
@@ -354,7 +384,7 @@ export function PracticePage({ onBack }: { onBack: () => void }) {
               progressKey={progressKey}
               onApply={live ? onApply : undefined}
               layerBase={live?.block.start ?? 0}
-              steps={guideSteps(!!live)}
+              steps={guideSteps(!!live, guideKind)}
               device={
                 live
                   ? {
@@ -542,6 +572,15 @@ function DeviceBar({
             {t("{{n}} of the changes could not be written to the keyboard.", {
               n: failed,
             })}
+            {outcome.unwritable.some((u) => u.reason === "tapdance") &&
+              " " +
+                (device.firmware === "zmk"
+                  ? t(
+                      "A key with a double tap or its own tapping term needs the runtime tap dance module in the firmware, with a free slot.",
+                    )
+                  : t(
+                      "A key with a double tap or its own tapping term needs a free tap dance entry in Vial.",
+                    ))}
           </span>
         )}
         <span className="ml-auto flex items-center gap-2">

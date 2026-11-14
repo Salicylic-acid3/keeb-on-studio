@@ -23,6 +23,10 @@ export type Trigger =
       hold?: string;
       /** Layer its hold turns on, for a layer-tap (LT, &lt). */
       holdLayer?: number;
+      /** Code two quick taps send, for a tap dance (Vial TD, a ZMK tap-dance). */
+      doubleTap?: string;
+      /** Its own tapping term in ms, when the key has one (a Vial tap dance). */
+      term?: number;
     }
   | { kind: "mouse"; button: number }
   /**

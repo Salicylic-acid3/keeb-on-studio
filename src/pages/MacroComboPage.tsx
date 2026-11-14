@@ -318,14 +318,21 @@ export function MacroComboPage() {
         macroEditor.clearGlobalModified();
       }
       if (comboAvailable) {
+        // The one Save button covers macros, combos and tap dance, and the
+        // keyboard answers a combo save with how many combos it wrote, edited
+        // or not. Reporting that after a tap dance edit read as "3 combo
+        // changes saved" when no combo had been touched.
+        const combosChanged = runtimeCombo.hasPendingChanges;
         const status = await runtimeCombo.saveChanges();
         if (status) {
           comboEditor.clearModified();
-          comboEditor.setStatusMessage(
-            t("Saved {{count}} runtime combo changes.", {
-              count: status.affectedCount,
-            }),
-          );
+          if (combosChanged) {
+            comboEditor.setStatusMessage(
+              t("Saved {{count}} runtime combo changes.", {
+                count: status.affectedCount,
+              }),
+            );
+          }
         }
       }
       if (tapDanceAvailable) {
@@ -363,15 +370,18 @@ export function MacroComboPage() {
         await macroEditor.reloadLoadedMacro();
       }
       if (comboAvailable) {
+        const combosChanged = runtimeCombo.hasPendingChanges;
         const status = await runtimeCombo.discardChanges();
         if (status) {
           comboEditor.clearModified();
           comboEditor.clearSelection();
-          comboEditor.setStatusMessage(
-            t("Discarded {{count}} runtime combo changes.", {
-              count: status.affectedCount,
-            }),
-          );
+          if (combosChanged) {
+            comboEditor.setStatusMessage(
+              t("Discarded {{count}} runtime combo changes.", {
+                count: status.affectedCount,
+              }),
+            );
+          }
           // A discarded combo selection no longer exists reliably; fall back
           // to the placeholder (the macro auto-select may then take over).
           setRightView((view) => (view === "combo" ? null : view));
@@ -404,7 +414,11 @@ export function MacroComboPage() {
     macroEditor.encodedSizeError ||
     macroEditor.stringConversionError ||
     runtimeCombo.error ||
-    tapDance.error ||
+    // The keyboard's own error text is generic ("Failed to process request");
+    // say which of the three sections it came from.
+    (tapDance.error
+      ? t("Tap dance: {{message}}", { message: t(tapDance.error) })
+      : null) ||
     keymap.error;
 
   return (
@@ -792,6 +806,7 @@ export function MacroComboPage() {
                   behaviors={keymap.behaviors}
                   layers={layersForSelector}
                   keyboardLayout={keyboardLayoutContext.layout}
+                  runtimeMacros={runtimeMacro.macros}
                   disabled={locked}
                 />
               ) : rightView === "macro" && macroAvailable ? (

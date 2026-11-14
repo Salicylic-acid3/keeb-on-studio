@@ -19,6 +19,7 @@ import {
 import { qmkTrigger, type Mod, type Trigger } from "../../keyTest/lib/triggers";
 import type { VialKey } from "../../qmk/lib/vial/kle";
 import {
+  decodeKeycode,
   encodeKeycode,
   KC_NO,
   KC_TRANSPARENT,
@@ -29,12 +30,26 @@ import {
   MOD_LSFT,
   MOD_RIGHT,
 } from "../../qmk/lib/keycodes/qmkKeycode";
+import type { VialTapDanceEntry } from "../../qmk/lib/vial/protocol";
 import {
   HID_BY_CODE,
   type LayerBlock,
+  needsTapDance,
   type Unwritable,
   windowTrigger,
 } from "./device";
+
+/** QMK's own basic keycodes for keys the HID keyboard page has no usage for. */
+const QMK_ONLY: Record<string, number> = {
+  AudioVolumeMute: 0xa8,
+  AudioVolumeUp: 0xa9,
+  AudioVolumeDown: 0xaa,
+};
+const CODE_BY_QMK_ONLY: Record<number, string> = Object.fromEntries(
+  Object.entries(QMK_ONLY).map(([code, id]) => [id, code]),
+);
+const basicCode = (code: string): number | undefined =>
+  HID_BY_CODE[code] ?? QMK_ONLY[code];
 import type { Change, WorkingKeymap } from "./guide";
 
 export interface LiveQmkKeyboard {
@@ -47,10 +62,105 @@ export interface LiveQmkKeyboard {
   block: LayerBlock;
 }
 
-/** A QMK keycode as a trigger, through the same text the key test reads. */
-export function keycodeToTrigger(code: number): Trigger {
+/**
+ * A QMK keycode as a trigger, through the same text the key test reads;
+ * a tap dance is read from its entry, when the entries are given.
+ */
+export function keycodeToTrigger(
+  code: number,
+  tapDances?: VialTapDanceEntry[],
+): Trigger {
+  const key = decodeKeycode(code);
+  if (key.kind === "tapDance" && tapDances) {
+    const t = tapDanceToTrigger(tapDances[key.index]);
+    if (t) return t;
+  }
+  if (key.kind === "basic" && CODE_BY_QMK_ONLY[key.code])
+    return { kind: "key", code: CODE_BY_QMK_ONLY[key.code], mods: [] };
   return qmkTrigger(keycodeToText(code));
 }
+
+/**
+ * A Vial tap dance as a key trigger: its tap (a plain key, possibly with
+ * modifiers), its hold as a modifier, its double tap as a plain key.
+ * Anything else the guide does not describe, so null.
+ */
+export function tapDanceToTrigger(
+  e: VialTapDanceEntry | undefined,
+): Trigger | null {
+  if (!e) return null;
+  const tap = qmkTrigger(keycodeToText(e.onTap));
+  if (tap.kind !== "key" || tap.hold || tap.holdLayer !== undefined)
+    return null;
+  const out: Extract<Trigger, { kind: "key" }> = {
+    kind: "key",
+    code: tap.code,
+    mods: tap.mods,
+  };
+  if (e.onHold !== KC_NO) {
+    const hold = qmkTrigger(keycodeToText(e.onHold));
+    if (
+      hold.kind !== "key" ||
+      hold.mods.length ||
+      modsOfHold(hold.code) === null
+    )
+      return null;
+    out.hold = hold.code;
+  }
+  if (e.onDoubleTap !== KC_NO) {
+    const dbl = qmkTrigger(keycodeToText(e.onDoubleTap));
+    if (dbl.kind !== "key" || dbl.mods.length) return null;
+    out.doubleTap = dbl.code;
+  }
+  if (e.onTapHold !== KC_NO) return null;
+  if (e.tappingTerm) out.term = e.tappingTerm;
+  return out;
+}
+
+/** The tap-dance entry for a trigger that needs one, or null when it cannot be one. */
+export function triggerToTapDance(t: Trigger): VialTapDanceEntry | null {
+  if (t.kind !== "key" || t.holdLayer !== undefined) return null;
+  const code = basicCode(t.code);
+  if (code === undefined) return null;
+  const onTap = t.mods.length
+    ? encodeKeycode({
+        kind: "mods",
+        mods: t.mods.reduce((f, m) => f | MOD_BIT[m], 0),
+        code,
+      })
+    : encodeKeycode({ kind: "basic", code });
+  let onHold = KC_NO;
+  if (t.hold) {
+    const h = basicCode(t.hold);
+    if (h === undefined || modsOfHold(t.hold) === null) return null;
+    onHold = encodeKeycode({ kind: "basic", code: h });
+  }
+  let onDoubleTap = KC_NO;
+  if (t.doubleTap) {
+    const d = basicCode(t.doubleTap);
+    if (d === undefined) return null;
+    onDoubleTap = encodeKeycode({ kind: "basic", code: d });
+  }
+  return {
+    onTap,
+    onHold,
+    onDoubleTap,
+    onTapHold: KC_NO,
+    tappingTerm: t.term ?? 200,
+  };
+}
+
+const sameTapDance = (a: VialTapDanceEntry, b: VialTapDanceEntry) =>
+  a.onTap === b.onTap &&
+  a.onHold === b.onHold &&
+  a.onDoubleTap === b.onDoubleTap &&
+  a.onTapHold === b.onTapHold &&
+  a.tappingTerm === b.tappingTerm;
+const emptyTapDance = (e: VialTapDanceEntry) =>
+  e.onTap === KC_NO &&
+  e.onHold === KC_NO &&
+  e.onDoubleTap === KC_NO &&
+  e.onTapHold === KC_NO;
 
 const MOD_BIT: Record<Mod, number> = {
   ctrl: MOD_LCTL,
@@ -89,7 +199,9 @@ export function triggerToKeycode(trigger: Trigger): number | null {
         ? null
         : encodeKeycode({ kind: "layer", op: "MO", layer: trigger.layer });
     case "key": {
-      const code = HID_BY_CODE[trigger.code];
+      // A double tap or a tapping term of its own needs a tap dance entry.
+      if (needsTapDance(trigger)) return null;
+      const code = basicCode(trigger.code);
       if (code === undefined) return null;
       if (trigger.holdLayer !== undefined) {
         if (trigger.holdLayer > 15 || trigger.mods.length) return null;
@@ -122,7 +234,8 @@ export function liveQmkKeyboard(
   visible: VialKey[],
   keymap: number[][][],
   labelLayout: LabelLayout,
-  block: LayerBlock = { start: 0, size: Math.min(4, keymap.length) },
+  block: LayerBlock = { start: 0, size: keymap.length },
+  tapDances?: VialTapDanceEntry[],
 ): LiveQmkKeyboard {
   // Vial's key geometry uses the same units as a ZMK physical layout.
   const project = importKle(
@@ -146,7 +259,7 @@ export function liveQmkKeyboard(
       const code = layer[row]?.[col];
       return code === undefined
         ? { kind: "none" }
-        : windowTrigger(keycodeToTrigger(code), block);
+        : windowTrigger(keycodeToTrigger(code, tapDances), block);
     }),
   );
   const keys: TestKey[] = project.keys.map((key, pos) => {
@@ -195,6 +308,7 @@ export function absolute(t: Trigger, block: LayerBlock): Trigger {
 export function keycodesFor(
   changes: Change[],
   live: LiveQmkKeyboard,
+  tapDances: VialTapDanceEntry[] = [],
 ): {
   /** `layer` is the device's layer index. */
   writes: Array<{
@@ -204,6 +318,8 @@ export function keycodesFor(
     col: number;
     code: number;
   }>;
+  /** Tap-dance entries to set, each at its index, before the keycodes. */
+  tapDanceWrites: Array<{ index: number; entry: VialTapDanceEntry }>;
   unwritable: Unwritable[];
 } {
   const writes: Array<{
@@ -213,6 +329,19 @@ export function keycodesFor(
     col: number;
     code: number;
   }> = [];
+  const tapDanceWrites: Array<{ index: number; entry: VialTapDanceEntry }> = [];
+  const entries = tapDances.map((e) => ({ ...e }));
+  // The entry that already is this tap dance, else the first empty one.
+  const tapDanceIndex = (entry: VialTapDanceEntry): number | null => {
+    let i = entries.findIndex((e) => sameTapDance(e, entry));
+    if (i < 0) i = entries.findIndex(emptyTapDance);
+    if (i < 0) return null;
+    if (!sameTapDance(entries[i], entry)) {
+      entries[i] = entry;
+      tapDanceWrites.push({ index: i, entry });
+    }
+    return i;
+  };
   const unwritable: Unwritable[] = [];
   for (const change of changes) {
     const at = live.matrix[change.pos];
@@ -220,9 +349,18 @@ export function keycodesFor(
       unwritable.push({ change, reason: "layer" });
       continue;
     }
-    const code = triggerToKeycode(absolute(change.trigger, live.block));
+    const t = absolute(change.trigger, live.block);
+    let code: number | null;
+    if (needsTapDance(t)) {
+      const entry = triggerToTapDance(t);
+      const index = entry ? tapDanceIndex(entry) : null;
+      code = index === null ? null : encodeKeycode({ kind: "tapDance", index });
+    } else code = triggerToKeycode(t);
     if (code === null) {
-      unwritable.push({ change, reason: "keycode" });
+      unwritable.push({
+        change,
+        reason: needsTapDance(t) ? "tapdance" : "keycode",
+      });
       continue;
     }
     writes.push({
@@ -233,5 +371,5 @@ export function keycodesFor(
       code,
     });
   }
-  return { writes, unwritable };
+  return { writes, tapDanceWrites, unwritable };
 }

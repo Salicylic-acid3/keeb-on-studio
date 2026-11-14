@@ -8,3 +8,5 @@ package-lock.json
 src/proto
 # Written by scripts/fetchLayoutTemplates.py
 src/layoutEditor/data/keyboards.json
+# Written by scripts/generateDemoKeymaps.py
+src/lib/transport/demoKeymaps.json

@@ -166,6 +166,33 @@ export function formatMacroName(
   return `Macro ${slot}`;
 }
 
+/**
+ * The name a new macro gets: "Macro <slot>", for the slot the firmware is
+ * about to give it.
+ *
+ * The keymap refers to a macro by its slot number, and shows "Macro 0" for
+ * slot 0 wherever the name is not at hand (a number field, a key whose macro
+ * list has not loaded). Slots count from 0, and the firmware hands a new
+ * macro the lowest free one (zmk-feature-custom-settings,
+ * keyspace_free_slot_index_locked), so the name is taken from there. Counting
+ * the macros instead named the first one "Macro 1" while the keymap called it
+ * "Macro 0".
+ *
+ * A name that is already in use (a macro renamed to it, or one named by the
+ * old rule) cannot be reused - names are the keys create/delete/rename go by -
+ * so the number moves up until the name is free.
+ */
+export function nextMacroName(
+  macros: ReadonlyArray<{ slot: number; name: string }>,
+): string {
+  const usedSlots = new Set(macros.map((m) => m.slot));
+  const usedNames = new Set(macros.map((m) => m.name));
+  let n = 0;
+  while (usedSlots.has(n)) n++;
+  while (usedNames.has(`Macro ${n}`)) n++;
+  return `Macro ${n}`;
+}
+
 export function clampUInt32(value: number): number {
   if (!Number.isFinite(value)) return 0;
   return Math.max(0, Math.min(0xffffffff, Math.round(value)));

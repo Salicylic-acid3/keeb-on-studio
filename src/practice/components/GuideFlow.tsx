@@ -60,12 +60,20 @@ import {
   thumbsLeftToRight,
   currentThumb,
   type Answers,
+  type GuideKind,
   type HoldChoice,
   type LayerContent,
   type Proposal,
   type ThumbAssign,
   type WorkingKeymap,
 } from "../lib/guide";
+import {
+  groups30,
+  isStep30,
+  layersShown30,
+  propose30,
+  type Group30,
+} from "../lib/guide30";
 import {
   clearProgress,
   readProgress,
@@ -80,10 +88,14 @@ import { TaskSession } from "./TaskSession";
 
 type T = (key: string, params?: Record<string, string | number>) => string;
 
-function fresh(board: TestBoard, start?: WorkingKeymap): GuideProgress {
+function fresh(
+  board: TestBoard,
+  guide: GuideKind,
+  start?: WorkingKeymap,
+): GuideProgress {
   return {
     version: 1,
-    guide: "40",
+    guide,
     step: 0,
     answers: DEFAULT_ANSWERS,
     status: {},
@@ -142,10 +154,17 @@ export function GuideFlow({
 }) {
   const storeKey = progressKey ?? board.id;
   const steps = stepsProp ?? GUIDE_40;
+  // The 30% guide is the one whose steps are its own (guide30.ts).
+  const kind: GuideKind = steps.some((s) => s.id === "thumbs30") ? "30" : "40";
   const ln = (layer: number) => layer + (layerBase ?? 0);
-  const [progress, setProgress] = useState<GuideProgress>(
-    () => readProgress(storeKey) ?? fresh(board, startKeymap),
-  );
+  const [progress, setProgress] = useState<GuideProgress>(() => {
+    // Progress from the other guide (a keyboard moved to the 30% guide)
+    // does not carry over: its steps are different ones.
+    const saved = readProgress(storeKey);
+    return saved && (saved.guide ?? "40") === kind
+      ? saved
+      : fresh(board, kind, startKeymap);
+  });
   // The keyboard drawn to fit, or at full size with sideways scrolling.
   const [zoom, setZoom] = useState(false);
   // Step 2 by hand: the slot picked on the drawing, if any.
@@ -210,7 +229,7 @@ export function GuideFlow({
   };
   const restart = () => {
     clearProgress(storeKey);
-    setProgress(fresh(board, startKeymap));
+    setProgress(fresh(board, kind, startKeymap));
   };
 
   // The proposal of the step in front of the person, from the answers so far.
@@ -229,9 +248,36 @@ export function GuideFlow({
       case "rare":
         return proposeRare(board, meta, km, answers);
       default:
-        return null;
+        return isStep30(step.id)
+          ? propose30(step.id, board, meta, km, answers, layout)
+          : null;
     }
   }, [step.id, board, meta, km, answers, layout]);
+
+  // The 30% guide: a step's groups of keys, each on or off, and the
+  // layers its drawing shows.
+  const groups: Group30[] = useMemo(
+    () =>
+      isStep30(step.id)
+        ? groups30(step.id, board, meta, km, answers, layout)
+        : [],
+    [step.id, board, meta, km, answers, layout],
+  );
+  const layers30 = useMemo(
+    () => (isStep30(step.id) ? layersShown30(step.id, board, meta) : null),
+    [step.id, board, meta],
+  );
+  const setGroup = (id: string, on: boolean) => {
+    const off = answers.thirty.off.filter((g) => g !== id);
+    answer({ thirty: { ...answers.thirty, off: on ? off : [...off, id] } });
+  };
+  const setTerm = (which: "tab" | "a", value: number) =>
+    answer({
+      thirty: {
+        ...answers.thirty,
+        terms: { ...answers.thirty.terms, [which]: value },
+      },
+    });
 
   // Which layer the drawing shows: the one most of the proposal lands on.
   const shownLayer = useMemo(() => {
@@ -279,8 +325,15 @@ export function GuideFlow({
   ]);
 
   const layerStep = step.id === "layer-one-hand" || step.id === "layer-other";
-  /** The proposal's marks on one layer, with the thumb key held for it lit. */
-  const marksForLayer = (layer: number, thumbPos: number) => {
+  // Several layers drawn at once: the thumb layers of the 40% guide's
+  // layer steps, or the layers a 30% step fills (none for its base-layer steps).
+  const multiLayers: Array<{ layer: number; held: number[] }> | null = layerStep
+    ? null
+    : layers30 && (layers30.length > 1 || layers30[0].layer > 0)
+      ? layers30
+      : null;
+  /** The proposal's marks on one layer, with the keys held for it lit. */
+  const marksForLayer = (layer: number, heldPos: number | number[]) => {
     const m = new Map<string, Mark>();
     if (!proposal) return m;
     for (const c of proposalLabels(proposal.changes, layout, layerBase ?? 0)) {
@@ -288,8 +341,10 @@ export function GuideFlow({
       const k = board.keys[c.pos];
       if (k) m.set(k.id, { tone: "set", label: c.label });
     }
-    const held = board.keys[thumbPos];
-    if (held) m.set(held.id, { tone: "hint" });
+    for (const p of Array.isArray(heldPos) ? heldPos : [heldPos]) {
+      const held = board.keys[p];
+      if (held) m.set(held.id, { tone: "hint" });
+    }
     return m;
   };
 
@@ -551,7 +606,34 @@ export function GuideFlow({
               {t(step.title)}
             </h2>
 
-            {step.id === "intro" && (
+            {step.id === "intro" && kind === "30" && (
+              <>
+                <Para>
+                  {t(
+                    "A 30% keyboard has three rows of letters, a bottom row, and no modifier keys of its own: no Shift, Ctrl, Tab or Esc with a key to itself. They still have to come from somewhere, so the letters carry them: a letter tapped types the letter, held it is a modifier. Two thumb keys, held, open the layers that hold everything else.",
+                  )}
+                </Para>
+                <Para>
+                  {t(
+                    "This guide walks through the keymap Salicylic_acid3 uses on the BeThirty, a step at a time: the thumb keys, the letters with a hold, then each layer. Every step comes in groups of keys; leave a group out if it is not for you, apply the rest, and fix single keys later in the keymap editor.",
+                  )}
+                </Para>
+                <Para>
+                  {t(
+                    "A letter with a hold has to tell a tap from a hold by time, so a key held a little too long sends the modifier instead of the letter. The last step tunes that time for the two keys where it matters most.",
+                  )}
+                </Para>
+                <button
+                  type="button"
+                  onClick={() => finish("done")}
+                  className="btn-electric h-10 px-4 text-sm"
+                >
+                  {t("Begin")}
+                </button>
+              </>
+            )}
+
+            {step.id === "intro" && kind === "40" && (
               <>
                 <Para>
                   {t(
@@ -1004,6 +1086,85 @@ export function GuideFlow({
               </>
             )}
 
+            {isStep30(step.id) && (
+              <>
+                <Para>{t(STEP30_TEXT[step.id])}</Para>
+                {step.id === "terms30" && (
+                  <div className="flex flex-wrap gap-4">
+                    {(["tab", "a"] as const).map((which) => (
+                      <label
+                        key={which}
+                        className="flex items-center gap-2 text-sm text-[var(--color-text)]"
+                      >
+                        <span className="font-mono">
+                          {which === "tab" ? "Tab / Q" : "A"}
+                        </span>
+                        <input
+                          type="number"
+                          min={100}
+                          max={500}
+                          step={10}
+                          value={answers.thirty.terms[which]}
+                          onChange={(e) =>
+                            setTerm(which, Number(e.target.value) || 0)
+                          }
+                          className="h-8 w-20 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm text-[var(--color-text)]"
+                        />
+                        <span className="text-xs text-[var(--color-text-muted)]">
+                          ms
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+                <ul className="space-y-1.5">
+                  {groups.map((g) => {
+                    const on = !answers.thirty.off.includes(g.id);
+                    const empty = g.changes.length === 0;
+                    return (
+                      <li
+                        key={g.id}
+                        className={`rounded-lg border px-3 py-2 text-sm ${
+                          on && !empty
+                            ? "border-[var(--color-border)]"
+                            : "border-[var(--color-border)] opacity-60"
+                        }`}
+                      >
+                        <label className="flex items-start gap-3 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={on}
+                            disabled={empty}
+                            onChange={(e) => setGroup(g.id, e.target.checked)}
+                            className="mt-1 accent-[var(--color-electric)]"
+                          />
+                          <span className="space-y-1">
+                            <span className="block font-medium text-[var(--color-text)]">
+                              {t(g.title)}
+                              <span className="ml-2 text-xs font-normal text-[var(--color-text-muted)]">
+                                {t("{{n}} keys", { n: g.changes.length })}
+                              </span>
+                            </span>
+                            <span className="block text-xs leading-relaxed text-[var(--color-text-secondary)]">
+                              {t(g.text)}
+                            </span>
+                            {g.note === "layers-full" && (
+                              <span className="block text-xs text-[var(--color-warning)]">
+                                {t(
+                                  "This keyboard has no layer left for it, so the keys that would open it keep their tap only.",
+                                )}
+                              </span>
+                            )}
+                          </span>
+                        </label>
+                      </li>
+                    );
+                  })}
+                </ul>
+                {changeButtons}
+              </>
+            )}
+
             {proposal &&
               !proposal.note &&
               step.id !== "layer-one-hand" &&
@@ -1028,9 +1189,13 @@ export function GuideFlow({
               <span className="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
                 {layerStep
                   ? t("All thumb layers")
-                  : shownLayer === 0
-                    ? t("Base layer")
-                    : t("Layer {{n}}", { n: ln(shownLayer) })}
+                  : multiLayers
+                    ? multiLayers
+                        .map((l) => t("Layer {{n}}", { n: ln(l.layer) }))
+                        .join(" · ")
+                    : shownLayer === 0
+                      ? t("Base layer")
+                      : t("Layer {{n}}", { n: ln(shownLayer) })}
                 <button
                   type="button"
                   aria-pressed={zoom}
@@ -1066,6 +1231,28 @@ export function GuideFlow({
                 {thumbLayers.length === 0 && (
                   <Para muted>{noteText("one-layer")}</Para>
                 )}
+              </div>
+            ) : multiLayers ? (
+              // The layers a 30% step fills, each with the keys held for it lit.
+              <div className="space-y-4">
+                {multiLayers.map((l) => (
+                  <div key={l.layer} className="space-y-1.5">
+                    <div className="text-xs text-[var(--color-text-secondary)]">
+                      {t("Layer {{n}} ({{key}} held)", {
+                        n: ln(l.layer),
+                        key: l.held.map((p) => thumbLabel(p)).join(" + "),
+                      })}
+                    </div>
+                    <PracticeBoard
+                      board={drawn}
+                      marks={marksForLayer(l.layer, l.held)}
+                      dimOthers={marksForLayer(l.layer, l.held).size > 1}
+                      layer={l.layer}
+                      layout={layout}
+                      scroll={zoom}
+                    />
+                  </div>
+                ))}
               </div>
             ) : (
               <PracticeBoard
@@ -1105,7 +1292,7 @@ export function GuideFlow({
                     <span className="inline-block h-3.5 w-3.5 rounded border border-[var(--color-neon)] bg-[color-mix(in_srgb,var(--color-neon)_25%,var(--color-surface-elevated))]" />
                     {t("Keys the proposal changes (old legend struck through)")}
                   </span>
-                  {layerStep && (
+                  {(layerStep || multiLayers) && (
                     <span className="inline-flex items-center gap-1.5">
                       <span className="inline-block h-3.5 w-3.5 rounded border border-[var(--color-electric)] bg-[color-mix(in_srgb,var(--color-electric)_55%,var(--color-surface-elevated))]" />
                       {t("Thumb key held")}
@@ -1157,6 +1344,25 @@ function Example({ children }: { children: ReactNode }) {
     </p>
   );
 }
+
+/** What each 30% step says before its groups. */
+const STEP30_TEXT: Record<
+  "thumbs30" | "alpha30" | "layer1" | "layer2" | "extra30" | "terms30",
+  string
+> = {
+  thumbs30:
+    "The bottom row is the one row with no letters, so it carries the keys a thumb presses on its own and the two layer keys. Space and Enter are hardly ever held, so their hold opens a layer each; Backspace sits between them where either thumb reaches it.",
+  alpha30:
+    "With no modifier keys, the letters carry the modifiers: tapped, a letter types itself; held, it is Shift or Ctrl. The little fingers' keys take them, where a modifier usually sits. The Q key goes further: Tab is typed far more often than Q, so Tab takes the tap and Q moves to a double tap.",
+  layer1:
+    "Space held opens layer 1. What one hand finishes on its own goes under that hand: the cursor keys under the right, whose thumb holds the layer; the F keys under the left, with Ctrl and Shift beside them for Ctrl+arrow and Shift+arrow. Esc and Delete are on every layer in the same place.",
+  layer2:
+    "Enter held opens layer 2. Symbols go under the left hand, every one a single key with no Shift, in the author's grid: pairs side by side, rows following the number row where they can. A numpad goes under the right hand.",
+  extra30:
+    "Two more layers for what is used now and then. Layer 3 opens from the ろ key at the bottom right and holds PrintScreen and the volume; layer 4 opens with both thumbs down and puts the common Ctrl shortcuts on single keys. Leave either out if you will not use it.",
+  terms30:
+    "The time that tells a tap from a hold, for the two keys that get it wrong most often. Q is hard to tap quickly, so its term is longer; A has to be tapped short or it turns into Ctrl, so its term is shorter. Set the values and apply to write them.",
+};
 
 const CONTENT_NAME: Record<LayerContent, string> = {
   none: "No content",

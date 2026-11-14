@@ -70,8 +70,9 @@ describe("QMK keycodes and triggers", () => {
   it("rebuilds GoForty JP from Vial's keys and keymap", () => {
     const { keys, keymap } = vialOf(entry);
     const live = liveQmkKeyboard("goforty_jp", entry.name, keys, keymap, "jis");
-    // Without an OS-switch module the guide works in the first four layers.
-    expect(live.layerCount).toBe(Math.min(4, keymap.length));
+    // Without an OS-switch module the guide works in the whole keymap,
+    // whose layer count the firmware fixes (a 30% guide needs five).
+    expect(live.layerCount).toBe(keymap.length);
     expect(live.matrix).toHaveLength(keys.length);
     const staticBoard = testBoard("goforty_jp")!;
     // Every live key that sends a key sits where the registered board has
@@ -110,6 +111,106 @@ describe("QMK keycodes and triggers", () => {
       code: 0x05,
     });
     expect(unwritable.map((u) => u.reason)).toEqual(["layer", "keycode"]);
+  });
+
+  it("reads and writes a tap dance: Tab on tap, Ctrl on hold, Q on two taps", () => {
+    const { keys, keymap } = vialOf(entry);
+    const empty = {
+      onTap: 0,
+      onHold: 0,
+      onDoubleTap: 0,
+      onTapHold: 0,
+      tappingTerm: 200,
+    };
+    const tapDances = [
+      {
+        onTap: 0x2b,
+        onHold: 0xe0,
+        onDoubleTap: 0x14,
+        onTapHold: 0,
+        tappingTerm: 220,
+      },
+      empty,
+      empty,
+    ];
+    const td: Trigger = {
+      kind: "key",
+      code: "Tab",
+      mods: [],
+      hold: "ControlLeft",
+      doubleTap: "KeyQ",
+      term: 220,
+    };
+    // TD(0) on the first key reads back as the trigger.
+    const withTd = keymap.map((l) => l.map((r) => [...r]));
+    withTd[0][keys[0].row][keys[0].col] = 0x5700;
+    const live = liveQmkKeyboard(
+      "goforty_jp",
+      entry.name,
+      keys,
+      withTd,
+      "jis",
+      undefined,
+      tapDances,
+    );
+    expect(sameTrigger(live.keymap.layers[0][0], td)).toBe(true);
+    // Writing it again reuses entry 0; a new one (A with a short term) takes the first empty entry.
+    const { writes, tapDanceWrites, unwritable } = keycodesFor(
+      [
+        { layer: 0, pos: 0, trigger: td },
+        {
+          layer: 0,
+          pos: 1,
+          trigger: {
+            kind: "key",
+            code: "KeyA",
+            mods: [],
+            hold: "ControlLeft",
+            term: 180,
+          },
+        },
+      ],
+      live,
+      tapDances,
+    );
+    expect(unwritable).toEqual([]);
+    expect(writes.map((w) => w.code)).toEqual([0x5700, 0x5701]);
+    expect(tapDanceWrites).toEqual([
+      {
+        index: 1,
+        entry: {
+          onTap: 0x04,
+          onHold: 0xe0,
+          onDoubleTap: 0,
+          onTapHold: 0,
+          tappingTerm: 180,
+        },
+      },
+    ]);
+    // With every entry taken, the key cannot be written.
+    const full = keycodesFor(
+      [
+        {
+          layer: 0,
+          pos: 2,
+          trigger: { kind: "key", code: "KeyS", mods: [], term: 150 },
+        },
+      ],
+      live,
+      tapDances.map((e, i) => (i === 0 ? e : { ...e, onTap: 0x05 })),
+    );
+    expect(full.unwritable.map((u) => u.reason)).toEqual(["tapdance"]);
+    // A tap dance needs an entry: no plain keycode stands for it.
+    expect(triggerToKeycode(td)).toBeNull();
+    // Volume keys are QMK's own basic keycodes.
+    expect(
+      triggerToKeycode({ kind: "key", code: "AudioVolumeUp", mods: [] }),
+    ).toBe(0xa9);
+    expect(keycodeToTrigger(0xa9)).toEqual({
+      kind: "key",
+      code: "AudioVolumeUp",
+      mods: [],
+    });
   });
 
   it("stages into the OS's block of layers", () => {

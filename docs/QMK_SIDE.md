@@ -16,13 +16,13 @@ workshop's Vial keyboards (vial-qmk fork, Vial protocol 6) over WebHID.
   ZMK-shaped keymap (pretend behaviors, lossless keycode translation), so
   KeyboardLayout, KeycodeSelector and QuickAssignBar serve both sides.
 - `src/qmk/lib/osBlocks.ts` — OS-block grouping of layers and block copy.
-- `src/qmk/demo/` — the demo keyboard's data, generated from the firmware.
+- `src/qmk/demo/` — the demo keyboards' data (every QMK keyboard on the firmware list, as its multi-os firmware builds it), generated from the firmware; picked with "Keyboard" on the keymap page in demo mode.
 
 ## Regenerating
 
 ```
 node --experimental-strip-types scripts/generateQmkKeycodes.ts ../vial-qmk/quantum/keycodes.h
-python3 scripts/generateQmkDemo.py ../vial-qmk/keyboards/salicylic_acid3/clickboard_ergomini multi-os clickboardErgoMini
+python3 scripts/generateQmkDemoBoards.py ../vial-qmk
 ```
 
 ## Firmware side

@@ -17,6 +17,7 @@ import {
   TAP_DANCE_SUBSYSTEM_ID,
   groupIntoSlots,
   type TapDanceSlot,
+  type TapsRef,
 } from "../../lib/tapDance/slots";
 import type {
   Setting,
@@ -49,6 +50,12 @@ export function slotHasUnsavedValue(slot: TapDanceSlot): boolean {
     slot.holds.some((hold) => hold.hasUnsavedValue) ||
     Boolean(slot.term?.hasUnsavedValue)
   );
+}
+
+export interface DanceSpec {
+  taps: BehaviorBinding[];
+  holds?: Array<BehaviorBinding | null>;
+  term?: number;
 }
 
 export interface UseTapDanceReturn {
@@ -84,6 +91,12 @@ export interface UseTapDanceReturn {
   addTap: (slot: TapDanceSlot) => Promise<void>;
   removeTap: (slot: TapDanceSlot) => Promise<void>;
   setTerm: (slot: TapDanceSlot, ms: number) => Promise<void>;
+  /**
+   * Set a whole slot at once: its taps, what each tap count does when
+   * held, and the wait between taps. The slot is grown or shrunk to fit.
+   * False when the keyboard has no &none to pad with.
+   */
+  setDance: (slot: TapDanceSlot, dance: DanceSpec) => Promise<boolean>;
   refresh: () => Promise<void>;
   save: () => Promise<void>;
   discard: () => Promise<void>;
@@ -241,6 +254,66 @@ export function useTapDance(
     [settings],
   );
 
+  const setDance = useCallback(
+    async (slot: TapDanceSlot, dance: DanceSpec) => {
+      if (noneBehaviorId === null) return false;
+      setEditedSinceSave(true);
+      const n = dance.taps.length;
+      const none: SettingScalarValue = {
+        behaviorValue: { behaviorId: noneBehaviorId, param1: 0, param2: 0 },
+      };
+      // Grow or shrink to the dance's length; holds follow taps row for row.
+      for (let i = slot.taps.length; i < n; i++) {
+        await settings.pushBackArrayElement(slot.tapsRef, none);
+        if (slot.holdsSupported)
+          await settings.pushBackArrayElement(slot.holdsRef, none);
+      }
+      for (let i = slot.taps.length; i > n; i--) {
+        await settings.popBackArrayElement(slot.tapsRef);
+        if (slot.holdsSupported)
+          await settings.popBackArrayElement(slot.holdsRef);
+      }
+      // An element named from its array: the listing may not have caught
+      // up with the pushes, so the Setting is built rather than looked up.
+      const element = (ref: TapsRef, index: number): Setting => ({
+        customSubsystemIndex: ref.customSubsystemIndex,
+        key: ref.key,
+        source: ref.source,
+        hasUnsavedValue: false,
+        value: { arrayValue: { index, size: n, value: {} } },
+      });
+      const binding = (b: BehaviorBinding | null): SettingScalarValue =>
+        b
+          ? {
+              behaviorValue: {
+                behaviorId: b.behaviorId,
+                param1: b.param1,
+                param2: b.param2,
+              },
+            }
+          : none;
+      for (let i = 0; i < n; i++)
+        await settings.writeSettingToMemory(element(slot.tapsRef, i), {
+          arrayValue: { index: i, size: n, value: binding(dance.taps[i]) },
+        });
+      if (slot.holdsSupported)
+        for (let i = 0; i < n; i++)
+          await settings.writeSettingToMemory(element(slot.holdsRef, i), {
+            arrayValue: {
+              index: i,
+              size: n,
+              value: binding(dance.holds?.[i] ?? null),
+            },
+          });
+      if (dance.term !== undefined && slot.term)
+        await settings.writeSettingToMemory(slot.term, {
+          int32Value: dance.term,
+        });
+      return true;
+    },
+    [settings, noneBehaviorId],
+  );
+
   const refresh = useCallback(async () => {
     await settings.loadSettings();
   }, [settings]);
@@ -276,6 +349,7 @@ export function useTapDance(
     addTap,
     removeTap,
     setTerm,
+    setDance,
     refresh,
     save,
     discard,

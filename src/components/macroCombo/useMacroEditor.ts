@@ -31,6 +31,7 @@ import {
   getKeyTapSequenceString,
   getStepAction,
   getStepBinding,
+  nextMacroName,
   stringToKeyTapSequenceStep,
   type MacroStepRow,
   type StepAction,
@@ -458,12 +459,10 @@ export function useMacroEditor({
     }
   }, [loadedMacro, runtimeMacro, requireUnlocked]);
 
-  const generateMacroName = useCallback((): string => {
-    const existingNames = new Set(runtimeMacro.macros.map((m) => m.name));
-    let n = runtimeMacro.macros.length + 1;
-    while (existingNames.has(`Macro ${n}`)) n++;
-    return `Macro ${n}`;
-  }, [runtimeMacro.macros]);
+  const generateMacroName = useCallback(
+    (): string => nextMacroName(runtimeMacro.macros),
+    [runtimeMacro.macros],
+  );
 
   const handleCreateMacro = useCallback(async () => {
     if (!requireUnlocked()) return;

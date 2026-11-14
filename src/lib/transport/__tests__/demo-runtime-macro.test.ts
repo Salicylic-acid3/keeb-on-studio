@@ -157,6 +157,25 @@ describe("RuntimeMacroHandler", () => {
     expect(created?.encodedSize).toBe(0);
   });
 
+  it("gives a new macro the lowest free slot, like the firmware", () => {
+    const slotOf = (name: string) =>
+      handler
+        .process(Request.create({ listMacros: {} }))
+        .listMacros?.macros.find((macro) => macro.name === name)?.slot;
+
+    handler.process(
+      Request.create({ createMacro: { name: "third", persist: false } }),
+    );
+    expect(slotOf("third")).toBe(2);
+
+    // Free slot 0; the next macro takes it rather than a fresh number.
+    handler.process(Request.create({ deleteMacro: { name: "Hello" } }));
+    handler.process(
+      Request.create({ createMacro: { name: "again", persist: false } }),
+    );
+    expect(slotOf("again")).toBe(0);
+  });
+
   it("removes a macro via native deleteMacro RPC", () => {
     const before = handler.process(Request.create({ listMacros: {} }));
     expect(

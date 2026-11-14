@@ -11,18 +11,17 @@ import { DemoTransport, base64ToBytes } from "../demoTransport";
 import { readDefinition } from "../definition";
 import { parseKleLayout, visibleKeys } from "../kle";
 import { keycodeToText, parseKeycode } from "../../keycodes/qmkKeycode";
-import {
-  DEMO_DEFINITION_XZ_BASE64,
-  DEMO_KEYMAP,
-} from "../../../demo/clickboardErgoMini";
+import boards from "../../../demo/boards.json";
+
+const ERGOMINI = boards.clickboard_ergomini;
 
 function demo(withOs = true) {
   return new DemoTransport({
     productName: "clickboard_ergomini (demo)",
-    definition: base64ToBytes(DEMO_DEFINITION_XZ_BASE64),
-    rows: 10,
-    cols: 6,
-    keymap: DEMO_KEYMAP,
+    definition: base64ToBytes(ERGOMINI.definitionXzBase64),
+    rows: ERGOMINI.rows,
+    cols: ERGOMINI.cols,
+    keymap: ERGOMINI.keymap,
     keebOnOs: withOs
       ? { layersPerBlock: 4, blockCount: 3, detectedOs: 3 }
       : undefined,
@@ -71,8 +70,8 @@ describe("VialClient against the demo keyboard", () => {
     expect(layers).toBe(12);
     const keymap = await client.getKeymap(layers, 10, 6);
     expect(keycodeToText(keymap[0][0][0])).toBe("KC_TAB");
-    const fnRow = DEMO_KEYMAP[0].findIndex((row) => row.includes("MO(1)"));
-    const fnCol = DEMO_KEYMAP[0][fnRow].indexOf("MO(1)");
+    const fnRow = ERGOMINI.keymap[0].findIndex((row) => row.includes("MO(1)"));
+    const fnCol = ERGOMINI.keymap[0][fnRow].indexOf("MO(1)");
     expect(keycodeToText(keymap[0][fnRow][fnCol])).toBe("MO(1)");
     expect(keycodeToText(keymap[4][fnRow][fnCol])).toBe("MO(5)");
     expect(keycodeToText(keymap[8][fnRow][fnCol])).toBe("MO(9)");

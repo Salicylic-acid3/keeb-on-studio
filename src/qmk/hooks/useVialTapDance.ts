@@ -179,6 +179,25 @@ export function useVialTapDance(keyboard: UseVialKeyboard): UseTapDanceReturn {
       if (!Number.isFinite(ms) || ms <= 0) return;
       update(slot, (e) => ({ ...e, tappingTerm: Math.round(ms) }));
     },
+    setDance: async (slot, dance) => {
+      if (dance.taps.length > MAX_TAPS) return false;
+      const codes = dance.taps.map((b) => toKeycode(b));
+      const holds = TAP_FIELDS.map((_, i) =>
+        toKeycode(dance.holds?.[i] ?? null),
+      );
+      if (codes.some((c) => c === null) || holds.some((c) => c === null))
+        return false;
+      update(slot, (e) => ({
+        onTap: codes[0] ?? KC_NO,
+        onDoubleTap: codes[1] ?? KC_NO,
+        onHold: holds[0] ?? KC_NO,
+        onTapHold: holds[1] ?? KC_NO,
+        tappingTerm:
+          dance.term !== undefined ? Math.round(dance.term) : e.tappingTerm,
+      }));
+      setShownTaps((prev) => ({ ...prev, [slot.index]: dance.taps.length }));
+      return true;
+    },
     refresh: async () => {
       setShownTaps({});
       await keyboard.reload();

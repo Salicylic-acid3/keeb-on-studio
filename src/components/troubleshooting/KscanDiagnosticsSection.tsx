@@ -67,6 +67,7 @@ export function KscanDiagnosticsSection({
     peripheralTopologyErrors,
     peripheralDiscoveryError,
     loadPeripheralTopologies,
+    peripheralStats,
   } = kscan;
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [hasRequestedTopology, setHasRequestedTopology] = useState(false);
@@ -96,12 +97,34 @@ export function KscanDiagnosticsSection({
     () => pseudoKeyPositionsFor(statsLayout?.name, statsLayout?.keys.length),
     [statsLayout],
   );
-  const stats = useMemo(
-    () => rawStats.filter((s) => !pseudoKeys.has(s.position)),
-    [rawStats, pseudoKeys],
-  );
+  // Which half measured each position. On a split keyboard the central's
+  // table also counts the other half's keys, but timed as their events come
+  // over the link, so where a peripheral has seen a key itself, its own
+  // numbers (taken at the switch) replace the central's. A peripheral's
+  // table has a row for every position of the keymap -- its transform is
+  // the whole keyboard's -- so only the rows it has actually counted a
+  // press or release at are its; the rest stay the central's. `measuredOn`
+  // keeps the source for the table: 0 is this half, otherwise the
+  // peripheral.
+  const stats = useMemo(() => {
+    const own = rawStats.filter((s) => !pseudoKeys.has(s.position));
+    const merged = new Map<
+      number,
+      (typeof own)[number] & { measuredOn: number }
+    >();
+    for (const s of own) merged.set(s.position, { ...s, measuredOn: 0 });
+    for (const [source, entries] of peripheralStats) {
+      for (const s of entries) {
+        if (pseudoKeys.has(s.position)) continue;
+        if (s.presses === 0 && s.releases === 0) continue;
+        merged.set(s.position, { ...s, measuredOn: source });
+      }
+    }
+    return [...merged.values()].sort((a, b) => a.position - b.position);
+  }, [rawStats, pseudoKeys, peripheralStats]);
 
-  const suspectKeys = findSuspectKeys(stats);
+  const suspectKeys = findSuspectKeys(stats) as typeof stats;
+  const halvesMeasured = peripheralStats.size > 0;
   const untestedKeys = stats.filter((s) => s.presses === 0 && s.releases === 0);
   const totalPresses = stats.reduce((sum, s) => sum + s.presses, 0);
 
@@ -267,7 +290,14 @@ export function KscanDiagnosticsSection({
                   <KscanKeyboardView
                     layout={physicalLayout}
                     wiring={peripheralWiring}
-                    statsByPosition={new Map()}
+                    statsByPosition={
+                      new Map(
+                        (peripheralStats.get(src) ?? []).map((s) => [
+                          s.position,
+                          s,
+                        ]),
+                      )
+                    }
                   />
                 ) : (
                   <p className="text-xs text-[var(--color-text-muted)]">
@@ -327,6 +357,11 @@ export function KscanDiagnosticsSection({
                         {t(
                           "Suspect keys (possible chatter or stuck switch) — position numbers follow the keymap order.",
                         )}
+                        {halvesMeasured &&
+                          " " +
+                            t(
+                              "Each half's keys are measured on that half, at the switch, so the link between the halves does not enter these numbers.",
+                            )}
                       </p>
                       <table className="w-full text-xs">
                         <thead>
@@ -334,6 +369,11 @@ export function KscanDiagnosticsSection({
                             <th className="py-2 pr-3 font-medium">
                               {t("Position")}
                             </th>
+                            {halvesMeasured && (
+                              <th className="py-2 pr-3 font-medium">
+                                {t("Half")}
+                              </th>
+                            )}
                             <th className="py-2 pr-3 font-medium">
                               {t("Presses")}
                             </th>
@@ -356,6 +396,15 @@ export function KscanDiagnosticsSection({
                               className="border-b border-[var(--color-border)] last:border-b-0 font-mono"
                             >
                               <td className="py-2 pr-3">{s.position}</td>
+                              {halvesMeasured && (
+                                <td className="py-2 pr-3">
+                                  {s.measuredOn === 0
+                                    ? t("This half")
+                                    : t("Peripheral {{src}}", {
+                                        src: s.measuredOn,
+                                      })}
+                                </td>
+                              )}
                               <td className="py-2 pr-3">{s.presses}</td>
                               <td className="py-2 pr-3">{s.releases}</td>
                               <td className="py-2 pr-3">{s.minRepressGapMs}</td>

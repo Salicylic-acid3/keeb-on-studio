@@ -82,8 +82,12 @@ jest.mock("../../../hooks/useCustomSettings", () => ({
   }),
 }));
 
+const keycodeSelectorProps = jest.fn();
 jest.mock("../../KeycodeSelector", () => ({
-  KeycodeSelector: () => null,
+  KeycodeSelector: (props: unknown) => {
+    keycodeSelectorProps(props);
+    return null;
+  },
 }));
 
 const behaviors = new Map([
@@ -172,5 +176,31 @@ describe("TapDanceEditorCard", () => {
     // No Save button of its own: the tab's Save covers macros, combos and
     // tap dance together.
     expect(screen.queryByText("Save")).not.toBeInTheDocument();
+  });
+
+  test("the key picker opens on the OS layout the page is set to", () => {
+    // It was not handed the layout, so with JIS selected the rows showed
+    // JIS labels and the picker drew the US keyboard.
+    const { result } = renderHook(() => useTapDance(behaviors));
+    const slot = groupIntoSlots(listedSettings)[0];
+    const macros = [{ slot: 0, name: "Hello" }];
+    keycodeSelectorProps.mockClear();
+    render(
+      <TapDanceEditorCard
+        tapDance={result.current}
+        slot={slot}
+        behaviors={behaviors}
+        layers={[]}
+        keyboardLayout="JIS"
+        runtimeMacros={macros}
+      />,
+    );
+
+    expect(keycodeSelectorProps).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        keyboardLayout: "JIS",
+        runtimeMacros: macros,
+      }),
+    );
   });
 });
