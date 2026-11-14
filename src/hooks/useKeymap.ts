@@ -218,6 +218,21 @@ function bindingsEqual(a: BehaviorBinding, b: BehaviorBinding): boolean {
   );
 }
 
+/** True when two keymaps have the same layers holding the same bindings. */
+function sameLayers(a: Keymap | null, b: Keymap): boolean {
+  if (!a || a.layers.length !== b.layers.length) return false;
+  return a.layers.every((layer, index) => {
+    const other = b.layers[index];
+    return (
+      layer.id === other.id &&
+      layer.bindings.length === other.bindings.length &&
+      layer.bindings.every((binding, position) =>
+        bindingsEqual(binding, other.bindings[position]),
+      )
+    );
+  });
+}
+
 /**
  * Hook for managing keymap state and operations
  */
@@ -958,6 +973,22 @@ export function useKeymap(): UseKeymapReturn {
       );
 
       if (result?.ok) {
+        // A layout whose keys map to different bindings brings a different
+        // keymap with it: on a keyboard with position maps the bindings move,
+        // and in demo mode each layout is a different keyboard with a keymap
+        // of its own. What this hook remembers by `layer:position` -- the
+        // bindings as loaded, the defaults, what the device holds unsaved --
+        // then describes the previous keymap, and every key would read as
+        // modified. Load again, as Discard does, so all of it is taken from
+        // the keyboard as it now is.
+        if (!sameLayers(keymap, result.ok)) {
+          setDefaultBindings(new Map());
+          dataLoadedRef.current = false;
+          await loadKeymapData();
+          clearError();
+          return true;
+        }
+
         setKeymap(result.ok);
 
         // On the fast path, non-active layout geometry is loaded lazily (not
@@ -998,6 +1029,8 @@ export function useKeymap(): UseKeymapReturn {
     },
     [
       callRpc,
+      keymap,
+      loadKeymapData,
       physicalLayouts,
       loadLayoutGeometry,
       clearError,

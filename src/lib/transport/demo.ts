@@ -128,16 +128,19 @@ import {
 } from "./demo-subsystems";
 import { ERGOTRACK, GOFORTY_MAX } from "../layouts";
 import { ErrorConditions } from "@zmkfirmware/zmk-studio-ts-client/meta";
-import {
-  KEYBOARD_KEYCODES,
-  createHidUsage,
-  HID_USAGE_PAGE_KEYBOARD,
-} from "../keycodes";
 import { BEHAVIORS } from "./behaviors";
+import {
+  defaultKeymapFor,
+  editedBindings,
+  fingerprint,
+  type DemoKeymap,
+} from "./demo-keymaps";
 import { bindingParamsValid } from "./bindingParams";
 import {
+  AddLayerErrorCode,
   MoveLayerErrorCode,
   RestoreLayerErrorCode,
+  SetActivePhysicalLayoutErrorCode,
   type Layer,
 } from "@zmkfirmware/zmk-studio-ts-client/keymap";
 
@@ -153,10 +156,16 @@ const ESC = 0xac;
 // else away, so offering a generic layout here would advertise something the
 // app will not actually talk to.
 const LAYOUTS = [ERGOTRACK, GOFORTY_MAX];
-const maxKeys = LAYOUTS.reduce(
-  (max, layout) => (layout.keys.length > max ? layout.keys.length : max),
-  0,
-);
+// Each layout is a different keyboard, so each has a keymap of its own: the
+// default keymap its firmware ships with (see demo-keymaps.ts).
+const defaultKeymaps = (): DemoKeymap[] =>
+  LAYOUTS.map((layout) => defaultKeymapFor(layout, BEHAVIORS));
+// The pristine copies: what "default" means for get_default_layer and the
+// fingerprints, whatever has been edited since.
+const DEFAULT_KEYMAPS = defaultKeymaps();
+// A layout's fingerprint is its geometry, so it does not change while the
+// demo runs; the set's fingerprint also covers which one is selected.
+const LAYOUT_FPS = LAYOUTS.map((layout) => fingerprint(layout));
 const DEMO = {
   device: {
     name: "Keeb-On! Demo Keyboard",
@@ -168,46 +177,9 @@ const DEMO = {
     activeLayoutIndex: 0,
     layouts: LAYOUTS,
   },
-  keymap: {
-    layers: [
-      {
-        id: 0,
-        name: "Base",
-        // slice, not splice: splice mutates the exported keycode list, which
-        // is shared with the key picker. It happens to be harmless only
-        // because keycodes.ts finishes building its lookups before this module
-        // loads — that is luck, not a design.
-        //
-        // createHidUsage, because a binding carries the full usage with its
-        // page. The demo used to store the bare id here, which is a binding no
-        // keyboard would accept; now that the demo checks parameters, its own
-        // starting keymap has to be one a keyboard could have.
-        bindings: KEYBOARD_KEYCODES.slice(0, maxKeys).map((code) => ({
-          behaviorId: 10,
-          param1: createHidUsage(HID_USAGE_PAGE_KEYBOARD, code.code),
-          param2: 0,
-        })),
-      },
-      {
-        // Named as the real ClickBoard ErgoTrack names it, because the app
-        // treats "Alt Base" as a layer with a job: it is the per-OS base
-        // (what the trackpad's `layers = <1>` keys off) and the one layer
-        // offered a copy of Base. A demo whose layers were called something
-        // else would hide that button from anyone trying the app before
-        // buying a keyboard.
-        id: 1,
-        name: "Alt Base",
-        bindings: Array(maxKeys).fill({ behaviorId: 35, param1: 0, param2: 0 }),
-      },
-      {
-        id: 2,
-        name: "Drag",
-        bindings: Array(maxKeys).fill({ behaviorId: 35, param1: 0, param2: 0 }),
-      },
-    ],
-    availableLayers: 8,
-    maxLayerNameLength: 32,
-  },
+  // The selected keyboard's keymap. The other keyboards' are kept aside by
+  // Keyboard (see `shelved`) and swapped in when the layout is switched.
+  keymap: defaultKeymaps()[0],
   behaviors: BEHAVIORS,
 };
 
@@ -230,11 +202,23 @@ function frame(bytes: Uint8Array): Uint8Array {
 /**
  * Demo keyboard
  */
-class Keyboard {
+// Exported for tests; the app only ever reaches it through connect().
+export class Keyboard {
   private dirty = false;
   private persistent: typeof DEMO = JSON.parse(JSON.stringify(DEMO));
   private data: typeof DEMO = JSON.parse(JSON.stringify(DEMO));
   private deletedLayers: Layer[] = [];
+  /**
+   * The keymaps of the keyboards that are not selected, by layout index:
+   * what was in memory, what was saved, and whether the two differed. A
+   * keyboard that has not been selected yet has no entry and starts from its
+   * default keymap. Switching layouts in the demo is picking up a different
+   * keyboard, so each keeps its own edits and its own unsaved state.
+   */
+  private shelved = new Map<
+    number,
+    { data: DemoKeymap; persistent: DemoKeymap; dirty: boolean }
+  >();
 
   // Custom subsystem handlers
   private bleHandler = new BLEManagementHandler();
@@ -399,6 +383,50 @@ class Keyboard {
     },
   ];
 
+  /**
+   * Make `layoutIndex` the selected layout, and with it the selected
+   * keyboard: its keymap replaces the one being shown, and the one being
+   * shown is put aside as it stands, unsaved edits included.
+   *
+   * On a real keyboard the layout is a setting like any other and waits for
+   * Save. Here it is which keyboard the demo is, so it applies to the saved
+   * state at once; otherwise Discard would bring back the previous layout
+   * with this keyboard's keymap on it.
+   */
+  private selectKeyboard(layoutIndex: number): void {
+    const previous = this.data.layouts.activeLayoutIndex;
+    if (layoutIndex !== previous) {
+      this.shelved.set(previous, {
+        data: this.data.keymap,
+        persistent: this.persistent.keymap,
+        dirty: this.dirty,
+      });
+      const next = this.shelved.get(layoutIndex) ?? {
+        data: defaultKeymapFor(LAYOUTS[layoutIndex], BEHAVIORS),
+        persistent: defaultKeymapFor(LAYOUTS[layoutIndex], BEHAVIORS),
+        dirty: false,
+      };
+      this.shelved.delete(layoutIndex);
+      this.data.keymap = next.data;
+      this.persistent.keymap = next.persistent;
+      this.dirty = next.dirty;
+      // Removed layers can be restored only on the keyboard they came from.
+      this.deletedLayers = [];
+    }
+    this.data.layouts.activeLayoutIndex = layoutIndex;
+    this.persistent.layouts.activeLayoutIndex = layoutIndex;
+    // The demo layouts are different keyboards: only one of them has
+    // trackpads, and their keymaps differ in depth, so the handlers that
+    // describe the keyboard have to follow the selection.
+    this.physicalLayoutsHandler.setActiveLayoutIndex(layoutIndex);
+    this.defaultLayerHandler.setLayerCount(this.data.keymap.layers.length);
+  }
+
+  /** The selected keyboard's default keymap (never edited). */
+  private get defaultKeymap(): DemoKeymap {
+    return DEFAULT_KEYMAPS[this.data.layouts.activeLayoutIndex];
+  }
+
   process(req: Request): Response {
     // Response structure: { requestResponse: { requestId, core/keymap/behaviors } }
     const rr: RequestResponse = { requestId: req.requestId };
@@ -421,15 +449,20 @@ class Keyboard {
       rr.keymap = { checkUnsavedChanges: this.dirty };
     } else if (req.keymap?.setActivePhysicalLayout !== undefined) {
       const layoutIndex = req.keymap.setActivePhysicalLayout;
-      this.data.layouts.activeLayoutIndex = layoutIndex;
-      // The two demo layouts are two different keyboards, and only one of them
-      // has trackpads, so the module handler has to follow the selection.
-      this.physicalLayoutsHandler.setActiveLayoutIndex(layoutIndex);
-      rr.keymap = {
-        setActivePhysicalLayout: {
-          ok: this.data.keymap,
-        },
-      };
+      if (!this.data.layouts.layouts[layoutIndex]) {
+        rr.keymap = {
+          setActivePhysicalLayout: {
+            err: SetActivePhysicalLayoutErrorCode.SET_ACTIVE_PHYSICAL_LAYOUT_ERR_INVALID_LAYOUT_INDEX,
+          },
+        };
+      } else {
+        this.selectKeyboard(layoutIndex);
+        rr.keymap = {
+          setActivePhysicalLayout: {
+            ok: this.data.keymap,
+          },
+        };
+      }
     } else if (req.keymap?.setLayerBinding) {
       const { layerId, keyPosition, binding } = req.keymap.setLayerBinding;
       const layer = this.data.keymap.layers.find(
@@ -464,7 +497,14 @@ class Keyboard {
       this.dirty = false;
       this.data = JSON.parse(JSON.stringify(this.persistent));
       rr.keymap = { discardChanges: true };
+    } else if (req.keymap?.addLayer && this.data.keymap.availableLayers <= 0) {
+      // No reserved layer left to hand out. Each demo keyboard has as many as
+      // its own keymap reserves, and some reserve none.
+      rr.keymap = {
+        addLayer: { err: AddLayerErrorCode.ADD_LAYER_ERR_NO_SPACE },
+      };
     } else if (req.keymap?.addLayer) {
+      this.data.keymap.availableLayers -= 1;
       const newIndex =
         this.data.keymap.layers.reduce(
           (max: number, layer: { id: number }) =>
@@ -496,6 +536,8 @@ class Keyboard {
       this.data.keymap.layers = this.data.keymap.layers.filter(
         (l) => l.id !== layerId,
       );
+      // A removed layer's slot is free again.
+      this.data.keymap.availableLayers += 1;
       this.dirty = true;
       rr.keymap = {
         removeLayer: {
@@ -515,6 +557,7 @@ class Keyboard {
           0,
           layer,
         );
+        this.data.keymap.availableLayers -= 1;
         this.dirty = true;
         rr.keymap = {
           restoreLayer: {
@@ -752,8 +795,9 @@ class Keyboard {
   /**
    * Serve the `cormoran__fast_keymap` read-only subsystem from the same demo
    * keymap/behaviors/layout data the official protocol uses. Fingerprints are
-   * stable constants: the demo resets to DEMO on every reconnect, so the
-   * web's fingerprint cache stays valid across loads. Behavior details are
+   * computed from the content: the demo resets to its defaults on every
+   * reconnect, so the web's cache still hits across loads, and misses when
+   * the demo data itself has changed. Behavior details are
    * always inlined (mode-agnostic) so the web resolves every behavior from the
    * device without needing a matching bundled def_fp.
    */
@@ -762,8 +806,21 @@ class Keyboard {
     const behaviors = this.data.behaviors;
     const layoutsData = this.data.layouts;
 
-    const layerFp = (id: number) => 0x1000 + id;
-    const layoutFp = (i: number) => 0x2000 + i;
+    // Fingerprints are of the content they stand for, as on a keyboard. The
+    // web keeps layers, behaviors and layouts in localStorage under them, so
+    // a constant here would have it draw the previous demo's keymap after the
+    // demo data changes, or one keyboard's layer on another keyboard.
+    const defaults = this.defaultKeymap;
+    const defaultLayerOf = (id: number) =>
+      defaults.layers.find((l) => l.id === id);
+    const layerFp = (bindings: unknown) => fingerprint(bindings);
+    // A layer added in the demo has no default: a fingerprint nothing else
+    // has, so the web asks for the layer itself.
+    const defaultFpOf = (id: number) => {
+      const d = defaultLayerOf(id);
+      return d ? layerFp(d.bindings) : fingerprint(["no default", id]);
+    };
+    const layoutFp = (i: number) => LAYOUT_FPS[i] ?? 0;
     // Arbitrary stable def_fp within 16 bits (def_fp_bits = 16 below), so the
     // web never has to widen. Values don't match the bundle, so the web always
     // uses the inlined details the demo serves.
@@ -795,23 +852,28 @@ class Keyboard {
       return {
         snapshot: {
           definitionVersion: 2,
-          behaviorsFp: 0xbeef,
-          defaultKeymapFp: 0x3000,
-          keymapFp: 0x3000,
-          physicalLayoutFp: 0x4000,
+          behaviorsFp: fingerprint(behaviors),
+          defaultKeymapFp: fingerprint(defaults.layers),
+          keymapFp: fingerprint(km.layers),
+          physicalLayoutFp: fingerprint([
+            layoutsData.activeLayoutIndex,
+            LAYOUT_FPS,
+          ]),
           behaviorCount: behaviors.length,
           maxLayerNameLength: km.maxLayerNameLength,
           availableLayers: km.availableLayers,
           activeLayoutIndex: layoutsData.activeLayoutIndex,
           defFpBits: 16,
-          // fp === defaultFp per layer (no edits) -> web uses get_layer(s).
+          // fp === defaultFp for a layer nobody has edited -> the web uses
+          // get_layer(s); otherwise it may overlay get_edited_layer on a
+          // default it has cached.
           layers: km.layers.map((l) => ({
             id: l.id,
             name: l.name,
             bindingCount: l.bindings.length,
-            fp: layerFp(l.id),
-            defaultFp: layerFp(l.id),
-            editedCount: 0,
+            fp: layerFp(l.bindings),
+            defaultFp: defaultFpOf(l.id),
+            editedCount: editedBindings(l, defaultLayerOf(l.id)).length,
           })),
         },
       };
@@ -861,12 +923,10 @@ class Keyboard {
 
     if (req.getDefaultLayer) {
       // The compiled-in (devicetree-stock) default never changes with edits, so
-      // read it from the pristine DEMO baseline rather than the live keymap --
+      // read it from the pristine baseline rather than the live keymap --
       // this is what real firmware's get_default_layer returns, and it lets the
       // "changed from default" / "reset to default" features work in demo mode.
-      const l = DEMO.keymap.layers.find(
-        (layer) => layer.id === req.getDefaultLayer!.layerId,
-      );
+      const l = defaultLayerOf(req.getDefaultLayer.layerId);
       return {
         getDefaultLayer: {
           id: l?.id ?? req.getDefaultLayer.layerId,
@@ -877,9 +937,15 @@ class Keyboard {
     }
 
     if (req.getEditedLayer) {
-      // Demo keymap has no edits vs. its compiled-in default.
+      // The positions that differ from the compiled-in default, which is
+      // what the web overlays on a default layer it already has.
+      const id = req.getEditedLayer.layerId;
+      const l = findLayer(id);
       return {
-        getEditedLayer: { id: req.getEditedLayer.layerId, bindings: [] },
+        getEditedLayer: {
+          id,
+          bindings: l ? editedBindings(l, defaultLayerOf(id)) : [],
+        },
       };
     }
 

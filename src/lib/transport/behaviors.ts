@@ -494,4 +494,84 @@ export const BEHAVIORS = [
       },
     ],
   },
+  // QMK の PERMISSIVE_HOLD 相当(flavor = "balanced"、180ms)。4 機種とも
+  // キーマップに定義してある(mt_perm / lt_perm)。アプリは表示名の末尾の
+  // 「<数値>ms」と括弧の中身でプリセットを見分けるので、名前は実機と同じ。
+  {
+    id: 47,
+    displayName: "Mod-Tap 180ms (Permissive)",
+    metadata: [
+      {
+        param1: [
+          {
+            name: "Key",
+            hidUsage: {
+              keyboardMax: 255,
+              consumerMax: 4095,
+            },
+          },
+        ],
+        param2: [
+          {
+            name: "Key",
+            hidUsage: {
+              keyboardMax: 255,
+              consumerMax: 4095,
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 48,
+    displayName: "Layer-Tap 180ms (Permissive)",
+    metadata: [
+      {
+        param1: [
+          {
+            name: "Layer",
+            layerId: {},
+          },
+        ],
+        param2: [
+          {
+            name: "Key",
+            hidUsage: {
+              keyboardMax: 255,
+              consumerMax: 4095,
+            },
+          },
+        ],
+      },
+    ],
+  },
+  // ClickBoard ErgoTrack's default keymap uses the two below (the switches
+  // under the trackpads, and the speed keys), so the demo has to know them
+  // for that keymap to load. Names and values are the ones zmk-driver-iqs9151
+  // reports: behavior_drag_click.c takes no parameters,
+  // behavior_zip_dynamic_scale.c lists these (ZDS_XY/SC/ALL, ZDS_INC/DEC/RST).
+  {
+    id: 49,
+    displayName: "Left Click (Drag)",
+    metadata: [],
+  },
+  {
+    id: 50,
+    displayName: "Pointer Speed Adjust",
+    metadata: [
+      {
+        param1: [
+          { name: "Cursor", constant: 0 },
+          { name: "Scroll", constant: 1 },
+          { name: "Cursor and scroll", constant: 2 },
+        ],
+        param2: [
+          { name: "Faster", constant: 1 },
+          { name: "Slower", constant: 2 },
+          { name: "Reset to default", constant: 3 },
+        ],
+      },
+    ],
+  },
 ].sort((a, b) => a.id - b.id);

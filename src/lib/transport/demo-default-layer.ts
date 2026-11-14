@@ -52,6 +52,12 @@ export class DefaultLayerHandler {
     this.layerCount = layerCount;
   }
 
+  /** The demo keyboards have keymaps of different depths; follow the one
+   * that is selected. */
+  setLayerCount(layerCount: number): void {
+    this.layerCount = layerCount;
+  }
+
   process(request: Request): Response {
     if (request.getState !== undefined) {
       return { state: this.buildState() };

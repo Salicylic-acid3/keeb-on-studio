@@ -5,7 +5,13 @@
       "date": null,
       "changes": {
         "major": [],
-        "minor": [],
+        "minor": [
+          {
+            "en": "Demo mode: each keyboard now starts with its real default keymap instead of the letters A, B, C … in order, so you can see the thumb keys, layer-taps, Bluetooth key and trackpad buttons the keyboard ships with. Switching the layout switches the keyboard: each one keeps its own keymap, its own unsaved edits and its own number of spare layers. The Permissive presets (Mod-Tap / Layer-Tap 180ms (Permissive)) can be picked in the demo as well.",
+            "ja": "デモモード: 各キーボードが、A, B, C … と順に並べたキーマップではなく、実機のデフォルトキーマップで始まるようになりました。親指キー、レイヤータップ、Bluetooth キー、トラックパッド下のボタンなど、出荷時の割り当てをそのまま確認できます。レイアウトを切り替えるとキーボードごと切り替わり、キーマップ・未保存の編集・追加できるレイヤー数はキーボードごとに別々に保持されます。Permissive のプリセット(Mod-Tap / Layer-Tap 180ms (Permissive))もデモで選べます。",
+            "zh": "演示模式：每款键盘现在以其真实的默认键位图开始，而不是按顺序排列的 A、B、C……，可以直接看到出厂时的拇指键、层-点击键、蓝牙键和触控板下的按键。切换布局即切换键盘：键位图、未保存的修改和可添加的层数按键盘分别保留。Permissive 预设（Mod-Tap / Layer-Tap 180ms (Permissive)）也可在演示中选择。"
+          }
+        ],
         "patch": [
           {
             "en": "Macros: a new macro is now named after its slot, starting from \"Macro 0\". The list used to start at \"Macro 1\" while the keymap called the same macro \"Macro 0\". Macros you already have keep their names; rename them if you want them to match.",
