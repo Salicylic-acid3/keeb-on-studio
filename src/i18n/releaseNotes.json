@@ -15,6 +15,11 @@
             "en": "Demo mode: each keyboard now starts with its real default keymap instead of the letters A, B, C … in order, so you can see the thumb keys, layer-taps, Bluetooth key and trackpad buttons the keyboard ships with. Switching the layout switches the keyboard: each one keeps its own keymap, its own unsaved edits and its own number of spare layers. The Permissive presets (Mod-Tap / Layer-Tap 180ms (Permissive)) can be picked in the demo as well.",
             "ja": "デモモード: 各キーボードが、A, B, C … と順に並べたキーマップではなく、実機のデフォルトキーマップで始まるようになりました。親指キー、レイヤータップ、Bluetooth キー、トラックパッド下のボタンなど、出荷時の割り当てをそのまま確認できます。レイアウトを切り替えるとキーボードごと切り替わり、キーマップ・未保存の編集・追加できるレイヤー数はキーボードごとに別々に保持されます。Permissive のプリセット(Mod-Tap / Layer-Tap 180ms (Permissive))もデモで選べます。",
             "zh": "演示模式：每款键盘现在以其真实的默认键位图开始，而不是按顺序排列的 A、B、C……，可以直接看到出厂时的拇指键、层-点击键、蓝牙键和触控板下的按键。切换布局即切换键盘：键位图、未保存的修改和可添加的层数按键盘分别保留。Permissive 预设（Mod-Tap / Layer-Tap 180ms (Permissive)）也可在演示中选择。"
+          },
+          {
+            "en": "Key picker: Mod-Tap and Layer-Tap now say how they decide a hold, with a line about each: \"Hold: typing first\" (a hold only after the tapping term, so fast typing never turns a letter into a modifier), \"Hold: balanced\" (also when another key is pressed and released meanwhile) and \"Hold: hold first\" (as soon as another key is pressed). With the firmware that ships these, plain Mod-Tap is typing first, which fixes Shift on Z turning a fast \"zyouzou\" into \"YouOu\"; the old behavior is Mod-Tap 200ms. All three kinds exist at 200ms for both Mod-Tap and Layer-Tap, and can be tried in demo mode.",
+            "ja": "キーの選択画面: Mod-Tap と Layer-Tap に、長押しの判定方式の名前と説明を表示するようにしました。「長押し：タイピング優先」(判定時間まで押し続けたときだけ長押し。速く打っても文字が修飾キーになりません)、「長押し：バランス」(押している間に別のキーを押して離したときも長押し)、「長押し：反応優先」(別のキーを押した時点で長押し)の 3 種類です。対応ファームウェアでは素の Mod-Tap がタイピング優先になり、Z に Shift を重ねたときに「醸造(zyouzou)」が「YouOu」になる問題が直ります。これまでの動作は Mod-Tap 200ms です。Mod-Tap・Layer-Tap とも 3 種類を 200ms で揃えてあり、デモモードでも選べます。",
+            "zh": "按键选择界面：Mod-Tap 和 Layer-Tap 现在会显示长按的判定方式及说明：“长按：打字优先”（只有按住超过判定时间才算长按，快速打字时字母不会变成修饰键）、“长按：平衡”（按住期间按下并松开另一个键也算长按）、“长按：响应优先”（一按下另一个键即算长按）。在对应固件中，普通的 Mod-Tap 变为打字优先，修复了在 Z 上叠加 Shift 时快速输入“zyouzou”变成“YouOu”的问题；原先的行为是 Mod-Tap 200ms。Mod-Tap 与 Layer-Tap 的三种方式均以 200ms 提供，也可在演示模式中选择。"
           }
         ],
         "patch": [

@@ -546,6 +546,82 @@ export const BEHAVIORS = [
       },
     ],
   },
+  // 長押しの判定方式を 200ms で揃えた 3 択のうち、新しく足された 3 つ。
+  // タイピング優先は素の Mod-Tap / Layer-Tap、Mod-Tap の反応優先は
+  // Mod-Tap 200ms。"Mod-Tap 200ms (Balanced)" があることが「このファームの
+  // 素の Mod-Tap はタイピング優先」の目印になる(holdTapChoice.ts)。
+  {
+    id: 51,
+    displayName: "Mod-Tap 200ms (Balanced)",
+    metadata: [
+      {
+        param1: [
+          {
+            name: "Key",
+            hidUsage: {
+              keyboardMax: 255,
+              consumerMax: 4095,
+            },
+          },
+        ],
+        param2: [
+          {
+            name: "Key",
+            hidUsage: {
+              keyboardMax: 255,
+              consumerMax: 4095,
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 52,
+    displayName: "Layer-Tap 200ms (Balanced)",
+    metadata: [
+      {
+        param1: [
+          {
+            name: "Layer",
+            layerId: {},
+          },
+        ],
+        param2: [
+          {
+            name: "Key",
+            hidUsage: {
+              keyboardMax: 255,
+              consumerMax: 4095,
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 53,
+    displayName: "Layer-Tap 200ms (Hold-preferred)",
+    metadata: [
+      {
+        param1: [
+          {
+            name: "Layer",
+            layerId: {},
+          },
+        ],
+        param2: [
+          {
+            name: "Key",
+            hidUsage: {
+              keyboardMax: 255,
+              consumerMax: 4095,
+            },
+          },
+        ],
+      },
+    ],
+  },
   // ClickBoard ErgoTrack's default keymap uses the two below (the switches
   // under the trackpads, and the speed keys), so the demo has to know them
   // for that keymap to load. Names and values are the ones zmk-driver-iqs9151

@@ -9,6 +9,7 @@ import {
   getBehaviorMetadata,
   type BehaviorCategory,
 } from "../lib/behaviorMetadata";
+import { holdTapChoice } from "../lib/holdTapChoice";
 import type { BehaviorDefinition } from "../hooks/useKeymap";
 import { useLanguage } from "../hooks/useLanguage";
 
@@ -33,6 +34,8 @@ interface BehaviorOption {
   displayName: string;
   category: BehaviorCategory;
   description?: string;
+  /** Where the option sorts within its category; the name unless set. */
+  sortName: string;
 }
 
 interface BehaviorDropdownProps {
@@ -83,6 +86,40 @@ export function BehaviorDropdown({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
+  // How a behavior reads in the list: its name and a line about it.
+  //
+  // A Mod-Tap or Layer-Tap comes in several kinds on these keyboards -- the
+  // same key at different tapping terms and with different rules for what a
+  // second key pressed meanwhile means. The firmware can only tell them apart
+  // in the name ("Mod-Tap 200ms (Balanced)"), which says little to someone
+  // choosing; so those get the kind spelled out ("Hold: balanced") and the
+  // line describes what that kind does instead of repeating "Modifier on
+  // hold, key on tap" on every one of them.
+  const describe = useMemo(() => {
+    const names = Array.from(behaviors.values(), (b) => b.displayName);
+    return (behavior: BehaviorDefinition) => {
+      const metadata = getBehaviorMetadata(behavior.displayName);
+      const name = metadata?.displayNameVariants?.at(0) || behavior.displayName;
+      const choice = holdTapChoice(behavior.displayName, names);
+      if (!choice) {
+        return {
+          displayName: name,
+          description: metadata?.description
+            ? t(metadata.description)
+            : undefined,
+          sortName: name,
+        };
+      }
+      return {
+        displayName: `${choice.baseName} · ${t(choice.label)}`,
+        description: t(choice.description, { ms: choice.ms }),
+        // Starts with the family name so the group stays where "Mod-Tap"
+        // sorts among its neighbours.
+        sortName: `${choice.baseName.split(" ")[0]} ${choice.sortKey}`,
+      };
+    };
+  }, [behaviors, t]);
+
   // Build behavior options
   const behaviorOptions = useMemo((): BehaviorOption[] => {
     const allOptions: BehaviorOption[] = [];
@@ -95,19 +132,17 @@ export function BehaviorDropdown({
       allOptions.push({
         id,
         name: behavior.displayName,
-        displayName:
-          metadata?.displayNameVariants?.at(0) || behavior.displayName,
         category,
-        description: metadata?.description,
+        ...describe(behavior),
       });
     });
     return allOptions.sort((a, b) => {
       const catA = BEHAVIOR_CATEGORIES.findIndex((c) => c.id === a.category);
       const catB = BEHAVIOR_CATEGORIES.findIndex((c) => c.id === b.category);
       if (catA !== catB) return catA - catB;
-      return a.displayName.localeCompare(b.displayName);
+      return a.sortName.localeCompare(b.sortName);
     });
-  }, [behaviors, selectedBehaviorId]);
+  }, [behaviors, selectedBehaviorId, describe]);
 
   // Filtered options
   const filteredOptions = useMemo(() => {
@@ -184,6 +219,11 @@ export function BehaviorDropdown({
   const selectedBehaviorOverrideMeta = selectedBehavior
     ? getBehaviorMetadata(selectedBehavior.displayName)
     : null;
+  // Only a behavior the app knows gets its name shown here, as before.
+  const selectedText =
+    selectedBehavior && selectedBehaviorOverrideMeta
+      ? describe(selectedBehavior)
+      : null;
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -194,11 +234,10 @@ export function BehaviorDropdown({
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className="text-sm text-[var(--color-text)]">
-          {selectedBehaviorOverrideMeta?.displayNameVariants?.at(0) ||
-            t("Select behavior")}
-          {selectedBehaviorOverrideMeta?.description && (
+          {selectedText?.displayName || t("Select behavior")}
+          {selectedText?.description && (
             <span className="mx-1 text-xs text-[var(--color-text-muted)]">
-              - {t(selectedBehaviorOverrideMeta.description)}
+              - {selectedText.description}
             </span>
           )}
         </span>
@@ -285,7 +324,7 @@ export function BehaviorDropdown({
                 </span>
                 {option.description && (
                   <span className="block text-xs text-[var(--color-text-muted)]">
-                    {t(option.description)}
+                    {option.description}
                   </span>
                 )}
               </button>

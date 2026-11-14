@@ -2324,6 +2324,15 @@ const ja: Record<string, string> = {
   "Transparent (pass-through to lower layer)": "透過（下位レイヤーへパス）",
   "No operation": "何もしない",
   "Modifier on hold, key on tap": "長押しで修飾キー、タップでキー",
+  "Hold: typing first": "長押し：タイピング優先",
+  "Hold: balanced": "長押し：バランス",
+  "Hold: hold first": "長押し：反応優先",
+  "A hold only once it has been held for {{ms}} ms. Typing fast never turns it into a hold.":
+    "{{ms}}ms 押し続けたときだけ長押し。速く打っても長押しになりません。",
+  "A hold after {{ms}} ms, or once another key is pressed and released while it is down.":
+    "{{ms}}ms 押し続けるか、押している間に別のキーを押して離すと長押し。",
+  "A hold after {{ms}} ms, or the moment another key is pressed while it is down.":
+    "{{ms}}ms 押し続けるか、押している間に別のキーを押した時点で長押し。",
   "Execute macro": "マクロを実行",
   "Toggle key on/off with each press": "押すたびにキーのオン/オフを切り替え",
   "A sticky key stays pressed until another key is pressed.":
@@ -4192,6 +4201,15 @@ const zh: Record<string, string> = {
   "Transparent (pass-through to lower layer)": "透明（透传到下层）",
   "No operation": "无操作",
   "Modifier on hold, key on tap": "长按修饰键，点击触发按键",
+  "Hold: typing first": "长按：打字优先",
+  "Hold: balanced": "长按：平衡",
+  "Hold: hold first": "长按：响应优先",
+  "A hold only once it has been held for {{ms}} ms. Typing fast never turns it into a hold.":
+    "只有按住满 {{ms}}ms 才算长按。快速打字不会变成长按。",
+  "A hold after {{ms}} ms, or once another key is pressed and released while it is down.":
+    "按住满 {{ms}}ms，或按住期间按下并松开另一个键，即为长按。",
+  "A hold after {{ms}} ms, or the moment another key is pressed while it is down.":
+    "按住满 {{ms}}ms，或按住期间一按下另一个键，即为长按。",
   "Execute macro": "执行宏",
   "Toggle key on/off with each press": "每次按下切换按键开关",
   "A sticky key stays pressed until another key is pressed.":
