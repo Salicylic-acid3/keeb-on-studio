@@ -71,7 +71,7 @@ describe("default keymaps of the demo keyboards", () => {
       "Alt Base",
       "Drag",
     ]);
-    expect(keymap.availableLayers).toBe(8);
+    expect(keymap.availableLayers).toBe(13);
     const base = keymap.layers[0].bindings;
     // Esc, then the number row; Q under the 1.
     expect(base[0]).toEqual({
@@ -251,10 +251,10 @@ describe("demo keyboard: one keymap per keyboard", () => {
     const add = () =>
       kb.process({ requestId: 1, keymap: { addLayer: {} } }).requestResponse!
         .keymap!.addLayer!;
-    expect(add().ok).toBeDefined(); // ErgoTrack reserves eight
+    expect(add().ok).toBeDefined(); // ErgoTrack reserves thirteen
     expect(
       fast(kb).handleFastKeymap({ getSnapshot: {} }).snapshot!.availableLayers,
-    ).toBe(7);
+    ).toBe(12);
     select(kb, 1);
     expect(add().err).toBeDefined(); // GoFortyMax reserves none
   });
