@@ -224,6 +224,7 @@ describe("the connected keyboard as a board", () => {
     expect(boardIdForDevice("GoFortyWL Ortho")).toBe("goforty_max_ortho");
     expect(boardIdForDevice("BeThirtyWL QAZ")).toBe("bethirtymax_qaz");
     expect(boardIdForDevice("BeThirtyWL Ortho")).toBe("bethirtymax_ortho");
+    expect(boardIdForDevice("Be30WL Ortho")).toBe("bethirtymax_ortho");
     expect(boardIdForDevice("ErgoTrack")).toBe("clickboard_ergotrack");
     expect(boardIdForDevice("something")).toBeNull();
   });

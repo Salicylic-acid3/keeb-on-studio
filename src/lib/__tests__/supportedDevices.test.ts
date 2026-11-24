@@ -99,6 +99,8 @@ describe("keyboards that were renamed", () => {
     expect(deviceKeyFor("GoFortyWL Ortho")).toBe("goforty-max");
     expect(deviceKeyFor("goforty-max")).toBe("goforty-max");
     expect(deviceKeyFor("BeThirtyWL Ortho")).toBe("be30max-ortho");
+    // BeThirtyWL Ortho's firmware names itself in 15 characters.
+    expect(deviceKeyFor("Be30WL Ortho")).toBe("be30max-ortho");
     expect(deviceKeyFor(undefined)).toBeNull();
   });
 

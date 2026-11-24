@@ -7,9 +7,9 @@
         "major": [],
         "minor": [
           {
-            "en": "GoFortyMax Ortho, BeThirtyMax QAZ and BeThirtyMax Ortho are now called GoFortyWL Ortho, BeThirtyWL QAZ and BeThirtyWL Ortho throughout the app. Their new firmware reports the new name (on Bluetooth too) and downloads as gofortywl_ortho.uf2, bethirtywl_qaz.uf2 and bethirtywl_ortho.uf2. A keyboard still on the old firmware works as before, and keymaps and history saved under the old name carry over.",
-            "ja": "GoFortyMax Ortho・BeThirtyMax QAZ・BeThirtyMax Ortho を、アプリ全体で GoFortyWL Ortho・BeThirtyWL QAZ・BeThirtyWL Ortho と表記するようにしました。新しいファームウェアは新しい名前で名乗り(Bluetooth の名前も変わります)、ファイル名は gofortywl_ortho.uf2・bethirtywl_qaz.uf2・bethirtywl_ortho.uf2 になります。古いファームウェアのままのキーボードもこれまでどおり使え、古い名前で保存したキーマップや変更履歴もそのまま引き継がれます。",
-            "zh": "GoFortyMax Ortho、BeThirtyMax QAZ 和 BeThirtyMax Ortho 在整个应用中更名为 GoFortyWL Ortho、BeThirtyWL QAZ 和 BeThirtyWL Ortho。新固件以新名称显示（蓝牙名称也会改变），下载文件为 gofortywl_ortho.uf2、bethirtywl_qaz.uf2 和 bethirtywl_ortho.uf2。仍使用旧固件的键盘照常可用，以旧名称保存的键位图和修改历史也会沿用。"
+            "en": "GoFortyMax Ortho, BeThirtyMax QAZ and BeThirtyMax Ortho are now called GoFortyWL Ortho, BeThirtyWL QAZ and BeThirtyWL Ortho throughout the app. Their new firmware reports the new name (on Bluetooth too; BeThirtyWL Ortho as \"Be30WL Ortho\", since Bluetooth names stop at 15 characters) and downloads as gofortywl_ortho.uf2, bethirtywl_qaz.uf2 and bethirtywl_ortho.uf2. A keyboard still on the old firmware works as before, and keymaps and history saved under the old name carry over.",
+            "ja": "GoFortyMax Ortho・BeThirtyMax QAZ・BeThirtyMax Ortho を、アプリ全体で GoFortyWL Ortho・BeThirtyWL QAZ・BeThirtyWL Ortho と表記するようにしました。新しいファームウェアは新しい名前で名乗り(Bluetooth の名前も変わります。BeThirtyWL Ortho は Bluetooth の名前の上限 15 文字に収めるため「Be30WL Ortho」)、ファイル名は gofortywl_ortho.uf2・bethirtywl_qaz.uf2・bethirtywl_ortho.uf2 になります。古いファームウェアのままのキーボードもこれまでどおり使え、古い名前で保存したキーマップや変更履歴もそのまま引き継がれます。",
+            "zh": "GoFortyMax Ortho、BeThirtyMax QAZ 和 BeThirtyMax Ortho 在整个应用中更名为 GoFortyWL Ortho、BeThirtyWL QAZ 和 BeThirtyWL Ortho。新固件以新名称显示（蓝牙名称也会改变；蓝牙名称最多 15 个字符，BeThirtyWL Ortho 显示为“Be30WL Ortho”），下载文件为 gofortywl_ortho.uf2、bethirtywl_qaz.uf2 和 bethirtywl_ortho.uf2。仍使用旧固件的键盘照常可用，以旧名称保存的键位图和修改历史也会沿用。"
           },
           {
             "en": "Keymap: the keyboard at the bottom of the screen (\"Set keys one after another\") now has Trans and None buttons. Picking one sets the selected key and moves to the next, so a run of keys can be made transparent or cleared without opening the key dialog for each.",

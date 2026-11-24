@@ -114,7 +114,7 @@ export const SUPPORTED_DEVICE_NAMES = [
  *
  * GoFortyMax Ortho / BeThirtyMax QAZ / BeThirtyMax Ortho became GoFortyWL
  * Ortho / BeThirtyWL QAZ / BeThirtyWL Ortho (2026-11), and their firmware
- * reports the product name since. A keyboard still on the old firmware
+ * reports the product name since (BeThirtyWL Ortho as "Be30WL Ortho"). A keyboard still on the old firmware
  * reports the old name, so both have to work, and both have to find the same
  * saved history.
  */
@@ -122,6 +122,9 @@ export const DEVICE_NAME_ALIASES: Readonly<Record<string, string>> = {
   "gofortywl ortho": "goforty-max",
   "bethirtywl qaz": "be30max-qaz",
   "bethirtywl ortho": "be30max-ortho",
+  // What BeThirtyWL Ortho's firmware actually reports: "BeThirtyWL Ortho"
+  // is 16 characters, one more than Zephyr allows a Bluetooth name.
+  "be30wl ortho": "be30max-ortho",
 };
 
 /**
