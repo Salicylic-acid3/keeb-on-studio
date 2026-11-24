@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useCustomSubsystem, useLockAwareCall } from "./useCustomSubsystem";
 import {
   Request,
   Response,
   StateResponse,
 } from "../proto/cormoran/default_layer/default_layer";
+import { LAYER_OS_DETECTION, endpointsToFollowOs } from "../lib/osDetection";
 
 // Subsystem identifier for the ZMK default-layer custom protocol.
 // This matches the identifier registered in the zmk-feature-default-layer module.
@@ -128,6 +129,42 @@ export function useDefaultLayer(): UseDefaultLayerReturn {
     },
     [ready, call],
   );
+
+  // Once any OS has a layer of its own, make every unset endpoint really
+  // follow OS detection (see endpointsToFollowOs): the page shows them that
+  // way, and that is what someone setting "Windows -> Alt" expects. Written
+  // with the raw call so it doesn't show up as a change of the user's.
+  const followingRef = useRef(false);
+  useEffect(() => {
+    const pending = endpointsToFollowOs(state);
+    if (!ready || pending.length === 0 || followingRef.current) return;
+    followingRef.current = true;
+    void (async () => {
+      try {
+        let latest: StateResponse | null = null;
+        for (const endpointIndex of pending) {
+          const resp = await call(
+            Request.create({
+              setEndpointLayer: { endpointIndex, value: LAYER_OS_DETECTION },
+            }),
+          );
+          if (resp?.error) {
+            console.warn(
+              `Could not make endpoint ${endpointIndex} follow OS detection:`,
+              resp.error.message,
+            );
+            return;
+          }
+          if (resp?.state) latest = resp.state;
+        }
+        if (latest) setState(latest);
+      } catch (err) {
+        console.warn("Could not make endpoints follow OS detection:", err);
+      } finally {
+        followingRef.current = false;
+      }
+    })();
+  }, [ready, state, call]);
 
   // Load state when connection or subsystem changes.
   useEffect(() => {

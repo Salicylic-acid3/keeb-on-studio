@@ -53,6 +53,34 @@ export function protoOsToZmkOs(protoOs: Os): number {
   return protoOs - 1;
 }
 
+/**
+ * Endpoints the app shows as "Follow OS detection" that the firmware would
+ * not actually resolve through the per-OS table.
+ *
+ * zmk-feature-default-layer resolves an endpoint through the per-OS table only
+ * when its value is LAYER_OS_DETECTION (-2); an unset endpoint (-1) means "the
+ * keymap's default layer". The app shows an unset endpoint as "Follow OS
+ * detection" (see LayerSelect), which is the same thing as long as no OS has a
+ * layer of its own -- but once one does (Windows -> Alt), the unset endpoints
+ * kept the default layer while the page said they followed the OS. These are
+ * the endpoints to write -2 to so the firmware does what the page shows.
+ */
+export function endpointsToFollowOs(
+  state:
+    | {
+        endpoints: Array<{ index: number; value: number }>;
+        osLayers: Array<{ value: number }>;
+      }
+    | null
+    | undefined,
+): number[] {
+  if (!state) return [];
+  if (!state.osLayers.some((entry) => entry.value >= 0)) return [];
+  return state.endpoints
+    .filter((endpoint) => endpoint.value === LAYER_UNSET)
+    .map((endpoint) => endpoint.index);
+}
+
 /** The raw zmk_os values enumerated by the default-layer per-OS section (0..5). */
 export const ZMK_OS_VALUES = [0, 1, 2, 3, 4, 5];
 

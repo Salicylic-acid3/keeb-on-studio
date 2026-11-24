@@ -9,7 +9,10 @@ import { renderHook, act } from "@testing-library/react";
 import { useDefaultLayer } from "../useDefaultLayer";
 import { ZMKAppContext } from "@cormoran/zmk-studio-react-hook";
 import type { ReactNode } from "react";
-import { Response } from "../../proto/cormoran/default_layer/default_layer";
+import {
+  Request,
+  Response,
+} from "../../proto/cormoran/default_layer/default_layer";
 
 const mockCallRPC = jest.fn();
 
@@ -51,9 +54,11 @@ const STATE_RESPONSE = Response.create({
       { index: 1, isUsb: true, bleProfileIndex: 0, value: -2 },
       { index: 2, isUsb: false, bleProfileIndex: 0, value: -1 },
     ],
+    // No OS has a layer of its own yet, so the unset endpoint is left alone
+    // (see "Following OS detection" below for what happens once one does).
     osLayers: [
       { os: 0, value: -1 },
-      { os: 2, value: 0 },
+      { os: 2, value: -1 },
     ],
     activeEndpointIndex: 1,
     currentOs: 2,
@@ -192,6 +197,20 @@ describe("useDefaultLayer", () => {
       });
       mockCallRPC.mockResolvedValueOnce(Response.encode(updatedState).finish());
 
+      // Setting an OS layer makes the unset endpoint 2 follow OS detection.
+      const followingState = Response.create({
+        state: {
+          ...updatedState.state,
+          endpoints: [
+            { index: 1, isUsb: true, bleProfileIndex: 0, value: -2 },
+            { index: 2, isUsb: false, bleProfileIndex: 0, value: -2 },
+          ],
+        },
+      });
+      mockCallRPC.mockResolvedValueOnce(
+        Response.encode(followingState).finish(),
+      );
+
       const wrapper = createWrapper({
         state: {
           connection: { isConnected: true } as never,
@@ -210,9 +229,84 @@ describe("useDefaultLayer", () => {
       await act(async () => {
         await result.current.setOsLayer(2, 2);
       });
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+
+      expect(mockCallRPC).toHaveBeenCalledTimes(3);
+      expect(result.current.state?.osLayers[1].value).toBe(2);
+      expect(result.current.state?.endpoints[1].value).toBe(-2);
+    });
+  });
+
+  describe("Following OS detection", () => {
+    // The page shows an unset endpoint as "Follow OS detection", but the
+    // firmware resolves only -2 through the per-OS table: with Windows -> Alt
+    // set and profile 1 unset, profile 1 stayed on the default layer.
+    it("writes -2 to unset endpoints once an OS has a layer", async () => {
+      const inconsistent = Response.create({
+        state: {
+          ...STATE_RESPONSE.state,
+          osLayers: [
+            { os: 0, value: -1 },
+            { os: 1, value: 1 },
+          ],
+        },
+      });
+      const fixed = Response.create({
+        state: {
+          ...inconsistent.state,
+          endpoints: [
+            { index: 1, isUsb: true, bleProfileIndex: 0, value: -2 },
+            { index: 2, isUsb: false, bleProfileIndex: 0, value: -2 },
+          ],
+        },
+      });
+      mockCallRPC
+        .mockResolvedValueOnce(Response.encode(inconsistent).finish())
+        .mockResolvedValueOnce(Response.encode(fixed).finish());
+
+      const wrapper = createWrapper({
+        state: {
+          connection: { isConnected: true } as never,
+          customSubsystems: [{ index: 1, identifier: SUBSYSTEM_ID }],
+        },
+        findSubsystem: (id) =>
+          id === SUBSYSTEM_ID ? { index: 1, identifier: id } : null,
+      });
+
+      const { result } = renderHook(() => useDefaultLayer(), { wrapper });
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
 
       expect(mockCallRPC).toHaveBeenCalledTimes(2);
-      expect(result.current.state?.osLayers[1].value).toBe(2);
+      const written = Request.decode(mockCallRPC.mock.calls[1][0]);
+      expect(written.setEndpointLayer).toEqual({
+        endpointIndex: 2,
+        value: -2,
+      });
+      expect(result.current.state?.endpoints[1].value).toBe(-2);
+    });
+
+    it("leaves unset endpoints alone while no OS has a layer", async () => {
+      mockCallRPC.mockResolvedValue(Response.encode(STATE_RESPONSE).finish());
+
+      const wrapper = createWrapper({
+        state: {
+          connection: { isConnected: true } as never,
+          customSubsystems: [{ index: 1, identifier: SUBSYSTEM_ID }],
+        },
+        findSubsystem: (id) =>
+          id === SUBSYSTEM_ID ? { index: 1, identifier: id } : null,
+      });
+
+      renderHook(() => useDefaultLayer(), { wrapper });
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+
+      expect(mockCallRPC).toHaveBeenCalledTimes(1);
     });
   });
 });
