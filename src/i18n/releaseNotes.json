@@ -5,6 +5,15 @@
       "date": null,
       "changes": {
         "major": [],
+        "minor": [],
+        "patch": []
+      }
+    },
+    {
+      "version": "2026.11.24.0",
+      "date": "2026-11-24",
+      "changes": {
+        "major": [],
         "minor": [
           {
             "en": "GoFortyMax Ortho, BeThirtyMax QAZ and BeThirtyMax Ortho are now called GoFortyWL Ortho, BeThirtyWL QAZ and BeThirtyWL Ortho throughout the app. Their new firmware reports the new name (on Bluetooth too; BeThirtyWL Ortho as \"Be30WL Ortho\", since Bluetooth names stop at 15 characters) and downloads as gofortywl_ortho.uf2, bethirtywl_qaz.uf2 and bethirtywl_ortho.uf2. A keyboard still on the old firmware works as before, and keymaps and history saved under the old name carry over.",
