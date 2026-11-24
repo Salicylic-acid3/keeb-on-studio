@@ -31,7 +31,7 @@ KEYMAPS = ["vial", "multi-os"]
 KEYCODE_KEYMAPS = ["multi-os", "vial", "default"]
 ZMK = {
     "clickboard_ergotrack": ("Salicylic-acid3/zmk-keyboard-clickboard-ergotrack", "config/clickboard_ergotrack.keymap"),
-    "goforty_max_ortho": ("Salicylic-acid3/zmk-keyboard-gofortymax-ortho", "config/goforty_max.keymap"),
+    "goforty_max_ortho": ("Salicylic-acid3/zmk-keyboard-gofortywl-ortho", "config/gofortywl_ortho.keymap"),
 }
 
 

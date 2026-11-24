@@ -10,7 +10,7 @@ import { ConnectionContext } from "../../components/DeviceConnection";
 import type { BehaviorDefinition } from "../../hooks/useKeymapSource";
 import { zmkTrigger } from "../../keyTest/lib/triggers";
 import { keyboardBindings } from "../../layoutEditor/lib/keyboards";
-import { GOFORTY_MAX } from "../../lib/layouts";
+import { GOFORTYWL_ORTHO } from "../../lib/layouts";
 import { BEHAVIORS } from "../../lib/transport/behaviors";
 import { behaviorIds, triggerToBinding } from "../../practice/lib/device";
 import data from "../../layoutEditor/data/keyboards.json";
@@ -68,7 +68,7 @@ const behaviors = new Map<number, BehaviorDefinition>(
 );
 const ids = behaviorIds(behaviors, null);
 
-/** GoFortyMax's default keymap as a keyboard would hold it; `blocks` of four layers per OS. */
+/** GoFortyWL's default keymap as a keyboard would hold it; `blocks` of four layers per OS. */
 function deviceKeymap(blocks = 1): Keymap {
   const def = keyboardBindings("goforty_max_ortho")!;
   const one = [def.bindings, ...def.layers];
@@ -186,7 +186,7 @@ function mount(opts: {
   const saveChanges = jest.fn().mockResolvedValue(true);
   const addLayer = jest.fn().mockResolvedValue(null);
   mockUseKeymap.mockReturnValue({
-    physicalLayouts: { activeLayoutIndex: 0, layouts: [GOFORTY_MAX] },
+    physicalLayouts: { activeLayoutIndex: 0, layouts: [GOFORTYWL_ORTHO] },
     keymap: deviceKeymap(opts.blocks ?? 1),
     behaviors,
     isFullyLoaded: opts.connected && !opts.qmk,
@@ -232,7 +232,7 @@ describe("PracticePage with a keyboard", () => {
     const names = Array.from(picker.querySelectorAll("option")).map(
       (o) => o.textContent,
     );
-    expect(names).toContain("GoFortyMax Ortho");
+    expect(names).toContain("GoFortyWL Ortho");
     expect(names).toContain("GoForty JP");
     for (const pad of [
       "ClickBoard Tenkey",
@@ -293,7 +293,7 @@ describe("PracticePage with a keyboard", () => {
     // The guide, started on the device's keymap.
     fireEvent.click(screen.getByRole("button", { name: /Start the guide/ }));
     fireEvent.click(screen.getByRole("button", { name: "Begin" }));
-    // Step 2 (symbols) has a proposal on GoFortyMax; applying writes it.
+    // Step 2 (symbols) has a proposal on GoFortyWL; applying writes it.
     const apply = screen.getByRole("button", { name: "Apply" });
     expect((apply as HTMLButtonElement).disabled).toBe(false);
     fireEvent.click(apply);
@@ -353,7 +353,7 @@ describe("PracticePage with a keyboard", () => {
   });
 
   it("offers to write a demo-mode guide to the keyboard it was done for, then asks to save", async () => {
-    // A demo guide with one applied step on the registered GoFortyMax.
+    // A demo guide with one applied step on the registered GoFortyWL.
     const b = testBoard("goforty_max_ortho")!;
     const km = keymapOf(b);
     const change = {

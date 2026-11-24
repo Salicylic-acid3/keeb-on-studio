@@ -1,7 +1,7 @@
 <h1 align="center">⌨️ Keeb-On! Studio</h1>
 
 <p align="center">
-  A web-based configuration tool for <strong>ClickBoard ErgoTrack</strong> and <strong>GoFortyMax</strong>.<br />
+  A web-based configuration tool for <strong>ClickBoard ErgoTrack</strong> and <strong>GoFortyWL</strong>.<br />
   Tune your keymap, trackpads and connections — right from your browser. No install required.
 </p>
 
@@ -129,7 +129,7 @@ Live at [keeb-on.studio](https://keeb-on.studio), and in use on real hardware.
 What this fork added on top of DYA Studio:
 
 - **Narrowed to two keyboards.** Unsupported boards are turned away at connect;
-  the tabs and settings that do not apply to ErgoTrack / GoFortyMax are gone
+  the tabs and settings that do not apply to ErgoTrack / GoFortyWL are gone
 - **Trackpad work** — per-OS tuning, the pads drawn on the board, and an editor
   for the gestures (pinch, three-finger swipe) that names them instead of
   showing seven blank keys

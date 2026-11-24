@@ -38,7 +38,7 @@ describe("the dojo keymap in the remapper's keymaps", () => {
     expect(p.name).toBe(DOJO_KEYMAP_NAME);
     expect(p.fromDemo).toBe(true);
     expect(p.target).toEqual({
-      layoutName: "GoFortyMax Ortho",
+      layoutName: "GoFortyWL Ortho",
       keyCount: board.keys.length,
     });
     // Every default layer is there, not only the ones the guide reaches.

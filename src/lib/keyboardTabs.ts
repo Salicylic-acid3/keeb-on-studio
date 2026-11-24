@@ -3,7 +3,7 @@
  *
  * The Trackpad tab is the runtime input processor's page: pointer and
  * scroll speed, rotation, the gesture bindings, the pad's own settings. On a
- * keyboard built without that module — GoFortyMax Ortho, or anything else
+ * keyboard built without that module — GoFortyWL Ortho, or anything else
  * without a pointing device — every one of those is missing, and the page
  * could only open on a warning telling the owner to enable a firmware module
  * they have no use for. A tab that exists to tell you it does not apply is

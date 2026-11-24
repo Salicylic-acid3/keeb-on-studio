@@ -99,3 +99,31 @@ export function nextKeyPosition(
   if (index < 0) return null;
   return positions[index + 1] ?? null;
 }
+
+/** The two non-key bindings the bottom keyboard offers alongside plain keys. */
+export type QuickAssignSpecial = "trans" | "none";
+
+/** Display names each special goes by (ZMK's and this app's own). */
+const SPECIAL_NAMES: Record<QuickAssignSpecial, string[]> = {
+  trans: ["Trans", "Transparent"],
+  none: ["None"],
+};
+
+/**
+ * The device's behavior id for Trans or None, or null if it has none.
+ *
+ * Filling a layer with Trans (or clearing keys with None) is the run of keys
+ * the bottom keyboard exists for just as much as typing letters is, and
+ * neither takes a parameter, so they belong here rather than in the dialog.
+ * Looked up by name for the same reason as the key press: ids are
+ * device-local.
+ */
+export function specialBehaviorId(
+  behaviors: Map<number, BehaviorDefinition>,
+  kind: QuickAssignSpecial,
+): number | null {
+  for (const [id, behavior] of behaviors) {
+    if (SPECIAL_NAMES[kind].includes(behavior.displayName ?? "")) return id;
+  }
+  return null;
+}

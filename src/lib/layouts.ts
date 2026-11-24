@@ -121,9 +121,9 @@ export const ERGOTRACK: PhysicalLayout = {
   ].map(attr),
 };
 
-/** GoFortyMax Ortho: 53 keys. */
-export const GOFORTY_MAX: PhysicalLayout = {
-  name: "GoFortyMax Ortho",
+/** GoFortyWL Ortho: 53 keys. */
+export const GOFORTYWL_ORTHO: PhysicalLayout = {
+  name: "GoFortyWL Ortho",
   keys: [
     { width: 50, height: 100, x: 50, y: 0 },
     { width: 50, height: 100, x: 1200, y: 0 },
@@ -182,18 +182,18 @@ export const GOFORTY_MAX: PhysicalLayout = {
 };
 
 /**
- * BeThirtyMax QAZ: 37 keys. The Vial BeThirty QAZ's 36 (QAZ layout, four
+ * BeThirtyWL QAZ: 37 keys. The Vial BeThirty QAZ's 36 (QAZ layout, four
  * rows of 10u) with a half-width key above the top row, which is first in
  * the firmware's transform.
  */
 /**
- * BeThirtyMax Ortho: 40 keys. The Vial BeThirty Ortho's 39 (a 4 x 10 grid
+ * BeThirtyWL Ortho: 40 keys. The Vial BeThirty Ortho's 39 (a 4 x 10 grid
  * whose bottom row is 1.25u, six 1u, 1.5u in the middle, 1.25u) with the
  * same half-width key above the top row as the QAZ, first in the firmware's
  * transform.
  */
-export const BETHIRTYMAX_ORTHO: PhysicalLayout = {
-  name: "BeThirtyMax Ortho",
+export const BETHIRTYWL_ORTHO: PhysicalLayout = {
+  name: "BeThirtyWL Ortho",
   keys: [
     { width: 50, height: 100, x: 50, y: 0 },
     { width: 100, height: 100, x: 0, y: 100 },
@@ -238,8 +238,8 @@ export const BETHIRTYMAX_ORTHO: PhysicalLayout = {
   ].map(attr),
 };
 
-export const BETHIRTYMAX_QAZ: PhysicalLayout = {
-  name: "BeThirtyMax QAZ",
+export const BETHIRTYWL_QAZ: PhysicalLayout = {
+  name: "BeThirtyWL QAZ",
   keys: [
     { width: 50, height: 100, x: 50, y: 0 },
     { width: 100, height: 100, x: 0, y: 100 },

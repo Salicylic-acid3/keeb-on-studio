@@ -71,7 +71,7 @@ describe("default keymaps of the demo keyboards", () => {
       "Alt Base",
       "Drag",
     ]);
-    expect(keymap.availableLayers).toBe(8);
+    expect(keymap.availableLayers).toBe(13);
     const base = keymap.layers[0].bindings;
     // Esc, then the number row; Q under the 1.
     expect(base[0]).toEqual({
@@ -98,11 +98,11 @@ describe("default keymaps of the demo keyboards", () => {
     ).toBe(true);
   });
 
-  test("GoFortyMax Ortho starts as its firmware does", () => {
-    const keymap = defaultKeymapFor(layoutModule.GOFORTY_MAX, BEHAVIORS);
+  test("GoFortyWL Ortho starts as its firmware does", () => {
+    const keymap = defaultKeymapFor(layoutModule.GOFORTYWL_ORTHO, BEHAVIORS);
     expect(keymap.layers).toHaveLength(5);
-    // Its keymap reserves no extra layer, so none can be added.
-    expect(keymap.availableLayers).toBe(0);
+    // 5 layers + 11 reserved = 16, the same ceiling as ErgoTrack.
+    expect(keymap.availableLayers).toBe(11);
     const base = keymap.layers[0].bindings;
     // &bt BT_PRV, &bt BT_NXT, Tab, Q ...
     expect(base[0]).toEqual({
@@ -225,7 +225,7 @@ describe("demo keyboard: one keymap per keyboard", () => {
       KEYBOARD_PAGE | 0x29,
     );
 
-    // And GoFortyMax is as it was left.
+    // And GoFortyWL is as it was left.
     select(kb, 1);
     expect(unsaved(kb)).toBe(true);
     expect(keymapOf(kb).layers[0].bindings[0]).toEqual({
@@ -234,7 +234,7 @@ describe("demo keyboard: one keymap per keyboard", () => {
       param2: 0,
     });
 
-    // Discard brings back GoFortyMax's default, on GoFortyMax.
+    // Discard brings back GoFortyWL's default, on GoFortyWL.
     kb.process({ requestId: 1, keymap: { discardChanges: true } });
     expect(keymapOf(kb).layers).toHaveLength(5);
     expect(keymapOf(kb).layers[0].bindings[0].behaviorId).toBe(id("Bluetooth"));
@@ -246,17 +246,19 @@ describe("demo keyboard: one keymap per keyboard", () => {
     expect(keymapOf(kb).layers[0].bindings).toHaveLength(81);
   });
 
-  test("a keyboard whose keymap reserves no layer cannot add one", () => {
+  test("layers can be added up to the reserved count, and no further", () => {
     const kb = new Keyboard();
     const add = () =>
       kb.process({ requestId: 1, keymap: { addLayer: {} } }).requestResponse!
         .keymap!.addLayer!;
-    expect(add().ok).toBeDefined(); // ErgoTrack reserves eight
-    expect(
-      fast(kb).handleFastKeymap({ getSnapshot: {} }).snapshot!.availableLayers,
-    ).toBe(7);
-    select(kb, 1);
-    expect(add().err).toBeDefined(); // GoFortyMax reserves none
+    const available = () =>
+      fast(kb).handleFastKeymap({ getSnapshot: {} }).snapshot!.availableLayers;
+    expect(add().ok).toBeDefined(); // ErgoTrack reserves thirteen
+    expect(available()).toBe(12);
+    select(kb, 1); // GoFortyWL reserves eleven
+    for (let i = 0; i < 11; i++) expect(add().ok).toBeDefined();
+    expect(available()).toBe(0);
+    expect(add().err).toBeDefined();
   });
 
   test("fingerprints follow the content, so the web's cache cannot go stale", () => {
@@ -294,7 +296,7 @@ describe("demo keyboard: one keymap per keyboard", () => {
         binding: { behaviorId: id("Key Press"), param1: A, param2: 0 },
       },
     ]);
-    // The default itself is still GoFortyMax's.
+    // The default itself is still GoFortyWL's.
     const stock = fast(kb).handleFastKeymap({
       getDefaultLayer: { layerId: 0 },
     }).getDefaultLayer!;

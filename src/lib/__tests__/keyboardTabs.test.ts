@@ -1,6 +1,6 @@
 /**
  * The Trackpad tab exists only for keyboards that have a trackpad's worth of
- * settings. On GoFortyMax Ortho it used to open on a warning telling the
+ * settings. On GoFortyWL Ortho it used to open on a warning telling the
  * owner to enable a firmware module the keyboard has no use for.
  */
 import { keyboardHasTrackpadTab } from "../keyboardTabs";
@@ -16,7 +16,7 @@ describe("which keyboards get the Trackpad tab", () => {
   });
 
   it("hides it on a keyboard that lists everything but", () => {
-    // GoFortyMax Ortho: settings, tap dance, battery — no pointing device.
+    // GoFortyWL Ortho: settings, tap dance, battery — no pointing device.
     expect(
       keyboardHasTrackpadTab([
         { identifier: "cormoran__custom_settings" },

@@ -7,9 +7,19 @@
         "major": [],
         "minor": [
           {
-            "en": "BeThirtyMax QAZ and BeThirtyMax Ortho, the wireless BeThirty keyboards, are supported: on the firmware download page, in the key test and layout editor, in demo mode, and in the keymap dojo with its 30% guide.",
-            "ja": "BeThirty の無線版 BeThirtyMax QAZ と BeThirtyMax Ortho に対応しました。ファームウェアのダウンロード、キーテストとレイアウトエディタ、デモモード、キーマップ道場（30% ガイド）で選べます。",
-            "zh": "新增支持 BeThirty 的无线版 BeThirtyMax QAZ 与 BeThirtyMax Ortho：固件下载页、按键测试与布局编辑器、演示模式，以及键位道场（30% 指南）。"
+            "en": "GoFortyMax Ortho, BeThirtyMax QAZ and BeThirtyMax Ortho are now called GoFortyWL Ortho, BeThirtyWL QAZ and BeThirtyWL Ortho throughout the app. Their new firmware reports the new name (on Bluetooth too) and downloads as gofortywl_ortho.uf2, bethirtywl_qaz.uf2 and bethirtywl_ortho.uf2. A keyboard still on the old firmware works as before, and keymaps and history saved under the old name carry over.",
+            "ja": "GoFortyMax Ortho・BeThirtyMax QAZ・BeThirtyMax Ortho を、アプリ全体で GoFortyWL Ortho・BeThirtyWL QAZ・BeThirtyWL Ortho と表記するようにしました。新しいファームウェアは新しい名前で名乗り(Bluetooth の名前も変わります)、ファイル名は gofortywl_ortho.uf2・bethirtywl_qaz.uf2・bethirtywl_ortho.uf2 になります。古いファームウェアのままのキーボードもこれまでどおり使え、古い名前で保存したキーマップや変更履歴もそのまま引き継がれます。",
+            "zh": "GoFortyMax Ortho、BeThirtyMax QAZ 和 BeThirtyMax Ortho 在整个应用中更名为 GoFortyWL Ortho、BeThirtyWL QAZ 和 BeThirtyWL Ortho。新固件以新名称显示（蓝牙名称也会改变），下载文件为 gofortywl_ortho.uf2、bethirtywl_qaz.uf2 和 bethirtywl_ortho.uf2。仍使用旧固件的键盘照常可用，以旧名称保存的键位图和修改历史也会沿用。"
+          },
+          {
+            "en": "Keymap: the keyboard at the bottom of the screen (\"Set keys one after another\") now has Trans and None buttons. Picking one sets the selected key and moves to the next, so a run of keys can be made transparent or cleared without opening the key dialog for each.",
+            "ja": "キーマップ: 画面下のキーボード(「キーを続けて設定」)に Trans と None のボタンを追加しました。押すと選択中のキーに設定して次のキーへ進むので、キーの設定ダイアログを 1 つずつ開かなくても、続けて透過にしたり無効にしたりできます。",
+            "zh": "键位图：屏幕下方的键盘（“连续设置按键”）新增 Trans 和 None 按钮。点击即设置当前选中的键并跳到下一个，无需逐个打开按键对话框即可连续设为透明或无效。"
+          },
+          {
+            "en": "BeThirtyWL QAZ and BeThirtyWL Ortho, the wireless BeThirty keyboards, are supported: on the firmware download page, in the key test and layout editor, in demo mode, and in the keymap dojo with its 30% guide.",
+            "ja": "BeThirty の無線版 BeThirtyWL QAZ と BeThirtyWL Ortho に対応しました。ファームウェアのダウンロード、キーテストとレイアウトエディタ、デモモード、キーマップ道場（30% ガイド）で選べます。",
+            "zh": "新增支持 BeThirty 的无线版 BeThirtyWL QAZ 与 BeThirtyWL Ortho：固件下载页、按键测试与布局编辑器、演示模式，以及键位道场（30% 指南）。"
           },
           {
             "en": "Demo mode: each keyboard now starts with its real default keymap instead of the letters A, B, C … in order, so you can see the thumb keys, layer-taps, Bluetooth key and trackpad buttons the keyboard ships with. Switching the layout switches the keyboard: each one keeps its own keymap, its own unsaved edits and its own number of spare layers. The Permissive presets (Mod-Tap / Layer-Tap 180ms (Permissive)) can be picked in the demo as well.",
@@ -23,6 +33,16 @@
           }
         ],
         "patch": [
+          {
+            "en": "Trackpad: Y invert, scaling and the other input processor settings are now written to the keyboard right away. The keyboard used to save them about a minute later, so unplugging it sooner (with no battery in it) brought the old values back.",
+            "ja": "トラックパッド: Y 軸の反転やスケーリングなどの入力プロセッサの設定を、変更後すぐキーボードに保存するようにしました。これまではキーボードが約 1 分後にまとめて保存していたため、それより前に USB ケーブルを抜くと(電池が入っていない場合)元の値に戻っていました。",
+            "zh": "触控板：Y 轴反转、缩放等输入处理器设置现在会在更改后立即保存到键盘。此前键盘约 1 分钟后才统一保存，在此之前拔下 USB 线（未装电池时）会恢复为原来的值。"
+          },
+          {
+            "en": "Connection: a default layer set for an OS (Windows → Alt, for example) now applies to every connection shown as \"Follow OS detection\". Connections that had never been changed were shown that way but stayed on the keymap's default layer.",
+            "ja": "接続: OS ごとのデフォルトレイヤー(Windows → Alt など)が、「OS 検出に従う」と表示されている接続すべてに効くようになりました。一度も変更していない接続は「OS 検出に従う」と表示されていても、実際にはキーマップのデフォルトレイヤーのままでした。",
+            "zh": "连接：为某个系统设置的默认层（例如 Windows → Alt）现在会作用于所有显示为“跟随系统检测”的连接。此前从未修改过的连接虽然显示为“跟随系统检测”，实际仍停留在键位图的默认层。"
+          },
           {
             "en": "Macros: a new macro is now named after its slot, starting from \"Macro 0\". The list used to start at \"Macro 1\" while the keymap called the same macro \"Macro 0\". Macros you already have keep their names; rename them if you want them to match.",
             "ja": "マクロ: 新しく追加したマクロの名前を、スロット番号に合わせて「Macro 0」から付けるようにしました。これまで一覧では「Macro 1」から始まるのに、キーマップでは同じマクロが「Macro 0」と表示されていました。作成済みのマクロの名前はそのままです。揃えたい場合は名前を変更してください。",
@@ -63,9 +83,9 @@
         "major": [],
         "minor": [
           {
-            "en": "Keymap dojo: a 30% course for the BeThirty QAZ / Ortho and BeThirtyMax QAZ / Ortho, following Salicylic_acid3's BeThirty keymap step by step — the thumb row, letters with a hold (Tab on the Q key with Q on a double tap), layer 1 with the cursor and F keys, layer 2 with symbols and a numpad, layers 3 and 4 for occasional keys and shortcuts, and the tapping terms. Each step comes in groups that can be left out. On Vial the double tap and the terms are written as tap dance entries; on ZMK as runtime tap dance slots.",
-            "ja": "キーマップ道場: BeThirty QAZ / Ortho と BeThirtyMax QAZ / Ortho 向けの30%コースを追加。サリチル酸のBeThirtyキーマップを、親指キーと最下段、アルファベットの長押し（Qの位置にTab、Qは2回押し）、レイヤー1（カーソルキーとFキー）、レイヤー2（記号とテンキー）、レイヤー3・4（たまに使うキーとショートカット）、タッピング間隔の順に設定していきます。各ステップはグループ単位で外せます。2回押しや個別のタッピング間隔は、Vialではタップダンスのエントリに、ZMKではランタイムタップダンスのスロットに書き込みます。",
-            "zh": "键位道场：为 BeThirty QAZ / Ortho 和 BeThirtyMax QAZ / Ortho 新增 30% 课程，按步骤还原 Salicylic_acid3 的 BeThirty 键位：拇指键与最下排、带长按的字母键（Q 位置为 Tab，双击为 Q）、层1（光标键与F键）、层2（符号与数字小键盘）、层3・4（偶尔使用的键与快捷键）以及点击判定时间。每一步按组可单独排除。双击和单独的判定时间在 Vial 中写入 Tap Dance 条目，在 ZMK 中写入运行时 Tap Dance 槽位。"
+            "en": "Keymap dojo: a 30% course for the BeThirty QAZ / Ortho and BeThirtyWL QAZ / Ortho, following Salicylic_acid3's BeThirty keymap step by step — the thumb row, letters with a hold (Tab on the Q key with Q on a double tap), layer 1 with the cursor and F keys, layer 2 with symbols and a numpad, layers 3 and 4 for occasional keys and shortcuts, and the tapping terms. Each step comes in groups that can be left out. On Vial the double tap and the terms are written as tap dance entries; on ZMK as runtime tap dance slots.",
+            "ja": "キーマップ道場: BeThirty QAZ / Ortho と BeThirtyWL QAZ / Ortho 向けの30%コースを追加。サリチル酸のBeThirtyキーマップを、親指キーと最下段、アルファベットの長押し（Qの位置にTab、Qは2回押し）、レイヤー1（カーソルキーとFキー）、レイヤー2（記号とテンキー）、レイヤー3・4（たまに使うキーとショートカット）、タッピング間隔の順に設定していきます。各ステップはグループ単位で外せます。2回押しや個別のタッピング間隔は、Vialではタップダンスのエントリに、ZMKではランタイムタップダンスのスロットに書き込みます。",
+            "zh": "键位道场：为 BeThirty QAZ / Ortho 和 BeThirtyWL QAZ / Ortho 新增 30% 课程，按步骤还原 Salicylic_acid3 的 BeThirty 键位：拇指键与最下排、带长按的字母键（Q 位置为 Tab，双击为 Q）、层1（光标键与F键）、层2（符号与数字小键盘）、层3・4（偶尔使用的键与快捷键）以及点击判定时间。每一步按组可单独排除。双击和单独的判定时间在 Vial 中写入 Tap Dance 条目，在 ZMK 中写入运行时 Tap Dance 槽位。"
           }
         ],
         "patch": []
@@ -397,9 +417,9 @@
         "major": [],
         "minor": [
           {
-            "en": "Troubleshooting: a Settings storage card shows how full the keyboard's settings area is and turns red before saves start failing (firmware with zmk-feature-custom-settings 61f2b6a or later). A full settings area is why a change could take effect and then come back as it was after a restart, with no error anywhere; ClickBoard ErgoTrack and GoFortyMax Ortho firmware now also doubles that area to 64 KB.",
-            "ja": "トラブルシューティング: 「設定の保存領域」カードを追加し、キーボードの設定領域がどれだけ埋まっているかを表示して、保存できなくなる前に赤くします(zmk-feature-custom-settings 61f2b6a 以降のファームウェア)。設定領域が一杯になると、変更がいったん効いたあと再起動で元に戻り、どこにもエラーが出ません。ClickBoard ErgoTrack と GoFortyMax Ortho のファームウェアでは、あわせて設定領域を 64 KB に倍増しました。",
-            "zh": "故障排除：新增“设置存储空间”卡片，显示键盘设置区的占用情况，并在保存开始失败之前变红（需要 zmk-feature-custom-settings 61f2b6a 或更新的固件）。设置区已满时，更改会先生效、重启后又恢复原状，且任何地方都没有报错；ClickBoard ErgoTrack 和 GoFortyMax Ortho 的固件同时把该区域扩大到 64 KB。"
+            "en": "Troubleshooting: a Settings storage card shows how full the keyboard's settings area is and turns red before saves start failing (firmware with zmk-feature-custom-settings 61f2b6a or later). A full settings area is why a change could take effect and then come back as it was after a restart, with no error anywhere; ClickBoard ErgoTrack and GoFortyWL Ortho firmware now also doubles that area to 64 KB.",
+            "ja": "トラブルシューティング: 「設定の保存領域」カードを追加し、キーボードの設定領域がどれだけ埋まっているかを表示して、保存できなくなる前に赤くします(zmk-feature-custom-settings 61f2b6a 以降のファームウェア)。設定領域が一杯になると、変更がいったん効いたあと再起動で元に戻り、どこにもエラーが出ません。ClickBoard ErgoTrack と GoFortyWL Ortho のファームウェアでは、あわせて設定領域を 64 KB に倍増しました。",
+            "zh": "故障排除：新增“设置存储空间”卡片，显示键盘设置区的占用情况，并在保存开始失败之前变红（需要 zmk-feature-custom-settings 61f2b6a 或更新的固件）。设置区已满时，更改会先生效、重启后又恢复原状，且任何地方都没有报错；ClickBoard ErgoTrack 和 GoFortyWL Ortho 的固件同时把该区域扩大到 64 KB。"
           }
         ],
         "patch": [
@@ -482,14 +502,14 @@
         "major": [],
         "minor": [
           {
-            "en": "The Trackpad tab appears only on keyboards that have the runtime input processor (the trackpad settings module). On GoFortyMax Ortho it used to open on a warning asking you to enable a firmware module the keyboard has no use for.",
-            "ja": "トラックパッドタブは、ランタイム入力プロセッサ(トラックパッド設定のモジュール)を持つキーボードでだけ表示するようにしました。GoFortyMax Ortho では、キーボードに関係のないファームウェアモジュールを有効にするよう促す警告が開いていました。",
-            "zh": "触控板标签页现在只在具备运行时输入处理器（触控板设置模块）的键盘上显示。此前在 GoFortyMax Ortho 上打开它只会看到一条要求启用与该键盘无关的固件模块的警告。"
+            "en": "The Trackpad tab appears only on keyboards that have the runtime input processor (the trackpad settings module). On GoFortyWL Ortho it used to open on a warning asking you to enable a firmware module the keyboard has no use for.",
+            "ja": "トラックパッドタブは、ランタイム入力プロセッサ(トラックパッド設定のモジュール)を持つキーボードでだけ表示するようにしました。GoFortyWL Ortho では、キーボードに関係のないファームウェアモジュールを有効にするよう促す警告が開いていました。",
+            "zh": "触控板标签页现在只在具备运行时输入处理器（触控板设置模块）的键盘上显示。此前在 GoFortyWL Ortho 上打开它只会看到一条要求启用与该键盘无关的固件模块的警告。"
           },
           {
-            "en": "Troubleshooting: the battery card is withdrawn for now. The firmware measures the supply rail, and on ClickBoard ErgoTrack and GoFortyMax Ortho that rail sits behind a regulator, so the reading stays the same from a fresh cell to a nearly dead one and then the keyboard stops. A number that says nothing until it is too late is worse than none; it comes back when a board can measure the cell itself.",
-            "ja": "トラブルシューティング: 電池カードをいったん外しました。ファームウェアが測っているのは電源ラインで、ClickBoard ErgoTrack と GoFortyMax Ortho ではそこがレギュレータの後ろにあるため、新品でも空に近くても同じ値を示し、そのまま止まります。手遅れになるまで何も言わない数字は無いほうがましなので、電池そのものを測れる基板ができたときに戻します。",
-            "zh": "故障排除：电池卡片暂时撤下。固件测量的是供电轨，而在 ClickBoard ErgoTrack 和 GoFortyMax Ortho 上供电轨位于稳压器之后，因此从新电池到几乎耗尽读数都一样，然后键盘就停了。一个到来不及时才说话的数字不如没有；等有能直接测量电池的板子再恢复。"
+            "en": "Troubleshooting: the battery card is withdrawn for now. The firmware measures the supply rail, and on ClickBoard ErgoTrack and GoFortyWL Ortho that rail sits behind a regulator, so the reading stays the same from a fresh cell to a nearly dead one and then the keyboard stops. A number that says nothing until it is too late is worse than none; it comes back when a board can measure the cell itself.",
+            "ja": "トラブルシューティング: 電池カードをいったん外しました。ファームウェアが測っているのは電源ラインで、ClickBoard ErgoTrack と GoFortyWL Ortho ではそこがレギュレータの後ろにあるため、新品でも空に近くても同じ値を示し、そのまま止まります。手遅れになるまで何も言わない数字は無いほうがましなので、電池そのものを測れる基板ができたときに戻します。",
+            "zh": "故障排除：电池卡片暂时撤下。固件测量的是供电轨，而在 ClickBoard ErgoTrack 和 GoFortyWL Ortho 上供电轨位于稳压器之后，因此从新电池到几乎耗尽读数都一样，然后键盘就停了。一个到来不及时才说话的数字不如没有；等有能直接测量电池的板子再恢复。"
           }
         ],
         "patch": [
@@ -508,9 +528,9 @@
         "major": [],
         "minor": [
           {
-            "en": "Troubleshooting: the battery card shows each half's voltage instead of a percentage, with a per-keyboard guide to what the voltage means — ClickBoard ErgoTrack has stopped working at about 2.7 V, so its bar reads empty there; GoFortyMax Ortho's AAA cells are done at about 2.0 V. The half connected to the computer reports its voltage directly (ClickBoard ErgoTrack firmware ef94cd9 / GoFortyMax Ortho 0e1fdba or later); the other half's is read back from the percentage it sends. Older firmware still shows the percentage.",
-            "ja": "トラブルシューティング: 電池カードが % ではなく左右それぞれの電圧を表示するようになり、その電圧が何を意味するかの目安をキーボードごとに添えました。ClickBoard ErgoTrack は 2.7 V あたりで動かなくなった実績があるので、そこでバーが空になります。GoFortyMax Ortho の単4電池は 2.0 V あたりで使い切りです。PC につながる側は電圧をそのまま報告し(ClickBoard ErgoTrack ファームウェア ef94cd9 / GoFortyMax Ortho 0e1fdba 以降)、もう片方は送ってくる % から電圧に読み戻します。古いファームウェアでは引き続き % 表示です。",
-            "zh": "故障排除：电池卡片改为显示两半各自的电压而非百分比，并按键盘附上电压含义的参考——ClickBoard ErgoTrack 曾在约 2.7 V 时停止工作，因此电量条在那里归零；GoFortyMax Ortho 的 AAA 电池约 2.0 V 时耗尽。连接电脑的一半直接报告电压（需要 ClickBoard ErgoTrack 固件 ef94cd9 / GoFortyMax Ortho 0e1fdba 或更新），另一半由其发送的百分比换算回电压。旧固件仍显示百分比。"
+            "en": "Troubleshooting: the battery card shows each half's voltage instead of a percentage, with a per-keyboard guide to what the voltage means — ClickBoard ErgoTrack has stopped working at about 2.7 V, so its bar reads empty there; GoFortyWL Ortho's AAA cells are done at about 2.0 V. The half connected to the computer reports its voltage directly (ClickBoard ErgoTrack firmware ef94cd9 / GoFortyWL Ortho 0e1fdba or later); the other half's is read back from the percentage it sends. Older firmware still shows the percentage.",
+            "ja": "トラブルシューティング: 電池カードが % ではなく左右それぞれの電圧を表示するようになり、その電圧が何を意味するかの目安をキーボードごとに添えました。ClickBoard ErgoTrack は 2.7 V あたりで動かなくなった実績があるので、そこでバーが空になります。GoFortyWL Ortho の単4電池は 2.0 V あたりで使い切りです。PC につながる側は電圧をそのまま報告し(ClickBoard ErgoTrack ファームウェア ef94cd9 / GoFortyWL Ortho 0e1fdba 以降)、もう片方は送ってくる % から電圧に読み戻します。古いファームウェアでは引き続き % 表示です。",
+            "zh": "故障排除：电池卡片改为显示两半各自的电压而非百分比，并按键盘附上电压含义的参考——ClickBoard ErgoTrack 曾在约 2.7 V 时停止工作，因此电量条在那里归零；GoFortyWL Ortho 的 AAA 电池约 2.0 V 时耗尽。连接电脑的一半直接报告电压（需要 ClickBoard ErgoTrack 固件 ef94cd9 / GoFortyWL Ortho 0e1fdba 或更新），另一半由其发送的百分比换算回电压。旧固件仍显示百分比。"
           }
         ],
         "patch": []
@@ -524,9 +544,9 @@
         "minor": [],
         "patch": [
           {
-            "en": "Troubleshooting: GoFortyMax Ortho shows its battery level too (firmware from zmk-keyboard-gofortymax-ortho 0e57c39 or later), labelled Keyboard rather than the firmware's internal name.",
-            "ja": "トラブルシューティング: GoFortyMax Ortho も電池残量を表示するようになりました(zmk-keyboard-gofortymax-ortho 0e57c39 以降のファームウェア)。表記はファームウェア内部の名前ではなく「本体」です。",
-            "zh": "故障排除：GoFortyMax Ortho 也会显示电池电量（需要 zmk-keyboard-gofortymax-ortho 0e57c39 或更新的固件），标注为“键盘本体”而非固件内部名称。"
+            "en": "Troubleshooting: GoFortyWL Ortho shows its battery level too (firmware from zmk-keyboard-gofortywl-ortho 0e57c39 or later), labelled Keyboard rather than the firmware's internal name.",
+            "ja": "トラブルシューティング: GoFortyWL Ortho も電池残量を表示するようになりました(zmk-keyboard-gofortywl-ortho 0e57c39 以降のファームウェア)。表記はファームウェア内部の名前ではなく「本体」です。",
+            "zh": "故障排除：GoFortyWL Ortho 也会显示电池电量（需要 zmk-keyboard-gofortywl-ortho 0e57c39 或更新的固件），标注为“键盘本体”而非固件内部名称。"
           }
         ]
       }
@@ -765,9 +785,9 @@
             "zh": "首页：连接按钮下方新增指南——自制键盘为何要重新映射、如何学习本应用、无需连接即可打开的固件下载页，以及在 Discord 提问的入口"
           },
           {
-            "en": "Keymap: mouse pointer movement, scrolling and clicks can be put on keys (needs firmware built with CONFIG_ZMK_POINTING; GoFortyMax has it from 2695b3e)",
-            "ja": "キーマップ: マウスポインタの移動・スクロール・クリックをキーに割り当て可能に（CONFIG_ZMK_POINTING を入れたファームウェアが必要。GoFortyMax は 2695b3e 以降）",
-            "zh": "键位图：可把鼠标指针移动、滚动和点击分配到按键（需要启用 CONFIG_ZMK_POINTING 构建的固件；GoFortyMax 自 2695b3e 起支持）"
+            "en": "Keymap: mouse pointer movement, scrolling and clicks can be put on keys (needs firmware built with CONFIG_ZMK_POINTING; GoFortyWL has it from 2695b3e)",
+            "ja": "キーマップ: マウスポインタの移動・スクロール・クリックをキーに割り当て可能に（CONFIG_ZMK_POINTING を入れたファームウェアが必要。GoFortyWL は 2695b3e 以降）",
+            "zh": "键位图：可把鼠标指针移动、滚动和点击分配到按键（需要启用 CONFIG_ZMK_POINTING 构建的固件；GoFortyWL 自 2695b3e 起支持）"
           }
         ],
         "minor": [
@@ -839,9 +859,9 @@
       "changes": {
         "major": [
           {
-            "en": "Specialized for ClickBoard ErgoTrack and GoFortyMax — other keyboards are turned away at connection rather than half-supported",
-            "ja": "ClickBoard ErgoTrack と GoFortyMax に特化。他のキーボードは中途半端に対応せず、接続の時点でお断りします",
-            "zh": "专为 ClickBoard ErgoTrack 与 GoFortyMax 打造——其他键盘在连接时即被拒绝，而非半吊子支持"
+            "en": "Specialized for ClickBoard ErgoTrack and GoFortyWL — other keyboards are turned away at connection rather than half-supported",
+            "ja": "ClickBoard ErgoTrack と GoFortyWL に特化。他のキーボードは中途半端に対応せず、接続の時点でお断りします",
+            "zh": "专为 ClickBoard ErgoTrack 与 GoFortyWL 打造——其他键盘在连接时即被拒绝，而非半吊子支持"
           },
           {
             "en": "Edit the trackpad's gestures by name: what a pinch or a three-finger swipe sends, per layer",

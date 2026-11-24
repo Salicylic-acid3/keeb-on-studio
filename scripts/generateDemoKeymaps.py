@@ -10,9 +10,9 @@ side by side:
   zmk-fork/                           (dt-bindings: keys.h, bt.h, pointing.h)
   zmk-driver-iqs9151/                 (dt-bindings: zip_dynamic_scale.h)
   zmk-keyboard-clickboard-ergotrack/
-  zmk-keyboard-gofortymax-ortho/
-  zmk-keyboard-bethirtymax-qaz/
-  zmk-keyboard-bethirtymax-ortho/
+  zmk-keyboard-gofortywl-ortho/
+  zmk-keyboard-bethirtywl-qaz/
+  zmk-keyboard-bethirtywl-ortho/
 
 For every keyboard in KEYBOARDS, the .keymap its firmware is built from is
 run through the C preprocessor with the same dt-bindings headers the build
@@ -42,17 +42,17 @@ KEYBOARDS = {
         "zmk-keyboard-clickboard-ergotrack",
         "config/clickboard_ergotrack.keymap",
     ),
-    "GoFortyMax Ortho": (
-        "zmk-keyboard-gofortymax-ortho",
-        "config/goforty_max.keymap",
+    "GoFortyWL Ortho": (
+        "zmk-keyboard-gofortywl-ortho",
+        "config/gofortywl_ortho.keymap",
     ),
-    "BeThirtyMax QAZ": (
-        "zmk-keyboard-bethirtymax-qaz",
-        "config/bethirtymax_qaz.keymap",
+    "BeThirtyWL QAZ": (
+        "zmk-keyboard-bethirtywl-qaz",
+        "config/bethirtywl_qaz.keymap",
     ),
-    "BeThirtyMax Ortho": (
-        "zmk-keyboard-bethirtymax-ortho",
-        "config/bethirtymax_ortho.keymap",
+    "BeThirtyWL Ortho": (
+        "zmk-keyboard-bethirtywl-ortho",
+        "config/bethirtywl_ortho.keymap",
     ),
 }
 

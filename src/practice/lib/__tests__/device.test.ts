@@ -5,7 +5,7 @@ import type {
 import { testBoard } from "../../../keyTest/lib/boards";
 import { zmkTrigger, type Trigger } from "../../../keyTest/lib/triggers";
 import { keyboardBindings } from "../../../layoutEditor/lib/keyboards";
-import { GOFORTY_MAX } from "../../../lib/layouts";
+import { GOFORTYWL_ORTHO } from "../../../lib/layouts";
 import { BEHAVIORS } from "../../../lib/transport/behaviors";
 import type { BehaviorDefinition } from "../../../hooks/useKeymapSource";
 import {
@@ -220,11 +220,15 @@ describe("triggers and bindings", () => {
 describe("the connected keyboard as a board", () => {
   it("names the registered board of a device", () => {
     expect(boardIdForDevice("goforty-max")).toBe("goforty_max_ortho");
+    // The names the firmware reports since the rename find the same boards.
+    expect(boardIdForDevice("GoFortyWL Ortho")).toBe("goforty_max_ortho");
+    expect(boardIdForDevice("BeThirtyWL QAZ")).toBe("bethirtymax_qaz");
+    expect(boardIdForDevice("BeThirtyWL Ortho")).toBe("bethirtymax_ortho");
     expect(boardIdForDevice("ErgoTrack")).toBe("clickboard_ergotrack");
     expect(boardIdForDevice("something")).toBeNull();
   });
 
-  it("rebuilds GoFortyMax from its layout and a keymap of its default bindings", () => {
+  it("rebuilds GoFortyWL from its layout and a keymap of its default bindings", () => {
     const def = keyboardBindings("goforty_max_ortho")!;
     const textLayers = [def.bindings, ...def.layers];
     const layerIds = textLayers.map((_, i) => i);
@@ -246,8 +250,8 @@ describe("the connected keyboard as a board", () => {
     } as unknown as Keymap;
     const live = liveKeyboard(
       "goforty_max_ortho",
-      "GoFortyMax",
-      GOFORTY_MAX,
+      "GoFortyWL",
+      GOFORTYWL_ORTHO,
       keymap,
       behaviors,
       "us",
@@ -308,8 +312,8 @@ describe("the connected keyboard as a board", () => {
     } as unknown as Keymap;
     const live = liveKeyboard(
       "goforty_max_ortho",
-      "GoFortyMax",
-      GOFORTY_MAX,
+      "GoFortyWL",
+      GOFORTYWL_ORTHO,
       keymap,
       behaviors,
       "us",

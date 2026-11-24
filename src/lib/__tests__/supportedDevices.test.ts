@@ -14,7 +14,10 @@ import {
   KEEB_ON_SERIAL_FILTERS,
   KEEB_ON_WEBUSB_FILTERS,
   SUPPORTED_DEVICE_NAMES,
+  deviceKeyFor,
   isKnownDeviceName,
+  sameLayoutName,
+  storageKeyForDevice,
   isSupportedVendorId,
 } from "../supportedDevices";
 
@@ -78,5 +81,39 @@ describe("the roster of keyboards known by name", () => {
     expect(isKnownDeviceName("corne")).toBe(false);
     expect(isKnownDeviceName(undefined)).toBe(false);
     expect(isKnownDeviceName("")).toBe(false);
+  });
+});
+
+describe("keyboards that were renamed", () => {
+  // GoFortyMax Ortho / BeThirtyMax QAZ / BeThirtyMax Ortho are sold as
+  // GoFortyWL Ortho / BeThirtyWL QAZ / BeThirtyWL Ortho, and their firmware
+  // reports the new name. Old firmware is still out there.
+  it("knows them by either name", () => {
+    expect(isKnownDeviceName("GoFortyWL Ortho")).toBe(true);
+    expect(isKnownDeviceName("BeThirtyWL QAZ")).toBe(true);
+    expect(isKnownDeviceName("BeThirtyWL Ortho")).toBe(true);
+    expect(isKnownDeviceName("goforty-max")).toBe(true);
+  });
+
+  it("files either name under the key the old one had", () => {
+    expect(deviceKeyFor("GoFortyWL Ortho")).toBe("goforty-max");
+    expect(deviceKeyFor("goforty-max")).toBe("goforty-max");
+    expect(deviceKeyFor("BeThirtyWL Ortho")).toBe("be30max-ortho");
+    expect(deviceKeyFor(undefined)).toBeNull();
+  });
+
+  it("keeps saved history where it was", () => {
+    // Version history was keyed by the raw name the firmware reported.
+    expect(storageKeyForDevice("GoFortyWL Ortho")).toBe("goforty-max");
+    expect(storageKeyForDevice("BeThirtyWL QAZ")).toBe("be30max-qaz");
+    // Any other keyboard: exactly as before, case and all.
+    expect(storageKeyForDevice("Corne")).toBe("Corne");
+    expect(storageKeyForDevice("ergotrack")).toBe("ergotrack");
+  });
+
+  it("treats the old and new layout names as one keyboard", () => {
+    expect(sameLayoutName("GoFortyMax Ortho", "GoFortyWL Ortho")).toBe(true);
+    expect(sameLayoutName("BeThirtyWL Ortho", "BeThirtyMax Ortho")).toBe(true);
+    expect(sameLayoutName("BeThirtyWL QAZ", "BeThirtyWL Ortho")).toBe(false);
   });
 });

@@ -1383,8 +1383,8 @@ const ja: Record<string, string> = {
   "This keyboard refused that setting for this behavior.":
     "このキーボードはその動作にその設定を受け付けませんでした。",
   "The key could not be set.": "キーを設定できませんでした。",
-  "Choosing a key here sets it and moves to the next one. Use the key dialog for anything other than a plain key press.":
-    "ここでキーを選ぶと設定され、次のキーへ進みます。通常のキー入力以外はキーの設定ダイアログを使ってください。",
+  "Choosing a key here sets it and moves to the next one. Trans and None are here too; use the key dialog for anything else.":
+    "ここでキーを選ぶと設定され、次のキーへ進みます。Trans と None もここで選べます。それ以外はキーの設定ダイアログを使ってください。",
   "Key {{position}}": "キー {{position}}",
   Battery: "電池",
   "Settings storage": "設定の保存領域",
@@ -1469,8 +1469,8 @@ const ja: Record<string, string> = {
     "このサーバーではギャラリーがまだ有効になっていません。",
   "You already have {{count}} keymaps in the gallery.":
     "ギャラリーに公開できるのは{{count}}件までです。",
-  "The gallery is for ClickBoard ErgoTrack, GoFortyMax and BeThirtyMax.":
-    "ギャラリーは ClickBoard ErgoTrack、GoFortyMax、BeThirtyMax 向けです。",
+  "The gallery is for ClickBoard ErgoTrack, GoFortyWL and BeThirtyWL.":
+    "ギャラリーは ClickBoard ErgoTrack、GoFortyWL、BeThirtyWL 向けです。",
   "That keymap is too big to publish.":
     "このキーマップは大きすぎて公開できません。",
   "That keymap could not be read.": "このキーマップを読み取れませんでした。",
@@ -3319,8 +3319,8 @@ const zh: Record<string, string> = {
   "This keyboard refused that setting for this behavior.":
     "此键盘拒绝了该行为的这个设置。",
   "The key could not be set.": "无法设置该键。",
-  "Choosing a key here sets it and moves to the next one. Use the key dialog for anything other than a plain key press.":
-    "在这里选择按键会直接设置并跳到下一个。普通按键以外的绑定请使用按键设置对话框。",
+  "Choosing a key here sets it and moves to the next one. Trans and None are here too; use the key dialog for anything else.":
+    "在这里选择按键会直接设置并跳到下一个。Trans 和 None 也可以在这里选择，其他绑定请使用按键设置对话框。",
   "Key {{position}}": "键 {{position}}",
   Battery: "电池",
   "Settings storage": "设置存储空间",
@@ -3400,8 +3400,8 @@ const zh: Record<string, string> = {
   "The gallery is not set up on this server yet.": "此服务器尚未启用图库。",
   "You already have {{count}} keymaps in the gallery.":
     "图库中最多只能发布 {{count}} 个键映射。",
-  "The gallery is for ClickBoard ErgoTrack, GoFortyMax and BeThirtyMax.":
-    "图库面向 ClickBoard ErgoTrack、GoFortyMax 与 BeThirtyMax。",
+  "The gallery is for ClickBoard ErgoTrack, GoFortyWL and BeThirtyWL.":
+    "图库面向 ClickBoard ErgoTrack、GoFortyWL 与 BeThirtyWL。",
   "That keymap is too big to publish.": "该键映射过大，无法发布。",
   "That keymap could not be read.": "无法读取该键映射。",
   "That keymap was published from another browser.":

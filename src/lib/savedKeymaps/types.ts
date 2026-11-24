@@ -9,6 +9,7 @@
  * The same format is what a shared keymap will travel in, so it has to survive
  * leaving this browser.
  */
+import { sameLayoutName } from "../supportedDevices";
 /**
  * A binding, as both the editor and a stored record hold it.
  *
@@ -124,7 +125,7 @@ export function compatibilityOf(
       connected: connected.keyCount,
     };
   }
-  if (saved.target.layoutName !== connected.layoutName) {
+  if (!sameLayoutName(saved.target.layoutName, connected.layoutName)) {
     return {
       kind: "different-layout",
       savedFor: saved.target.layoutName,

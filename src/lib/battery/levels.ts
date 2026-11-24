@@ -14,6 +14,7 @@
  * wrong battery.
  */
 import type { Setting } from "../../proto/cormoran/zmk/custom_settings/custom_settings";
+import { deviceKeyFor } from "../supportedDevices";
 
 /** The firmware module's subsystem id. Must match its header. */
 export const BATTERY_SUBSYSTEM_ID = "keebon__battery";
@@ -70,11 +71,12 @@ export interface BatteryGuide {
 }
 
 /**
- * Keyed by `CONFIG_ZMK_KEYBOARD_NAME`, like the half labels.
+ * Keyed by the device key (`deviceKeyFor`: `CONFIG_ZMK_KEYBOARD_NAME`
+ * lower-cased, a renamed keyboard under its old name), like the half labels.
  *
  * ErgoTrack: two CR2032 in parallel per half, 3.0 to 3.3 V new, and the
  * keyboard has stopped working below about 2.7 V (observed by its owner;
- * the keys outlive the pointer). GoFortyMax: two AAA cells in series,
+ * the keys outlive the pointer). GoFortyWL: two AAA cells in series,
  * 3.0 to 3.2 V new for alkaline and used up around 2.0 V; NiMH cells sit at
  * 2.4 to 2.6 V almost the whole way, which is not a fault.
  */
@@ -103,7 +105,7 @@ BATTERY_GUIDES["keeb-on! demo keyboard"] = BATTERY_GUIDES.ergotrack;
 export function batteryGuideFor(
   deviceName?: string | null,
 ): BatteryGuide | null {
-  return BATTERY_GUIDES[(deviceName ?? "").trim().toLowerCase()] ?? null;
+  return BATTERY_GUIDES[deviceKeyFor(deviceName) ?? ""] ?? null;
 }
 
 /**
@@ -138,7 +140,7 @@ export function voltagePercent(
 /**
  * Which physical half each firmware role is, per keyboard.
  *
- * Keyed by `CONFIG_ZMK_KEYBOARD_NAME`. ClickBoard ErgoTrack builds the right
+ * Keyed like the guides above. ClickBoard ErgoTrack builds the right
  * half as the central (`clickboard_ergotrack_right.conf` carries
  * ZMK_STUDIO and the split central role), so its peripheral0 is the left.
  * A one-piece keyboard has only a central and needs no naming at all.
@@ -151,6 +153,12 @@ const HALF_LABELS: Record<string, Record<string, string>> = {
   // One piece: the firmware's "central" is the whole keyboard, and showing
   // the word "central" for it would send someone looking for another half.
   "goforty-max": {
+    central: "Keyboard",
+  },
+  "be30max-qaz": {
+    central: "Keyboard",
+  },
+  "be30max-ortho": {
     central: "Keyboard",
   },
   // The demo keyboard is ErgoTrack-shaped and reports a friendly name rather
@@ -175,7 +183,7 @@ export function readBatteryLevels(
   settings: readonly Setting[],
   deviceName?: string | null,
 ): BatteryLevel[] {
-  const labels = HALF_LABELS[(deviceName ?? "").trim().toLowerCase()] ?? {};
+  const labels = HALF_LABELS[deviceKeyFor(deviceName) ?? ""] ?? {};
   const central: BatteryLevel[] = [];
   const peripherals: { index: number; level: BatteryLevel }[] = [];
   // 0 is "no voltage channel", not a reading.

@@ -232,6 +232,19 @@ export interface SetXySwapEnabledRequest {
 export interface SetXySwapEnabledResponse {
 }
 
+/**
+ * Write every processor's current settings to flash now. The set_* requests
+ * above already persist, but the firmware debounces that write
+ * (CONFIG_ZMK_SETTINGS_SAVE_DEBOUNCE, 60 s by default), so a keyboard that
+ * loses power sooner (unplugged with no battery) comes back with the old
+ * values. Firmware without this request answers it with an error.
+ */
+export interface SaveAllSettingsRequest {
+}
+
+export interface SaveAllSettingsResponse {
+}
+
 /** Request to get layer information */
 export interface GetLayerInfoRequest {
 }
@@ -261,6 +274,7 @@ export interface Request {
   setXySwapEnabled?: SetXySwapEnabledRequest | undefined;
   setXInvert?: SetXInvertRequest | undefined;
   setYInvert?: SetYInvertRequest | undefined;
+  saveAllSettings?: SaveAllSettingsRequest | undefined;
 }
 
 /** Error response */
@@ -290,6 +304,7 @@ export interface Response {
   setXySwapEnabled?: SetXySwapEnabledResponse | undefined;
   setXInvert?: SetXInvertResponse | undefined;
   setYInvert?: SetYInvertResponse | undefined;
+  saveAllSettings?: SaveAllSettingsResponse | undefined;
 }
 
 /** Notification when processor settings change */
@@ -2238,6 +2253,74 @@ export const SetXySwapEnabledResponse: MessageFns<SetXySwapEnabledResponse> = {
   },
 };
 
+function createBaseSaveAllSettingsRequest(): SaveAllSettingsRequest {
+  return {};
+}
+
+export const SaveAllSettingsRequest: MessageFns<SaveAllSettingsRequest> = {
+  encode(_: SaveAllSettingsRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): SaveAllSettingsRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSaveAllSettingsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<SaveAllSettingsRequest>): SaveAllSettingsRequest {
+    return SaveAllSettingsRequest.fromPartial(base ?? {});
+  },
+  fromPartial(_: DeepPartial<SaveAllSettingsRequest>): SaveAllSettingsRequest {
+    const message = createBaseSaveAllSettingsRequest();
+    return message;
+  },
+};
+
+function createBaseSaveAllSettingsResponse(): SaveAllSettingsResponse {
+  return {};
+}
+
+export const SaveAllSettingsResponse: MessageFns<SaveAllSettingsResponse> = {
+  encode(_: SaveAllSettingsResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): SaveAllSettingsResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSaveAllSettingsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<SaveAllSettingsResponse>): SaveAllSettingsResponse {
+    return SaveAllSettingsResponse.fromPartial(base ?? {});
+  },
+  fromPartial(_: DeepPartial<SaveAllSettingsResponse>): SaveAllSettingsResponse {
+    const message = createBaseSaveAllSettingsResponse();
+    return message;
+  },
+};
+
 function createBaseGetLayerInfoRequest(): GetLayerInfoRequest {
   return {};
 }
@@ -2339,6 +2422,7 @@ function createBaseRequest(): Request {
     setXySwapEnabled: undefined,
     setXInvert: undefined,
     setYInvert: undefined,
+    saveAllSettings: undefined,
   };
 }
 
@@ -2401,6 +2485,9 @@ export const Request: MessageFns<Request> = {
     }
     if (message.setYInvert !== undefined) {
       SetYInvertRequest.encode(message.setYInvert, writer.uint32(154).fork()).join();
+    }
+    if (message.saveAllSettings !== undefined) {
+      SaveAllSettingsRequest.encode(message.saveAllSettings, writer.uint32(162).fork()).join();
     }
     return writer;
   },
@@ -2564,6 +2651,14 @@ export const Request: MessageFns<Request> = {
           message.setYInvert = SetYInvertRequest.decode(reader, reader.uint32());
           continue;
         }
+        case 20: {
+          if (tag !== 162) {
+            break;
+          }
+
+          message.saveAllSettings = SaveAllSettingsRequest.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -2637,6 +2732,9 @@ export const Request: MessageFns<Request> = {
     message.setYInvert = (object.setYInvert !== undefined && object.setYInvert !== null)
       ? SetYInvertRequest.fromPartial(object.setYInvert)
       : undefined;
+    message.saveAllSettings = (object.saveAllSettings !== undefined && object.saveAllSettings !== null)
+      ? SaveAllSettingsRequest.fromPartial(object.saveAllSettings)
+      : undefined;
     return message;
   },
 };
@@ -2709,6 +2807,7 @@ function createBaseResponse(): Response {
     setXySwapEnabled: undefined,
     setXInvert: undefined,
     setYInvert: undefined,
+    saveAllSettings: undefined,
   };
 }
 
@@ -2774,6 +2873,9 @@ export const Response: MessageFns<Response> = {
     }
     if (message.setYInvert !== undefined) {
       SetYInvertResponse.encode(message.setYInvert, writer.uint32(162).fork()).join();
+    }
+    if (message.saveAllSettings !== undefined) {
+      SaveAllSettingsResponse.encode(message.saveAllSettings, writer.uint32(170).fork()).join();
     }
     return writer;
   },
@@ -2945,6 +3047,14 @@ export const Response: MessageFns<Response> = {
           message.setYInvert = SetYInvertResponse.decode(reader, reader.uint32());
           continue;
         }
+        case 21: {
+          if (tag !== 170) {
+            break;
+          }
+
+          message.saveAllSettings = SaveAllSettingsResponse.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -3020,6 +3130,9 @@ export const Response: MessageFns<Response> = {
       : undefined;
     message.setYInvert = (object.setYInvert !== undefined && object.setYInvert !== null)
       ? SetYInvertResponse.fromPartial(object.setYInvert)
+      : undefined;
+    message.saveAllSettings = (object.saveAllSettings !== undefined && object.saveAllSettings !== null)
+      ? SaveAllSettingsResponse.fromPartial(object.saveAllSettings)
       : undefined;
     return message;
   },

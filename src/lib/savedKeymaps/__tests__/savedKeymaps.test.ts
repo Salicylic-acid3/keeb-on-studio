@@ -174,7 +174,7 @@ describe("compatibility", () => {
 
   it("refuses a keyboard with a different number of keys", () => {
     const result = compatibilityOf(saved, {
-      layoutName: "GoFortyMax Ortho",
+      layoutName: "GoFortyWL Ortho",
       keyCount: 53,
     });
     expect(result).toEqual({ kind: "key-count", savedFor: 79, connected: 53 });
@@ -192,6 +192,26 @@ describe("compatibility", () => {
       connected: "Something Else",
     });
     expect(isLoadable(result)).toBe(true);
+  });
+
+  it("treats a keyboard's former name as the same keyboard", () => {
+    // GoFortyMax Ortho is now GoFortyWL Ortho, and its firmware says so. A
+    // keymap saved before the rename is still for this keyboard.
+    const old = {
+      schemaVersion: SAVED_KEYMAP_SCHEMA_VERSION,
+      target: { layoutName: "GoFortyMax Ortho", keyCount: 53 },
+    };
+    expect(
+      compatibilityOf(old, { layoutName: "GoFortyWL Ortho", keyCount: 53 }),
+    ).toEqual({ kind: "match" });
+    // And the other way round: a keymap saved on new firmware, loaded on a
+    // keyboard still running the old one.
+    expect(
+      compatibilityOf(
+        { ...old, target: { layoutName: "BeThirtyWL QAZ", keyCount: 37 } },
+        { layoutName: "BeThirtyMax QAZ", keyCount: 37 },
+      ),
+    ).toEqual({ kind: "match" });
   });
 
   it("refuses the same keyboard with a different number of positions", () => {

@@ -56,10 +56,13 @@ import {
   keyPressCandidates,
   keyPressParam,
   nextKeyPosition,
+  specialBehaviorId,
+  type QuickAssignSpecial,
 } from "../lib/keymap/quickAssign";
 import { extractBaseKeycode } from "../lib/keycodes";
 import { pseudoKeyPositionsFor } from "../lib/trackpad/gestures";
 import { QuickAssignBar } from "../components/keymap/QuickAssignBar";
+import { deviceKeyFor, sameLayoutName } from "../lib/supportedDevices";
 import { useLanguage } from "../hooks/useLanguage";
 import { ResetVersionMenu } from "../components/versionHistory/ResetVersionMenu";
 import { VersionDiffModal } from "../components/versionHistory/VersionDiffModal";
@@ -194,7 +197,7 @@ export function KeymapPage() {
   );
   const [galleryBusyId, setGalleryBusyId] = useState<string | null>(null);
   // Only the posts made for the keyboard on screen. The gallery is one list
-  // for every board, so on a GoFortyMax the ErgoTrack keymaps would otherwise
+  // for every board, so on a GoFortyWL the ErgoTrack keymaps would otherwise
   // sit in it, none of them openable here. Matched by physical layout the way
   // saved keymaps are (name and key count), which also makes this the demo's
   // rule: its two layouts are two keyboards and the picker decides which one
@@ -203,7 +206,7 @@ export function KeymapPage() {
     if (!currentLayout) return gallery.posts;
     return gallery.posts.filter(
       (post) =>
-        post.layout === currentLayout.name &&
+        sameLayoutName(post.layout, currentLayout.name) &&
         post.keys === currentLayout.keys.length,
     );
   }, [gallery.posts, currentLayout]);
@@ -334,7 +337,9 @@ export function KeymapPage() {
   // gallery staying about these keyboards.
   const handlePublish = useCallback(
     async (record: SavedKeymap) => {
-      const board = connection.deviceName;
+      // The board under its stable key: a GoFortyWL Ortho is "goforty-max"
+      // whichever firmware it runs, so its posts stay one board.
+      const board = deviceKeyFor(connection.deviceName);
       if (!board) return;
       const result = await publishToGallery(
         {
@@ -579,21 +584,35 @@ export function KeymapPage() {
     return extractBaseKeycode(currentBinding.param1);
   }, [currentBinding, keyPressIds]);
 
-  const handleQuickAssign = useCallback(
-    (code: number) =>
+  // Trans / None for the bottom keyboard, where this device has them.
+  const specialIds = useMemo(
+    () => ({
+      trans: specialBehaviorId(keymap.behaviors, "trans"),
+      none: specialBehaviorId(keymap.behaviors, "none"),
+    }),
+    [keymap.behaviors],
+  );
+  const availableSpecials = useMemo(
+    () =>
+      (["trans", "none"] as const).filter((kind) => specialIds[kind] !== null),
+    [specialIds],
+  );
+  const quickAssignSelectedSpecial = useMemo((): QuickAssignSpecial | null => {
+    if (!currentBinding) return null;
+    if (currentBinding.behaviorId === specialIds.trans) return "trans";
+    if (currentBinding.behaviorId === specialIds.none) return "none";
+    return null;
+  }, [currentBinding, specialIds]);
+
+  // Write one binding to the selected key and move on.
+  const assignAndAdvance = useCallback(
+    (binding: { behaviorId: number; param1: number; param2: number }) =>
       withUnlock(async () => {
         if (!currentLayer || selectedKeyPosition === null) return;
-
-        const behaviorId = keyPressIds[0];
-        if (behaviorId === undefined) return;
-
-        // keyPressParam, not the bare code: the picker speaks bare usage ids
-        // and a binding wants the full HID usage. That one conversion is what
-        // the whole "Invalid behavior ID" hunt was actually about.
         const ok = await keymap.setBinding(
           currentLayer.id,
           selectedKeyPosition,
-          { behaviorId, param1: keyPressParam(code), param2: 0 },
+          binding,
         );
         // Only advance when the key actually took. Moving on after a refusal
         // would leave a gap the user has no reason to look for.
@@ -603,14 +622,32 @@ export function KeymapPage() {
           setQuickAssignFinished(next === null);
         }
       }),
-    [
-      currentLayer,
-      selectedKeyPosition,
-      keyPressIds,
-      keymap,
-      layoutPositions,
-      withUnlock,
-    ],
+    [currentLayer, selectedKeyPosition, keymap, layoutPositions, withUnlock],
+  );
+
+  const handleQuickAssign = useCallback(
+    (code: number) => {
+      const behaviorId = keyPressIds[0];
+      if (behaviorId === undefined) return;
+      // keyPressParam, not the bare code: the picker speaks bare usage ids
+      // and a binding wants the full HID usage. That one conversion is what
+      // the whole "Invalid behavior ID" hunt was actually about.
+      return assignAndAdvance({
+        behaviorId,
+        param1: keyPressParam(code),
+        param2: 0,
+      });
+    },
+    [keyPressIds, assignAndAdvance],
+  );
+
+  const handleQuickAssignSpecial = useCallback(
+    (kind: QuickAssignSpecial) => {
+      const behaviorId = specialIds[kind];
+      if (behaviorId === null) return;
+      return assignAndAdvance({ behaviorId, param1: 0, param2: 0 });
+    },
+    [specialIds, assignAndAdvance],
   );
 
   // Handle key reset
@@ -917,7 +954,7 @@ export function KeymapPage() {
   // A real keyboard's trackpads do not move when you switch layout, so this
   // costs it one repeated answer; demo mode stands in for two different
   // keyboards, and only one of them has trackpads, so without this it would
-  // draw ErgoTrack's pads underneath the GoFortyMax grid.
+  // draw ErgoTrack's pads underneath the GoFortyWL grid.
   const { loadModules: loadPhysicalLayoutModules } = physicalLayoutModules;
   const activePhysicalLayoutIndex = keymap.physicalLayouts?.activeLayoutIndex;
   useEffect(() => {
@@ -1647,6 +1684,9 @@ export function KeymapPage() {
                   }
                   selectedCode={quickAssignSelectedCode}
                   onAssign={handleQuickAssign}
+                  onAssignSpecial={handleQuickAssignSpecial}
+                  availableSpecials={availableSpecials}
+                  selectedSpecial={quickAssignSelectedSpecial}
                   keyboardLayout={keyboardLayoutContext.layout}
                   finished={quickAssignFinished}
                   disabled={locked || keyPressIds.length === 0}

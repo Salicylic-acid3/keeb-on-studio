@@ -43,7 +43,17 @@ import {
   getLayoutLabel,
   type KeyboardLayoutType,
 } from "../../lib/keyboardLayouts";
-import { keyPressParam, nextKeyPosition } from "../../lib/keymap/quickAssign";
+import {
+  keyPressParam,
+  nextKeyPosition,
+  type QuickAssignSpecial,
+} from "../../lib/keymap/quickAssign";
+
+// QMK always has KC_TRNS and KC_NO.
+const QMK_QUICK_ASSIGN_SPECIALS: readonly QuickAssignSpecial[] = [
+  "trans",
+  "none",
+];
 import { extractBaseKeycode } from "../../lib/keycodes";
 import {
   layerGroups,
@@ -388,14 +398,10 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
   }, [visible, keyboard.liveKeys]);
 
   const layoutPositions = useMemo(() => visible.map((_, i) => i), [visible]);
-  const handleQuickAssign = useCallback(
-    (code: number) => {
+  const assignAndAdvance = useCallback(
+    (binding: { behaviorId: number; param1: number; param2: number }) => {
       if (selectedKeyPosition === null) return;
-      const ok = assign(selectedKeyPosition, {
-        behaviorId: QMK_BEHAVIOR.keyPress,
-        param1: keyPressParam(code),
-        param2: 0,
-      });
+      const ok = assign(selectedKeyPosition, binding);
       if (ok) {
         const next = nextKeyPosition(layoutPositions, selectedKeyPosition);
         setSelectedKeyPosition(next);
@@ -403,6 +409,26 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
       }
     },
     [assign, selectedKeyPosition, layoutPositions],
+  );
+
+  const handleQuickAssign = useCallback(
+    (code: number) =>
+      assignAndAdvance({
+        behaviorId: QMK_BEHAVIOR.keyPress,
+        param1: keyPressParam(code),
+        param2: 0,
+      }),
+    [assignAndAdvance],
+  );
+
+  const handleQuickAssignSpecial = useCallback(
+    (kind: QuickAssignSpecial) =>
+      assignAndAdvance({
+        behaviorId: kind === "trans" ? QMK_BEHAVIOR.trans : QMK_BEHAVIOR.none,
+        param1: 0,
+        param2: 0,
+      }),
+    [assignAndAdvance],
   );
 
   const copyBlock = useCallback(() => {
@@ -445,6 +471,12 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
     currentBinding?.behaviorId === QMK_BEHAVIOR.keyPress
       ? extractBaseKeycode(currentBinding.param1)
       : 0;
+  const quickAssignSelectedSpecial: QuickAssignSpecial | null =
+    currentBinding?.behaviorId === QMK_BEHAVIOR.trans
+      ? "trans"
+      : currentBinding?.behaviorId === QMK_BEHAVIOR.none
+        ? "none"
+        : null;
 
   if (!info || !keymap || !group) return null;
 
@@ -928,6 +960,9 @@ export function QmkKeymapPage({ keyboard }: QmkKeymapPageProps) {
               }
               selectedCode={quickAssignSelectedCode}
               onAssign={handleQuickAssign}
+              onAssignSpecial={handleQuickAssignSpecial}
+              availableSpecials={QMK_QUICK_ASSIGN_SPECIALS}
+              selectedSpecial={quickAssignSelectedSpecial}
               keyboardLayout={keyboardLayoutContext.layout}
               finished={quickAssignFinished}
             />

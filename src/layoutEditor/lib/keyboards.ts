@@ -8,10 +8,10 @@
  * the legends of its default keymap's base layer.
  */
 import {
-  BETHIRTYMAX_ORTHO,
-  BETHIRTYMAX_QAZ,
+  BETHIRTYWL_ORTHO,
+  BETHIRTYWL_QAZ,
   ERGOTRACK,
-  GOFORTY_MAX,
+  GOFORTYWL_ORTHO,
 } from "../../lib/layouts";
 import data from "../data/keyboards.json";
 import { importKle, type KleDocument } from "./kle";
@@ -110,11 +110,14 @@ function tidied(layout: ZmkLayout, moves: typeof ERGOTRACK_TIDY): ZmkLayout {
   };
 }
 
+// The ids are from before GoFortyMax / BeThirtyMax became GoFortyWL /
+// BeThirtyWL and stay that way: practice progress and saved projects are
+// stored under them. The names shown come from the layouts.
 const ZMK: Record<string, ZmkLayout> = {
   clickboard_ergotrack: tidied(ERGOTRACK, ERGOTRACK_TIDY),
-  goforty_max_ortho: GOFORTY_MAX,
-  bethirtymax_qaz: BETHIRTYMAX_QAZ,
-  bethirtymax_ortho: BETHIRTYMAX_ORTHO,
+  goforty_max_ortho: GOFORTYWL_ORTHO,
+  bethirtymax_qaz: BETHIRTYWL_QAZ,
+  bethirtymax_ortho: BETHIRTYWL_ORTHO,
 };
 
 /** Every keyboard, by name. */
