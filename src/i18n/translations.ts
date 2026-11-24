@@ -1469,8 +1469,8 @@ const ja: Record<string, string> = {
     "このサーバーではギャラリーがまだ有効になっていません。",
   "You already have {{count}} keymaps in the gallery.":
     "ギャラリーに公開できるのは{{count}}件までです。",
-  "The gallery is for ClickBoard ErgoTrack, GoFortyMax and BeThirtyMax.":
-    "ギャラリーは ClickBoard ErgoTrack、GoFortyMax、BeThirtyMax 向けです。",
+  "The gallery is for ClickBoard ErgoTrack, GoFortyWL and BeThirtyWL.":
+    "ギャラリーは ClickBoard ErgoTrack、GoFortyWL、BeThirtyWL 向けです。",
   "That keymap is too big to publish.":
     "このキーマップは大きすぎて公開できません。",
   "That keymap could not be read.": "このキーマップを読み取れませんでした。",
@@ -3391,8 +3391,8 @@ const zh: Record<string, string> = {
   "The gallery is not set up on this server yet.": "此服务器尚未启用图库。",
   "You already have {{count}} keymaps in the gallery.":
     "图库中最多只能发布 {{count}} 个键映射。",
-  "The gallery is for ClickBoard ErgoTrack, GoFortyMax and BeThirtyMax.":
-    "图库面向 ClickBoard ErgoTrack、GoFortyMax 与 BeThirtyMax。",
+  "The gallery is for ClickBoard ErgoTrack, GoFortyWL and BeThirtyWL.":
+    "图库面向 ClickBoard ErgoTrack、GoFortyWL 与 BeThirtyWL。",
   "That keymap is too big to publish.": "该键映射过大，无法发布。",
   "That keymap could not be read.": "无法读取该键映射。",
   "That keymap was published from another browser.":

@@ -256,9 +256,9 @@ export function QmkAboutContent({
               </p>
               <p>
                 {pick({
-                  ja: "ClickBoard ErgoTrack や GoFortyMax Ortho などの無線（ZMK）キーボードは、ZMK版で設定します（右上の「ZMK / QMK」で切り替え）。",
-                  en: "Wireless (ZMK) keyboards such as ClickBoard ErgoTrack and GoFortyMax Ortho are set up on the ZMK side (ZMK / QMK at the top right).",
-                  zh: "ClickBoard ErgoTrack、GoFortyMax Ortho 等无线（ZMK）键盘请在 ZMK 版中设置（右上角的“ZMK / QMK”切换）。",
+                  ja: "ClickBoard ErgoTrack や GoFortyWL Ortho などの無線（ZMK）キーボードは、ZMK版で設定します（右上の「ZMK / QMK」で切り替え）。",
+                  en: "Wireless (ZMK) keyboards such as ClickBoard ErgoTrack and GoFortyWL Ortho are set up on the ZMK side (ZMK / QMK at the top right).",
+                  zh: "ClickBoard ErgoTrack、GoFortyWL Ortho 等无线（ZMK）键盘请在 ZMK 版中设置（右上角的“ZMK / QMK”切换）。",
                 })}
               </p>
             </QA>

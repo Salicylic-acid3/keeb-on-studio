@@ -15,6 +15,7 @@ import {
   type Trigger,
 } from "../../keyTest/lib/triggers";
 import { keyboardBindings } from "../../layoutEditor/lib/keyboards";
+import { sameLayoutName } from "../../lib/supportedDevices";
 import {
   createSavedKeymapStore,
   toPayload,
@@ -182,7 +183,8 @@ export function dojoRecord(
     return {
       firmware: "zmk",
       dbName: undefined,
-      same: (r) => r.target.layoutName === payload.target.layoutName,
+      same: (r) =>
+        sameLayoutName(r.target.layoutName, payload.target.layoutName),
       payload,
       skipped,
     };

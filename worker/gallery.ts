@@ -25,7 +25,7 @@
  */
 import { parseFile } from "../src/lib/savedKeymaps/file";
 import type { SavedKeymapPayload } from "../src/lib/savedKeymaps/types";
-import { isKnownDeviceName } from "../src/lib/supportedDevices";
+import { deviceKeyFor, isKnownDeviceName } from "../src/lib/supportedDevices";
 import {
   isKnownQmkBoard,
   parseQmkKeymapFile,
@@ -90,7 +90,7 @@ export interface PostCard {
   blurb: string;
   /** Physical layout the keymap was made for. */
   layout: string;
-  /** Supported keyboard name (`ergotrack`, `goforty-max`). */
+  /** Supported keyboard key (`ergotrack`, `goforty-max`; see deviceKeyFor). */
   board: string;
   layers: number;
   keys: number;
@@ -259,11 +259,14 @@ export async function publish(
 
   const at = store.now();
   const id = makeId(at, store.randomId());
-  const card = cardFor(parsed.keymap, input.board, at);
+  // Stored under the board's stable key: a GoFortyWL Ortho on new firmware
+  // ("GoFortyWL Ortho") and on old ("goforty-max") is one board.
+  const board = deviceKeyFor(input.board) ?? input.board;
+  const card = cardFor(parsed.keymap, board, at);
   const body: PostBody = {
     file: JSON.parse(input.text),
     author,
-    board: input.board,
+    board,
     at,
   };
 

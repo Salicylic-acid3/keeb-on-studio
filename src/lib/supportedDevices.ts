@@ -42,7 +42,7 @@
  *
  * Set in each shield's `Kconfig.defconfig`. Registered to moimate inc. and
  * used with permission. Product ids are per-keyboard (ErgoTrack 0x1028,
- * GoFortyMax 0x1029) and are deliberately *not* checked: the whole point of
+ * GoFortyWL Ortho 0x1029) and are deliberately *not* checked: the whole point of
  * gating on the vendor id is that a new keyboard needs no app change.
  */
 export const KEEB_ON_USB_VENDOR_ID = 0x355d;
@@ -88,33 +88,97 @@ export function isSupportedVendorId(
  * A new keyboard connects and edits fine without an entry. It gains firmware
  * downloads and a gallery board when one is added.
  *
- * The names are the lower-case identifiers rather than the marketing names:
- * the same string keys each device's saved version history, so renaming a
- * keyboard would orphan its stored snapshots.
+ * The entries are **storage keys**, not what the firmware reports today: the
+ * same string keys each device's saved version history (and the gallery's
+ * board field, the battery tables...), so they never change. A keyboard that
+ * is renamed keeps its key, and its new name is listed in
+ * {@link DEVICE_NAME_ALIASES}; {@link deviceKeyFor} turns either into the key.
  */
 export const SUPPORTED_DEVICE_NAMES = [
   // Salicylic-acid3/zmk-keyboard-clickboard-ergotrack
   "ergotrack",
-  // Salicylic-acid3/zmk-keyboard-gofortymax-ortho
+  // Salicylic-acid3/zmk-keyboard-gofortywl-ortho (GoFortyWL Ortho; the
+  // firmware called itself "goforty-max" while it was GoFortyMax Ortho)
   "goforty-max",
-  // Salicylic-acid3/zmk-keyboard-bethirtymax-qaz. "be30" because a BLE
-  // name is 16 characters at most, and "bethirtymax-ortho" is 17.
+  // Salicylic-acid3/zmk-keyboard-bethirtywl-qaz (BeThirtyWL QAZ; formerly
+  // BeThirtyMax QAZ, "be30max-qaz")
   "be30max-qaz",
-  // Salicylic-acid3/zmk-keyboard-bethirtymax-ortho
+  // Salicylic-acid3/zmk-keyboard-bethirtywl-ortho (BeThirtyWL Ortho;
+  // formerly BeThirtyMax Ortho, "be30max-ortho")
   "be30max-ortho",
 ] as const;
 
 /**
- * Whether `name` is a keyboard on the roster above.
+ * Names the firmware reports now, lower-cased, for keyboards that were
+ * renamed: each maps to the storage key the keyboard had before.
+ *
+ * GoFortyMax Ortho / BeThirtyMax QAZ / BeThirtyMax Ortho became GoFortyWL
+ * Ortho / BeThirtyWL QAZ / BeThirtyWL Ortho (2026-11), and their firmware
+ * reports the product name since. A keyboard still on the old firmware
+ * reports the old name, so both have to work, and both have to find the same
+ * saved history.
+ */
+export const DEVICE_NAME_ALIASES: Readonly<Record<string, string>> = {
+  "gofortywl ortho": "goforty-max",
+  "bethirtywl qaz": "be30max-qaz",
+  "bethirtywl ortho": "be30max-ortho",
+};
+
+/**
+ * The key a keyboard's per-device data is stored under: the name lower-cased
+ * and trimmed, with a renamed keyboard's new name mapped to its old key.
+ * Null for no name.
+ */
+export function deviceKeyFor(name: string | undefined | null): string | null {
+  if (!name) return null;
+  const normalized = name.trim().toLowerCase();
+  if (!normalized) return null;
+  return DEVICE_NAME_ALIASES[normalized] ?? normalized;
+}
+
+/**
+ * What to key a device's stored data by. A renamed keyboard's new name maps to
+ * the key its data already has; any other name is used exactly as reported,
+ * as it always was, so nothing stored for it moves.
+ */
+export function storageKeyForDevice(name: string): string {
+  const alias = DEVICE_NAME_ALIASES[name.trim().toLowerCase()];
+  return alias ?? name;
+}
+
+/**
+ * Physical layout names a keyboard's firmware used to report, mapped to the
+ * name it reports now. Saved keymaps and gallery posts carry the layout name
+ * they were made on, so one made on a GoFortyMax Ortho has to count as made
+ * for the GoFortyWL Ortho it is.
+ */
+export const FORMER_LAYOUT_NAMES: Readonly<Record<string, string>> = {
+  "GoFortyMax Ortho": "GoFortyWL Ortho",
+  "BeThirtyMax QAZ": "BeThirtyWL QAZ",
+  "BeThirtyMax Ortho": "BeThirtyWL Ortho",
+};
+
+/** A layout name under the keyboard's current name. */
+export function currentLayoutName(name: string): string {
+  return FORMER_LAYOUT_NAMES[name] ?? name;
+}
+
+/** Whether two layout names are the same keyboard, before or after a rename. */
+export function sameLayoutName(a: string, b: string): boolean {
+  return currentLayoutName(a) === currentLayoutName(b);
+}
+
+/**
+ * Whether `name` is a keyboard on the roster above (under its old or new
+ * name).
  *
  * Not a connection check -- see {@link isSupportedVendorId} for that. Callers
  * use this where a keyboard has to be one of the *known* ones: the gallery's
  * board field, and anything keyed to a specific board's data.
  */
 export function isKnownDeviceName(name: string | undefined | null): boolean {
-  if (!name) return false;
-  const normalized = name.trim().toLowerCase();
-  return SUPPORTED_DEVICE_NAMES.some((known) => known === normalized);
+  const key = deviceKeyFor(name);
+  return SUPPORTED_DEVICE_NAMES.some((known) => known === key);
 }
 
 /**
@@ -124,7 +188,7 @@ export function isKnownDeviceName(name: string | undefined | null): boolean {
  */
 export const ZMK_MODELS = [
   "ClickBoard ErgoTrack",
-  "GoFortyMax Ortho",
-  "BeThirtyMax QAZ",
-  "BeThirtyMax Ortho",
+  "GoFortyWL Ortho",
+  "BeThirtyWL QAZ",
+  "BeThirtyWL Ortho",
 ];

@@ -98,8 +98,8 @@ describe("default keymaps of the demo keyboards", () => {
     ).toBe(true);
   });
 
-  test("GoFortyMax Ortho starts as its firmware does", () => {
-    const keymap = defaultKeymapFor(layoutModule.GOFORTY_MAX, BEHAVIORS);
+  test("GoFortyWL Ortho starts as its firmware does", () => {
+    const keymap = defaultKeymapFor(layoutModule.GOFORTYWL_ORTHO, BEHAVIORS);
     expect(keymap.layers).toHaveLength(5);
     // 5 layers + 11 reserved = 16, the same ceiling as ErgoTrack.
     expect(keymap.availableLayers).toBe(11);
@@ -225,7 +225,7 @@ describe("demo keyboard: one keymap per keyboard", () => {
       KEYBOARD_PAGE | 0x29,
     );
 
-    // And GoFortyMax is as it was left.
+    // And GoFortyWL is as it was left.
     select(kb, 1);
     expect(unsaved(kb)).toBe(true);
     expect(keymapOf(kb).layers[0].bindings[0]).toEqual({
@@ -234,7 +234,7 @@ describe("demo keyboard: one keymap per keyboard", () => {
       param2: 0,
     });
 
-    // Discard brings back GoFortyMax's default, on GoFortyMax.
+    // Discard brings back GoFortyWL's default, on GoFortyWL.
     kb.process({ requestId: 1, keymap: { discardChanges: true } });
     expect(keymapOf(kb).layers).toHaveLength(5);
     expect(keymapOf(kb).layers[0].bindings[0].behaviorId).toBe(id("Bluetooth"));
@@ -255,7 +255,7 @@ describe("demo keyboard: one keymap per keyboard", () => {
       fast(kb).handleFastKeymap({ getSnapshot: {} }).snapshot!.availableLayers;
     expect(add().ok).toBeDefined(); // ErgoTrack reserves thirteen
     expect(available()).toBe(12);
-    select(kb, 1); // GoFortyMax reserves eleven
+    select(kb, 1); // GoFortyWL reserves eleven
     for (let i = 0; i < 11; i++) expect(add().ok).toBeDefined();
     expect(available()).toBe(0);
     expect(add().err).toBeDefined();
@@ -296,7 +296,7 @@ describe("demo keyboard: one keymap per keyboard", () => {
         binding: { behaviorId: id("Key Press"), param1: A, param2: 0 },
       },
     ]);
-    // The default itself is still GoFortyMax's.
+    // The default itself is still GoFortyWL's.
     const stock = fast(kb).handleFastKeymap({
       getDefaultLayer: { layerId: 0 },
     }).getDefaultLayer!;

@@ -62,6 +62,7 @@ import {
 import { extractBaseKeycode } from "../lib/keycodes";
 import { pseudoKeyPositionsFor } from "../lib/trackpad/gestures";
 import { QuickAssignBar } from "../components/keymap/QuickAssignBar";
+import { deviceKeyFor, sameLayoutName } from "../lib/supportedDevices";
 import { useLanguage } from "../hooks/useLanguage";
 import { ResetVersionMenu } from "../components/versionHistory/ResetVersionMenu";
 import { VersionDiffModal } from "../components/versionHistory/VersionDiffModal";
@@ -196,7 +197,7 @@ export function KeymapPage() {
   );
   const [galleryBusyId, setGalleryBusyId] = useState<string | null>(null);
   // Only the posts made for the keyboard on screen. The gallery is one list
-  // for every board, so on a GoFortyMax the ErgoTrack keymaps would otherwise
+  // for every board, so on a GoFortyWL the ErgoTrack keymaps would otherwise
   // sit in it, none of them openable here. Matched by physical layout the way
   // saved keymaps are (name and key count), which also makes this the demo's
   // rule: its two layouts are two keyboards and the picker decides which one
@@ -205,7 +206,7 @@ export function KeymapPage() {
     if (!currentLayout) return gallery.posts;
     return gallery.posts.filter(
       (post) =>
-        post.layout === currentLayout.name &&
+        sameLayoutName(post.layout, currentLayout.name) &&
         post.keys === currentLayout.keys.length,
     );
   }, [gallery.posts, currentLayout]);
@@ -336,7 +337,9 @@ export function KeymapPage() {
   // gallery staying about these keyboards.
   const handlePublish = useCallback(
     async (record: SavedKeymap) => {
-      const board = connection.deviceName;
+      // The board under its stable key: a GoFortyWL Ortho is "goforty-max"
+      // whichever firmware it runs, so its posts stay one board.
+      const board = deviceKeyFor(connection.deviceName);
       if (!board) return;
       const result = await publishToGallery(
         {
@@ -951,7 +954,7 @@ export function KeymapPage() {
   // A real keyboard's trackpads do not move when you switch layout, so this
   // costs it one repeated answer; demo mode stands in for two different
   // keyboards, and only one of them has trackpads, so without this it would
-  // draw ErgoTrack's pads underneath the GoFortyMax grid.
+  // draw ErgoTrack's pads underneath the GoFortyWL grid.
   const { loadModules: loadPhysicalLayoutModules } = physicalLayoutModules;
   const activePhysicalLayoutIndex = keymap.physicalLayouts?.activeLayoutIndex;
   useEffect(() => {

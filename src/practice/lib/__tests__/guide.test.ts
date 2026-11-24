@@ -28,7 +28,7 @@ const board = testBoard("goforty_max_ortho")!;
 const meta = keyboardMeta(board);
 const label = (b: typeof board, pos: number) => b.keys[pos].label.main;
 
-describe("guide proposals on GoFortyMax Ortho", () => {
+describe("guide proposals on GoFortyWL Ortho", () => {
   it("round-trips the default keymap through the working keymap", () => {
     const km = keymapOf(board);
     expect(km.layers.length).toBeGreaterThanOrEqual(1);

@@ -137,6 +137,13 @@ describe("reading a voltage against the keyboard's guide", () => {
       batteryGuideFor("ergotrack"),
     );
     expect(batteryGuideFor("goforty-max")?.deadMv).toBe(2000);
+    // Renamed keyboards report their product name now.
+    expect(batteryGuideFor("GoFortyWL Ortho")).toBe(
+      batteryGuideFor("goforty-max"),
+    );
+    expect(batteryGuideFor("BeThirtyWL Ortho")).toBe(
+      batteryGuideFor("goforty-max"),
+    );
     expect(batteryGuideFor("someone-elses")).toBeNull();
   });
 

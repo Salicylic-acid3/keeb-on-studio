@@ -20,6 +20,7 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { ConnectionContext } from "../components/DeviceConnection";
 import { loadVersions, recordVersion } from "../lib/versionHistory";
 import type { JsonValue, StoredSnapshot } from "../lib/versionHistory";
+import { storageKeyForDevice } from "../lib/supportedDevices";
 
 /** Device key used before the keyboard reports a name. */
 export const UNKNOWN_DEVICE_KEY = "unknown-device";
@@ -60,7 +61,11 @@ export function useVersionHistory<T extends JsonValue>({
   enabled = true,
 }: UseVersionHistoryOptions<T>): UseVersionHistoryReturn<T> {
   const connection = useContext(ConnectionContext);
-  const deviceKey = connection.deviceName ?? UNKNOWN_DEVICE_KEY;
+  // A renamed keyboard (GoFortyWL Ortho, formerly "goforty-max") keeps the
+  // history it saved under its old name.
+  const deviceKey = connection.deviceName
+    ? storageKeyForDevice(connection.deviceName)
+    : UNKNOWN_DEVICE_KEY;
   const [versions, setVersions] = useState<StoredSnapshot<T>[]>([]);
   const [isBusy, setIsBusy] = useState(false);
 

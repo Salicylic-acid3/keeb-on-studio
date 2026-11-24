@@ -70,12 +70,12 @@ export const FIRMWARE_BOARDS: FirmwareBoard[] = [
     ],
   },
   {
-    name: "GoFortyMax Ortho",
-    repo: "Salicylic-acid3/zmk-keyboard-gofortymax-ortho",
+    name: "GoFortyWL Ortho",
+    repo: "Salicylic-acid3/zmk-keyboard-gofortywl-ortho",
     split: false,
     files: [
       {
-        asset: "goforty_max",
+        asset: "gofortywl_ortho",
         label: "Firmware",
         description: "Flash this to the keyboard.",
       },
@@ -83,12 +83,12 @@ export const FIRMWARE_BOARDS: FirmwareBoard[] = [
     ],
   },
   {
-    name: "BeThirtyMax QAZ",
-    repo: "Salicylic-acid3/zmk-keyboard-bethirtymax-qaz",
+    name: "BeThirtyWL QAZ",
+    repo: "Salicylic-acid3/zmk-keyboard-bethirtywl-qaz",
     split: false,
     files: [
       {
-        asset: "bethirtymax_qaz",
+        asset: "bethirtywl_qaz",
         label: "Firmware",
         description: "Flash this to the keyboard.",
       },
@@ -96,12 +96,12 @@ export const FIRMWARE_BOARDS: FirmwareBoard[] = [
     ],
   },
   {
-    name: "BeThirtyMax Ortho",
-    repo: "Salicylic-acid3/zmk-keyboard-bethirtymax-ortho",
+    name: "BeThirtyWL Ortho",
+    repo: "Salicylic-acid3/zmk-keyboard-bethirtywl-ortho",
     split: false,
     files: [
       {
-        asset: "bethirtymax_ortho",
+        asset: "bethirtywl_ortho",
         label: "Firmware",
         description: "Flash this to the keyboard.",
       },

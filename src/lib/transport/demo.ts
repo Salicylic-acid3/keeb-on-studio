@@ -127,10 +127,10 @@ import {
   isDemoSubsystemEnabled,
 } from "./demo-subsystems";
 import {
-  BETHIRTYMAX_ORTHO,
-  BETHIRTYMAX_QAZ,
+  BETHIRTYWL_ORTHO,
+  BETHIRTYWL_QAZ,
   ERGOTRACK,
-  GOFORTY_MAX,
+  GOFORTYWL_ORTHO,
 } from "../layouts";
 import { ErrorConditions } from "@zmkfirmware/zmk-studio-ts-client/meta";
 import { BEHAVIORS } from "./behaviors";
@@ -160,7 +160,7 @@ const ESC = 0xac;
 // Only the keyboards this app supports: the connection guard turns anything
 // else away, so offering a generic layout here would advertise something the
 // app will not actually talk to.
-const LAYOUTS = [ERGOTRACK, GOFORTY_MAX, BETHIRTYMAX_QAZ, BETHIRTYMAX_ORTHO];
+const LAYOUTS = [ERGOTRACK, GOFORTYWL_ORTHO, BETHIRTYWL_QAZ, BETHIRTYWL_ORTHO];
 // Each layout is a different keyboard, so each has a keymap of its own: the
 // default keymap its firmware ships with (see demo-keymaps.ts).
 const defaultKeymaps = (): DemoKeymap[] =>

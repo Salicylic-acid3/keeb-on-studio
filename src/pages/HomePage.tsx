@@ -243,12 +243,12 @@ export function HomePage({
               </div>
             </div>
 
-            {/* GoFortyMax */}
+            {/* GoFortyWL */}
             <div className="flex items-center justify-between p-4 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] group flex-col sm:flex-row">
               <div className="flex flex-col flex-1 w-full">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                   <p className="text-sm font-medium text-[var(--color-text-secondary)]">
-                    GoFortyMax
+                    GoFortyWL
                   </p>
                   <span className="text-xs text-[var(--color-text-muted)]">
                     {t("From the GoForty small-form-factor keyboard line.")}
@@ -260,12 +260,12 @@ export function HomePage({
               </div>
             </div>
 
-            {/* BeThirtyMax */}
+            {/* BeThirtyWL */}
             <div className="flex items-center justify-between p-4 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] group flex-col sm:flex-row">
               <div className="flex flex-col flex-1 w-full">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                   <p className="text-sm font-medium text-[var(--color-text-secondary)]">
-                    BeThirtyMax
+                    BeThirtyWL
                   </p>
                   <span className="text-xs text-[var(--color-text-muted)]">
                     {t("The wireless BeThirty: a 30% keyboard.")}

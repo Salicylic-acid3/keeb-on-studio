@@ -35,6 +35,7 @@ import {
 } from "../../keyTest/lib/boards";
 import type { Mod, Trigger } from "../../keyTest/lib/triggers";
 import { type Change, type WorkingKeymap } from "./guide";
+import { deviceKeyFor } from "../../lib/supportedDevices";
 
 /* ------------------------------------------------------------------ */
 /* Key codes and HID usages                                             */
@@ -477,7 +478,11 @@ export function triggerToBinding(
 export function boardIdForDevice(
   deviceName: string | undefined,
 ): string | null {
-  const n = (deviceName ?? "").trim().toLowerCase();
+  // deviceKeyFor maps GoFortyWL Ortho / BeThirtyWL QAZ / BeThirtyWL Ortho
+  // (what the firmware reports now) onto the names they had before, so one
+  // table covers keyboards on either firmware. The board ids are the old
+  // ones too: guide progress is stored under them.
+  const n = deviceKeyFor(deviceName) ?? "";
   if (n.includes("ergotrack")) return "clickboard_ergotrack";
   if (n.includes("goforty-max") || n.includes("gofortymax"))
     return "goforty_max_ortho";

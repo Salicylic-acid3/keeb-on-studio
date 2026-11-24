@@ -24,7 +24,7 @@ export class PhysicalLayoutsHandler {
 
   process(request: Request): Response {
     if (request.getPhysicalLayout) {
-      // GoFortyMax is a plain ortholinear board: no pointing device, no
+      // GoFortyWL is a plain ortholinear board: no pointing device, no
       // encoder. Reporting nothing is what its firmware would report.
       if (this.activeLayoutIndex !== ERGOTRACK_LAYOUT_INDEX) {
         return { physicalLayout: { devices: [], rotaryEncoders: [] } };
