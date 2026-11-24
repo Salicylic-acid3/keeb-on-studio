@@ -8,7 +8,9 @@
  *
  * So this is the other half of that trade, and deliberately only the other
  * half: one behavior, a plain key press, picked off a keyboard that stays on
- * screen, applied to the selected key, which then advances. Everything with
+ * screen, applied to the selected key, which then advances. Trans and None
+ * sit beside it: they take no parameters either, and filling a layer with
+ * Trans is as much a run of keys as typing the letters is. Everything with
  * parameters — layer taps, mod taps, macros — still goes through the dialog,
  * which is why the dialog is untouched.
  *
@@ -19,6 +21,7 @@
 import { IconKeyboard, IconX } from "@tabler/icons-react";
 import { KeyLayoutSelector } from "../KeyLayoutSelector";
 import type { KeyboardLayoutType } from "../../lib/keyboardLayouts";
+import type { QuickAssignSpecial } from "../../lib/keymap/quickAssign";
 import { useLanguage } from "../../hooks/useLanguage";
 
 export interface QuickAssignBarProps {
@@ -34,7 +37,31 @@ export interface QuickAssignBarProps {
   /** True once the run has walked off the end of the board. */
   finished: boolean;
   disabled?: boolean;
+  /**
+   * Trans / None picked. Each one the page can write is offered as a button
+   * beside the keyboard; leave it out and neither is shown.
+   */
+  onAssignSpecial?: (kind: QuickAssignSpecial) => void;
+  /** Which specials this device has (a behavior to write them with). */
+  availableSpecials?: readonly QuickAssignSpecial[];
+  /** The special on the selected key, for highlighting. */
+  selectedSpecial?: QuickAssignSpecial | null;
 }
+
+const SPECIALS: Array<{
+  kind: QuickAssignSpecial;
+  symbol: string;
+  label: string;
+  description: string;
+}> = [
+  {
+    kind: "trans",
+    symbol: "▽",
+    label: "Trans",
+    description: "Transparent (pass-through to lower layer)",
+  },
+  { kind: "none", symbol: "✕", label: "None", description: "No operation" },
+];
 
 export function QuickAssignBar({
   open,
@@ -45,6 +72,9 @@ export function QuickAssignBar({
   keyboardLayout,
   finished,
   disabled = false,
+  onAssignSpecial,
+  availableSpecials = [],
+  selectedSpecial = null,
 }: QuickAssignBarProps) {
   const { t } = useLanguage();
 
@@ -78,7 +108,7 @@ export function QuickAssignBar({
           </p>
           <p className="text-xs text-[var(--color-text-muted)]">
             {t(
-              "Choosing a key here sets it and moves to the next one. Use the key dialog for anything other than a plain key press.",
+              "Choosing a key here sets it and moves to the next one. Trans and None are here too; use the key dialog for anything else.",
             )}
           </p>
         </div>
@@ -101,6 +131,30 @@ export function QuickAssignBar({
             : undefined
         }
       >
+        {onAssignSpecial && availableSpecials.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-3">
+            {SPECIALS.filter((s) => availableSpecials.includes(s.kind)).map(
+              (special) => (
+                <button
+                  key={special.kind}
+                  type="button"
+                  className={`btn-ghost text-sm px-3 py-1.5 flex items-center gap-1.5 border ${
+                    selectedSpecial === special.kind
+                      ? "border-[var(--color-electric)] text-[var(--color-electric)]"
+                      : "border-[var(--color-border)]"
+                  }`}
+                  onClick={() => onAssignSpecial(special.kind)}
+                  title={t(special.description)}
+                  aria-label={`${special.label}: ${t(special.description)}`}
+                  aria-pressed={selectedSpecial === special.kind}
+                >
+                  <span aria-hidden="true">{special.symbol}</span>
+                  {special.label}
+                </button>
+              ),
+            )}
+          </div>
+        )}
         <KeyLayoutSelector
           selectedCode={selectedCode}
           onSelect={onAssign}

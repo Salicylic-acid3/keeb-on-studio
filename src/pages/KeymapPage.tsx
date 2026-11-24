@@ -56,6 +56,8 @@ import {
   keyPressCandidates,
   keyPressParam,
   nextKeyPosition,
+  specialBehaviorId,
+  type QuickAssignSpecial,
 } from "../lib/keymap/quickAssign";
 import { extractBaseKeycode } from "../lib/keycodes";
 import { pseudoKeyPositionsFor } from "../lib/trackpad/gestures";
@@ -579,21 +581,35 @@ export function KeymapPage() {
     return extractBaseKeycode(currentBinding.param1);
   }, [currentBinding, keyPressIds]);
 
-  const handleQuickAssign = useCallback(
-    (code: number) =>
+  // Trans / None for the bottom keyboard, where this device has them.
+  const specialIds = useMemo(
+    () => ({
+      trans: specialBehaviorId(keymap.behaviors, "trans"),
+      none: specialBehaviorId(keymap.behaviors, "none"),
+    }),
+    [keymap.behaviors],
+  );
+  const availableSpecials = useMemo(
+    () =>
+      (["trans", "none"] as const).filter((kind) => specialIds[kind] !== null),
+    [specialIds],
+  );
+  const quickAssignSelectedSpecial = useMemo((): QuickAssignSpecial | null => {
+    if (!currentBinding) return null;
+    if (currentBinding.behaviorId === specialIds.trans) return "trans";
+    if (currentBinding.behaviorId === specialIds.none) return "none";
+    return null;
+  }, [currentBinding, specialIds]);
+
+  // Write one binding to the selected key and move on.
+  const assignAndAdvance = useCallback(
+    (binding: { behaviorId: number; param1: number; param2: number }) =>
       withUnlock(async () => {
         if (!currentLayer || selectedKeyPosition === null) return;
-
-        const behaviorId = keyPressIds[0];
-        if (behaviorId === undefined) return;
-
-        // keyPressParam, not the bare code: the picker speaks bare usage ids
-        // and a binding wants the full HID usage. That one conversion is what
-        // the whole "Invalid behavior ID" hunt was actually about.
         const ok = await keymap.setBinding(
           currentLayer.id,
           selectedKeyPosition,
-          { behaviorId, param1: keyPressParam(code), param2: 0 },
+          binding,
         );
         // Only advance when the key actually took. Moving on after a refusal
         // would leave a gap the user has no reason to look for.
@@ -603,14 +619,32 @@ export function KeymapPage() {
           setQuickAssignFinished(next === null);
         }
       }),
-    [
-      currentLayer,
-      selectedKeyPosition,
-      keyPressIds,
-      keymap,
-      layoutPositions,
-      withUnlock,
-    ],
+    [currentLayer, selectedKeyPosition, keymap, layoutPositions, withUnlock],
+  );
+
+  const handleQuickAssign = useCallback(
+    (code: number) => {
+      const behaviorId = keyPressIds[0];
+      if (behaviorId === undefined) return;
+      // keyPressParam, not the bare code: the picker speaks bare usage ids
+      // and a binding wants the full HID usage. That one conversion is what
+      // the whole "Invalid behavior ID" hunt was actually about.
+      return assignAndAdvance({
+        behaviorId,
+        param1: keyPressParam(code),
+        param2: 0,
+      });
+    },
+    [keyPressIds, assignAndAdvance],
+  );
+
+  const handleQuickAssignSpecial = useCallback(
+    (kind: QuickAssignSpecial) => {
+      const behaviorId = specialIds[kind];
+      if (behaviorId === null) return;
+      return assignAndAdvance({ behaviorId, param1: 0, param2: 0 });
+    },
+    [specialIds, assignAndAdvance],
   );
 
   // Handle key reset
@@ -1647,6 +1681,9 @@ export function KeymapPage() {
                   }
                   selectedCode={quickAssignSelectedCode}
                   onAssign={handleQuickAssign}
+                  onAssignSpecial={handleQuickAssignSpecial}
+                  availableSpecials={availableSpecials}
+                  selectedSpecial={quickAssignSelectedSpecial}
                   keyboardLayout={keyboardLayoutContext.layout}
                   finished={quickAssignFinished}
                   disabled={locked || keyPressIds.length === 0}

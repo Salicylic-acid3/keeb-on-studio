@@ -12,6 +12,7 @@ import {
   keyPressCandidates,
   keyPressParam,
   nextKeyPosition,
+  specialBehaviorId,
 } from "../quickAssign";
 import type { BehaviorDefinition } from "../../../hooks/useKeymap";
 
@@ -122,5 +123,22 @@ describe("advancing to the next key", () => {
   it("has nowhere to go on an empty layout", () => {
     expect(nextKeyPosition([], null)).toBeNull();
     expect(nextKeyPosition([], 0)).toBeNull();
+  });
+});
+
+describe("finding Trans and None", () => {
+  it("finds each by the names the firmware uses", () => {
+    const b = behaviors([
+      [3, "Key Press"],
+      [7, "Transparent"],
+      [9, "None"],
+    ]);
+    expect(specialBehaviorId(b, "trans")).toBe(7);
+    expect(specialBehaviorId(b, "none")).toBe(9);
+    expect(specialBehaviorId(behaviors([[4, "Trans"]]), "trans")).toBe(4);
+  });
+
+  it("offers nothing rather than guessing", () => {
+    expect(specialBehaviorId(behaviors([[3, "Key Press"]]), "none")).toBe(null);
   });
 });

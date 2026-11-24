@@ -1383,8 +1383,8 @@ const ja: Record<string, string> = {
   "This keyboard refused that setting for this behavior.":
     "このキーボードはその動作にその設定を受け付けませんでした。",
   "The key could not be set.": "キーを設定できませんでした。",
-  "Choosing a key here sets it and moves to the next one. Use the key dialog for anything other than a plain key press.":
-    "ここでキーを選ぶと設定され、次のキーへ進みます。通常のキー入力以外はキーの設定ダイアログを使ってください。",
+  "Choosing a key here sets it and moves to the next one. Trans and None are here too; use the key dialog for anything else.":
+    "ここでキーを選ぶと設定され、次のキーへ進みます。Trans と None もここで選べます。それ以外はキーの設定ダイアログを使ってください。",
   "Key {{position}}": "キー {{position}}",
   Battery: "電池",
   "Settings storage": "設定の保存領域",
@@ -3310,8 +3310,8 @@ const zh: Record<string, string> = {
   "This keyboard refused that setting for this behavior.":
     "此键盘拒绝了该行为的这个设置。",
   "The key could not be set.": "无法设置该键。",
-  "Choosing a key here sets it and moves to the next one. Use the key dialog for anything other than a plain key press.":
-    "在这里选择按键会直接设置并跳到下一个。普通按键以外的绑定请使用按键设置对话框。",
+  "Choosing a key here sets it and moves to the next one. Trans and None are here too; use the key dialog for anything else.":
+    "在这里选择按键会直接设置并跳到下一个。Trans 和 None 也可以在这里选择，其他绑定请使用按键设置对话框。",
   "Key {{position}}": "键 {{position}}",
   Battery: "电池",
   "Settings storage": "设置存储空间",

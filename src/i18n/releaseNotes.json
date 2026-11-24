@@ -7,6 +7,11 @@
         "major": [],
         "minor": [
           {
+            "en": "Keymap: the keyboard at the bottom of the screen (\"Set keys one after another\") now has Trans and None buttons. Picking one sets the selected key and moves to the next, so a run of keys can be made transparent or cleared without opening the key dialog for each.",
+            "ja": "キーマップ: 画面下のキーボード(「キーを続けて設定」)に Trans と None のボタンを追加しました。押すと選択中のキーに設定して次のキーへ進むので、キーの設定ダイアログを 1 つずつ開かなくても、続けて透過にしたり無効にしたりできます。",
+            "zh": "键位图：屏幕下方的键盘（“连续设置按键”）新增 Trans 和 None 按钮。点击即设置当前选中的键并跳到下一个，无需逐个打开按键对话框即可连续设为透明或无效。"
+          },
+          {
             "en": "BeThirtyMax QAZ and BeThirtyMax Ortho, the wireless BeThirty keyboards, are supported: on the firmware download page, in the key test and layout editor, in demo mode, and in the keymap dojo with its 30% guide.",
             "ja": "BeThirty の無線版 BeThirtyMax QAZ と BeThirtyMax Ortho に対応しました。ファームウェアのダウンロード、キーテストとレイアウトエディタ、デモモード、キーマップ道場（30% ガイド）で選べます。",
             "zh": "新增支持 BeThirty 的无线版 BeThirtyMax QAZ 与 BeThirtyMax Ortho：固件下载页、按键测试与布局编辑器、演示模式，以及键位道场（30% 指南）。"
