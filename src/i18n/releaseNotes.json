@@ -19,6 +19,16 @@
         ],
         "patch": [
           {
+            "en": "Trackpad: Y invert, scaling and the other input processor settings are now written to the keyboard right away. The keyboard used to save them about a minute later, so unplugging it sooner (with no battery in it) brought the old values back.",
+            "ja": "トラックパッド: Y 軸の反転やスケーリングなどの入力プロセッサの設定を、変更後すぐキーボードに保存するようにしました。これまではキーボードが約 1 分後にまとめて保存していたため、それより前に USB ケーブルを抜くと(電池が入っていない場合)元の値に戻っていました。",
+            "zh": "触控板：Y 轴反转、缩放等输入处理器设置现在会在更改后立即保存到键盘。此前键盘约 1 分钟后才统一保存，在此之前拔下 USB 线（未装电池时）会恢复为原来的值。"
+          },
+          {
+            "en": "Connection: a default layer set for an OS (Windows → Alt, for example) now applies to every connection shown as \"Follow OS detection\". Connections that had never been changed were shown that way but stayed on the keymap's default layer.",
+            "ja": "接続: OS ごとのデフォルトレイヤー(Windows → Alt など)が、「OS 検出に従う」と表示されている接続すべてに効くようになりました。一度も変更していない接続は「OS 検出に従う」と表示されていても、実際にはキーマップのデフォルトレイヤーのままでした。",
+            "zh": "连接：为某个系统设置的默认层（例如 Windows → Alt）现在会作用于所有显示为“跟随系统检测”的连接。此前从未修改过的连接虽然显示为“跟随系统检测”，实际仍停留在键位图的默认层。"
+          },
+          {
             "en": "Macros: a new macro is now named after its slot, starting from \"Macro 0\". The list used to start at \"Macro 1\" while the keymap called the same macro \"Macro 0\". Macros you already have keep their names; rename them if you want them to match.",
             "ja": "マクロ: 新しく追加したマクロの名前を、スロット番号に合わせて「Macro 0」から付けるようにしました。これまで一覧では「Macro 1」から始まるのに、キーマップでは同じマクロが「Macro 0」と表示されていました。作成済みのマクロの名前はそのままです。揃えたい場合は名前を変更してください。",
             "zh": "宏：新建的宏现在按槽位编号命名，从“Macro 0”开始。此前列表从“Macro 1”开始，而键位图把同一个宏显示为“Macro 0”。已有的宏保持原名，如需一致请重命名。"
