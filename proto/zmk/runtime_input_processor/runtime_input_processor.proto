@@ -189,6 +189,15 @@ message SetXySwapEnabledRequest {
 
 message SetXySwapEnabledResponse {}
 
+// Write every processor's current settings to flash now. The set_* requests
+// above already persist, but the firmware debounces that write
+// (CONFIG_ZMK_SETTINGS_SAVE_DEBOUNCE, 60 s by default), so a keyboard that
+// loses power sooner (unplugged with no battery) comes back with the old
+// values. Firmware without this request answers it with an error.
+message SaveAllSettingsRequest {}
+
+message SaveAllSettingsResponse {}
+
 // Request to get layer information
 message GetLayerInfoRequest {}
 
@@ -218,6 +227,7 @@ message Request {
         SetXySwapEnabledRequest set_xy_swap_enabled = 17;
         SetXInvertRequest set_x_invert = 18;
         SetYInvertRequest set_y_invert = 19;
+        SaveAllSettingsRequest save_all_settings = 20;
     }
 }
 
@@ -249,6 +259,7 @@ message Response {
         SetXySwapEnabledResponse set_xy_swap_enabled = 18;
         SetXInvertResponse set_x_invert = 19;
         SetYInvertResponse set_y_invert = 20;
+        SaveAllSettingsResponse save_all_settings = 21;
     }
 }
 

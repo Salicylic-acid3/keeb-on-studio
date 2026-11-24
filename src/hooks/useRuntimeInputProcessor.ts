@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useContext } from "react";
+import { useState, useEffect, useCallback, useContext, useRef } from "react";
 import { ZMKAppContext } from "@cormoran/zmk-studio-react-hook";
 import { useCustomSubsystem, useLockAwareCall } from "./useCustomSubsystem";
 import {
@@ -24,6 +24,22 @@ const CODEC = {
 
 // Time to wait for all notifications to arrive after requesting processors
 const NOTIFICATION_COLLECTION_TIMEOUT_MS = 500;
+
+// How long after the last change to ask the firmware to write the settings to
+// flash. The set_* requests do persist, but the firmware debounces that write
+// by CONFIG_ZMK_SETTINGS_SAVE_DEBOUNCE (60 s by default): a keyboard unplugged
+// sooner with no battery (so it powers off) came back with the old values.
+// Short enough to beat an unplug, long enough to batch a slider drag.
+export const RIP_SAVE_DELAY_MS = 400;
+
+/** Whether `request` changes a processor's settings (and so needs saving). */
+export function isRipSettingsWrite(request: Request): boolean {
+  return Object.entries(request).some(
+    ([key, value]) =>
+      value !== undefined &&
+      (key.startsWith("set") || key === "resetProcessor"),
+  );
+}
 
 // Helper function to find GCD (Greatest Common Divisor) using Euclidean algorithm
 function gcd(a: number, b: number): number {
@@ -116,7 +132,36 @@ export function useRuntimeInputProcessor(): UseRuntimeInputProcessorReturn {
   const [error, setError] = useState<string | null>(null);
   // Map a lock/cancel rejection from the gate to the shared "device is locked"
   // message (rendered via t()); other outcomes pass through unchanged.
-  const call = useLockAwareCall(gatedCall, setError);
+  const lockAwareCall = useLockAwareCall(gatedCall, setError);
+
+  // Flush settings to flash shortly after the last successful change (see
+  // RIP_SAVE_DELAY_MS). Best effort: firmware without save_all_settings
+  // answers with an error, and then it still saves after its own debounce.
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scheduleSave = useCallback(() => {
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      saveTimerRef.current = null;
+      lockAwareCall(Request.create({ saveAllSettings: {} })).catch((err) =>
+        console.warn("Failed to save input processor settings:", err),
+      );
+    }, RIP_SAVE_DELAY_MS);
+  }, [lockAwareCall]);
+  useEffect(
+    () => () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    },
+    [],
+  );
+
+  const call = useCallback(
+    async (request: Request, options?: { timeout?: number }) => {
+      const resp = await lockAwareCall(request, options);
+      if (resp && !resp.error && isRipSettingsWrite(request)) scheduleSave();
+      return resp;
+    },
+    [lockAwareCall, scheduleSave],
+  );
 
   // Extract subsystem index as a stable primitive value for dependencies
   const subsystemIndex = subsystem?.index;

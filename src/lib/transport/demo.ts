@@ -476,7 +476,7 @@ export class Keyboard {
       const behavior = DEMO.behaviors.find((b) => b.id === binding?.behaviorId);
       if (!layer || keyPosition < 0 || keyPosition >= layer.bindings.length) {
         rr.keymap = { setLayerBinding: 1 }; // INVALID_LOCATION
-      } else if (!behavior) {
+      } else if (!binding || !behavior) {
         rr.keymap = { setLayerBinding: 2 }; // INVALID_BEHAVIOR
       } else if (
         // The demo used to store whatever it was handed, so a binding that no

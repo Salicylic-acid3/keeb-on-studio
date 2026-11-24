@@ -132,6 +132,11 @@ export class RuntimeInputProcessorHandler {
   );
 
   process(request: Request): Response {
+    if (request.saveAllSettings !== undefined) {
+      // The demo keeps everything in memory; nothing to flush.
+      return { saveAllSettings: {} };
+    }
+
     if (request.listProcessors !== undefined) {
       // Send processor data via notifications
       setTimeout(() => {

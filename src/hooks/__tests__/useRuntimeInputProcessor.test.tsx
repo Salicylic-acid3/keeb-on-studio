@@ -5,10 +5,15 @@
  * including loading processors, setting scaling, and setting rotation.
  */
 import { renderHook, act } from "@testing-library/react";
-import { useRuntimeInputProcessor } from "../useRuntimeInputProcessor";
+import {
+  useRuntimeInputProcessor,
+  isRipSettingsWrite,
+  RIP_SAVE_DELAY_MS,
+} from "../useRuntimeInputProcessor";
 import { ZMKAppContext } from "@cormoran/zmk-studio-react-hook";
 import type { ReactNode } from "react";
 import {
+  Request,
   Response,
   Notification,
 } from "../../proto/zmk/runtime_input_processor/runtime_input_processor";
@@ -459,6 +464,79 @@ describe("useRuntimeInputProcessor", () => {
 
       expect(result.current.error).toBe(null);
       expect(result.current.processors[0]?.rotationDegrees).toBe(90);
+    });
+  });
+
+  describe("Saving to flash", () => {
+    it("classifies setters and resets as writes, reads as not", () => {
+      expect(
+        isRipSettingsWrite(
+          Request.create({ setYInvert: { id: 0, invert: true } }),
+        ),
+      ).toBe(true);
+      expect(
+        isRipSettingsWrite(Request.create({ resetProcessor: { id: 0 } })),
+      ).toBe(true);
+      expect(isRipSettingsWrite(Request.create({ listProcessors: {} }))).toBe(
+        false,
+      );
+      expect(isRipSettingsWrite(Request.create({ saveAllSettings: {} }))).toBe(
+        false,
+      );
+    });
+
+    it("asks the firmware to save once, shortly after a burst of changes", async () => {
+      // The firmware's own save waits CONFIG_ZMK_SETTINGS_SAVE_DEBOUNCE (60 s);
+      // a keyboard unplugged sooner without a battery lost the change.
+      mockCallRPC.mockImplementation(async (payload: Uint8Array) => {
+        const req = Request.decode(payload);
+        if (req.setYInvert)
+          return Response.encode(Response.create({ setYInvert: {} })).finish();
+        if (req.saveAllSettings)
+          return Response.encode(
+            Response.create({ saveAllSettings: {} }),
+          ).finish();
+        return Response.encode(
+          Response.create({ listProcessors: {} }),
+        ).finish();
+      });
+
+      const wrapper = createWrapper({
+        state: {
+          connection: { isConnected: true } as never,
+          customSubsystems: [{ index: 0, identifier: "cormoran_rip" }],
+        },
+        findSubsystem: (id: string) =>
+          id === "cormoran_rip"
+            ? { index: 0, identifier: "cormoran_rip" }
+            : null,
+        onNotification: mockOnNotification,
+      });
+      const { result } = renderHook(() => useRuntimeInputProcessor(), {
+        wrapper,
+      });
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      });
+
+      const sent = () =>
+        mockCallRPC.mock.calls.map((call) =>
+          Request.decode(call[0] as Uint8Array),
+        );
+
+      await act(async () => {
+        await result.current.setYInvert(0, true);
+        await result.current.setYInvert(0, false);
+      });
+      expect(sent().some((r) => r.saveAllSettings)).toBe(false);
+
+      await act(async () => {
+        await new Promise((resolve) =>
+          setTimeout(resolve, RIP_SAVE_DELAY_MS + 100),
+        );
+      });
+      expect(sent().filter((r) => r.saveAllSettings)).toHaveLength(1);
+      expect(result.current.error).toBe(null);
     });
   });
 
