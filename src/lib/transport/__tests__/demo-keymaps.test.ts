@@ -101,8 +101,8 @@ describe("default keymaps of the demo keyboards", () => {
   test("GoFortyMax Ortho starts as its firmware does", () => {
     const keymap = defaultKeymapFor(layoutModule.GOFORTY_MAX, BEHAVIORS);
     expect(keymap.layers).toHaveLength(5);
-    // Its keymap reserves no extra layer, so none can be added.
-    expect(keymap.availableLayers).toBe(0);
+    // 5 layers + 11 reserved = 16, the same ceiling as ErgoTrack.
+    expect(keymap.availableLayers).toBe(11);
     const base = keymap.layers[0].bindings;
     // &bt BT_PRV, &bt BT_NXT, Tab, Q ...
     expect(base[0]).toEqual({
@@ -246,17 +246,19 @@ describe("demo keyboard: one keymap per keyboard", () => {
     expect(keymapOf(kb).layers[0].bindings).toHaveLength(81);
   });
 
-  test("a keyboard whose keymap reserves no layer cannot add one", () => {
+  test("layers can be added up to the reserved count, and no further", () => {
     const kb = new Keyboard();
     const add = () =>
       kb.process({ requestId: 1, keymap: { addLayer: {} } }).requestResponse!
         .keymap!.addLayer!;
+    const available = () =>
+      fast(kb).handleFastKeymap({ getSnapshot: {} }).snapshot!.availableLayers;
     expect(add().ok).toBeDefined(); // ErgoTrack reserves thirteen
-    expect(
-      fast(kb).handleFastKeymap({ getSnapshot: {} }).snapshot!.availableLayers,
-    ).toBe(12);
-    select(kb, 1);
-    expect(add().err).toBeDefined(); // GoFortyMax reserves none
+    expect(available()).toBe(12);
+    select(kb, 1); // GoFortyMax reserves eleven
+    for (let i = 0; i < 11; i++) expect(add().ok).toBeDefined();
+    expect(available()).toBe(0);
+    expect(add().err).toBeDefined();
   });
 
   test("fingerprints follow the content, so the web's cache cannot go stale", () => {
