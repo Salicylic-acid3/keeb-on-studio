@@ -804,8 +804,8 @@ const ja: Record<string, string> = {
     "{{drive}} ドライブが出てこない場合は、このブートローダーより前に作られた基板です。一度だけ入れる必要があります：",
   "Or let Keeb-On! Studio do it: connect the keyboard on the QMK side and use Update firmware on the Settings tab.":
     "Keeb-On! Studio に任せることもできます。QMK側でキーボードをつなぎ、設定タブの「ファームウェアの更新」を使ってください。",
-  "Put the keyboard in its bootloader. It appears as a USB drive: RPI-RP2, or KEEBONBOOT on ClickBoard Tenkey, EzTenkey, EzTenkeyMX and WzTwenty STM.":
-    "キーボードをブートローダーに切り替えます。USBドライブとして現れます（RPI-RP2。ClickBoard Tenkey・EzTenkey・EzTenkeyMX・WzTwenty STM は KEEBONBOOT）。",
+  "Put the keyboard in its bootloader. It appears as a USB drive: RPI-RP2, or KEEBONBOOT on ClickBoard Macro, ClickBoard Tenkey, EzTenkey, EzTenkeyMX and WzTwenty STM.":
+    "キーボードをブートローダーに切り替えます。USBドライブとして現れます（RPI-RP2。ClickBoard Macro・ClickBoard Tenkey・EzTenkey・EzTenkeyMX・WzTwenty STM は KEEBONBOOT）。",
   "RP2040 keyboards: double-tapping the reset switch works too.":
     "RP2040 のキーボードは、リセットスイッチの2回押しでも切り替えられます。",
   "STM32G0 keyboards without the KEEBONBOOT bootloader":

@@ -5753,6 +5753,33 @@
     ],
     "entries": { "tapDance": 32, "combo": 32, "keyOverride": 32 }
   },
+  "clickboard_macro": {
+    "name": "ClickBoard Macro",
+    "definitionXzBase64": "/Td6WFoAAATm1rRGAgAhARYAAAB0L+Wj4AFsAOtdAD2IicZUNsMXT+TvruKxKlTgzfwA1Y+iGqcaQC4mb0p+e7cY4Hjk+R65G/PWcNUlAZgH+huyRrdh2FZOsddAvLvE2hEA1Kyieym9IMtQAD5KDUcR20xQ9+RAXXXKM9mj85Ho/fwiTFsFzu0qaNPcAa+hlXb7bwl7HNV3L2SE9E9havUoB0OcGVyUEtVhmH+Wq4eirSlBiBMXqVmV001r2lOLOXVhvrTREkKeppY6/CzzfhQWxfmHGi/BwHsDqfAlI+MJJFqz/ImM+/jNgRBTngcb2QDpAQIEvPy/fQUIgxxt/J8XmD54wKKnvx8AAPJOSHfJ+ULbAAGHAu0CAABW7rGdscRn+wIAAAAABFla",
+    "rows": 1,
+    "cols": 6,
+    "keymap": [
+      [["KC_PGDN", "KC_LEFT", "KC_DOWN", "KC_UP", "KC_RGHT", "KC_PGUP"]],
+      [["KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS"]],
+      [["KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS"]],
+      [["KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS"]],
+      [["KC_PGDN", "KC_LEFT", "KC_DOWN", "KC_UP", "KC_RGHT", "KC_PGUP"]],
+      [["KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS"]],
+      [["KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS"]],
+      [["KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS"]],
+      [["KC_PGDN", "KC_LEFT", "KC_DOWN", "KC_UP", "KC_RGHT", "KC_PGUP"]],
+      [["KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS"]],
+      [["KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS"]],
+      [["KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS"]]
+    ],
+    "layersPerBlock": 4,
+    "blockCount": 3,
+    "unlockKeys": [
+      { "row": 0, "col": 0 },
+      { "row": 0, "col": 5 }
+    ],
+    "entries": { "tapDance": 32, "combo": 32, "keyOverride": 32 }
+  },
   "clickboard_ortho": {
     "name": "ClickBoard Ortho",
     "definitionXzBase64": "/Td6WFoAAATm1rRGAgAhARYAAAB0L+Wj4AS4ATFdAD2IicZUNsMXT+TvruKxKlTgzfwA1ZAXPwbPoW8FVP6I8KGXaMt7AviukY7MnmlD6GY+lispIvduRsXJEcTY7CF8WfLmqVvElZKaQzBQFPiOM8c0Dzb4QPMtFRDS30yO8hUTlOGQ+AfM1Fj39IW5AAf5QVHel6EQIhMAXl98BP4490edf1Hj1bMXjGVrKM81/kvEurlhdAsWvUH3znyN3rPtklVqZ/HxIKgNP1csgPPFSFSZqjsMG7FLminISKnC05wfDQ2/rZ7EUvEAeH/ozgv07ViTiOedQdaxvay5Y44qA66Sm26CcBG6nZvrEN6o0/9PLT65BShVZuWdTLHH6plEHDvkx+WiCJ0NQAbd7Nz6mKj0tXfY+nPTea37aWz5wBcjyjkuoSbcFzORl6WIXAAAAAAAAB0nfJ93QMwdAAHNArkJAABIsEh7scRn+wIAAAAABFla",

@@ -249,6 +249,25 @@
     ],
     "reviewed": false
   },
+  "clickboard_macro": {
+    "sizeClass": "pad",
+    "defaultGuide": null,
+    "allowGuide": [],
+    "split": false,
+    "thumbKeys": [],
+    "homeRow": {
+      "L": [],
+      "R": []
+    },
+    "fixedKeys": {
+      "esc": null,
+      "tab": null,
+      "capslock": null
+    },
+    "symbolSlots": [],
+    "defaultLayerKeys": [],
+    "reviewed": false
+  },
   "clickboard_ergotrack": {
     "sizeClass": "60",
     "defaultGuide": "60",

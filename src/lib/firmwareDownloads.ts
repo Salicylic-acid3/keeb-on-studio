@@ -192,6 +192,7 @@ export const QMK_FIRMWARE: QmkFirmware[] = [
   rp("BeThirty QAZ", "bethirty_qaz", "BeThirty"),
   rp("ClickBoard CyberMini", "clickboard_cybermini"),
   rp("ClickBoard ErgoMini", "clickboard_ergomini"),
+  g0("ClickBoard Macro", "clickboard_macro"),
   rp("ClickBoard Ortho", "clickboard_ortho"),
   g0("ClickBoard Tenkey", "clickboard_tenkey"),
   g0("EzTenkey", "eztenkey"),

@@ -14,7 +14,7 @@ export function QmkFlashInstructions() {
         <li>{t("Download the .uf2 file for your keyboard below.")}</li>
         <li>
           {t(
-            "Put the keyboard in its bootloader. It appears as a USB drive: RPI-RP2, or KEEBONBOOT on ClickBoard Tenkey, EzTenkey, EzTenkeyMX and WzTwenty STM.",
+            "Put the keyboard in its bootloader. It appears as a USB drive: RPI-RP2, or KEEBONBOOT on ClickBoard Macro, ClickBoard Tenkey, EzTenkey, EzTenkeyMX and WzTwenty STM.",
           )}
           <ul className="mt-1 list-outside list-disc space-y-1 pl-5">
             <li>

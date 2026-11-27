@@ -5,7 +5,13 @@
       "date": null,
       "changes": {
         "major": [],
-        "minor": [],
+        "minor": [
+          {
+            "en": "QMK: ClickBoard Macro (6-key macro pad, STM32G0) is supported: its firmware is on the download page, and it is in demo mode, the layout editor and the key test.",
+            "ja": "QMK: ClickBoard Macro（6キーのマクロパッド、STM32G0）に対応しました。ダウンロードページからファームウェアを入手でき、デモモード・レイアウトエディタ・キーテストでも選べます。",
+            "zh": "QMK：现已支持 ClickBoard Macro（6 键宏键盘，STM32G0）。可在下载页面获取固件，也可在演示模式、布局编辑器和按键测试中选择。"
+          }
+        ],
         "patch": []
       }
     },
